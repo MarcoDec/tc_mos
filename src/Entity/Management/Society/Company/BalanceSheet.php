@@ -7,6 +7,8 @@ use App\Entity\Entity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Currency;
 use App\Entity\Management\Unit;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -79,7 +81,7 @@ class BalanceSheet extends Entity implements MeasuredInterface
     private int $year;
 
     #[
-        ORM\ManyToOne(targetEntity: Currency::class),
+        ORM\ManyToOne(targetEntity: Currency::class, fetch: 'EAGER'),
         ORM\JoinColumn(nullable: true),
         ApiProperty(description: 'Devise', example: '/api/currencies/1'),
         Serializer\Groups(['create:balance-sheet', 'read:balance-sheet', 'write:balance-sheet'])
@@ -100,11 +102,15 @@ class BalanceSheet extends Entity implements MeasuredInterface
     ]
     private ?Unit $unit = null;
 
+    #[ORM\OneToMany(mappedBy: 'balanceSheet', targetEntity: BalanceSheetItem::class)]
+    private Collection $balanceSheetItems;
+
     public function __construct() {
         $this->totalIncome = new Measure();
         $this->totalExpense = new Measure();
         $this->totalIncome->setValue(0);
         $this->totalExpense->setValue(0);
+        $this->balanceSheetItems = new ArrayCollection();
         //        $this->unit = new Unit();
         //        $this->unit->setCode('U');
     }
@@ -186,4 +192,50 @@ class BalanceSheet extends Entity implements MeasuredInterface
         return $this;
     }
 
+    public function getBalanceSheetItems(): Collection
+    {
+        return $this->balanceSheetItems;
+    }
+
+    public function setBalanceSheetItems(Collection $balanceSheetItems): BalanceSheet
+    {
+        $this->balanceSheetItems = $balanceSheetItems;
+        return $this;
+    }
+
+    public function refreshIncomeAndExpense() {
+        //dump('refreshIncomeAndExpense');
+//        $totalIncome = $this->calculateTotalIncome();
+//        $totalExpense = $this->calculateTotalExpense();
+//        $this->setTotalIncome($totalIncome);
+//        $this->setTotalExpense($totalExpense);
+    }
+    private function calculateTotalExpense(): Measure
+    {
+        $totalExpense = new Measure();
+        $totalExpense->setUnit($this->getCurrency());
+        foreach ($this->getBalanceSheetItems() as $item) {
+            if ($item->isExpense()) {
+                $totalExpense->add($item->getAmount());
+                $totalExpense->add($item->getVat());
+            }
+        }
+        return $totalExpense;
+    }
+    private function calculateTotalIncome(): Measure
+    {
+        $totalIncome = new Measure();
+        $totalIncome->setUnit($this->getCurrency());
+        /** @var BalanceSheetItem $item */
+        foreach ($this->getBalanceSheetItems() as $item) {
+            if ($item->isIncome()) {
+                dump('isIncome', $item->getAmount(), $item->getVat());
+                $totalIncome->add($item->getAmount());
+                $totalIncome->add($item->getVat());
+            } else {
+                dump('isNotIncome', $item->getAmount(), $item->getVat());
+            }
+        }
+        return $totalIncome;
+    }
 }
