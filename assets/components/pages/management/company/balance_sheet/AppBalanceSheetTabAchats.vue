@@ -40,6 +40,18 @@
     }
     //endregion
     //region    Définition des champs des formulaires d'ajout
+    const subCategoryOptions = {
+        label: id => id,
+        options: [
+            {text: 'SALAIRE DE BASE', value: 'SALAIRE DE BASE'},
+            {text: 'AVANCE SUR SALAIRE', value: 'AVANCE SUR SALAIRE'},
+            {text: 'PRIME', value: 'PRIME'},
+            {text: 'AVANTAGES EN NATURE', value: 'AVANTAGES EN NATURE'},
+            {text: 'CHARGES SOCIALES', value: 'CHARGES SOCIALES'},
+            {text: 'CHARGES PATRONALES', value: 'CHARGES PATRONALES'},
+            {text: 'CHARGES SALARIALES', value: 'CHARGES SALARIALES'}
+        ]
+    }
     const purchaseFormFields = [
         {
             title: 'Dépenses normales',
@@ -69,7 +81,12 @@
             fields: [
                 {label: 'Date', name: 'paymentDate', type: 'date'},
                 {label: 'N° Matricule', name: 'paymentRef', type: 'text'},
-                {label: 'Type Paies', name: 'subCategory', type: 'text'},
+                {
+                    label: 'Type Paies',
+                    name: 'subCategory',
+                    type: 'select',
+                    options: subCategoryOptions
+                },
                 {label: 'Nom & Prénom', name: 'label', type: 'text'},
                 {label: 'Montant', name: 'amount', type: 'measure', measure: priceMeasure},
                 {label: 'Mode de paiement', name: 'paymentMethod', type: 'text'},
@@ -145,7 +162,14 @@
             fields: [
                 {label: 'Date', name: 'paymentDate', trie: true, type: 'date', min: true},
                 {label: 'N° Matricule', name: 'paymentRef', trie: true, type: 'text'},
-                {label: 'Type Paies', name: 'subCategory', trie: true, type: 'text', min: true},
+                {
+                    label: 'Type Paies',
+                    name: 'subCategory',
+                    type: 'select',
+                    options: subCategoryOptions,
+                    trie: true,
+                    min: true
+                },
                 {label: 'Nom & Prénom', name: 'label', trie: true, type: 'text', min: true},
                 {label: 'Mode de paiement', name: 'paymentMethod', trie: true, type: 'text'},
                 {label: 'Montant', name: 'amount', trie: false, type: 'measure', min: true, measure: priceMeasure, filter: false},
