@@ -44,7 +44,7 @@ class BalanceSheetItemEventListener
         $this->loadMeasureUnitAsCurrency($totalIncome);
         /** @var BalanceSheetItem $item */
         foreach ($balanceSheetItem->getBalanceSheet()->getBalanceSheetItems() as $item) {
-            if ($item->isIncome()) {
+            if ($item->isIncome() && !$item->isDeleted()) {
                 $amount = $item->getAmount();
                 if ($amount->getValue()>0 && $amount->getCode() !== null) {
                     $this->loadMeasureUnitAsCurrency($amount);
@@ -67,7 +67,7 @@ class BalanceSheetItemEventListener
         $totalExpense->setUnit($balanceSheetCurrency);
         $this->loadMeasureUnitAsCurrency($totalExpense);
         foreach ($balanceSheetItem->getBalanceSheet()->getBalanceSheetItems() as $item) {
-            if ($item->isExpense()) {
+            if ($item->isExpense() && !$item->isDeleted()) {
                 $amount = $item->getAmount();
                 if ($amount->getValue() >0 && $amount->getCode() !== null) {
                     $this->loadMeasureUnitAsCurrency($amount);
