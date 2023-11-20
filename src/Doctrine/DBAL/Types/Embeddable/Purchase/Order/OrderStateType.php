@@ -8,11 +8,11 @@ final class OrderStateType extends StateType {
     final public const TYPES = [
         self::TYPE_STATE_AGREED,
         self::TYPE_STATE_CART,
-        self::TYPE_STATE_DELIVERED,
+        self::TYPE_STATE_RECEIVED,
         self::TYPE_STATE_DRAFT,
         self::TYPE_STATE_INITIAL,
-        self::TYPE_STATE_PARTIALLY_DELIVERED,
-        self::TYPE_STATE_LOCKED
+        self::TYPE_STATE_PARTIALLY_RECEIVED,
+        self::TYPE_STATE_PAID
     ];
 
     public function getName(): string {

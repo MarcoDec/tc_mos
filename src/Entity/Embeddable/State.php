@@ -20,7 +20,9 @@ abstract class State {
     final public const TR_MONTH = 'month';
     final public const TR_PARTIALLY_DELIVER = 'partially_deliver';
     final public const TR_PARTIALLY_PAY = 'partially_pay';
+    final public const TR_PARTIALLY_RECEIVE = 'partially_receive';
     final public const TR_PAY = 'pay';
+    final public const TR_RECEIVE = 'receive';
     final public const TR_REJECT = 'reject';
     final public const TR_SUBMIT_VALIDATION = 'submit_validation';
     final public const TR_SUPERVISE = 'supervise';

@@ -3842,7 +3842,7 @@ CREATE TABLE `purchase_order_item` (
     `copper_price_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
     `copper_price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `emb_blocker_state` ENUM('blocked', 'closed', 'delayed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:purchase_order_item_closer_state)',
-    `emb_state_state` ENUM('agreed', 'delivered', 'draft', 'forecast', 'initial', 'monthly', 'partially_delivered','locked') DEFAULT 'initial' NOT NULL COMMENT '(DC2Type:purchase_order_item_state)',
+    `emb_state_state` ENUM('agreed', 'received', 'draft', 'forecast', 'initial', 'monthly', 'partially_received','paid') DEFAULT 'initial' NOT NULL COMMENT '(DC2Type:purchase_order_item_state)',
     `notes` VARCHAR(255) DEFAULT NULL,
     `order_id` INT UNSIGNED DEFAULT NULL,
     `price_code`VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
@@ -3896,7 +3896,7 @@ INSERT INTO `purchase_order_item` (
     'EUR',
     `ordersupplier_component`.`price_surcharge_cu`,
     IF(
-        `purchase_order`.`emb_state_state` IN ('agreed', 'partially_delivery')
+        `purchase_order`.`emb_state_state` IN ('agreed', 'partially_received')
             OR `purchase_order`.`emb_blocker_state` = 'closed',
         CASE
             WHEN IFNULL(`ordersupplier_component`.`quantity`, 0) = IFNULL(`ordersupplier_component`.`quantity_received`, 0) THEN 'closed'
@@ -3906,11 +3906,11 @@ INSERT INTO `purchase_order_item` (
         'enabled'
     ),
     IF(
-        `purchase_order`.`emb_state_state` IN ('agreed', 'partially_delivery')
+        `purchase_order`.`emb_state_state` IN ('agreed', 'partially_received')
             OR `purchase_order`.`emb_blocker_state` = 'closed',
         CASE
-            WHEN IFNULL(`ordersupplier_component`.`quantity`, 0) = IFNULL(`ordersupplier_component`.`quantity_received`, 0) THEN 'delivered'
-            WHEN IFNULL(`ordersupplier_component`.`quantity_received`, 0) > 0 THEN 'partially_delivered'
+            WHEN IFNULL(`ordersupplier_component`.`quantity`, 0) = IFNULL(`ordersupplier_component`.`quantity_received`, 0) THEN 'received'
+            WHEN IFNULL(`ordersupplier_component`.`quantity_received`, 0) > 0 THEN 'partially_received'
             ELSE 'agreed'
         END,
         'draft'
@@ -3942,7 +3942,7 @@ CREATE TABLE `receipt` (
     `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `date` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `emb_state_state` ENUM('asked', 'blocked', 'closed', 'to_validate') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:receipt_state)',
+    `emb_state_state` ENUM('asked', 'rejected', 'closed', 'to_validate') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:receipt_state)',
     `item_id` INT UNSIGNED DEFAULT NULL,
     `quantity_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
     `quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
@@ -4013,7 +4013,7 @@ CREATE TABLE `purchase_order` (
     `contact_id` INT UNSIGNED DEFAULT NULL,
     `delivery_company_id` INT UNSIGNED DEFAULT NULL,
     `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
-    `emb_state_state` ENUM('agreed', 'cart', 'delivered', 'draft', 'initial', 'partially_delivered','locked') DEFAULT 'initial' NOT NULL COMMENT '(DC2Type:purchase_order_state)',
+    `emb_state_state` ENUM('agreed', 'cart', 'received', 'draft', 'initial', 'partially_received','paid') DEFAULT 'initial' NOT NULL COMMENT '(DC2Type:purchase_order_state)',
     `notes` TEXT DEFAULT NULL,
     `order_id` INT UNSIGNED DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
@@ -4044,8 +4044,8 @@ INSERT INTO `purchase_order` (
     IF(`ordersupplier`.`id_ordersupplierstatus` IN (6, 7), 'closed', 'enabled'),
     CASE
         WHEN `ordersupplier`.`id_ordersupplierstatus` = 4 THEN 'agreed'
-        WHEN `ordersupplier`.`id_ordersupplierstatus` = 5 THEN 'partially_delivered'
-        WHEN `ordersupplier`.`id_ordersupplierstatus` = 6 THEN 'delivered'
+        WHEN `ordersupplier`.`id_ordersupplierstatus` = 5 THEN 'partially_received'
+        WHEN `ordersupplier`.`id_ordersupplierstatus` = 6 THEN 'received'
         ELSE 'draft'
     END,
     IF(

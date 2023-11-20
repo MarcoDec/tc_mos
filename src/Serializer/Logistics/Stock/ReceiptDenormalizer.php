@@ -34,10 +34,10 @@ final class ReceiptDenormalizer implements DenormalizerAwareInterface, Denormali
         $item = $this->iriConverter->getItemFromIri($data['orderItem'], $context);
         $stock->setOrderItem($item);
         $workflow = $this->registry->get($item, 'purchase_order_item');
-        if ($workflow->can($item, State::TR_DELIVER)) {
-            $workflow->apply($item, State::TR_DELIVER);
-        } elseif ($workflow->can($item, State::TR_PARTIALLY_DELIVER)) {
-            $workflow->apply($item, State::TR_PARTIALLY_DELIVER);
+        if ($workflow->can($item, State::TR_RECEIVE)) {
+            $workflow->apply($item, State::TR_RECEIVE);
+        } elseif ($workflow->can($item, State::TR_PARTIALLY_RECEIVE)) {
+            $workflow->apply($item, State::TR_PARTIALLY_RECEIVE);
         }
         return $stock;
     }
