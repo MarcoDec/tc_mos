@@ -105,13 +105,13 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
     use FileTrait;
     //region définition des constantes
     public const INCOMES = [
-        "VENTES"
+        "Ventes"
     ];
     public const EXPENSES = [
-        "DEPENSES NORMALES",
-        "SALAIRES",
-        "ACHATS MATIERES PREMIERES",
-        "FRAIS DE TRANSPORT",
+        "Dépenses normales",
+        "Salaires",
+        "Achats Matières Premières",
+        "Frais de transport",
     ];
     public const CATEGORIES= [
         "VENTES",
@@ -165,7 +165,7 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
     ]
     protected ?string $filePath = null;
     #[
-        ORM\ManyToOne(targetEntity: BalanceSheet::class),
+        ORM\ManyToOne(targetEntity: BalanceSheet::class, inversedBy: 'balanceSheetItems'),
         ORM\JoinColumn(nullable: false),
         ApiProperty(description: 'Bilan', example: '/api/balance-sheets/1'),
         Serializer\Groups(['read:balance-sheet-item', 'write:balance-sheet-item'])
@@ -322,6 +322,7 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
     public function setVat(Measure $vat): BalanceSheetItem
     {
         $this->vat = $vat;
+        $this->getBalanceSheet()->refreshIncomeAndExpense();
         return $this;
     }
     public function getAmount(): Measure
@@ -331,6 +332,7 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
     public function setAmount(Measure $amount): BalanceSheetItem
     {
         $this->amount = $amount;
+        $this->getBalanceSheet()->refreshIncomeAndExpense();
         return $this;
     }
     public function getPaymentMethod(): ?string
@@ -349,6 +351,7 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
     public function setPaymentCategory(?string $category): void
     {
         $this->paymentCategory = $category;
+        $this->getBalanceSheet()->refreshIncomeAndExpense();
     }
     public function getSubCategory(): ?string
     {
@@ -366,6 +369,16 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
     public function setBalanceSheet(BalanceSheet $balanceSheet): BalanceSheetItem
     {
         $this->balanceSheet = $balanceSheet;
+        return $this;
+    }
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(?string $url): BalanceSheetItem
+    {
+        $this->url = $url;
         return $this;
     }
     //endregion
@@ -388,19 +401,16 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
     final public function getFilepath(): ?string {
         return $this->filePath;
     }
-    //endregion
     public function getBaseFolder() {
-        return 'BalanceSheet/'.$this->balanceSheet->getId().'/BalanceSheetItems';
+        return '/BalanceSheet/'.$this->balanceSheet->getId().'/BalanceSheetItems';
     }
-
-    public function getUrl(): ?string
-    {
-        return $this->url;
+    //endregion
+    //region définition des méthodes de typage des items
+    public function isIncome(): bool {
+        return in_array($this->paymentCategory, self::INCOMES);
     }
-
-    public function setUrl(?string $url): BalanceSheetItem
-    {
-        $this->url = $url;
-        return $this;
+    public function isExpense(): bool {
+        return in_array($this->paymentCategory, self::EXPENSES);
     }
+    //endregion
 }
