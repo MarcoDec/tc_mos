@@ -2,20 +2,20 @@
     import AppTableAdd from './AppTableAdd.vue'
     import AppTableFields from './field/AppTableFields.vue'
     import AppTableSearch from './AppTableSearch.vue'
-    import {computed, toRefs} from 'vue'
+    import {computed} from 'vue'
     import {useSlots} from '../../../composable/table'
 
-    const {action, disableAdd, fields, id, machine, store} = toRefs(defineProps({
+    const props = defineProps({
         action: {type: Boolean},
         disableAdd: {required: false, type: Boolean},
         fields: {required: true, type: Object},
         id: {required: true, type: String},
         machine: {required: true, type: Object},
         store: {required: true, type: Object}
-    }))
-    const add = computed(() => `${id.value}-add`)
-    const search = computed(() => `${id.value}-search`)
-    const {createSlots, searchSlots} = useSlots(fields.value.fields)
+    })
+    const add = computed(() => `${props.id}-add`)
+    const search = computed(() => `${props.id}-search`)
+    const {createSlots, searchSlots} = useSlots(props.fields.fields)
 </script>
 
 <template>

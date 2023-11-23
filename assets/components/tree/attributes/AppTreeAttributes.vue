@@ -1,21 +1,18 @@
 <script setup>
-    import {computed, onUnmounted, toRefs} from 'vue'
+    import {computed, onUnmounted} from 'vue'
     import useFields from '../../../stores/field/fields'
 
-    const {attributes, tree} = toRefs(defineProps({
-        attributes: {required: true, type: Object},
-        tree: {required: true, type: Object}
-    }))
-    const fields = useFields('attributes', attributes.value.fields)
-    const form = computed(() => `attributes-${tree.value.selected.id}`)
-    const modelValue = computed(() => attributes.value.modelValue(tree.value.selected))
+    const props = defineProps({attributes: {required: true, type: Object}, tree: {required: true, type: Object}})
+    const fields = useFields('attributes', props.attributes.fields)
+    const form = computed(() => `attributes-${props.tree.selected.id}`)
+    const modelValue = computed(() => props.attributes.modelValue(props.tree.selected))
 
     async function submit(data) {
-        const localAttributes = []
+        const attributes = []
         for (const [attribute, checked] of Object.entries(data))
             if (checked)
-                localAttributes.push(attribute)
-        attributes.value.update(await tree.value.selected.updateAttributes({localAttributes}))
+                attributes.push(attribute)
+        props.attributes.update(await props.tree.selected.updateAttributes({attributes}))
     }
 
     onUnmounted(() => {

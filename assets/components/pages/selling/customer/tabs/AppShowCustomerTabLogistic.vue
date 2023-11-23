@@ -1,34 +1,34 @@
 <script setup>
-    import {computed, ref, toRefs} from 'vue'
+    import {computed, ref} from 'vue'
     import generateCustomer from '../../../../../stores/selling/customers/customer'
     import {useCustomerStore} from '../../../../../stores/selling/customers/customers'
     import {useIncotermStore} from '../../../../../stores/logistic/incoterm/incoterm'
     import {useSocietyStore} from '../../../../../stores/management/societies/societies'
 
-    const {dataCustomers, dataSociety} = toRefs(defineProps({
+    const props = defineProps({
         dataCustomers: {required: true, type: Object},
         dataSociety: {required: true, type: Object}
-    }))
+    })
     const fetchSocietyStore = useSocietyStore()
     const fetchCustomerStore = useCustomerStore()
     const localData = ref({})
     localData.value = {
         conveyanceDuration: {
             code: 'j',
-            value: dataCustomers.value.conveyanceDuration.value
+            value: props.dataCustomers.conveyanceDuration.value
         },
-        getPassword: dataCustomers.value.logisticPortal.password,
-        getUrl: dataCustomers.value.logisticPortal.url,
-        getUsername: dataCustomers.value.logisticPortal.username,
-        incotermsValue: dataSociety.value.incoterms,
-        nbDeliveries: dataCustomers.value.nbDeliveries,
+        getPassword: props.dataCustomers.logisticPortal.password,
+        getUrl: props.dataCustomers.logisticPortal.url,
+        getUsername: props.dataCustomers.logisticPortal.username,
+        incotermsValue: props.dataSociety.incoterms,
+        nbDeliveries: props.dataCustomers.nbDeliveries,
         orderMin: {
             code: 'EUR',
-            value: dataSociety.value.orderMin.value
+            value: props.dataSociety.orderMin.value
         },
         outstandingMax: {
             code: 'EUR',
-            value: dataCustomers.value.outstandingMax.value
+            value: props.dataCustomers.outstandingMax.value
         }
     }
     const fecthIncotermStore = useIncotermStore()
@@ -83,7 +83,7 @@
                 value: parseFloat(localData.value.outstandingMax.value)
             }
         }
-        const localDataSociety = {
+        const dataSociety = {
             incoterms: localData.value.incotermsValue,
             orderMin: {
                 code: 'EUR',
@@ -91,15 +91,15 @@
             }
         }
 
-        const item = generateCustomer(dataCustomers.value)
+        const item = generateCustomer(props.dataCustomers)
         await item.updateLogistic(data)
         //await fetchCustomerStore.update(dataAccounting, customerId);
 
         //await item.update(data)
-        await fetchSocietyStore.update(localDataSociety, dataSociety.value.id)
+        await fetchSocietyStore.update(dataSociety, props.dataSociety.id)
         // const itemSoc = generateSocieties(value)
         // await itemSoc.update(dataSociety)
-        await fetchCustomerStore.fetchOne(dataCustomers.value.id)
+        await fetchCustomerStore.fetchOne(props.dataCustomers.id)
     }
     function updateLocalData(value) {
         localData.value = value

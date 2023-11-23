@@ -1,14 +1,13 @@
 <script setup>
     import AppSwitch from '../../../form-cardable/fieldCardable/input/AppSwitch.vue'
-    import {toRefs} from 'vue'
-    const {item, fields, shouldDelete, shouldSee} = toRefs(defineProps({
+    const props = defineProps({
         fields: {required: true, type: Array},
         item: {required: true, type: Object},
         shouldDelete: {required: false, default: true},
         shouldSee: {required: false, default: true}
-    }))
+    })
     //console.log('AppCardableTableItem', props.item, props.fields)
-    const id = Number(item.value['@id'].match(/\d+/)[0])
+    const id = Number(props.item['@id'].match(/\d+/)[0])
     const emit = defineEmits(['deleted', 'update'])
     function update(){
         emit('update', props.item)

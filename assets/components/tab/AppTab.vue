@@ -1,15 +1,14 @@
 <script setup>
     import useTabs from '../../stores/tab/tabs'
-    import {toRefs} from 'vue'
 
-    const {active, icon, id, tabs, title} = toRefs(defineProps({
+    const props = defineProps({
         active: {type: Boolean},
         icon: {required: true, type: String},
         id: {required: true, type: String},
         tabs: {required: true, type: String},
         title: {required: true, type: String}
-    }))
-    const tab = useTabs(tabs.value).push({active: active.value, icon: icon.value, id: id.value, title: title.value})
+    })
+    const tab = useTabs(props.tabs).push({active: props.active, icon: props.icon, id: props.id, title: props.title})
 </script>
 
 <template>

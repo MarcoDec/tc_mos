@@ -1,12 +1,12 @@
 <script setup>
     import AppBalanceSheetShowTable from './AppBalanceSheetShowTable.vue'
-    import {toRefs} from 'vue'
+    import {defineProps} from 'vue'
 
-    const {idBalanceSheet, isWriterOrAdmin, balanceSheetCurrency} = toRefs(defineProps({
+    const props = defineProps({
         idBalanceSheet: {required: true, type: Number},
         isWriterOrAdmin: {required: true, type: Boolean},
         balanceSheetCurrency: {required: true, type: String}
-    }))
+    })
     //region Définition des champs de formulaires et tableaux
     //region      Définition des champs communs
     const priceMeasure = {
@@ -73,14 +73,14 @@
     //endregion
     //region Initialisation des données de formulaires
     const defaultFormValues = {
-        balanceSheet: `/api/balance-sheets/${idBalanceSheet.value}`,
+        balanceSheet: `/api/balance-sheets/${props.idBalanceSheet}`,
         paymentCategory: sellingTablesField.paymentCategory,
         paymentDate: new Date().toISOString().substr(0, 10),
         paymentRef: '',
         stakeholder: '',
         label: '',
-        amount: {code: balanceSheetCurrency.value, value: 0},
-        vat: {code: balanceSheetCurrency.value, value: 0},
+        amount: {code: props.balanceSheetCurrency, value: 0},
+        vat: {code: props.balanceSheetCurrency, value: 0},
         paymentMethod: '',
         file: null
     }

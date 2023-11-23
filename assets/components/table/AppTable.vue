@@ -1,10 +1,10 @@
 <script setup>
     import AppTableHeaders from './head/AppTableHeaders.vue'
     import AppTableItems from './body/AppTableItems.vue'
-    import {computed, toRefs} from 'vue'
+    import {computed} from 'vue'
     import {useSlots} from '../../composable/table'
 
-    const {disableAdd, disableRemove, enableShow, fields, id, machine, store} = toRefs(defineProps({
+    const props = defineProps({
         disableAdd: {type: Boolean},
         disableRemove: {type: Boolean},
         enableShow: {type: Boolean},
@@ -12,11 +12,11 @@
         id: {required: true, type: String},
         machine: {required: true, type: Object},
         store: {required: true, type: Object}
-    }))
-    const action = computed(() => fields.value.action || !disableRemove.value)
-    const body = computed(() => `${id.value}-body`)
-    const headers = computed(() => `${id.value}-headers`)
-    const {slots} = useSlots(fields.value.fields)
+    })
+    const action = computed(() => props.fields.action || !props.disableRemove)
+    const body = computed(() => `${props.id}-body`)
+    const headers = computed(() => `${props.id}-headers`)
+    const {slots} = useSlots(props.fields.fields)
     const emits = defineEmits(['show'])
     function show(data) {
         emits('show', data)

@@ -1,23 +1,8 @@
 <script setup>
     import AppTablePage from './AppTablePage.vue'
     import {useSlots} from '../../../composable/table'
-    import {toRefs} from 'vue'
 
-    const {
-        apiBaseRoute,
-        apiTypedRoutes,
-        brands,
-        disableAdd,
-        disableRemove,
-        enableShow,
-        fields,
-        icon,
-        isCompanyFiltered,
-        readFilter,
-        showRouteName,
-        sort,
-        title
-    } = toRefs(defineProps({
+    const props = defineProps({
         apiBaseRoute: {default: '', required: true, type: String},
         apiTypedRoutes: {
             default: () => {
@@ -37,8 +22,8 @@
         showRouteName: {default: '', required: false, type: String},
         sort: {required: true, type: Object},
         title: {required: true, type: String}
-    }))
-    const {slots} = useSlots(fields.value)
+    })
+    const {slots} = useSlots(props.fields)
 </script>
 
 <template>

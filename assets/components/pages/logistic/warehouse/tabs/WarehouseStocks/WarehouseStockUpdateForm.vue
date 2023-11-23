@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, ref, toRefs} from 'vue'
+    import {computed, ref} from 'vue'
     import useOptions from '../../../../../../stores/option/options'
     import {useRoute} from 'vue-router'
     import {useStockListStore} from '../../../../../../stores/logistic/stocks/stocks'
@@ -7,9 +7,9 @@
     import AppSuspense from '../../../../../AppSuspense.vue'
 
     const emit = defineEmits(['cancel', 'saved'])
-    const {item} = toRefs(defineProps({
+    const props = defineProps({
         item: {type: Object, required: true}
-    }))
+    })
     //region récupération des informations de route
     const maRoute = useRoute()
     const warehouseId = maRoute.params.id_warehouse
@@ -17,7 +17,7 @@
     const isPopupVisible = ref(false)
     //region initialisation de la variable locale
     const itemsUpdateData = ref({})
-    const localFormData = ref(item.value)
+    const localFormData = ref(props.item)
     //endregion
     let formKey = 0
     let violations = []
@@ -141,7 +141,7 @@
             itemsUpdateData.value.item = localFormData.value.product['@id']
         }
         try {
-            await fetchStocks.updateStock(item.value.id, itemsUpdateData.value)
+            await fetchStocks.updateStock(props.item.id, itemsUpdateData.value)
             emit('saved')
         } catch (e) {
             alert(e.message)

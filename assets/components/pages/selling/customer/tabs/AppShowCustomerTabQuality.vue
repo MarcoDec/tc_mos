@@ -1,20 +1,20 @@
 <script setup>
     import generateCustomer from '../../../../../stores/selling/customers/customer'
     import generateSocieties from '../../../../../stores/management/societies/societie'
-    import {ref, toRefs} from 'vue'
+    import {ref} from 'vue'
     import {useCustomerStore} from '../../../../../stores/selling/customers/customers'
 
-    const {dataCustomers, dataSociety} = toRefs(defineProps({
+    const props = defineProps({
         dataCustomers: {required: true, type: Object},
         dataSociety: {required: true, type: Object}
-    }))
+    })
     const fetchCustomerStore = useCustomerStore()
     const localData = ref({})
     localData.value = {
-        getPassword: dataCustomers.value.qualityPortal.password,
-        getUrl: dataCustomers.value.qualityPortal.url,
-        getUsername: dataCustomers.value.qualityPortal.username,
-        ppmRate: dataSociety.value.ppmRate
+        getPassword: props.dataCustomers.qualityPortal.password,
+        getUrl: props.dataCustomers.qualityPortal.url,
+        getUsername: props.dataCustomers.qualityPortal.username,
+        ppmRate: props.dataSociety.ppmRate
     }
     const qualityFields = [
         {label: 'Nb PPM', name: 'ppmRate', type: 'number'},
@@ -33,11 +33,11 @@
                 username: localData.value.getUsername
             }
         }
-        const item = generateCustomer(dataCustomers.value)
+        const item = generateCustomer(props.dataCustomers)
         await item.updateQuality(dataQuality)
-        const itemSoc = generateSocieties(dataSociety.value)
+        const itemSoc = generateSocieties(props.dataSociety)
         await itemSoc.update(data)
-        await fetchCustomerStore.fetchOne(dataCustomers.value.id)
+        await fetchCustomerStore.fetchOne(props.dataCustomers.id)
     }
     function updateLocalData(value) {
         localData.value = value

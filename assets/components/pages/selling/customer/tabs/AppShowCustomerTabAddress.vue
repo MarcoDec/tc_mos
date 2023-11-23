@@ -1,11 +1,10 @@
 <script setup>
     import generateCustomer from '../../../../../stores/selling/customers/customer'
     import {useCustomerStore} from '../../../../../stores/selling/customers/customers'
-    import {toRefs} from 'vue'
 
-    const {optionsCountries} = toRefs(defineProps({
+    const props = defineProps({
         optionsCountries: {required: true, type: Array}
-    }))
+    })
     const fetchCustomersStore = useCustomerStore()
     const Adressefields = [
         {label: 'Email', name: 'getEmail', type: 'text'},
@@ -18,9 +17,9 @@
             name: 'getCountry',
             options: {
                 label: value =>
-                    optionsCountries.value.find(option => option.type === value)?.text
+                    props.optionsCountries.find(option => option.type === value)?.text
                     ?? null,
-                options: optionsCountries.value
+                options: props.optionsCountries
             },
             type: 'select'
         },

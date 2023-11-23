@@ -1,22 +1,22 @@
 <script setup>
-    import {ref, watch, toRefs} from 'vue'
+    import {ref, watch} from 'vue'
     import {generateField} from '../../../props'
 
     const emit = defineEmits(['update:modelValue'])
-    const {disabled, field, form, id, modelValue} = toRefs(defineProps({
+    const props = defineProps({
         disabled: {type: Boolean},
         field: generateField(),
         form: {required: true, type: String},
         id: {required: true, type: String},
         modelValue: {type: Boolean}
-    }))
-    const checked = ref(modelValue.value)
+    })
+    const checked = ref(props.modelValue)
 
     function input(e) {
         emit('update:modelValue', checked.value = e.target.checked)
     }
 
-    watch(() => modelValue.value, value => {
+    watch(() => props.modelValue, value => {
         checked.value = value
     })
 </script>

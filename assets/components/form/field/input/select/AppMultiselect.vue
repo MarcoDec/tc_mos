@@ -1,16 +1,16 @@
 <script setup>
     import Multiselect from '@vueform/multiselect'
-    import {readonly, onErrorCaptured, ref, toRefs} from 'vue'
+    import {readonly, onErrorCaptured, ref} from 'vue'
 
-    const {disabled, field, form, id, mode, modelValue} = toRefs(defineProps({
+    const props = defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
         form: {required: true, type: String},
         id: {required: true, type: String},
         mode: {default: 'tags', type: String},
         modelValue: {default: null, type: [Array, String]}
-    }))
-    const localModelValue = ref(modelValue.value)
+    })
+    const localModelValue = ref(props.modelValue)
     if (typeof localModelValue.value === 'string') {
         localModelValue.value = [localModelValue.value]
     }
@@ -25,7 +25,7 @@
         }
     }
     onErrorCaptured((err, compInst, errorInfo) => {
-        console.log(err, compInst, errorInfo)
+        console.log(props, err, compInst, errorInfo)
         return false
     })
 </script>
