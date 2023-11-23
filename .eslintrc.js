@@ -318,7 +318,7 @@ module.exports = {
         }],
         'vue/no-reserved-keys': 'error',
         'vue/no-reserved-props': 'error',
-        'vue/no-setup-props-destructure': 'error',
+        'vue/no-setup-props-destructure': 'off',
         'vue/no-shared-component-data': 'error',
         'vue/no-side-effects-in-computed-properties': 'error',
         'vue/no-spaces-around-equal-signs-in-attribute': 'error',
