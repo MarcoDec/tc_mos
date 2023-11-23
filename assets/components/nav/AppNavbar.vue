@@ -3,6 +3,9 @@
     import useUser from '../../stores/security'
 
     const user = useUser()
+    const appMode = import.meta.env.MODE
+    console.info(`App mode: ${appMode}`)
+    const logoPath = '/img/TConcept_Logo.png'
 </script>
 
 <template>
@@ -10,7 +13,7 @@
         <AppContainer fluid>
             <span class="m-0 navbar-brand p-0">
                 <AppRouterLink :to="{name: 'home'}">
-                    <img src="/img/TConcept_Logo.png"/>
+                    <img :src="logoPath" alt="TConcept"/>
                 </AppRouterLink>
             </span>
             <button
