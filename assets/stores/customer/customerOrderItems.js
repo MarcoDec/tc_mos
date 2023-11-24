@@ -1,40 +1,56 @@
 import {defineStore} from 'pinia'
+import api from '../../api'
+
 
 export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
     actions: {
-        fetchItems() {
-            this.items = [
-                {
-                    dateLivraisonConfirmée: '04/07/2019',
-                    dateLivraisonSouhaitée: '25/07/2019',
-                    delete: true,
-                    description: 'description',
-                    etat: 'etat',
-                    id: 1,
-                    produit: 'produit',
-                    quantitéConfirmée: 14,
-                    quantitéSouhaitée: 666,
-                    ref: 'ref',
-                    update: false
-                },
-                {
-                    dateLivraisonConfirmée: '04/04/2019',
-                    dateLivraisonSouhaitée: '25/04/2019',
-                    delete: true,
-                    description: 'descriptionnn',
-                    etat: 'etatttt',
-                    id: 2,
-                    produit: 'produittttt',
-                    quantitéConfirmée: 14,
-                    quantitéSouhaitée: 666,
-                    ref: 'refffff',
-                    update: false
-                }
-            ]
+        async fetch(criteria = '') {
+            const response = await api(`/api/selling-order-items${criteria}`, 'GET')
+            this.customerOrders = await this.updatePagination(response)
+            console.log('customerOrders', this.customerOrders);
+        },
+        async updatePagination(response) {
+            const responseData = await response['hydra:member']
+            let paginationView = {}
+            if (Object.prototype.hasOwnProperty.call(response, 'hydra:view')) {
+                paginationView = response['hydra:view']
+            } else {
+                paginationView = responseData
+            }
+            if (Object.prototype.hasOwnProperty.call(paginationView, 'hydra:first')) {
+                this.pagination = true
+                this.firstPage = paginationView['hydra:first'] ? paginationView['hydra:first'].match(/page=(\d+)/)[1] : '1'
+                this.lastPage = paginationView['hydra:last'] ? paginationView['hydra:last'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
+                this.nextPage = paginationView['hydra:next'] ? paginationView['hydra:next'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
+                this.currentPage = paginationView['@id'].match(/page=(\d+)/)[1]
+                this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
+                return responseData
+            }
+            this.pagination = false
+            return responseData
+        },
+        async remove(id){
+            await api(`/api/selling-order-items/${id}`, 'DELETE')
+            this.customerOrders = this.customerOrders.filter(customerOrder => Number(customerOrder['@id'].match(/\d+/)[0]) !== id)
         }
 
     },
     getters: {
+        itemsCustomerOrders: state => state.customerOrders.map(item => {
+            const newObject = {
+                '@id': item['@id'], 
+                confirmedDate:item.confirmedDate,
+                confirmedQuantity: item.confirmedQuantity.value + " " + item.confirmedQuantity.code,
+                requestedDate:item.requestedDate,
+                requestedQuantity: item.requestedQuantity.value + " " + item.requestedQuantity.code,
+                ref:item.ref,
+                state:item.embState.state,
+                notes:item.notes,
+                product:item.item,
+                id:item.id
+            }
+            return newObject
+        }),
         ariaSort() {
             return field => (this.isSorter(field) ? this.order : 'none')
         },
@@ -55,6 +71,7 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
         next: 1,
         prev: 1,
         search: {},
-        total: 0
+        total: 0,
+        customerOrders: {}
     })
 })

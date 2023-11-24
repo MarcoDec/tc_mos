@@ -63,6 +63,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Incoterms-read',
             'skip_null_values' => false
         ],
+        paginationEnabled: false
     ),
     ORM\Entity,
     UniqueEntity('code'),
@@ -71,10 +72,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Incoterms extends Entity {
     #[
         ApiProperty(description: 'Code ', required: true, example: 'DDP'),
-        Assert\Length(min: 3, max: 11),
+        Assert\Length(min: 3, max: 25),
         Assert\NotBlank,
-        ORM\Column(length: 11),
-        Serializer\Groups(['read:incoterms', 'write:incoterms'])
+        ORM\Column(length: 25),
+        Serializer\Groups(['read:incoterms', 'write:incoterms', 'read:society'])
     ]
     private ?string $code = null;
 
@@ -83,7 +84,7 @@ class Incoterms extends Entity {
         Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
         ORM\Column(length: 50),
-        Serializer\Groups(['read:incoterms', 'write:incoterms'])
+        Serializer\Groups(['read:incoterms', 'write:incoterms', 'read:society'])
     ]
     private ?string $name = null;
 
