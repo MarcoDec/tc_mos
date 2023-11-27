@@ -14,8 +14,13 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use App\Filter\RelationFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'currency']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['month' => 'exact', 'year' => 'exact']),
     ApiResource(
         collectionOperations: [
             'get' => [
