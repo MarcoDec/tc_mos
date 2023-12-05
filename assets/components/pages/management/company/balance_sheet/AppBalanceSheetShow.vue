@@ -70,7 +70,7 @@
         currentBalanceSheet.value = fetchBalanceSheet.item
         formData.value = currentBalanceSheet.value
         formData.value.company = currentBalanceSheet.value.company['@id']
-        formData.value.currency = currentBalanceSheet.value.currency['@id']
+        formData.value.currency = currentBalanceSheet.value.currency === null ? '' : currentBalanceSheet.value.currency['@id']
         formKey.value++
     }
     async function updateForm() {
@@ -86,7 +86,7 @@
         currentBalanceSheet.value = fetchBalanceSheet.item
         formData.value = currentBalanceSheet.value
         formData.value.company = currentBalanceSheet.value.company['@id']
-        formData.value.currency = currentBalanceSheet.value.currency['@id']
+        formData.value.currency = currentBalanceSheet.value.currency === null ? '' : currentBalanceSheet.value.currency['@id']
         company.value = await api(formData.value.company, 'GET')
         formKey.value++
     })
