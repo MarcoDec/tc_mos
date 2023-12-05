@@ -97,6 +97,15 @@ class Price extends Entity implements MeasuredInterface {
         return [$this->price, $this->quantity];
     }
 
+    final public function getUnitMeasures(): array
+    {
+        return [$this->quantity];
+    }
+    final public function getCurrencyMeasures(): array
+    {
+        return [$this->price];
+    }
+
     final public function getPrice(): Measure {
         return $this->price;
     }

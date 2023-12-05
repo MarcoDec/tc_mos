@@ -511,6 +511,14 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return [$this->copperWeight, $this->forecastVolume, $this->minStock, $this->weight];
     }
 
+    public function getUnitMeasures(): array {
+        return [$this->copperWeight, $this->forecastVolume, $this->minStock, $this->weight];
+    }
+    public function getCurrencyMeasures(): array
+    {
+        return [];
+    }
+
     final public function getMinStock(): Measure {
         return $this->minStock;
     }

@@ -596,6 +596,33 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ];
     }
 
+    final public function getUnitMeasures(): array
+    {
+        return [
+            $this->autoDuration,
+            $this->costingAutoDuration,
+            $this->costingManualDuration,
+            $this->forecastVolume,
+            $this->manualDuration,
+            $this->maxProto,
+            $this->minDelivery,
+            $this->minProd,
+            $this->minStock,
+            $this->packaging,
+            $this->productionDelay,
+            $this->weight
+        ];
+    }
+    final public function getCurrencyMeasures(): array
+    {
+        return [
+            $this->price,
+            $this->priceWithoutCopper,
+            $this->transfertPriceSupplies,
+            $this->transfertPriceWork
+        ];
+    }
+
     final public function getMinDelivery(): Measure {
         return $this->minDelivery;
     }
