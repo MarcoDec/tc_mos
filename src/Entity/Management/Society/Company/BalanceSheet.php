@@ -107,7 +107,7 @@ class BalanceSheet extends Entity implements MeasuredInterface
     ]
     private ?Unit $unit = null;
 
-    #[ORM\OneToMany(mappedBy: 'balanceSheet', targetEntity: BalanceSheetItem::class, fetch: 'EAGER', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'balanceSheet', targetEntity: BalanceSheetItem::class, fetch: 'LAZY', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $balanceSheetItems;
 
     public function __construct() {
