@@ -46,15 +46,18 @@ class Measure {
     private float $value = 0;
 
     final public function add(self $measure): self {
+//        dump(['Measure:add'=> ['this'=>$this, 'measure'=>$measure]]);
         $measure = $this->convertToSame($measure);
         $this->value = $this->value + $measure->value;
         return $this;
     }
 
     final public function convert(AbstractUnit $unit, ?AbstractUnit $denominator = null): self {
-        $this->getSafeUnit()->assertSameAs($unit);
-        if ($this->getSafeUnit()->getCode() !== $unit->getCode()) {
-            $this->value *= $this->getSafeUnit()->getConvertorDistance($unit);
+        $safeUnit = $this->getSafeUnit();
+//        dump(['convert','unit'=>$unit, 'this'=>$this, 'denominator'=>$denominator]);
+        $safeUnit->assertSameAs($unit);
+        if ($safeUnit->getCode() !== $unit->getCode()) {
+            $this->value *= $safeUnit->getConvertorDistance($unit);
             $this->code = $unit->getCode();
             $this->unit = $unit;
         }
@@ -141,6 +144,7 @@ class Measure {
     private function convertToSame(self $measure): self {
         /** @var AbstractUnit $unit */
         $unit = $this->getSafeUnit()->getLess($measure->getSafeUnit());
+//        dump(['convertToSame','unit'=>$unit, 'this'=>$this, 'measure'=>$measure]);
         /** @var null|AbstractUnit $denominator */
         $denominator = $this->denominatorUnit !== null && $measure->denominatorUnit !== null
             ? $this->denominatorUnit->getLess($measure->denominatorUnit)

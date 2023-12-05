@@ -24,6 +24,7 @@ final class DeserializeListener {
 
     public function __invoke(RequestEvent $event): void {
         $request = $event->getRequest();
+//        dump($request);
         if ($request->isMethodCacheable() || $request->isMethod(Request::METHOD_DELETE)) {
             return;
         }
@@ -54,7 +55,9 @@ final class DeserializeListener {
                $this->em->persist($supplier);
                $this->em->flush();
            }
-            $this->decorated->onKernelRequest($event);
+           if ($request->getMethod()==='POST' && str_contains($request->getPathInfo(),'/api/balance-sheet-items/from-excel')){
+//               dump("POST from Excel");
+           } else $this->decorated->onKernelRequest($event);
         }
     }
 
