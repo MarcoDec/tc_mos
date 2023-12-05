@@ -45,14 +45,12 @@ services:
       MYSQL_USER: ${DATABASE_USER}
     restart: always
     networks:
-      - traefik_default
+      - traefik_reseau_tc
     ports:
       - '3307:3306'
     volumes:
       - ./docker/mysql/db:/var/lib/mysql:delegated
       - ./docker/mysql/my.cnf:/etc/mysql/my.cnf:delegated
-    networks:
-      - traefik_reseau_tc
   php:
     build:
       args:
@@ -66,8 +64,6 @@ services:
     ports:
       - '8001:8001'
     restart: always
-    networks:
-      - traefik_default
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
       - ./docker/php:/var/www/html/TConcept-GPAO/docker/php:delegated
