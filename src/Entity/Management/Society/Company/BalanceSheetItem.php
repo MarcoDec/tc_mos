@@ -5,6 +5,7 @@ namespace App\Entity\Management\Society\Company;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use App\Controller\Management\Company\BalanceSheetItemPatchController;
 use App\Controller\Management\Company\BalanceSheetItemPostController;
+use App\Controller\Management\Company\BalanceSheetItemPostFromExcelController;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
@@ -68,6 +69,19 @@ use App\Filter\RelationFilter;
                 'input_formats' => ['multipart'],
                 'controller' => BalanceSheetItemPostController::class,
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
+            ],
+            'fromExcel' => [
+                'method' => 'POST',
+                'path' => '/balance-sheet-items/from-excel',
+                'read' => false,
+                'write' => false,
+                'openapi_context' => [
+                    'description' => 'Ajoute des écritures comptables depuis un fichier Excel',
+                    'summary' => 'Ajoute des écritures comptables depuis un fichier Excel'
+                ],
+                'controller' => BalanceSheetItemPostFromExcelController::class,
+                //'controller' => PlaceholderAction::class,
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -108,7 +122,7 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
         "Ventes"
     ];
     public const EXPENSES = [
-        "Dépenses normales",
+        "Dépenses normaux",
         "Salaires",
         "Achats Matières Premières",
         "Frais de transport",
@@ -322,7 +336,7 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
     public function setVat(Measure $vat): BalanceSheetItem
     {
         $this->vat = $vat;
-        $this->getBalanceSheet()->refreshIncomeAndExpense();
+        //$this->getBalanceSheet()->refreshIncomeAndExpense();
         return $this;
     }
     public function getAmount(): Measure
@@ -332,7 +346,7 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
     public function setAmount(Measure $amount): BalanceSheetItem
     {
         $this->amount = $amount;
-        $this->getBalanceSheet()->refreshIncomeAndExpense();
+        //$this->getBalanceSheet()->refreshIncomeAndExpense();
         return $this;
     }
     public function getPaymentMethod(): ?string
@@ -351,7 +365,7 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
     public function setPaymentCategory(?string $category): void
     {
         $this->paymentCategory = $category;
-        $this->getBalanceSheet()->refreshIncomeAndExpense();
+        //$this->getBalanceSheet()->refreshIncomeAndExpense();
     }
     public function getSubCategory(): ?string
     {
@@ -386,6 +400,14 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
     public function getMeasures(): array
     {
         return [$this->quantity, $this->unitPrice, $this->vat, $this->amount];
+    }
+    public function getUnitMeasures(): array
+    {
+        return [$this->quantity];
+    }
+    public function getCurrencyMeasures(): array
+    {
+        return [$this->amount, $this->vat, $this->unitPrice];
     }
 
     public function getUnit(): ?Unit

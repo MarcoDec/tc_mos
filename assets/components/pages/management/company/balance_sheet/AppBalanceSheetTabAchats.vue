@@ -72,7 +72,7 @@
                 {label: 'Méthode de paiement', name: 'paymentMethod', type: 'text'},
                 formFileField
             ],
-            paymentCategory: 'Dépenses normales'
+            paymentCategory: 'Dépenses normaux'
         },
         {
             title: 'Salaires',
@@ -153,7 +153,7 @@
                 },
                 showFileField
             ],
-            paymentCategory: 'Dépenses normales'
+            paymentCategory: 'Dépenses normaux'
         },
         {
             title: 'Salaires',
@@ -230,7 +230,7 @@
     }
     const defaultFormValues = [
         // Champs subCategory et vat inutiles pour les dépenses normales
-        {...defaultFormValue, subCategory: null, vat: null, paymentCategory: 'Dépenses normales'},
+        {...defaultFormValue, subCategory: null, vat: null, paymentCategory: 'Dépenses normaux'},
         // Champ billDate, stakeholder et vat inutiles pour les salaires
         {...defaultFormValue, billDate: null, stakeholder: null, vat: null, paymentCategory: 'Salaires'},
         // Champ subCategory inutile pour les achats matières premières

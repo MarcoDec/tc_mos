@@ -91,14 +91,16 @@ class BalanceSheetItemEventListener
         $parentBalanceSheet->setTotalExpense($totalExpense);
         $event->getEntityManager()->flush();
     }
-    public function postPersist(BalanceSheetItem $balanceSheetItem, LifecycleEventArgs $event): void
-    {
-        // Lorsqu'on ajoute un nouvel item, on doit mettre à jour les totaux du bilan associé
-        $this->refreshIncomeAndExpense($balanceSheetItem,$event);
-    }
     public function postUpdate(BalanceSheetItem $balanceSheetItem, LifecycleEventArgs $event): void
     {
         // Lorsqu'on modifie un nouvel item, on doit mettre à jour les totaux du bilan associé
+//        dump(['postUpdate' => $balanceSheetItem]);
+        $this->refreshIncomeAndExpense($balanceSheetItem,$event);
+    }
+    public function postPersist(BalanceSheetItem $balanceSheetItem, LifecycleEventArgs $event): void
+    {
+        // Lorsqu'on ajoute un nouvel item, on doit mettre à jour les totaux du bilan associé
+//        dump(['postPersist' => $balanceSheetItem]);
         $this->refreshIncomeAndExpense($balanceSheetItem,$event);
     }
 }

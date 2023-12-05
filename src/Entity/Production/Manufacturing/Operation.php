@@ -358,7 +358,17 @@ class Operation extends Entity implements MeasuredInterface {
       return [$this->actualQuantity, $this->quantityProduced];
    }
 
-   public function getUnit(): ?Unit
+   public function getUnitMeasures(): array
+   {
+       return [$this->actualQuantity, $this->quantityProduced];
+   }
+
+   public function getCurrencyMeasures(): array
+   {
+       return [];
+   }
+
+    public function getUnit(): ?Unit
    {
       return $this->order->getProduct()->getUnit();
    }

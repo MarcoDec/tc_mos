@@ -185,6 +185,15 @@ class ComponentEquivalent extends Entity implements BarCodeInterface, MeasuredIn
     {
         return [];
     }
+    public function getUnitMeasures(): array
+    {
+        return [];
+    }
+    public function getCurrencyMeasures(): array
+    {
+        return [];
+    }
+
     #[Serializer\Groups(['read:component-equivalent:option'])]
     final public function getText(): ?string
     {

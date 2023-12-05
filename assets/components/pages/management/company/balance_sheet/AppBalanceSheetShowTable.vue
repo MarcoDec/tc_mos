@@ -155,6 +155,7 @@
             method: 'POST',
             body: formDataAddItem
         }).then(() => {
+            AddForm.value = false
             resetFormData()
             refreshTable()
         })
@@ -171,6 +172,7 @@
             method: 'POST',
             body: formDataUpdateItem
         }).then(() => {
+            UpdateForm.value = false
             resetFormData()
             refreshTable()
         })
