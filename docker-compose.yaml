@@ -19,18 +19,16 @@ services:
     depends_on:
       - php
     image: tconcept/tc_apache:latest
-    #ports:
-    #  - '8000:80'
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.newgpdesktop.rule=Host(`desktop.newgp.localhost`)"
-      - "traefik.http.routers.newgpdesktop.entrypoints=web"
-    networks:
-      - traefik_default
+      - "traefik.http.routers.desktop.rule=Host(`${DESKTOP_HOST}`)"
+      - "traefik.http.routers.desktop.entrypoints=web"
     restart: always
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
       - ./docker/apache/main:/etc/apache2/sites-enabled:delegated
+    networks:
+      - traefik_reseau_tc
   mysql:
     build:
       args:
@@ -53,6 +51,8 @@ services:
     volumes:
       - ./docker/mysql/db:/var/lib/mysql:delegated
       - ./docker/mysql/my.cnf:/etc/mysql/my.cnf:delegated
+    networks:
+      - traefik_reseau_tc
   php:
     build:
       args:
@@ -77,6 +77,8 @@ services:
       - ./node_modules:/var/www/html/TConcept-GPAO/node_modules:delegated
       - ./var:/var/www/html/TConcept-GPAO/var:delegated
       - ./vendor:/var/www/html/TConcept-GPAO/vendor:delegated
+    networks:
+      - traefik_reseau_tc
   phpmyadmin:
     container_name: tconcept_gpao_phpmyadmin
     image: phpmyadmin/phpmyadmin:5.2.0
@@ -85,88 +87,88 @@ services:
       PMA_HOST: mysql
     links:
       - mysql:mysql
-    #ports:
-    #  - '8080:80'
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.newgpphpmyadmin.rule=Host(`phpmyadmin.newgp.localhost`)"
-      - "traefik.http.routers.newgpphpmyadmin.entrypoints=web"
-    networks:
-      - traefik_default
+      - "traefik.http.routers.phpmyadmin.rule=Host(`${PHPMYADMIN_HOST}`)"
+      - "traefik.http.routers.phpmyadmin.entrypoints=web"
     restart: always
     volumes:
       - /sessions
+    networks:
+      - traefik_reseau_tc
   yarn_builder:
     container_name: tconcept_gpao_mobile
     build:
       args:
-        API_HOST: http://192.168.2.3:8000
+        API_HOST: http://desktop.newgp.tconcept.local
       context: ./gpao-mobile
       dockerfile: ../docker/mobile/Dockerfile
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.newgp_mobile.rule=Host(`mobile.newgp.localhost`)"
-      - "traefik.http.routers.newgp_mobile.entrypoints=web"
 #    ports:
 #      - '3000:80'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mobile.rule=Host(`${MOBILE_HOST}`)"
+      - "traefik.http.routers.mobile.entrypoints=web"
+    networks:
+      - traefik_reseau_tc
   npm_builder_fr:
     container_name: tconcept_gpao_badgeuse_fr
     build:
       args:
-        VUE_APP_API_URL_BASE: http://192.168.2.3:8000/api
+        VUE_APP_API_URL_BASE: http://desktop.newgp.tconcept.local/api
         VUE_APP_COMPANY: 1
         VUE_APP_USER: frbad
         VUE_APP_USER_PASSWORD: frbad
       context: ./TConcept-Clock/vue
       dockerfile: ../../docker/clocking/Dockerfile
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.newgp_frbadgeuse.rule=Host(`fr_badgeuse.newgp.localhost`)"
-      - "traefik.http.routers.newgp_frbadgeuse.entrypoints=web"
     networks:
-      - traefik_default
+      - traefik_reseau_tc
 #    ports:
 #      - '3001:80'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fr_badgeuse.rule=Host(`${FR_BADGEUSE_HOST}`)"
+      - "traefik.http.routers.fr_badgeuse.entrypoints=web"
     restart: always
   npm_builder_tn:
     container_name: tconcept_gpao_badgeuse_tn
     build:
       args:
-        VUE_APP_API_URL_BASE: http://192.168.2.3:8000/api
+        VUE_APP_API_URL_BASE: http://desktop.newgp.tconcept.local/api
         VUE_APP_COMPANY: 2
         VUE_APP_USER: tnbad
         VUE_APP_USER_PASSWORD: tnbad
       context: ./TConcept-Clock/vue
       dockerfile: ../../docker/clocking/Dockerfile
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.newgp_tnbadgeuse.rule=Host(`tn_badgeuse.newgp.localhost`)"
-      - "traefik.http.routers.newgp_tnbadgeuse.entrypoints=web"
-    networks:
-      - traefik_default
 #    ports:
 #      - '3002:80'
+    networks:
+      - traefik_reseau_tc
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tn_badgeuse.rule=Host(`${TN_BADGEUSE_HOST}`)"
+      - "traefik.http.routers.tn_badgeuse.entrypoints=web"
     restart: always
   npm_builder_md:
     container_name: tconcept_gpao_badgeuse_md
     build:
       args:
-        VUE_APP_API_URL_BASE: http://192.168.2.3:8000/api
+        VUE_APP_API_URL_BASE: http://desktop.newgp.tconcept.local/api
         VUE_APP_COMPANY: 3
         VUE_APP_USER: mdbad
         VUE_APP_USER_PASSWORD: mdbad
       context: ./TConcept-Clock/vue
       dockerfile: ../../docker/clocking/Dockerfile
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.newgp_mdbadgeuse.rule=Host(`md_badgeuse.newgp.localhost`)"
-      - "traefik.http.routers.newgp_mdbadgeuse.entrypoints=web"
-    networks:
-      - traefik_default
 #    ports:
 #      - '3003:80'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.md_badgeuse.rule=Host(`${MD_BADGEUSE_HOST}`)"
+      - "traefik.http.routers.md_badgeuse.entrypoints=web"
+    networks:
+      - traefik_reseau_tc
     restart: always
 networks:
-    traefik_default:
-        external: true
+  traefik_reseau_tc:
+    external: true
 version: '3.3'
