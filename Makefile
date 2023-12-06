@@ -1,5 +1,5 @@
 # Makefile
-
+include .env
 # Définition de la commande par défaut quand on exécute 'make' sans arguments
 all: rebuild
 
@@ -9,8 +9,12 @@ build:
 
 # Définition de la tâche 'up' pour lancer les services en mode détaché
 up:
-	docker compose up -d
+	@GROUP_ID=$(id -g) USER_ID=$(id -u) USER_NAME=$USER docker-compose --env-file $(ENV) up -d;
 
+up-dev:
+	make up ENV=.env.dev.local
+up-prod:
+	make up ENV=.env.prod.local
 yarndev:
 	docker exec tconcept_gpao_php zsh -c '\
 		yarn dev \
