@@ -113,7 +113,7 @@
                     <AppDropdownItem disabled variant="info">
                         Contributeur
                     </AppDropdownItem>
-                    <AppNavbarLink icon="tags" to="label-carton-list" variant="info">
+                    <AppNavbarLink icon="tags" to="etiquette-list" variant="info">
                         Etiquettes Carton
                     </AppNavbarLink>
                     <template v-if="user.isLogisticsAdmin">

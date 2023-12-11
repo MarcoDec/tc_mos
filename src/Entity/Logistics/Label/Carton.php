@@ -3,8 +3,6 @@ namespace App\Entity\Logistics\Label;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
 use App\Entity\Entity;
-use App\Entity\Interfaces\FileEntity;
-use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\FileTrait;
 use Doctrine\ORM\Mapping as ORM;
@@ -14,7 +12,6 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: [
         'customerAddressName' => 'partial',
@@ -45,6 +42,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
                 ]
             ],
             'post' => [
+                'denormalization_context' => [
+                    'groups' => ['create:label-carton'],
+                    'openapi_definition_name' => 'Component-create'
+                ],
                 'method' => 'POST',
                 'path' => '/label-cartons',
                 'controller' => PlaceholderAction::class
@@ -79,141 +80,141 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
     ORM\Entity(),
     ORM\Table(name: 'label_carton'),
 ]
-class Carton extends Entity  implements MeasuredInterface, FileEntity
+class Carton extends Entity // implements MeasuredInterface, FileEntity
 {
     use FileTrait;
     #[
         ApiProperty(description: 'Numéro de référence logistique (ref produit fournisseur)'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private ?string $logisticReference; // Numéro de référence logistique (ref produit fournisseur) -> barcode
 
     #[
         ApiProperty(description: 'Numéro de référence produit (ref produit client)'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private ?string $productReference; // Numéro de référence produit (ref produit client) -> barcode
 
     #[
         ApiProperty(description: 'Indice du produit'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private ?string $productIndice; // Indice du produit
     #[
         ApiProperty(description: 'Nom du produit'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private ?string $productDescription;
     #[
         ApiProperty(description: 'Fabricant'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private ?string $manufacturer;
     #[
         ApiProperty(description: 'Nom du site à livrer'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private ?string $customerAddressName; // Nom du site client à livrer
     #[
         ApiProperty(description: 'Nom du site de départ'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private ?string $shipFromAddressName; // Nom du site de départ
     #[
         ApiProperty(description: 'Point de destination client'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private ?string $customerDestinationPoint; // Point de destination client
     #[
         ApiProperty(description: 'Numéro de lot'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private ?string $batchnumber; // Numéro de lot
     #[
         ApiProperty(description: 'Quantité'),
         ORM\Column(type: 'integer'),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private int $quantity; // Quantity of product in the box -> barcode
     #[
         ApiProperty(description: 'Poids net (avec unité)'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private ?string $netWeight; // Poids net
 
     #[
         ApiProperty(description: 'Poids brut (avec unité)'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private ?string $grossWeight; // Poids brut
     #[
         ApiProperty(description: 'Date de livraison (D) ou de Fabrication (P)'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private ?string $dateStr; // Format D{YYMMDD} for dispatch date P{YYMMDD} for production date
     #[
         ApiProperty(description: 'Date de livraison ou de fabrication'),
         ORM\Column(type: 'date', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private \DateTime $date;
     #[
         ApiProperty(description: 'Nombre de Cartons (=1)'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private int $numberOfBoxes = 1;
     #[
         ApiProperty(description: 'Numéro unique du Packaging'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private ?string $labelNumber; // Numéro unique du Packaging -> barcode
     #[
         ApiProperty(description: 'Numéro du fournisseur dans ERP client'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:label-carton'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private ?string $vendorNumber; // our supplier number in the customer's ERP system -> barcode
 
     #[
         ApiProperty(description: 'Lien pièce jointe'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:balance-sheet-item'])
+        Serializer\Groups(['read:file', 'read:label-carton'])
     ]
     private ?string $url = null;
     #[
         ApiProperty(description: 'Lien image'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:balance-sheet-item'])
+        Serializer\Groups(['read:file', 'read:label-carton'])
     ]
     protected ?string $filePath = null;
 
     #[
         ApiProperty(description: 'ZPL'),
         ORM\Column(type: 'text', nullable: true),
-        Serializer\Groups(['read:file', 'read:balance-sheet-item'])
+        Serializer\Groups(['read:file', 'read:label-carton'])
     ]
-    private string $zpl;
+    private ?string $zpl;
 
     #[
         ApiProperty(description: 'Type de label'),
         ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:file', 'read:balance-sheet-item'])
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
-    private string $labelType = 'TConcept';
+    private string $labelKind = 'TConcept';
 
     public function getFilepath(): ?string
     {
@@ -565,18 +566,18 @@ class Carton extends Entity  implements MeasuredInterface, FileEntity
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getZpl(): string
+    public function getZpl(): ?string
     {
         return $this->zpl;
     }
 
     /**
-     * @param string $zpl
+     * @param ?string $zpl
      * @return Carton
      */
-    public function setZpl(string $zpl): Carton
+    public function setZpl(?string $zpl): Carton
     {
         $this->zpl = $zpl;
         return $this;
@@ -585,19 +586,23 @@ class Carton extends Entity  implements MeasuredInterface, FileEntity
     /**
      * @return string
      */
-    public function getLabelType(): string
+    public function getLabelKind(): string
     {
-        return $this->labelType;
+        return $this->labelKind;
     }
 
     /**
-     * @param string $labelType
+     * @param string $labelKind
      * @return Carton
      */
-    public function setLabelType(string $labelType): Carton
+    public function setLabelKind(string $labelKind): Carton
     {
-        $this->labelType = $labelType;
+        $this->labelKind = $labelKind;
         return $this;
+    }
+
+    public function getImageUrl(): string {
+        return $this->url;
     }
 
 }

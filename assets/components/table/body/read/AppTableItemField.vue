@@ -55,6 +55,7 @@
     const array = computed(() => Array.isArray(label.value))
     const select = computed(() => props.field.type === 'select')
     const multiselectFetch = computed(() => props.field.type === 'multiselect-fetch')
+    const downloadText = computed(() => props.field.type === 'downloadText')
 </script>
 
 <template>
@@ -84,8 +85,11 @@
                 {{ v }}
             </li>
         </ul>
+        <div v-else-if="downloadText">
+            <a :href="'data:text/plain;charset=utf-8,'+ encodeURIComponent(label)" target="_blank" download="zpl.txt">Télécharger</a>
+        </div>
         <template v-else>
-            {{ label }}
+            {{ label }} - {{ props.field.type }}
         </template>
     </td>
 </template>
