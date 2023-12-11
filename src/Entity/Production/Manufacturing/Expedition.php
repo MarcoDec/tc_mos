@@ -139,7 +139,7 @@ class Expedition extends Entity {
     /** @var Item<I>|null */
     #[
         ApiProperty(description: 'Item', readableLink: false, example: '/api/selling-order-items/1'),
-        ORM\ManyToOne,
+        ORM\ManyToOne (inversedBy:'expeditions'),
         Serializer\Groups(['read:expedition', 'write:expedition'])
     ]
     private ?Item $item = null;

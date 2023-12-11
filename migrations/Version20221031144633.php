@@ -3951,7 +3951,7 @@ CREATE TABLE `receipt` (
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `receipt` (`old_id`, `date`, `emb_state_state`, `item_id`, `quantity_code`, `quantity_value`)
+INSERT INTO `receipt` (`old_id`, `date`,`emb_state_state`, `item_id`, `quantity_code`, `quantity_value`)
 SELECT
     `purchase_order_item`.`old_id`,
     `purchase_order_item`.`receipt_date`,

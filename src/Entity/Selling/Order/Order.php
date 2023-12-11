@@ -122,7 +122,7 @@ class Order extends Entity {
 
     #[
         ApiProperty(description: 'Client', readableLink: false, example: '/api/customers/8'),
-        ORM\ManyToOne,
+        ORM\ManyToOne (inversedBy : 'sellingOrders'),
         Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?Customer $customer = null;

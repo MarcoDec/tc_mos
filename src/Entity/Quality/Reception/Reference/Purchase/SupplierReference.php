@@ -53,7 +53,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 class SupplierReference extends Reference {
     #[
         ApiProperty(description: 'Fournisseurs', readableLink: false, example: ['/api/suppliers/1', '/api/suppliers/2']),
-        ORM\ManyToMany(targetEntity: Supplier::class, inversedBy: 'references'),
+        ORM\ManyToMany(targetEntity: Supplier::class, inversedBy: 'references', fetch:'EAGER'),
         Serializer\Groups(['read:reference', 'write:reference'])
     ]
     protected Collection $items;

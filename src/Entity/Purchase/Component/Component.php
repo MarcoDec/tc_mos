@@ -17,6 +17,7 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Logistics\Component\Preparation;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Attachment\ComponentAttachment;
 use App\Entity\Quality\Reception\Check;
@@ -393,6 +394,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     ]
     private ?string $code;
 
+    #[
+        ORM\OneToMany(targetEntity: Preparation::class, mappedBy: 'component', fetch: 'EAGER')
+    ]
+    private DoctrineCollection $preparationComponents;
+
     public function __construct() {
         $this->attributes = new ArrayCollection();
         $this->copperWeight = new Measure();
@@ -404,6 +410,8 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->supplierComponents = new ArrayCollection();
         $this->weight = new Measure();
         $this->code = $this->getCode();
+        $this->preparationComponents = new ArrayCollection();
+
     }
 
     public function __clone() {
@@ -588,6 +596,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     public function getSupplierComponents()
     {
         return $this->supplierComponents;
+    }
+
+    public function getPreparationComponents()
+    {
+        return $this->preparationComponents;
     }
 
     final public function getUnit(): ?Unit {

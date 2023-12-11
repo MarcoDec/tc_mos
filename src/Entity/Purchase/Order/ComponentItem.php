@@ -44,10 +44,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 ]
 class ComponentItem extends Item {
     #[
-        ApiProperty(description: 'Composant', example: '/api/components/1'),
+        ApiProperty(description: 'Composant', example: '/api/components/1',),
         ORM\JoinColumn(name: 'component_id'),
-        ORM\ManyToOne(targetEntity: Component::class, fetch: "EAGER"),
+        ORM\ManyToOne(targetEntity: Component::class, inversedBy: "componentItems", fetch: "EAGER"),
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $item;
+
+
 }

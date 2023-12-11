@@ -7,6 +7,8 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\Purchase\Component\Component;
+use App\Entity\Logistics\Order\Receipt;
 
 /**
  * @extends ItemRepository<ComponentItem>
@@ -79,4 +81,17 @@ final class ComponentItemRepository extends ItemRepository {
             return null;
         }
     }
+
+    public function findByComponentId(int $componentId): array
+    {
+        $query = $this->createQueryBuilder('ci')
+            ->join('ci.item', 'c')  // Assuming 'item' is the property in ComponentItem that maps to Component
+            ->where('c.id = :componentId')
+            ->setParameter('componentId', $componentId)
+            ->getQuery();
+
+        return $query->getResult();
+    }
+
+    
 }

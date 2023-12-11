@@ -12,6 +12,7 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Production\Manufacturing\Order\State;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
+use App\Entity\Logistics\Component\Preparation;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Project\Product\Product;
 use App\Entity\Selling\Order\Order as SellingOrder;
@@ -21,6 +22,8 @@ use App\Filter\SetFilter;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['company']),
@@ -175,7 +178,7 @@ class Order extends Entity implements BarCodeInterface {
 
     #[
         ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
-        ORM\ManyToOne,
+        ORM\ManyToOne (inversedBy:'productorders'),
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
     ]
     private ?Product $product = null;
@@ -194,10 +197,22 @@ class Order extends Entity implements BarCodeInterface {
     ]
     private ?string $ref = null;
 
+    #[
+        ORM\OneToMany(targetEntity: Operation::class, mappedBy: 'order')
+    ]
+    private Collection $operationOrders;
+
+    #[ORM\OneToMany(targetEntity: Preparation::class, mappedBy: 'ofnumber')]
+
+    private Collection $preparationOrders;
+
     public function __construct() {
         $this->embBlocker = new Closer();
         $this->embState = new State();
         $this->quantityRequested = new Measure();
+        $this->operationOrders = new ArrayCollection();
+        $this->preparationOrders = new ArrayCollection();
+
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -258,6 +273,14 @@ class Order extends Entity implements BarCodeInterface {
 
     final public function getState(): string {
         return $this->embState->getState();
+    }
+
+    public function getOperationOrders(): Collection {
+        return $this->operationOrders;
+    }
+
+    public function getPreparationOrders(): Collection {
+        return $this->preparationOrders;
     }
 
     final public function setBlocker(string $state): self {

@@ -123,7 +123,7 @@ abstract class Item extends BaseItem {
 
     #[
         ApiProperty(description: 'Commande', readableLink: false, example: '/api/selling-orders/1'),
-        ORM\ManyToOne(targetEntity: Order::class),
+        ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'sellingOrderItems'),
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $order;

@@ -20,6 +20,7 @@ use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
+use App\Entity\Production\Manufacturing\Order;
 use App\Entity\Project\Product\Attachment\ProductAttachment;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Selling\ProductReference;
@@ -428,6 +429,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     ]
     private Measure $weight;
 
+    #[
+        ORM\OneToMany(targetEntity: Order::class, mappedBy: 'product')
+    ]
+    private DoctrineCollection $productorders;
+
     public function __construct() {
         $this->autoDuration = new Measure();
         $this->children = new ArrayCollection();
@@ -449,6 +455,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->transfertPriceSupplies = new Measure();
         $this->transfertPriceWork = new Measure();
         $this->weight = new Measure();
+        $this->productorders = new ArrayCollection();
     }
 
     public function __clone() {
@@ -486,6 +493,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function getBlocker(): string {
         return $this->embBlocker->getState();
+    }
+
+    public function getProductOrders(): DoctrineCollection {
+        return $this->productorders;
     }
 
     /**

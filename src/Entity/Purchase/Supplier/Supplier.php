@@ -270,13 +270,14 @@ class Supplier extends Entity {
 
     /** @var DoctrineCollection<int, Order> */
     #[
-        ORM\OneToMany(mappedBy: 'supplier', targetEntity: Order::class),
+        ORM\OneToMany(mappedBy: 'supplier', targetEntity: Order::class ),
         Serializer\Groups(['read:supplier:receipt'])
     ]
     private DoctrineCollection $orders;
 
     /** @var DoctrineCollection<int, SupplierReference> */
-    #[ORM\ManyToMany(targetEntity: SupplierReference::class, mappedBy: 'items')]
+    #[ORM\ManyToMany(targetEntity: SupplierReference::class, mappedBy: 'items', fetch:'EAGER')]
+   
     private DoctrineCollection $references;
 
     #[

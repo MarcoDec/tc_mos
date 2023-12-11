@@ -93,6 +93,8 @@ framework:
       supports:
         - App\Entity\Accounting\Bill
         - App\Entity\Hr\Employee\Employee
+        - App\Entity\Logistics\Component\Preparation
+        - App\Entity\Logistics\Order\Receipt
         - App\Entity\Production\Engine\Engine
         - App\Entity\Production\Manufacturing\Expedition
         - App\Entity\Project\Product\Product
@@ -341,6 +343,28 @@ framework:
         '%wf_tr_lock%':
           from: '%wf_place_agreed%'
           to: '%wf_place_locked%'
+      type: state_machine
+    preparation:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%wf_place_asked%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_asked%'
+        - '%wf_place_delivered%'
+        - '%wf_place_rejected%'
+      supports:
+        - App\Entity\Logistics\Component\Preparation
+      transitions:
+        '%wf_tr_validate%':
+          from: '%wf_place_asked%'
+          to: '%wf_place_agreed%'
+        '%wf_tr_deliver%':
+          from: '%wf_place_agreed%'
+          to: '%wf_place_delivered%'
+        '%wf_tr_reject%':
+          from: '%wf_place_agreed%'
+          to: '%wf_place_rejected%'
       type: state_machine
     product:
       audit_trail: '%wf_audit_trail%'

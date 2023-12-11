@@ -150,6 +150,7 @@ abstract class Item extends BaseItem {
 
     /** @var DoctrineCollection<int, Receipt<I>> */
     #[ORM\OneToMany(mappedBy: 'item', targetEntity: Receipt::class)]
+    
     private DoctrineCollection $receipts;
 
     public function __construct() {
@@ -175,7 +176,6 @@ abstract class Item extends BaseItem {
     final public function getBlocker(): string {
         return $this->embBlocker->getState();
     }
-
     /**
      * @return Collection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
      */
