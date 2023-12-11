@@ -76,6 +76,7 @@ import {
     faSitemap,
     faSquarePlus,
     faStar,
+    faTags,
     faTimes,
     faTruck,
     faToolbox,
@@ -161,6 +162,7 @@ library.add(faShuttleVan)
 library.add(faSignOutAlt)
 library.add(faSitemap)
 library.add(faSquarePlus)
+library.add(faTags)
 library.add(faTimes)
 library.add(faToolbox)
 library.add(faTrash)

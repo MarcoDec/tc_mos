@@ -108,5 +108,12 @@ export default [
                 }
             ]
         }
+    },
+    {
+        component: async () => import('../components/pages/logistic/label/AppLabelCartonList.vue'),
+        meta: {requiresAuth: true},
+        name: 'label-carton-list',
+        path: '/labelcarton-list',
+        props: {}
     }
 ]

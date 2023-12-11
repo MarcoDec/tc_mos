@@ -102,25 +102,33 @@
             <!--                    Application Programming Interface (API)-->
             <!--                </a>-->
             <!--            </AppNavbarItem>-->
-            <!--            <AppNavbarItem v-if="user.isLogisticsReader" id="logistics" icon="boxes" title="Logistique">-->
-            <!--                <AppDropdownItem disabled variant="success">-->
-            <!--                    Lecteur-->
-            <!--                </AppDropdownItem>-->
-            <!--                <AppNavbarLink icon="shuttle-van" to="carriers" variant="success">-->
-            <!--                    Transporteurs-->
-            <!--                </AppNavbarLink>-->
-            <!--                <template v-if="user.isLogisticsAdmin">-->
-            <!--                    <AppDropdownItem disabled variant="warning">-->
-            <!--                        Administrateur-->
-            <!--                    </AppDropdownItem>-->
-            <!--                    <AppNavbarLink icon="file-contract" to="incoterms" variant="warning">-->
-            <!--                        Incoterms-->
-            <!--                    </AppNavbarLink>-->
-            <!--                    <AppNavbarLink icon="warehouse" to="warehouse-list" variant="warning">-->
-            <!--                        Entrepots-->
-            <!--                    </AppNavbarLink>-->
-            <!--                </template>-->
-            <!--            </AppNavbarItem>-->
+            <AppNavbarItem v-if="user.isLogisticsReader" id="logistics" icon="boxes" title="Logistique">
+                <!--                            <AppDropdownItem disabled variant="success">-->
+                <!--                                Lecteur-->
+                <!--                            </AppDropdownItem>-->
+                <!--                            <AppNavbarLink icon="shuttle-van" to="carriers" variant="success">-->
+                <!--                                Transporteurs-->
+                <!--                            </AppNavbarLink>-->
+                <template v-if="user.isLogisticsWriter">
+                    <AppDropdownItem disabled variant="info">
+                        Contributeur
+                    </AppDropdownItem>
+                    <AppNavbarLink icon="tags" to="label-carton-list" variant="info">
+                        Etiquettes Carton
+                    </AppNavbarLink>
+                    <template v-if="user.isLogisticsAdmin">
+                        <!--                                    <AppDropdownItem disabled variant="warning">-->
+                        <!--                                        Administrateur-->
+                        <!--                                    </AppDropdownItem>-->
+                        <!--                                <AppNavbarLink icon="file-contract" to="incoterms" variant="warning">-->
+                        <!--                                    Incoterms-->
+                        <!--                                </AppNavbarLink>-->
+                        <!--                                <AppNavbarLink icon="warehouse" to="warehouse-list" variant="warning">-->
+                        <!--                                    Entrepots-->
+                        <!--                                </AppNavbarLink>-->
+                    </template>
+                </template>
+            </AppNavbarItem>
             <!--            <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">-->
             <!--                <AppDropdownItem disabled variant="success">-->
             <!--                    Lecteur-->
