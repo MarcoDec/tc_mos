@@ -12,24 +12,44 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: [
         'customerAddressName' => 'partial',
+        'customerDestinationPoint' => 'partial',
         'manufacturer' => 'partial',
         'productDescription' => 'partial',
         'productReference' => 'partial',
         'productIndice' => 'partial',
         'batchnumber' => 'partial',
-        'quantity' => 'partial'
+        'quantity' => 'partial',
+        'grossWeight' => 'partial',
+        'netWeight' => 'partial',
+        'labelNumber' => 'partial',
+        'logisticReference' => 'partial',
+        'shipFromAddressName' => 'partial',
+        'vendorNumber' => 'partial',
+        'labelKind' => 'partial'
     ]),
     ApiFilter(filterClass: OrderFilter::class, properties: [
         'customerAddressName',
+        'customerDestinationPoint',
         'manufacturer',
         'productDescription',
         'productReference',
         'productIndice',
         'batchnumber',
-        'quantity'
+        'quantity',
+        'grossWeight',
+        'netWeight',
+        'labelNumber',
+        'logisticReference',
+        'shipFromAddressName',
+        'vendorNumber',
+        'labelKind'
+    ]),
+    ApiFilter(filterClass: DateFilter::class, properties: [
+        'date'
     ]),
     ApiResource(
         collectionOperations: [
