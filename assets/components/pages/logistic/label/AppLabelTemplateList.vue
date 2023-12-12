@@ -1,8 +1,10 @@
 <script setup>
+    import api from '../../../../api'
     import AppTab from '../../../tab/AppTab.vue'
     import AppTabs from '../../../tab/AppTabs.vue'
     import {ref} from 'vue'
 
+    //region définition des éléments pour gestion cartons format TConcept
     const cartonTCFields = [
         {
             name: 'labelName',
@@ -41,6 +43,31 @@
             required: true
         }
     ]
+    const keyTC = ref(0)
+    const localDataTC = ref({})
+    function cancelTC() {
+        console.log('cancelTC')
+        localDataTC.value = {
+            labelName: '',
+            customerAddressName: '',
+            manufacturer: '',
+            productDescription: '',
+            productReference: '',
+            productIndice: ''
+        }
+        keyTC.value++
+    }
+    function updateGeneralTC() {
+        console.log('updateGeneralTC', localDataTC.value)
+        //Récupération localDataTC et envoie via post pour ajout en base
+        localDataTC.value = {...localDataTC.value, labelKind: 'TConcept', templateFamilly: 'carton'}
+        const response = api('/api/label-templates','POST', localDataTC.value)
+    }
+    function localDataChangeTC(data) {
+        localDataTC.value = data
+    }
+    //endregion
+    //region définition des éléments pour gestion cartons format ETI9
     const cartonETI9Fields = [
         {
             name: 'labelName',
@@ -79,22 +106,8 @@
             required: true
         }
     ]
-    const keyTC = ref(0)
     const keyETI = ref(0)
-    const localDataTC = ref({})
     const localDataETI9 = ref({})
-    function cancelTC() {
-        console.log('cancelTC')
-        localDataTC.value = {
-            labelName: '',
-            customerAddressName: '',
-            manufacturer: '',
-            productDescription: '',
-            productReference: '',
-            productIndice: ''
-        }
-        keyTC.value++
-    }
     function cancelETI9() {
         console.log('cancelETI9')
         localDataETI9.value = {
@@ -107,20 +120,16 @@
         }
         keyETI.value++
     }
-    function updateGeneralTC() {
-        console.log('updateGeneralTC')
-        //Récupération localData et envoie via post pour ajout en base
-    }
     function updateGeneralETI9() {
-        console.log('updateGeneralETI9')
-        //Récupération localData et envoie via post pour ajout en base
-    }
-    function localDataChangeTC(data) {
-        console.log('localDataChangeTC', data)
+        console.log('updateGeneralETI9', localDataETI9.value)
+        //Récupération localDataETI9 et envoie via post pour ajout en base
+        localDataETI9.value = {...localDataETI9.value, labelKind: 'ETI9', templateFamilly: 'carton'}
+        const response = api('/api/label-templates','POST', localDataTC.value)
     }
     function localDataChangeETI9(data) {
-        console.log('localDataChangeETI9', data)
+        localDataETI9.value = data
     }
+    //endregion
 </script>
 
 <template>
@@ -131,7 +140,7 @@
         <!--        <AppTab id="product-labels" title="Modèles Etiquettes Produit" tabs="label-templates" icon="">-->
         <!--            Hello World-->
         <!--        </AppTab>-->
-        <AppTab id="carton-labels" title="Modèles Etiquettes Carton" tabs="label-templates" icon="box-open">
+        <AppTab id="carton-labels" title="Modèles Etiquettes Carton" tabs="label-templates" icon="box-open" active>
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-6">
@@ -140,7 +149,7 @@
                             :key="keyTC"
                             :fields="cartonTCFields"
                             :component-attribute="localDataTC"
-                            title="Génération de modèle d'étiquette format TCONCEPT - Saisie des champs invariants"
+                            title="Ajout modèle d'étiquette format TCONCEPT => Renseigner les champs ci-dessous"
                             @cancel="cancelTC"
                             @update="updateGeneralTC"
                             @update:model-value="localDataChangeTC"/>
@@ -151,7 +160,7 @@
                             :key="keyETI"
                             :fields="cartonETI9Fields"
                             :component-attribute="localDataETI9"
-                            title="Génération de modèle d'étiquette format ETI9 - Saisie des champs invariants"
+                            title="Ajout modèle d'étiquette format ETI9 => Renseigner les champs ci-dessous"
                             @cancel="cancelETI9"
                             @update="updateGeneralETI9"
                             @update:model-value="localDataChangeETI9"/>
