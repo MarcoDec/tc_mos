@@ -26,12 +26,11 @@
                     const theField = f.optionsList.find(o => o.text === newValue)
                     if (typeof theField === 'undefined') localData.value[f.name] = null
                     else localData.value[f.name] = theField['@id']
-                }
-                else {
+                } else {
                     localData.value[f.name] = newValue
                 }
             }
-         })
+        })
         props.store.createBody = localData.value
         try {
             props.store.create().then(() => {
@@ -51,8 +50,7 @@
                         const theField = f.optionsList.find(o => o.text === newValue)
                         if (typeof theField === 'undefined') localData.value[f.name] = null
                         else localData.value[f.name] = theField['@id']
-                    }
-                    else {
+                    } else {
                         localData.value[f.name] = newValue
                     }
                 }
@@ -75,11 +73,11 @@
         icon="plus"
         label="Ajouter"
         mode="create"
-        @input="onInput"
         reverse-icon="search"
         reverse-label="recherche"
         reverse-mode="search"
-        variant="success">
+        variant="success"
+        @input="onInput">
         <template #form="args">
             <slot name="btn" v-bind="args"/>
         </template>

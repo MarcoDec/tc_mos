@@ -1,6 +1,7 @@
 <script setup>
     import AppTableHeaders from './head/AppTableHeaders.vue'
     import AppTableItems from './body/AppTableItems.vue'
+    // import AppPagination from './pagination/AppPagination'
     import {computed} from 'vue'
     import {useSlots} from '../../composable/table'
 
@@ -42,6 +43,7 @@
                     :store="store"
                     @show="show"/>
             </table>
+            <!-- <AppPagination :machine="machine" :store="store"/>-->
         </div>
     </div>
 </template>

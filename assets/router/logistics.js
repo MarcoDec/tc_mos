@@ -109,16 +109,16 @@ export default [
             ]
         }
     },
-    // {
-    //     component: async () => import('../components/pages/logistic/label/AppLabelCartonList.vue'),
-    //     meta: {requiresAuth: true},
-    //     name: 'label-carton-list',
-    //     path: '/labelcarton-list',
-    //     props: {}
-    // },
+    {
+        component: async () => import('../components/pages/logistic/label/AppLabelTemplateList.vue'),
+        meta: {requiresAuth: true},
+        name: 'label-template-list',
+        path: '/label-template-list',
+        props: {}
+    },
     {
         component: AppTablePageSuspense,
-        meta: {title: 'Etiquettes — T-Concept GPAO'},
+        meta: {title: 'Etiquettes Générées — T-Concept GPAO'},
         name: 'etiquette-list',
         path: '/etiquette-list',
         props: {
@@ -151,14 +151,14 @@ export default [
                     create: true,
                     search: true
                 },
-                { label: 'Code ZPL', name: 'zpl', create: false, update: false, sort: false, search: false, type: 'downloadText' },
-                { label: 'Image', name: 'url', create: false, update: false, sort: false, search: false, type: 'link' },
+                {label: 'Code ZPL', name: 'zpl', create: false, update: false, sort: false, search: false, type: 'downloadText'},
+                {label: 'Image', name: 'url', create: false, update: false, sort: false, search: false, type: 'link'}
                 // {label: 'Unité', name: 'unit', options: {base: 'units'}, sortName: 'unit.code', type: 'select'},
                 // {create: false, label: 'Familles', name: 'familiesName', search: false, sort: false, update: false}
             ],
             icon: 'tags',
             sort: readonly({label: 'Référence Produit', name: 'productReference'}),
-            title: 'Etiquettes'
+            title: 'Etiquettes Générées'
         }
     }
 ]

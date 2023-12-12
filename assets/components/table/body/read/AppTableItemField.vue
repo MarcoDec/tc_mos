@@ -51,7 +51,7 @@
     const date = computed(() => props.field.type === 'date')
     const shortDate = computed(() => {
         if (labelValue(value).length > 10) return labelValue(value).slice(0, 10)
-        else return labelValue(value)
+        return labelValue(value)
     })
     const id = computed(() => `${props.row}-${props.field.name}`)
     const value = computed(() => get(props.item, props.field.name))
@@ -91,7 +91,7 @@
             </li>
         </ul>
         <div v-else-if="downloadText">
-            <a :href="'data:text/plain;charset=utf-8,'+ encodeURIComponent(label)" target="_blank" download="zpl.txt">Télécharger</a>
+            <a :href="`data:text/plain;charset=utf-8,${encodeURIComponent(label)}`" target="_blank" download="zpl.txt">Télécharger</a>
         </div>
         <template v-else-if="date">
             {{ shortDate }}

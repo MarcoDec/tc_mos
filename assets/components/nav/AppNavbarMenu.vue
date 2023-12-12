@@ -113,8 +113,11 @@
                     <AppDropdownItem disabled variant="info">
                         Contributeur
                     </AppDropdownItem>
+                    <AppNavbarLink to="label-template-list" icon="tags" variant="info">
+                        Modèles d'étiquette
+                    </AppNavbarLink>
                     <AppNavbarLink icon="tags" to="etiquette-list" variant="info">
-                        Etiquettes Carton
+                        Etiquettes Générées
                     </AppNavbarLink>
                     <template v-if="user.isLogisticsAdmin">
                         <!--                                    <AppDropdownItem disabled variant="warning">-->

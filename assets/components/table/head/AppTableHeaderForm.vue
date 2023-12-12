@@ -38,7 +38,7 @@
     function reverse() {
         props.send(props.reverseMode)
     }
-    function localSubmit(e) {
+    function localSubmit() {
         props.submit()
     }
 </script>

@@ -7,6 +7,7 @@ import {
     faBell,
     faBook,
     faBoxes,
+    faBoxOpen,
     faBriefcase,
     faBuilding,
     faBullseye,
@@ -102,6 +103,7 @@ library.add(faBars)
 library.add(faBell)
 library.add(faBook)
 library.add(faBoxes)
+library.add(faBoxOpen)
 library.add(faBriefcase)
 library.add(faBuilding)
 library.add(faBullseye)
