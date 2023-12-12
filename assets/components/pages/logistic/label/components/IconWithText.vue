@@ -51,7 +51,6 @@
         background-color: lightgrey;
         padding: 10px;
         border-radius: 20px;
-        /* Autres styles pour l'icône */
     }
     .icon:hover {
         box-shadow: #212529 0px 0px 10px 0px;
@@ -95,5 +94,4 @@
         font-size: 25px;
         box-shadow: inset white 0px 0px 10px 0px;
     }
-
 </style>

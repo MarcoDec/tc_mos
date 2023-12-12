@@ -124,16 +124,17 @@
         style="cursor: grab;"
         @click="showAddForm = !showAddForm"
     />
-    <div class="col-2" v-for="tcTemplate in labeltemplatesTC" style="cursor: grab;">
-        <IconWithText
-            :label="tcTemplate.labelName"
-            :text="`${tcTemplate.productReference}-${tcTemplate.productIndice}`"
-            icon="box"
-            icon-color="sandybrown"
-            @edit="editTC(tcTemplate)"
-            @remove="removeTC(tcTemplate)"
-        />
-    </div>
+    <IconWithText
+        v-for="tcTemplate in labeltemplatesTC"
+        :label="tcTemplate.labelName"
+        :text="`${tcTemplate.productReference}-${tcTemplate.productIndice}`"
+        icon="box"
+        icon-color="sandybrown"
+        :offset="15"
+        @edit="editTC(tcTemplate)"
+        @remove="removeTC(tcTemplate)"
+        style="cursor: grab;"
+    />
 </template>
 
 <style scoped>
