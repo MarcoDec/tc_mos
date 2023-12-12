@@ -3,70 +3,8 @@
     import AppTab from '../../../tab/AppTab.vue'
     import AppTabs from '../../../tab/AppTabs.vue'
     import {ref} from 'vue'
+    import AppTemplateList from './components/AppTemplateList.vue'
 
-    //region définition des éléments pour gestion cartons format TConcept
-    const cartonTCFields = [
-        {
-            name: 'labelName',
-            label: 'Désignation Etiquette Carton',
-            type: 'text',
-            required: true
-        },
-        {
-            name: 'customerAddressName',
-            label: 'DESTINATAIRE',
-            type: 'text',
-            required: true
-        },
-        {
-            name: 'manufacturer',
-            label: 'EXPEDITEUR',
-            type: 'text',
-            required: true
-        },
-        {
-            name: 'productDescription',
-            label: 'DESIGNATION',
-            type: 'text',
-            required: true
-        },
-        {
-            name: 'productReference',
-            label: 'REF CLIENT',
-            type: 'text',
-            required: true
-        },
-        {
-            name: 'productIndice',
-            label: 'INDICE',
-            type: 'text',
-            required: true
-        }
-    ]
-    const keyTC = ref(0)
-    const localDataTC = ref({})
-    function cancelTC() {
-        console.log('cancelTC')
-        localDataTC.value = {
-            labelName: '',
-            customerAddressName: '',
-            manufacturer: '',
-            productDescription: '',
-            productReference: '',
-            productIndice: ''
-        }
-        keyTC.value++
-    }
-    function updateGeneralTC() {
-        console.log('updateGeneralTC', localDataTC.value)
-        //Récupération localDataTC et envoie via post pour ajout en base
-        localDataTC.value = {...localDataTC.value, labelKind: 'TConcept', templateFamilly: 'carton'}
-        const response = api('/api/label-templates','POST', localDataTC.value)
-    }
-    function localDataChangeTC(data) {
-        localDataTC.value = data
-    }
-    //endregion
     //region définition des éléments pour gestion cartons format ETI9
     const cartonETI9Fields = [
         {
@@ -144,26 +82,22 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-6">
-                        <AppCardShow
-                            id="addEtiquetteCartonTC"
-                            :key="keyTC"
-                            :fields="cartonTCFields"
-                            :component-attribute="localDataTC"
-                            title="Ajout modèle d'étiquette format TCONCEPT => Renseigner les champs ci-dessous"
-                            @cancel="cancelTC"
-                            @update="updateGeneralTC"
-                            @update:model-value="localDataChangeTC"/>
+                        <div class="row">
+                            <AppTemplateList
+                                title="Modèles Etiquettes Carton Format TCONCEPT"
+                                label-kind="TConcept"
+                                template-familly="carton"
+                            />
+                        </div>
                     </div>
                     <div class="col-6">
-                        <AppCardShow
-                            id="addEtiquetteCartonETI9"
-                            :key="keyETI"
-                            :fields="cartonETI9Fields"
-                            :component-attribute="localDataETI9"
-                            title="Ajout modèle d'étiquette format ETI9 => Renseigner les champs ci-dessous"
-                            @cancel="cancelETI9"
-                            @update="updateGeneralETI9"
-                            @update:model-value="localDataChangeETI9"/>
+                        <div class="row">
+                            <AppTemplateList
+                                title="Modèles Etiquettes Carton Format ETI9"
+                                label-kind="ETI9"
+                                template-familly="carton"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -176,4 +110,32 @@
 
 <style scoped>
     div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
+    .labelClass {
+        font-size: 17px;
+        font-weight: bold;
+        color: darkblue;
+        text-align: center;
+        min-height: 50px;
+        max-height: 50px;
+        width: 107px;
+    }
+    .tc-infos {
+        text-align: justify;
+        position: relative;
+    }
+    .tc-icons {
+        font-size: 100px;
+        color: sandybrown;
+        background-color: lightgrey;
+        border-radius: 10px;
+        padding: 10px;
+    }
+    .productClass {
+        font-size: 12px;
+        color: darkblue;
+        text-align: center;
+        min-height: 20px;
+        max-height: 20px;
+        width: 107px;
+    }
 </style>

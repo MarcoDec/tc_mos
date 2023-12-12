@@ -4,11 +4,27 @@ namespace App\Entity\Logistics\Label;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
+    ApiFilter(filterClass: SearchFilter::class, properties: [
+        'labelName' => 'partial',
+        'templateFamily' => 'exact',
+        'logisticReference' => 'partial',
+        'productReference' => 'partial',
+        'productIndice' => 'partial',
+        'productDescription' => 'partial',
+        'manufacturer' => 'partial',
+        'customerAddressName' => 'partial',
+        'shipFromAddressName' => 'partial',
+        'customerDestinationPoint' => 'partial',
+        'vendorNumber' => 'partial',
+        'labelKind' => 'exact'
+    ]),
     ApiResource(
         collectionOperations: [
             'get',
