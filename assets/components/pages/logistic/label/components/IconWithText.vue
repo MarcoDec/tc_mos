@@ -12,10 +12,12 @@
         showEdit: {default: true, type: Boolean},
         showRemove: {default: true, type: Boolean}
     })
-    function clickEdit() {
+    function clickEdit(e) {
+        e.preventDefault()
         emits('edit')
     }
-    function clickRemove() {
+    function clickRemove(e) {
+        e.preventDefault()
         emits('remove')
     }
     function click() {
@@ -32,8 +34,8 @@
         <div class="label" :style="{color: labelColor, left: leftOffset}">{{ label }}</div>
         <div class="text" :style="{color: textColor, left: leftOffset}">{{ text }}</div>
         <div class="buttons" :style="{left: leftOffset}">
-            <Fa v-if="showEdit === true" :brand="false" icon="pencil" class="myButton text-primary" title="edit" @click="clickEdit"/>
-            <Fa v-if="showRemove === true" :brand="false" icon="trash" class="myButton text-danger" title="remove" @click="clickRemove"/>
+            <Fa v-if="showEdit === true" :brand="false" icon="pencil" class="myButton text-primary" title="edit" @click.stop="clickEdit"/>
+            <Fa v-if="showRemove === true" :brand="false" icon="trash" class="myButton text-danger" title="remove" @click.stop="clickRemove"/>
         </div>
     </div>
 </template>

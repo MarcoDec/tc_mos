@@ -117,6 +117,12 @@ export default [
         props: {}
     },
     {
+        component: async () => import('../components/pages/logistic/label/AppLabelTemplateGenerate.vue'),
+        name: 'label-template-generate',
+        path: '/label-template-generate/:id_label_template',
+        props: {}
+    },
+    {
         component: AppTablePageSuspense,
         meta: {title: 'Etiquettes Générées — T-Concept GPAO'},
         name: 'etiquette-list',

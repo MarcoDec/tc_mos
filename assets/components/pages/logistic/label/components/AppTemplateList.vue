@@ -2,12 +2,14 @@
     import api from '../../../../../api'
     import {defineProps, onMounted, ref} from 'vue'
     import IconWithText from './IconWithText.vue'
+    import {useRouter} from 'vue-router'
 
     const props = defineProps({
         labelKind: {required: true, type: String},
         templateFamilly: {required: true, type: String},
         title: {required: true, type: String}
     })
+    const router = useRouter()
     //region définition des éléments pour gestion cartons format TConcept
     const cartonTCFields = [
         {
@@ -86,11 +88,16 @@
         //localDataTC.value = tcTemplate
     }
     function removeTC(tcTemplate) {
-        console.log('removeTC', tcTemplate)
+        const validate = confirm(`Voulez-vous vraiment supprimer le modèle d'étiquette ${tcTemplate.labelName}?`)
+        if (!validate) return
         api(`/api/label-templates/${tcTemplate.id}`, 'DELETE')
             .then(response => {
                 getLabelTemplatesTC()
             })
+    }
+    function generateLabels(tcTemplate) {
+        console.log('generateLabels', tcTemplate)
+        router.push({name: 'label-template-generate', params: {id_label_template: tcTemplate.id}})
     }
     const showAddForm = ref(false)
     onMounted(() => {
@@ -129,8 +136,9 @@
         :label="tcTemplate.labelName"
         :text="`${tcTemplate.productReference}-${tcTemplate.productIndice}`"
         icon="box"
-        icon-color="sandybrown"
+        icon-color="#A4683BFF"
         :offset="15"
+        @click="generateLabels(tcTemplate)"
         @edit="editTC(tcTemplate)"
         @remove="removeTC(tcTemplate)"
         style="cursor: grab;"
