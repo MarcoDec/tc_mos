@@ -48,6 +48,11 @@
     }
     const bool = computed(() => props.field.type === 'boolean')
     const color = computed(() => props.field.type === 'color')
+    const date = computed(() => props.field.type === 'date')
+    const shortDate = computed(() => {
+        if (labelValue(value).length > 10) return labelValue(value).slice(0, 10)
+        else return labelValue(value)
+    })
     const id = computed(() => `${props.row}-${props.field.name}`)
     const value = computed(() => get(props.item, props.field.name))
     const label = computed(() => labelValue(value))
@@ -88,8 +93,11 @@
         <div v-else-if="downloadText">
             <a :href="'data:text/plain;charset=utf-8,'+ encodeURIComponent(label)" target="_blank" download="zpl.txt">Télécharger</a>
         </div>
+        <template v-else-if="date">
+            {{ shortDate }}
+        </template>
         <template v-else>
-            {{ label }} - {{ props.field.type }}
+            {{ label }}
         </template>
     </td>
 </template>
