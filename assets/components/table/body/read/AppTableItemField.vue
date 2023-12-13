@@ -50,7 +50,8 @@
     const color = computed(() => props.field.type === 'color')
     const date = computed(() => props.field.type === 'date')
     const shortDate = computed(() => {
-        if (labelValue(value).length > 10) return labelValue(value).slice(0, 10)
+
+        if (typeof labelValue(value) !== 'undefined' && labelValue(value).length > 10) return labelValue(value).slice(0, 10)
         return labelValue(value)
     })
     const id = computed(() => `${props.row}-${props.field.name}`)

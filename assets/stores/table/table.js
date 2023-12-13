@@ -39,10 +39,29 @@ export default function useTable(id) {
                 this.$dispose()
             },
             async fetch() {
+                console.log(this.readFilterPrevious, this.readFilter)
+                if (this.readFilterPrevious !== this.readFilter) {
+                    console.log('readFilter Change => Goto page 1')
+                    this.page = 1
+                }
+                if (this.readFilter === '') this.readFilter = `?page=${this.page}`
+                else if (!this.readFilter.includes('page=')) this.readFilter = `&page=${this.page}`
+                else {
+                    const previousPage = this.readFilter.match(/page=\d+/)[0]
+                    this.readFilter = this.readFilter.replace(previousPage, `page=${this.page}`)
+                }
+                this.readFilterPrevious = this.readFilter
                 const response = await api(this.url + this.readFilter, 'GET', this.fetchBody)
                 this.resetItems()
                 for (const row of response['hydra:member'])
                     this.rows.push(useRow(row, this))
+                this.totalItems = response['hydra:totalItems']
+                this.perPage = response['hydra:member'].length
+                this.hydraFirst = response['hydra:view']['hydra:first']
+                this.hydraLast = response['hydra:view']['hydra:last']
+                this.hydraNext = response['hydra:view']['hydra:next']
+                this.hydraPrevious = response['hydra:view']['hydra:previous']
+                this.hydraId = response['hydra:view']['@id']
             },
             removeRow(removed) {
                 this.rows = this.rows.filter(row => row.id !== removed.id)
@@ -96,11 +115,21 @@ export default function useTable(id) {
             id,
             isCompanyFiltered: false,
             readFilter: '',
+            readFilterPrevious: '',
             rows: [],
             search: {},
             showRouteName: null,
             sortName: null,
-            sorted: null
+            sorted: null,
+            pagination: true,
+            page: 1,
+            perPage: 15,
+            totalItems: 0,
+            hydraId: '',
+            hydraFirst: '',
+            hydraLast: '',
+            hydraNext: '',
+            hydraPrevious: ''
         })
     })()
 }

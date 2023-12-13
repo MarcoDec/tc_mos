@@ -92,7 +92,7 @@ import {
     faWrench,
     faGaugeHigh,
     faCartShopping,
-    faScaleBalanced, faBackwardStep, faChevronRight, faDownload
+    faScaleBalanced, faBackwardStep, faChevronRight, faDownload, faBackwardFast, faForwardStep, faForwardFast
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -100,6 +100,7 @@ import {library} from '@fortawesome/fontawesome-svg-core'
 library.add(faAddressCard)
 library.add(faAtom)
 library.add(faAngleDoubleLeft)
+library.add(faBackwardFast)
 library.add(faBackwardStep)
 library.add(faBars)
 library.add(faBell)
@@ -133,6 +134,8 @@ library.add(faFileInvoice)
 library.add(faFileInvoiceDollar)
 library.add(faFilter)
 library.add(faFolder)
+library.add(faForwardStep)
+library.add(faForwardFast)
 library.add(faGear)
 library.add(faHandHoldingUsd)
 library.add(faHourglassHalf)
