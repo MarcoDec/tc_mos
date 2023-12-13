@@ -18,6 +18,9 @@
     const nbProduit = ref(0)
     const currentStep = ref(1)
     const product = ref('')
+    const zpl = ref('')
+    const zplHref = ref('')
+    const imageUrl = ref('')
     const steps = ref([
         {
             id: 1,
@@ -73,7 +76,37 @@
                 product.value = ''
             },
             validate() {
-                if (this.check()) currentStep.value += 1
+                if (this.check()) {
+                    //Avant de passer à l'impression il faut créer l'étiquette avec l'ensemble des données
+                    const dataTosend = {
+                        labelKind: modeleEtiquette.value.labelKind,
+                        labelName: modeleEtiquette.value.labelName,
+                        manufacturer: modeleEtiquette.value.manufacturer,
+                        customerAddressName: modeleEtiquette.value.customerAddressName,
+                        productDescription: modeleEtiquette.value.productDescription,
+                        productReference: modeleEtiquette.value.productReference,
+                        productIndice: modeleEtiquette.value.productIndice,
+                        templateFamily: modeleEtiquette.value.templateFamily,
+                        operator: operateur.value,
+                        batchnumber: of.value,
+                        quantity: nbProduit.value
+                    }
+                    console.log('dataTosend', dataTosend)
+                    const response = api('/api/label-cartons', 'post', dataTosend)
+                    // et récupérer le code ZPL
+                    response.then(data => {
+                        var file = new Blob([data.zpl], {type: 'text/plain'})
+                        zplHref.value = URL.createObjectURL(file)
+                        // http://api.labelary.com/v1/printers/{dpmm}/labels/{width}x{height}/{index}/{zpl}
+                        const dpmm = '8dpmm'
+                        const width = '4'
+                        const height = '6'
+                        const index = '0'
+                        imageUrl.value = `http://api.labelary.com/v1/printers/${dpmm}/labels/${width}x${height}/${index}/${data.zpl}`
+                        currentStep.value += 1
+                    })
+                    // avant de passer à l'étape suivante
+                }
                 else alert('Veuillez scanner au moins un produit')
             },
             reset() {
@@ -114,7 +147,7 @@
     }
     function restartNewCarton() {
         currentStep.value = 3
-        steps[2].reset()
+        steps[2].scannedProducts= []
         nbProduit.value = 0
         product.value = ''
         inputProduitRef.value.focus()
@@ -186,11 +219,13 @@
         </div>
         <div v-show="currentStep === 4" class="form-step">
             <div class="step-title">Impression</div>
-            <div>Ici Aperçu de l'étiquette</div>
+            <img :src="imageUrl" alt="aperçu etiquette" width="280"/>
+            <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-center">
+                <a :href="zplHref" download="etiquette.zpl" class="btn btn-success">
+                    <Fa :brand="false" icon="download"/> Telecharger ZPL
+                </a>
+            </div>
             <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-between">
-                <button class="btn btn-warning d-inline-block m-2" @click="steps[2].reset()">
-                    <Fa :brand="false" icon="download"/> ZPL
-                </button>
                 <select class="form-control m-2">
                     <option>Imprimante 1</option>
                     <option>Imprimante 2</option>
