@@ -57,13 +57,29 @@
             scannedProducts: [],
             next() {
                 if (product.value === '') return
-                this.scannedProducts.push(product.value)
-                nbProduit.value = this.scannedProducts.length
+                if (this.scannedProducts.length === 0) {
+                    this.scannedProducts.push(product.value)
+                    nbProduit.value = this.scannedProducts.length
+                    product.value = ''
+                    return
+                }
+                if (this.scannedProducts.every(val => val === product.value)) {
+                    this.scannedProducts.push(product.value)
+                    nbProduit.value = this.scannedProducts.length
+                    product.value = ''
+                    return
+                }
+                alert('Le dernier produit scannés est différent des précédents, veuillez recommencer')
                 product.value = ''
             },
             validate() {
                 if (this.check()) currentStep.value += 1
                 else alert('Veuillez scanner au moins un produit')
+            },
+            reset() {
+                this.scannedProducts = []
+                nbProduit.value = 0
+                product.value = ''
             }
         },
         {id: 4, label: 'Impression', icon: 'print'}
@@ -76,6 +92,37 @@
         inputOperateurRef.value.focus()
         inputOperateurRef.value.select()
     })
+    function changeTemplate() {
+        // route.push({name: 'AppLabelTemplateList'})
+    }
+    function resetAll() {
+        currentStep.value = 1
+        operateur.value = '<à définir>'
+        of.value = '<à définir>'
+        nbProduit.value = 0
+        product.value = ''
+        inputOperateurRef.value.focus()
+        inputOperateurRef.value.select()
+    }
+    function restartFromOf() {
+        currentStep.value = 2
+        of.value = '<à définir>'
+        nbProduit.value = 0
+        product.value = ''
+        inputOfRef.value.focus()
+        inputOfRef.value.select()
+    }
+    function restartNewCarton() {
+        currentStep.value = 3
+        steps[2].reset()
+        nbProduit.value = 0
+        product.value = ''
+        inputProduitRef.value.focus()
+        inputProduitRef.value.select()
+    }
+    function disconnect() {
+        // route.push({name: 'AppLabelTemplateList'})
+    }
 </script>
 
 <template>
@@ -103,55 +150,93 @@
     <AppStepProgress :current-step="currentStep" :steps="steps"/>
     <div class="step-forms">
         <div v-show="currentStep === 1" class="form-step">
-            <div>Scanner le badge de l'opérateur</div>
-            <input id="operateur" ref="inputOperateurRef" v-model="operateur" class="form-control" type="text"/>
-            <button class="btn btn-success mt-2" @click="steps[0].validate()">
-                Suivant
-            </button>
-        </div>
-        <div v-show="currentStep === 2" class="form-step">
-            <div>Scanner l'OF'</div>
-            <input id="of" ref="inputOfRef" v-model="of" class="form-control" type="text"/>
-            <button class="btn btn-success mt-2" @click="steps[1].validate()">
-                Suivant
-            </button>
-        </div>
-        <div v-show="currentStep === 3" class="form-step">
-            <div>Scan Produits</div>
-            <input id="product" ref="inputProduitRef" v-model="product" class="form-control" type="text"/>
-            <div>
-                <button class="btn btn-success d-inline-block m-2" @click="steps[2].next()">
-                    Suivant
-                </button>
-                <button class="btn btn-success d-inline-block m-2" @click="steps[2].validate()">
-                    Terminer
+            <div class="step-title">Scanner le badge de l'opérateur</div>
+            <div class="d-flex flex-row align-items-baseline align-self-stretch">
+                <input id="operateur" ref="inputOperateurRef" v-model="operateur" class="form-control m-2" type="text"/>
+                <button class="btn btn-success m-2" @click="steps[0].validate()">
+                    <Fa :brand="false" icon="chevron-right"/>
                 </button>
             </div>
-            <ul class="font-size-8px">
-                <li v-for="(aProduct, index) in steps[2].scannedProducts" :key="`${aProduct}-${index}`" class="d-inline-block m-1">
-                    {{ aProduct }},
-                </li>
-            </ul>
+        </div>
+        <div v-show="currentStep === 2" class="form-step">
+            <div class="step-title">Scanner l'OF'</div>
+            <div class="d-flex flex-row align-items-baseline align-self-stretch">
+                <input id="of" ref="inputOfRef" v-model="of" class="form-control m-2" type="text"/>
+                <button class="btn btn-success m-2" @click="steps[1].validate()">
+                    <Fa :brand="false" icon="chevron-right"/>
+                </button>
+            </div>
+        </div>
+        <div v-show="currentStep === 3" class="form-step">
+            <div class="step-title">Scan Produits</div>
+            <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-between">
+                <input id="product" ref="inputProduitRef" v-model="product" class="form-control m-2" type="text"/>
+                <button class="btn btn-success m-2" @click="steps[2].next()">
+                    <Fa :brand="false" icon="plus"/>
+                </button>
+            </div>
+            <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-between mt-3">
+                <button class="btn btn-warning d-inline-block m-2" @click="steps[2].reset()" title="Recommencer">
+                   <Fa :brand="false" icon="backward-step"/> Recommencer les scans
+                </button>
+                <button class="btn btn-success d-inline-block m-2" @click="steps[2].validate()">
+                    <Fa :brand="false" icon="chevron-right"/>
+                </button>
+            </div>
+        </div>
+        <div v-show="currentStep === 4" class="form-step">
+            <div class="step-title">Impression</div>
+            <div>Ici Aperçu de l'étiquette</div>
+            <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-between">
+                <button class="btn btn-warning d-inline-block m-2" @click="steps[2].reset()">
+                    <Fa :brand="false" icon="download"/> ZPL
+                </button>
+                <select class="form-control m-2">
+                    <option>Imprimante 1</option>
+                    <option>Imprimante 2</option>
+                    <option>Imprimante 3</option>
+                </select>
+                <button class="btn btn-success d-inline-block m-2" @click="steps[2].validate()">
+                    Imprimer
+                </button>
+            </div>
+        </div>
+        <div v-show="currentStep >= 5" class="form-step">
+            <div class="step-title">Choix</div>
+            <div class="d-flex flex-column align-items-center">
+                <button class="btn btn-warning d-inline-block m-2" @click="changeTemplate">
+                    Changer de modèle
+                </button>
+                <button class="btn btn-warning d-inline-block m-2" @click="resetAll">
+                    Recommencer depuis le début
+                </button>
+                <button class="btn btn-success d-inline-block m-2" @click="restartFromOf">
+                    changer d'OF
+                </button>
+                <button class="btn btn-success d-inline-block m-2" @click="restartNewCarton">
+                    Faire un autre carton
+                </button>
+                <button class="btn btn-success d-inline-block m-2" @click="disconnect">
+                    Quitter
+                </button>
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-    .font-size-8px {
-        font-size: 8px;
-    }
     .step-forms {
         display: flex;
         justify-content: center;
-        margin: 20px 0;
+        margin: 0;
     }
     .step-forms .form-step {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: space-between;
         width: 300px;
-        height: 150px;
+        min-height: 20px;
         border: 1px solid black;
         border-radius: 10px;
     }
@@ -159,10 +244,10 @@
         font-family: 'Arial', sans-serif;
         font-size: 10px;
         max-width: 300px;
-        margin: 20px auto;
-        padding: 20px;
-        background-color: #f8f8f8;
-        border: 1px solid #ddd;
+        margin: 0px auto;
+        padding: 5px;
+        background-color: #f8eec9;
+        border: 1px solid #000000;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
@@ -174,7 +259,6 @@
     }
 
     .carton-label li {
-        //padding: 8px 0;
         display: flex;
         justify-content: space-between;
         border-bottom: 1px solid #eee;
@@ -194,5 +278,13 @@
     }
     .font-size-15px {
         font-size: 15px;
+    }
+    .step-title {
+        width: 100%;
+        text-align: center;
+        font-size: 10px;
+        font-weight: bold;
+        background-color: #6c757d;
+        color: white;
     }
 </style>

@@ -80,6 +80,6 @@
     .steps-container {
         display: flex;
         justify-content: center;
-        margin: 20px 0;
+        margin: 5px 0;
     }
 </style>
