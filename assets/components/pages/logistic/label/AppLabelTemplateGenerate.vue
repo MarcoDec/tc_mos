@@ -1,14 +1,25 @@
 <script setup>
     import {useRoute} from 'vue-router'
     const route = useRoute()
-    const id_label_template = route.params.id_label_template
-    console.log('id_label_template', id_label_template)
+    const idLabelTemplate = route.params.idLabelTemplate
+    console.log('idLabelTemplate', idLabelTemplate)
 </script>
 
 <template>
-    HELLO WORLD {{ id_label_template }}
+    HELLO WORLD {{ idLabelTemplate }}
 </template>
 
 <style scoped>
-
+    .currentStep {
+        background-color: #A4683BFF;
+        color: white;
+    }
+    .nextStep {
+        background-color: #A4683BFF;
+        color: white;
+    }
+    .previousStep {
+        background-color: #A4683BFF;
+        color: white;
+    }
 </style>

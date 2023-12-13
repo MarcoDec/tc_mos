@@ -63,19 +63,6 @@
         }
         keyTC.value++
     }
-    function updateGeneralTC() {
-        console.log('updateGeneralTC', localDataTC.value)
-        //Récupération localDataTC et envoie via post pour ajout en base
-        localDataTC.value = {...localDataTC.value, labelKind: props.labelKind, templateFamilly: props.templateFamilly}
-        const response = api('/api/label-templates','POST', localDataTC.value)
-        response.then(data => {
-            getLabelTemplatesTC()
-        })
-    }
-    function localDataChangeTC(data) {
-        localDataTC.value = data
-    }
-    const labeltemplatesTC = ref([])
     function getLabelTemplatesTC() {
         api(`/api/label-templates?labelKind=${props.labelKind}&templateFamilly=${props.templateFamilly}`, 'GET')
             .then(response => {
@@ -83,21 +70,34 @@
                 console.log(labeltemplatesTC.value)
             })
     }
+    function updateGeneralTC() {
+        console.log('updateGeneralTC', localDataTC.value)
+        //Récupération localDataTC et envoie via post pour ajout en base
+        localDataTC.value = {...localDataTC.value, labelKind: props.labelKind, templateFamilly: props.templateFamilly}
+        const response = api('/api/label-templates', 'POST', localDataTC.value)
+        response.then(() => {
+            getLabelTemplatesTC()
+        })
+    }
+    function localDataChangeTC(data) {
+        localDataTC.value = data
+    }
+    const labeltemplatesTC = ref([])
     function editTC(tcTemplate) {
         console.log('editTC', tcTemplate)
         //localDataTC.value = tcTemplate
+    }
+    function generateLabels(tcTemplate) {
+        console.log('generateLabels', tcTemplate)
+        router.push({name: 'label-template-generate', params: {idLabelTemplate: tcTemplate.id}})
     }
     function removeTC(tcTemplate) {
         const validate = confirm(`Voulez-vous vraiment supprimer le modèle d'étiquette ${tcTemplate.labelName}?`)
         if (!validate) return
         api(`/api/label-templates/${tcTemplate.id}`, 'DELETE')
-            .then(response => {
+            .then(() => {
                 getLabelTemplatesTC()
             })
-    }
-    function generateLabels(tcTemplate) {
-        console.log('generateLabels', tcTemplate)
-        router.push({name: 'label-template-generate', params: {id_label_template: tcTemplate.id}})
     }
     const showAddForm = ref(false)
     onMounted(() => {
@@ -107,10 +107,12 @@
 </script>
 
 <template>
-    <div class="title">{{ title }}</div>
+    <div class="title">
+        {{ title }}
+    </div>
     <AppCardShow
-        id="addEtiquetteCartonTC"
         v-if="showAddForm"
+        id="addEtiquetteCartonTC"
         :key="keyTC"
         :fields="cartonTCFields"
         :component-attribute="localDataTC"
@@ -119,6 +121,7 @@
         @update="updateGeneralTC"
         @update:model-value="localDataChangeTC"/>
     <IconWithText
+        class="icon-with-text"
         text="Modèle d'étiquette"
         text-color="yellow"
         label="AJOUT"
@@ -128,11 +131,11 @@
         :offset="15"
         :show-edit="false"
         :show-remove="false"
-        style="cursor: grab;"
-        @click="showAddForm = !showAddForm"
-    />
+        @click="showAddForm = !showAddForm"/>
     <IconWithText
-        v-for="tcTemplate in labeltemplatesTC"
+        v-for="(tcTemplate, index) in labeltemplatesTC"
+        :key="index"
+        class="icon-with-text"
         :label="tcTemplate.labelName"
         :text="`${tcTemplate.productReference}-${tcTemplate.productIndice}`"
         icon="box"
@@ -140,9 +143,7 @@
         :offset="15"
         @click="generateLabels(tcTemplate)"
         @edit="editTC(tcTemplate)"
-        @remove="removeTC(tcTemplate)"
-        style="cursor: grab;"
-    />
+        @remove="removeTC(tcTemplate)"/>
 </template>
 
 <style scoped>
@@ -154,5 +155,8 @@
         background-color: #6c757d;
         color: white;
         border: 1px solid white;
+    }
+    .icon-with-text {
+        cursor: grab;
     }
 </style>

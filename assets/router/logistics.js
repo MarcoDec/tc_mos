@@ -119,7 +119,7 @@ export default [
     {
         component: async () => import('../components/pages/logistic/label/AppLabelTemplateGenerate.vue'),
         name: 'label-template-generate',
-        path: '/label-template-generate/:id_label_template',
+        path: '/label-template-generate/:idLabelTemplate',
         props: {}
     },
     {

@@ -23,16 +23,18 @@
     function click() {
         emits('click')
     }
-    const leftOffset = computed(() => {
-        return (props.offset + 50) + 'px'
-    })
+    const leftOffset = computed(() => `${props.offset + 50}px`)
 </script>
 
 <template>
     <div class="icon-with-text" @click="click">
         <Fa class="icon" :brand="false" :icon="icon" :style="{color: iconColor, left: leftOffset}"/>
-        <div class="label" :style="{color: labelColor, left: leftOffset}">{{ label }}</div>
-        <div class="text" :style="{color: textColor, left: leftOffset}">{{ text }}</div>
+        <div class="label" :style="{color: labelColor, left: leftOffset}">
+            {{ label }}
+        </div>
+        <div class="text" :style="{color: textColor, left: leftOffset}">
+            {{ text }}
+        </div>
         <div class="buttons" :style="{left: leftOffset}">
             <Fa v-if="showEdit === true" :brand="false" icon="pencil" class="myButton text-primary" title="edit" @click.stop="clickEdit"/>
             <Fa v-if="showRemove === true" :brand="false" icon="trash" class="myButton text-danger" title="remove" @click.stop="clickRemove"/>
