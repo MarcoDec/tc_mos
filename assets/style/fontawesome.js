@@ -92,7 +92,15 @@ import {
     faWrench,
     faGaugeHigh,
     faCartShopping,
-    faScaleBalanced, faBackwardStep, faChevronRight, faDownload, faBackwardFast, faForwardStep, faForwardFast
+    faScaleBalanced,
+    faBackwardStep,
+    faChevronRight,
+    faDownload,
+    faBackwardFast,
+    faForwardStep,
+    faForwardFast,
+    faSquare,
+    faNetworkWired
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -149,6 +157,7 @@ library.add(faMagnet)
 library.add(faMale)
 library.add(faMapMarked)
 library.add(faMapMarkedAlt)
+library.add(faNetworkWired)
 library.add(faOilWell)
 library.add(faPalette)
 library.add(faPencilAlt)
@@ -171,6 +180,7 @@ library.add(faShoppingCart)
 library.add(faShuttleVan)
 library.add(faSignOutAlt)
 library.add(faSitemap)
+library.add(faSquare)
 library.add(faSquarePlus)
 library.add(faTags)
 library.add(faTimes)

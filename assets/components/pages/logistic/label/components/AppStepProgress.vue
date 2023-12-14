@@ -17,8 +17,6 @@
         //     }
         // }
     })
-    console.log('steps', props.steps)
-    console.log('currentStep', props.currentStep)
     function getStepClass(step) {
         if (step.id === props.currentStep) return 'currentStep'
         if (step.id < props.currentStep) return 'previousStep'

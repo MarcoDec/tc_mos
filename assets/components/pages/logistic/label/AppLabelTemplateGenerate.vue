@@ -4,6 +4,7 @@
     import api from '../../../../api'
     import AppItemCarte from './components/AppItemCarte.vue'
     import AppStepProgress from './components/AppStepProgress.vue'
+    import CustomeSelect from './components/CustomeSelect.vue'
 
     const inputOperateurRef = ref(null)
     const inputOfRef = ref(null)
@@ -11,7 +12,6 @@
     const route = useRoute()
     const router = useRouter()
     const idLabelTemplate = route.params.idLabelTemplate
-    console.log('idLabelTemplate', idLabelTemplate)
     const modeleEtiquette = ref({})
     const response = api(`/api/label-templates/${idLabelTemplate}`, 'get')
     const operateur = ref('<à définir>')
@@ -92,7 +92,6 @@
                         batchnumber: of.value,
                         quantity: nbProduit.value
                     }
-                    console.log('dataTosend', dataTosend)
                     const response = api('/api/label-cartons', 'post', dataTosend)
                     // et récupérer le code ZPL
                     response.then(data => {
@@ -120,7 +119,6 @@
     ])
     response.then(data => {
         modeleEtiquette.value = data
-        console.log('modeleEtiquette', modeleEtiquette.value)
     })
     onMounted(() => {
         inputOperateurRef.value.focus()
@@ -157,6 +155,18 @@
     function disconnect() {
         // route.push({name: 'AppLabelTemplateList'})
     }
+    const printers = ref([])
+    function getPrinters() {
+        api('/api/printers', 'get')
+            .then(data => {
+                printers.value = data['hydra:member']
+            })
+    }
+    getPrinters()
+    const selectedPrinter = ref(null)
+    function onNetworkPrinterSelected(printer) {
+        selectedPrinter.value = printer
+    }
 </script>
 
 <template>
@@ -178,7 +188,7 @@
             <AppItemCarte class="bg-info" label="Référence Produit :" :value="`${modeleEtiquette.productReference}-${modeleEtiquette.productIndice}`"/>
             <AppItemCarte label="Opérateur :" :value="operateur"/>
             <AppItemCarte label="OF :" :value="of"/>
-            <AppItemCarte label="Nb Produit scanné :" :value="nbProduit"/>
+            <AppItemCarte label="Nb Produit scanné :" :value="`${nbProduit}`"/>
         </ul>
     </div>
     <AppStepProgress :current-step="currentStep" :steps="steps"/>
@@ -222,18 +232,23 @@
             <div class="step-title">Impression</div>
             <img :src="imageUrl" alt="aperçu etiquette" width="280"/>
             <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-center">
-                <a :href="zplHref" download="etiquette.zpl" class="btn btn-success">
-                    <Fa :brand="false" icon="download"/> Telecharger ZPL
+                <a :href="zplHref" download="etiquette.zpl" class="btn btn-info d-flex justify-content-center min-button">
+                    <Fa :brand="false" icon="download"/> ZPL
                 </a>
             </div>
-            <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-between">
-                <select class="form-control m-2">
-                    <option>Imprimante 1</option>
-                    <option>Imprimante 2</option>
-                    <option>Imprimante 3</option>
-                </select>
-                <button class="btn btn-success d-inline-block m-2" @click="steps[2].validate()">
-                    Imprimer
+            <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-center mt-4">
+                <CustomeSelect
+                    :options="printers"
+                    title="Choix Imprimantes réseau"
+                    @update:model-value="onNetworkPrinterSelected"/>
+                <button class="btn btn-primary d-inline-block d-flex flex-column justify-content-center min-button align-items-center" @click="imprimeReseau">
+                    <Fa :brand="false" icon="network-wired"/> Réseau
+                </button>
+            </div>
+
+            <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-center mt-4">
+                <button class="btn btn-success d-inline-block d-flex flex-column justify-content-center min-button align-items-center" @click="imprimeLocal">
+                    <Fa :brand="false" icon="print"/> Local
                 </button>
             </div>
         </div>
@@ -261,6 +276,20 @@
 </template>
 
 <style scoped>
+
+    .value-list li {
+        padding: 5px;
+        cursor: pointer;
+    }
+
+    .value-list li::after {
+        content: '';
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-left: 5px;
+        /* La couleur sera définie dynamiquement */
+    }
     .step-forms {
         display: flex;
         justify-content: center;
@@ -322,5 +351,9 @@
         font-weight: bold;
         background-color: #6c757d;
         color: white;
+    }
+    .min-button {
+        min-height: 65px;
+        min-width: 65px;
     }
 </style>
