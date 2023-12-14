@@ -1,6 +1,6 @@
 <script setup>
     import {onMounted, ref} from 'vue'
-    import {useRoute} from 'vue-router'
+    import {useRoute, useRouter} from 'vue-router'
     import api from '../../../../api'
     import AppItemCarte from './components/AppItemCarte.vue'
     import AppStepProgress from './components/AppStepProgress.vue'
@@ -9,6 +9,7 @@
     const inputOfRef = ref(null)
     const inputProduitRef = ref(null)
     const route = useRoute()
+    const router = useRouter()
     const idLabelTemplate = route.params.idLabelTemplate
     console.log('idLabelTemplate', idLabelTemplate)
     const modeleEtiquette = ref({})
@@ -126,7 +127,7 @@
         inputOperateurRef.value.select()
     })
     function changeTemplate() {
-        // route.push({name: 'AppLabelTemplateList'})
+        router.push({name: 'label-template-list'})
     }
     function resetAll() {
         currentStep.value = 1
