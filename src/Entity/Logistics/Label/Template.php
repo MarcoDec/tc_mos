@@ -143,13 +143,13 @@ class Template extends Entity
         ORM\Column(type: 'float', nullable: true),
         Serializer\Groups(['read:label-template', 'create:label-template', 'write:label-template'])
     ]
-    private float $width = 0.0;
+    private ?float $width = 0.0;
     #[
         ApiProperty(description: 'Hauteur de l\'étiquette en inch'),
         ORM\Column(type: 'float', nullable: true),
         Serializer\Groups(['read:label-template', 'create:label-template', 'write:label-template'])
     ]
-    private float $height = 0.0;
+    private ?float $height = 0.0;
 
     /**
      * @return string|null
@@ -364,6 +364,42 @@ class Template extends Entity
     public function setLabelName(?string $labelName): Template
     {
         $this->labelName = $labelName;
+        return $this;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getWidth(): ?float
+    {
+        return $this->width;
+    }
+
+    /**
+     * @param float|null $width
+     * @return Template
+     */
+    public function setWidth(?float $width): Template
+    {
+        $this->width = $width;
+        return $this;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getHeight(): ?float
+    {
+        return $this->height;
+    }
+
+    /**
+     * @param float|null $height
+     * @return Template
+     */
+    public function setHeight(?float $height): Template
+    {
+        $this->height = $height;
         return $this;
     }
 
