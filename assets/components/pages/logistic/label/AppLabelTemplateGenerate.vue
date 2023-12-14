@@ -188,26 +188,34 @@
 </script>
 
 <template>
-    <div class="carton-label">
-        <ul>
-            <AppItemCarte
-                label="Famille d'étiquette :">
-                <Fa
-                    v-if="modeleEtiquette.templateFamily === 'carton'"
-                    :brand="false"
-                    class="color-carton font-size-15px"
-                    icon="box-open"/>
-            </AppItemCarte>
-            <AppItemCarte label="Format d'étiquette :" :value="modeleEtiquette.labelKind"/>
-            <AppItemCarte label="Nom du modèle :" :value="modeleEtiquette.labelName"/>
-            <AppItemCarte label="Fabricant :" :value="modeleEtiquette.manufacturer"/>
-            <AppItemCarte label="Site Livraison Client :" :value="modeleEtiquette.customerAddressName"/>
-            <AppItemCarte label="Libellé Produit :" :value="modeleEtiquette.productDescription"/>
-            <AppItemCarte class="bg-info" label="Référence Produit :" :value="`${modeleEtiquette.productReference}-${modeleEtiquette.productIndice}`"/>
-            <AppItemCarte label="Opérateur :" :value="operateur"/>
-            <AppItemCarte label="OF :" :value="of"/>
-            <AppItemCarte label="Nb Produit scanné :" :value="`${nbProduit}`"/>
-        </ul>
+    <div class="carton-label container-fluid">
+        <div class="row">
+            <div class="col-6">
+                <ul>
+                    <AppItemCarte
+                        label="Famille :">
+                        <Fa
+                            v-if="modeleEtiquette.templateFamily === 'carton'"
+                            :brand="false"
+                            class="color-carton font-size-15px"
+                            icon="box-open"/>
+                    </AppItemCarte>
+                    <AppItemCarte label="Format :" :value="modeleEtiquette.labelKind"/>
+                    <AppItemCarte label="Modèle :" :value="modeleEtiquette.labelName"/>
+                </ul>
+            </div>
+            <div class="col-6">
+                <ul>
+                    <AppItemCarte label="Opérateur :" :value="operateur"/>
+                    <AppItemCarte label="OF :" :value="of"/>
+                </ul>
+            </div>
+            <div class="col-12">
+                <AppItemCarte label="Nb Produit scannés :">
+                    <strong style="font-size: 50px;">{{ nbProduit }}</strong>
+                </AppItemCarte>
+            </div>
+        </div>
     </div>
     <AppStepProgress :current-step="currentStep" :steps="steps"/>
     <div class="step-forms">
@@ -327,7 +335,7 @@
     .carton-label {
         font-family: 'Arial', sans-serif;
         font-size: 10px;
-        max-width: 300px;
+        max-width: 350px;
         margin: 0px auto;
         padding: 5px;
         background-color: #f8eec9;

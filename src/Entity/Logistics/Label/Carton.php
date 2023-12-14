@@ -2,6 +2,7 @@
 namespace App\Entity\Logistics\Label;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use App\Controller\Logistics\Label\LabelPrintingController;
 use App\Entity\Entity;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\FileTrait;
@@ -29,7 +30,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
         'logisticReference' => 'partial',
         'shipFromAddressName' => 'partial',
         'vendorNumber' => 'partial',
-        'labelKind' => 'partial'
+        'labelKind' => 'partial',
+        'operator' => 'partial'
     ]),
     ApiFilter(filterClass: OrderFilter::class, properties: [
         'customerAddressName',
@@ -46,7 +48,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
         'logisticReference',
         'shipFromAddressName',
         'vendorNumber',
-        'labelKind'
+        'labelKind',
+        'operator'
     ]),
     ApiFilter(filterClass: DateFilter::class, properties: [
         'date'
@@ -244,6 +247,12 @@ class Carton extends Entity // implements MeasuredInterface, FileEntity
         Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private string $labelKind = 'TConcept';
+    #[
+        ApiProperty(description: 'Opérateur'),
+        ORM\Column(type: 'string', nullable: true),
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
+    ]
+    private ?string $operator = null;
 
     public function getFilepath(): ?string
     {
@@ -633,5 +642,24 @@ class Carton extends Entity // implements MeasuredInterface, FileEntity
     public function getImageUrl(): string {
         return $this->url;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getOperator(): ?string
+    {
+        return $this->operator;
+    }
+
+    /**
+     * @param string|null $operator
+     * @return Carton
+     */
+    public function setOperator(?string $operator): Carton
+    {
+        $this->operator = $operator;
+        return $this;
+    }
+
 
 }
