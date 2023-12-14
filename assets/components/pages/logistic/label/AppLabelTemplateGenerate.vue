@@ -22,6 +22,7 @@
     const zpl = ref('')
     const zplHref = ref('')
     const imageUrl = ref('')
+    const newLabel = ref({})
     const steps = ref([
         {
             id: 1,
@@ -95,6 +96,7 @@
                     const response = api('/api/label-cartons', 'post', dataTosend)
                     // et récupérer le code ZPL
                     response.then(data => {
+                        newLabel.value = data
                         var file = new Blob([data.zpl], {type: 'text/plain'})
                         zplHref.value = URL.createObjectURL(file)
                         // http://api.labelary.com/v1/printers/{dpmm}/labels/{width}x{height}/{index}/{zpl}
@@ -176,10 +178,9 @@
             return
         }
         const data = {
-            printer: selectedPrinter.value.name,
-            zpl: zpl.value
+            printer: selectedPrinter.value['@id']
         }
-        api('/api/print-zpl', 'post', data)
+        api(`/api/label-cartons/${newLabel.value.id}/print`, 'post', data)
             .then(() => {
                 alert('Impression lancée')
             })

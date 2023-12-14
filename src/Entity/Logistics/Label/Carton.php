@@ -92,7 +92,16 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
                     'description' => 'Delete a label carton by id',
                     'summary' => 'Delete a label carton by id'
                 ]
-            ]
+            ],
+            'print' => [
+                'method' => 'POST',
+                'path' => '/label-cartons/{id}/print',
+                'openapi_context' => [
+                    'description' => 'Print a label carton by id',
+                    'summary' => 'Print a label carton by id'
+                ],
+                'controller' => LabelPrintingController::class
+            ],
         ],
         denormalizationContext: ['groups' => ['write:file', 'write:label-carton']],
         normalizationContext: ['groups' => ['read:id', 'read:file', 'read:label-carton']]
