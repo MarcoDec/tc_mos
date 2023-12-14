@@ -100,8 +100,8 @@
                         zplHref.value = URL.createObjectURL(file)
                         // http://api.labelary.com/v1/printers/{dpmm}/labels/{width}x{height}/{index}/{zpl}
                         const dpmm = '8dpmm'
-                        const width = '4'
-                        const height = '6'
+                        const width = modeleEtiquette.value.width
+                        const height = modeleEtiquette.value.height
                         const index = '0'
                         imageUrl.value = `http://api.labelary.com/v1/printers/${dpmm}/labels/${width}x${height}/${index}/${data.zpl}`
                         currentStep.value += 1
