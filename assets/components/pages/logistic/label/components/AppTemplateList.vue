@@ -119,6 +119,12 @@
             })
     }
     const showAddForm = ref(false)
+    function onShowAddForm() {
+        if(showAddForm.value) cancelTC()
+        showAddForm.value = !showAddForm.value
+        //console.log('onShowAddForm', showAddForm.value)
+        keyTC.value++
+    }
     onMounted(() => {
         getLabelTemplatesTC()
     })
@@ -151,13 +157,13 @@
         :offset="15"
         :show-edit="false"
         :show-remove="false"
-        @click="showAddForm = !showAddForm"/>
+        @click="onShowAddForm()"/>
     <IconWithText
         v-for="(tcTemplate, index) in labeltemplatesTC"
         :key="index"
         class="icon-with-text"
         :label="tcTemplate.labelName"
-        :text="`${tcTemplate.productReference}-${tcTemplate.productIndice}`"
+        :text="`${tcTemplate.manufacturer}`"
         icon="box"
         icon-color="#A4683BFF"
         :offset="15"
