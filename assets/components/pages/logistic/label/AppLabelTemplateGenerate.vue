@@ -167,6 +167,23 @@
     function onNetworkPrinterSelected(printer) {
         selectedPrinter.value = printer
     }
+    function imprimeLocal() {
+        window.print()
+    }
+    function imprimeReseau() {
+        if (selectedPrinter.value === null) {
+            alert('Veuillez choisir une imprimante réseau')
+            return
+        }
+        const data = {
+            printer: selectedPrinter.value.name,
+            zpl: zpl.value
+        }
+        api('/api/print-zpl', 'post', data)
+            .then(() => {
+                alert('Impression lancée')
+            })
+    }
 </script>
 
 <template>
@@ -230,7 +247,7 @@
         </div>
         <div v-show="currentStep === 4" class="form-step">
             <div class="step-title">Impression</div>
-            <img :src="imageUrl" alt="aperçu etiquette" width="280"/>
+            <img id="imageToPrint" class="toPrint" :src="imageUrl" alt="aperçu etiquette" width="280"/>
             <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-center">
                 <a :href="zplHref" download="etiquette.zpl" class="btn btn-info d-flex justify-content-center min-button">
                     <Fa :brand="false" icon="download"/> ZPL
@@ -276,7 +293,6 @@
 </template>
 
 <style scoped>
-
     .value-list li {
         padding: 5px;
         cursor: pointer;
