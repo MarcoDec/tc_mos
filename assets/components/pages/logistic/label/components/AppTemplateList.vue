@@ -29,25 +29,26 @@
             label: 'EXPEDITEUR',
             type: 'text',
             required: true
-        },
-        {
-            name: 'productDescription',
-            label: 'DESIGNATION',
-            type: 'text',
-            required: true
-        },
-        {
-            name: 'productReference',
-            label: 'REF CLIENT',
-            type: 'text',
-            required: true
-        },
-        {
-            name: 'productIndice',
-            label: 'INDICE',
-            type: 'text',
-            required: true
         }
+        //,
+        // {
+        //     name: 'productDescription',
+        //     label: 'DESIGNATION',
+        //     type: 'text',
+        //     required: true
+        // },
+        // {
+        //     name: 'productReference',
+        //     label: 'REF CLIENT',
+        //     type: 'text',
+        //     required: true
+        // },
+        // {
+        //     name: 'productIndice',
+        //     label: 'INDICE',
+        //     type: 'text',
+        //     required: true
+        // }
     ]
     const keyTC = ref(0)
     const localDataTC = ref({})
@@ -132,6 +133,7 @@
         v-if="showAddForm"
         id="addEtiquetteCartonTC"
         :key="keyTC"
+        class="mb-3"
         :fields="cartonTCFields"
         :component-attribute="localDataTC"
         :title="`Ajout modèle d\'étiquette format ${labelKind} => Renseigner les champs ci-dessous`"

@@ -14,10 +14,6 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ApiFilter(filterClass: SearchFilter::class, properties: [
         'labelName' => 'partial',
         'templateFamily' => 'exact',
-        'logisticReference' => 'partial',
-        'productReference' => 'partial',
-        'productIndice' => 'partial',
-        'productDescription' => 'partial',
         'manufacturer' => 'partial',
         'customerAddressName' => 'partial',
         'shipFromAddressName' => 'partial',
@@ -73,32 +69,7 @@ class Template extends Entity
         Serializer\Groups(['read:label-template', 'create:label-template', 'write:label-template'])
     ]
     private ?string $templateFamily = self::LABEL_FAMILY_CARTON; // valeur par défault
-    #[
-        ApiProperty(description: 'Numéro de référence logistique (ref produit fournisseur)'),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups([ 'read:label-template', 'create:label-template', 'write:label-template'])
-    ]
-    private ?string $logisticReference; // Numéro de référence logistique (ref produit fournisseur) -> barcode
 
-    #[
-        ApiProperty(description: 'Numéro de référence produit (ref produit client)'),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:label-template', 'create:label-template', 'write:label-template'])
-    ]
-    private ?string $productReference; // Numéro de référence produit (ref produit client) -> barcode
-
-    #[
-        ApiProperty(description: 'Indice du produit'),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:label-template', 'create:label-template', 'write:label-template'])
-    ]
-    private ?string $productIndice; // Indice du produit
-    #[
-        ApiProperty(description: 'Nom du produit'),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:label-template', 'create:label-template', 'write:label-template'])
-    ]
-    private ?string $productDescription;
     #[
         ApiProperty(description: 'Fabricant'),
         ORM\Column(type: 'string', nullable: true),
@@ -150,78 +121,6 @@ class Template extends Entity
         Serializer\Groups(['read:label-template', 'create:label-template', 'write:label-template'])
     ]
     private ?float $height = 0.0;
-
-    /**
-     * @return string|null
-     */
-    public function getLogisticReference(): ?string
-    {
-        return $this->logisticReference;
-    }
-
-    /**
-     * @param string|null $logisticReference
-     * @return self
-     */
-    public function setLogisticReference(?string $logisticReference): self
-    {
-        $this->logisticReference = $logisticReference;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getProductReference(): ?string
-    {
-        return $this->productReference;
-    }
-
-    /**
-     * @param string|null $productReference
-     * @return self
-     */
-    public function setProductReference(?string $productReference): self
-    {
-        $this->productReference = $productReference;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getProductIndice(): ?string
-    {
-        return $this->productIndice;
-    }
-
-    /**
-     * @param string|null $productIndice
-     * @return self
-     */
-    public function setProductIndice(?string $productIndice): self
-    {
-        $this->productIndice = $productIndice;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getProductDescription(): ?string
-    {
-        return $this->productDescription;
-    }
-
-    /**
-     * @param string|null $productDescription
-     * @return self
-     */
-    public function setProductDescription(?string $productDescription): self
-    {
-        $this->productDescription = $productDescription;
-        return $this;
-    }
 
     /**
      * @return string|null
