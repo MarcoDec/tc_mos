@@ -264,15 +264,17 @@
                 </button>
             </div>
 
-            <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-center mt-4">
-                <button class="btn btn-success d-inline-block d-flex flex-column justify-content-center min-button align-items-center" @click="imprimeLocal">
+            <div class="align-items-stretch align-self-stretch d-flex flex-row justify-content-center mt-4">
+                <button class="align-items-center btn btn-success d-flex d-inline-block flex-column justify-content-center min-button" @click="imprimeLocal">
                     <Fa :brand="false" icon="print"/> Local
                 </button>
             </div>
         </div>
         <div v-show="currentStep >= 5" class="form-step">
-            <div class="step-title">Choix</div>
-            <div class="d-flex flex-column align-items-center">
+            <div class="step-title">
+                Choix
+            </div>
+            <div class="align-items-center d-flex flex-column">
                 <button class="btn btn-warning d-inline-block m-2" @click="changeTemplate">
                     Changer de modèle
                 </button>

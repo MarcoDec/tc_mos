@@ -1,17 +1,17 @@
 <script setup>
-    import { defineProps, ref, defineEmits } from 'vue'
+    import {defineProps, ref, defineEmits} from 'vue'
 
     const emits = defineEmits(['update:modelValue'])
-    const props = defineProps({
-        options: { required: true, type: Array },
-        title: { default: 'Select an option', type: String },
+    defineProps({
+        options: {required: true, type: Array},
+        title: {default: 'Select an option', type: String}
     })
     const showDropdown = ref(false)
     const selectedOption = ref(null)
     function toggleDropdown() {
         showDropdown.value = !showDropdown.value
     }
-    const selectOption = (option) => {
+    const selectOption = option => {
         selectedOption.value = option
         showDropdown.value = false
         emits('update:modelValue', option)
@@ -20,19 +20,20 @@
 
 <template>
     <div class="custom-select">
-        <div class="title">{{ title }}</div>
+        <div class="title">
+            {{ title }}
+        </div>
         <div class="selected-value" @click="toggleDropdown">
-            <Fa v-if="selectedOption" :style="{ color: selectedOption.color }" :brand="false" icon="fa-square"/>
+            <Fa v-if="selectedOption" :style="{color: selectedOption.color}" :brand="false" icon="fa-square"/>
             {{ selectedOption ? selectedOption.name : '' }}
         </div>
-        <div class="options-container" v-if="showDropdown">
+        <div v-if="showDropdown" class="options-container">
             <div
-                class="option d-flex flex-row align-items-center"
                 v-for="option in options"
                 :key="option.value"
-                @click="selectOption(option)"
-            >
-                <Fa :style="{ color: option.color }" :brand="false" icon="fa-square"/>
+                class="align-items-center d-flex flex-row option"
+                @click="selectOption(option)">
+                <Fa :style="{color: option.color}" :brand="false" icon="fa-square"/>
                 {{ option.name }}
             </div>
         </div>

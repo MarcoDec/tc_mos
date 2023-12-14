@@ -108,11 +108,13 @@
         </AppTable>
     </AppOverlay>
     <div class="d-flex flex-row justify-content-center">
-        <Fa v-if="store.hydraId !== store.hydraFirst " :brand="false" class="m-2 zoom-hover primary-hover" icon="backward-fast" @click="gotoFirstPage"/>
-        <Fa v-if="store.hydraId !== store.hydraFirst " :brand="false" class="m-2 zoom-hover primary-hover" icon="backward-step" @click="gotoPreviousPage"/>
-        <div class="pb-0 pt-1">{{ store.page }}</div>
-        <Fa v-if="store.hydraId !== store.hydraLast" :brand="false" class="m-2 zoom-hover primary-hover" icon="forward-step" @click="gotoNextPage"/>
-        <Fa v-if="store.hydraId !== store.hydraLast" :brand="false" class="m-2 zoom-hover primary-hover" icon="forward-fast" @click="gotoLastPage"/>
+        <Fa v-if="store.hydraId !== store.hydraFirst " :brand="false" class="m-2 primary-hover zoom-hover" icon="backward-fast" @click="gotoFirstPage"/>
+        <Fa v-if="store.hydraId !== store.hydraFirst " :brand="false" class="m-2 primary-hover zoom-hover" icon="backward-step" @click="gotoPreviousPage"/>
+        <div class="pb-0 pt-1">
+            {{ store.page }}
+        </div>
+        <Fa v-if="store.hydraId !== store.hydraLast" :brand="false" class="m-2 primary-hover zoom-hover" icon="forward-step" @click="gotoNextPage"/>
+        <Fa v-if="store.hydraId !== store.hydraLast" :brand="false" class="m-2 primary-hover zoom-hover" icon="forward-fast" @click="gotoLastPage"/>
     </div>
 </template>
 
