@@ -73,7 +73,19 @@
     function updateGeneralTC() {
         console.log('updateGeneralTC', localDataTC.value)
         //Récupération localDataTC et envoie via post pour ajout en base
-        localDataTC.value = {...localDataTC.value, labelKind: props.labelKind, templateFamilly: props.templateFamilly}
+        var width = 0 //inch
+        var height = 0 //inch
+        switch (props.labelKind) {
+            case 'TConcept':
+                width = 4
+                height = 6
+                break
+            case 'ETI9':
+                width = 3
+                height = 8.5
+                break
+        }
+        localDataTC.value = {...localDataTC.value, labelKind: props.labelKind, templateFamilly: props.templateFamilly, width: width, height: height}
         const response = api('/api/label-templates', 'POST', localDataTC.value)
         response.then(() => {
             getLabelTemplatesTC()

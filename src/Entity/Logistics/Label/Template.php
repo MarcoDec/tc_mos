@@ -138,6 +138,19 @@ class Template extends Entity
     ]
     private string $labelKind = self::LABEL_KIND_TCONCEPT; // Type de label
 
+    #[
+        ApiProperty(description: 'Largeur de l\'étiquette en inch'),
+        ORM\Column(type: 'float', nullable: true),
+        Serializer\Groups(['read:label-template', 'create:label-template', 'write:label-template'])
+    ]
+    private float $width = 0.0;
+    #[
+        ApiProperty(description: 'Hauteur de l\'étiquette en inch'),
+        ORM\Column(type: 'float', nullable: true),
+        Serializer\Groups(['read:label-template', 'create:label-template', 'write:label-template'])
+    ]
+    private float $height = 0.0;
+
     /**
      * @return string|null
      */
