@@ -11,6 +11,6 @@ final class CopperType extends EnumType {
     final public const TYPES = [self::TYPE_DELIVERY, self::TYPE_MONTHLY, self::TYPE_SEMI_ANNUAL];
 
     public function getName(): string {
-        return 'copper_type';
+        return 'copper';
     }
 }

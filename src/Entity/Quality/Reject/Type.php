@@ -62,7 +62,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:id', 'read:type'],
             'openapi_definition_name' => 'RejectType-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationEnabled: false
     ),
     ORM\Entity,
     ORM\Table(name: 'reject_type')
