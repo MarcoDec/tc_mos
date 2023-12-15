@@ -39,9 +39,7 @@ export default function useTable(id) {
                 this.$dispose()
             },
             async fetch() {
-                console.log(this.readFilterPrevious, this.readFilter)
                 if (this.readFilterPrevious !== this.readFilter) {
-                    console.log('readFilter Change => Goto page 1')
                     this.page = 1
                 }
                 if (this.readFilter === '') this.readFilter = `?page=${this.page}`
