@@ -111,7 +111,7 @@
         <Fa v-if="store.hydraId !== store.hydraFirst " :brand="false" class="m-2 primary-hover zoom-hover" icon="backward-fast" @click="gotoFirstPage"/>
         <Fa v-if="store.hydraId !== store.hydraFirst " :brand="false" class="m-2 primary-hover zoom-hover" icon="backward-step" @click="gotoPreviousPage"/>
         <div class="pb-0 pt-1">
-            {{ store.page }}
+            Page {{ store.page }}/{{ store.lastPage }}
         </div>
         <Fa v-if="store.hydraId !== store.hydraLast" :brand="false" class="m-2 primary-hover zoom-hover" icon="forward-step" @click="gotoNextPage"/>
         <Fa v-if="store.hydraId !== store.hydraLast" :brand="false" class="m-2 primary-hover zoom-hover" icon="forward-fast" @click="gotoLastPage"/>
