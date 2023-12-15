@@ -64,10 +64,13 @@
                         Suivi des dépenses et ventes
                     </AppNavbarLink>
                 </template>
-                <!--                <template v-if="user.isManagementAdmin">-->
-                <!--                    <AppDropdownItem disabled variant="warning">-->
-                <!--                        Administrateur-->
-                <!--                    </AppDropdownItem>-->
+                                <template v-if="user.isManagementAdmin">
+                                    <AppDropdownItem disabled variant="warning">
+                                        Administrateur
+                                    </AppDropdownItem>
+                                    <AppNavbarLink icon="print" to="printers" variant="warning">
+                                        Imprimantes
+                                    </AppNavbarLink>
                 <!--                    <AppNavbarLink icon="palette" to="colors" variant="warning">-->
                 <!--                        Couleurs-->
                 <!--                    </AppNavbarLink>-->
@@ -75,9 +78,7 @@
                 <!--                    <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" variant="warning">-->
                 <!--                        Délais de paiement des factures-->
                 <!--                    </AppNavbarLink>-->
-                <!--                    <AppNavbarLink icon="print" to="printers" variant="warning">-->
-                <!--                        Imprimantes-->
-                <!--                    </AppNavbarLink>-->
+
                 <!--                    <AppNavbarLink icon="comments-dollar" to="vat-messages" variant="warning">-->
                 <!--                        Messages TVA-->
                 <!--                    </AppNavbarLink>-->
@@ -87,7 +88,7 @@
                 <!--                    <AppNavbarLink icon="people-group" to="teams" variant="warning">-->
                 <!--                        Equipes-->
                 <!--                    </AppNavbarLink>-->
-                <!--                </template>-->
+                                </template>
             </AppNavbarItem>
             <!--            <AppNavbarItem v-if="user.isItAdmin" id="it" icon="laptop" title="Informatique">-->
             <!--                <AppDropdownItem disabled variant="warning">-->
