@@ -1,50 +1,51 @@
 <script setup>
-    import {onMounted, ref} from 'vue'
+    import {computed, onMounted, ref} from 'vue'
     import {useRoute, useRouter} from 'vue-router'
     import api from '../../../../api'
     import AppItemCarte from './components/AppItemCarte.vue'
+    import AppStepOperateur from './components/AppStepOperateur.vue'
+    import AppStepOrderFabrication from './components/AppStepOrderFabrication.vue'
     import AppStepProgress from './components/AppStepProgress.vue'
     import CustomeSelect from './components/CustomeSelect.vue'
 
-    const inputOperateurRef = ref(null)
-    const inputOfRef = ref(null)
     const inputProduitRef = ref(null)
     const route = useRoute()
     const router = useRouter()
     const idLabelTemplate = route.params.idLabelTemplate
     const modeleEtiquette = ref({})
     const response = api(`/api/label-templates/${idLabelTemplate}`, 'get')
-    const operateur = ref('<à définir>')
-    const of = ref('<à définir>')
+    const operateur = ref({ name: '<à définir>'})
     const nbProduit = ref(0)
     const currentStep = ref(1)
-    const product = ref('')
+    const product = ref('<à définir>')
     const zpl = ref('')
     const zplHref = ref('')
     const imageUrl = ref('')
     const newLabel = ref({})
+    const checkResult = ref({
+        class: '',
+        text: '',
+        state: true
+    })
+    function getOperateur(operateurData) {
+        console.log('operateurData', operateurData)
+        operateur.value = operateurData
+        currentStep.value += 1
+    }
+    const of = ref({})
+    function getOf(ofData) {
+        console.log('ofData', ofData)
+        of.value = ofData
+        currentStep.value += 1
+    }
     const steps = ref([
         {
             id: 1,
-            label: 'Opérateur',
-            check() {
-                return operateur.value !== '<à définir>'
-            },
-            validate() {
-                if (this.check()) currentStep.value += 1
-                else alert('Veuillez scanner le badge de l\'opérateur')
-            }
+            label: 'Opérateur'
         },
         {
             id: 2,
-            label: 'OF',
-            check() {
-                return of.value !== '<à définir>'
-            },
-            validate() {
-                if (this.check()) currentStep.value += 1
-                else alert('Veuillez scanner l\'OF')
-            }
+            label: 'OF'
         },
         {
             id: 3,
@@ -62,6 +63,9 @@
             scannedProducts: [],
             next() {
                 if (product.value === '') return
+                checkResult.value.class = ''
+                checkResult.value.text = ''
+                checkResult.value.state = true
                 if (this.scannedProducts.length === 0) {
                     this.scannedProducts.push(product.value)
                     nbProduit.value = this.scannedProducts.length
@@ -74,7 +78,9 @@
                     product.value = ''
                     return
                 }
-                alert('Le dernier produit scannés est différent des précédents, veuillez recommencer')
+                checkResult.value.class = 'bg-danger'
+                checkResult.value.text = 'Le dernier produit scanné n\'a pas été compté car il diffère des précédents, veuillez recommencer'
+                checkResult.value.state = false
                 product.value = ''
             },
             validate() {
@@ -115,16 +121,16 @@
                 this.scannedProducts = []
                 nbProduit.value = 0
                 product.value = ''
+            },
+            removeLast() {
+                this.scannedProducts.pop()
+                nbProduit.value = this.scannedProducts.length
             }
         },
         {id: 4, label: 'Impression', icon: 'print'}
     ])
     response.then(data => {
         modeleEtiquette.value = data
-    })
-    onMounted(() => {
-        inputOperateurRef.value.focus()
-        inputOperateurRef.value.select()
     })
     function changeTemplate() {
         router.push({name: 'label-template-list'})
@@ -185,6 +191,14 @@
                 alert('Impression lancée')
             })
     }
+    const ofNumberAndIndice = computed(() => {
+        if (of.value === '<à définir>' || !of.value.data) return '<à définir>'
+        return `${of.value.data.ofnumber}.${of.value.data.indice}`
+    })
+    const productRefAndIndice = computed(() => {
+        if (of.value === '<à définir>' || !of.value.data) return '<à définir>'
+        return `${of.value.data.productRef}/${of.value.data.productIndice}`
+    })
 </script>
 
 <template>
@@ -206,8 +220,9 @@
             </div>
             <div class="col-6">
                 <ul>
-                    <AppItemCarte label="Opérateur :" :value="operateur"/>
-                    <AppItemCarte label="OF :" :value="of"/>
+                    <AppItemCarte label="Opérateur :" :value="operateur.name"/>
+                    <AppItemCarte label="OF :" :value="ofNumberAndIndice"/>
+                    <AppItemCarte label="Produit :" :value="productRefAndIndice"/>
                 </ul>
             </div>
             <div class="col-12">
@@ -219,35 +234,31 @@
     </div>
     <AppStepProgress :current-step="currentStep" :steps="steps"/>
     <div class="step-forms">
-        <div v-show="currentStep === 1" class="form-step">
-            <div class="step-title">Scanner le badge de l'opérateur</div>
-            <div class="d-flex flex-row align-items-baseline align-self-stretch">
-                <input id="operateur" ref="inputOperateurRef" v-model="operateur" class="form-control m-2" type="text"/>
-                <button class="btn btn-success m-2" @click="steps[0].validate()">
-                    <Fa :brand="false" icon="chevron-right"/>
-                </button>
-            </div>
-        </div>
-        <div v-show="currentStep === 2" class="form-step">
-            <div class="step-title">Scanner l'OF'</div>
-            <div class="d-flex flex-row align-items-baseline align-self-stretch">
-                <input id="of" ref="inputOfRef" v-model="of" class="form-control m-2" type="text"/>
-                <button class="btn btn-success m-2" @click="steps[1].validate()">
-                    <Fa :brand="false" icon="chevron-right"/>
-                </button>
-            </div>
-        </div>
+        <AppStepOperateur
+            v-if="currentStep === 1"
+            class="form-step"
+            @next-step="getOperateur"
+        />
+        <AppStepOrderFabrication
+            v-if="currentStep === 2"
+            class="form-step"
+            @next-step="getOf"
+        />
         <div v-show="currentStep === 3" class="form-step">
             <div class="step-title">Scan Produits</div>
-            <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-between">
+            <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-between" :class="checkResult.class">
                 <input id="product" ref="inputProduitRef" v-model="product" class="form-control m-2" type="text"/>
                 <button class="btn btn-success m-2" @click="steps[2].next()">
                     <Fa :brand="false" icon="plus"/>
                 </button>
             </div>
+            <div v-if="!checkResult.state" class="bg-danger text-center text-white">{{ checkResult.text }}</div>
             <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-between mt-3">
                 <button class="btn btn-warning d-inline-block m-2" @click="steps[2].reset()" title="Recommencer">
                    <Fa :brand="false" icon="backward-step"/> Recommencer les scans
+                </button>
+                <button class="btn btn-warning d-inline-block m-2" @click="steps[2].removeLast()">
+                    <Fa :brand="false" icon="rotate-left"/>
                 </button>
                 <button class="btn btn-success d-inline-block m-2" @click="steps[2].validate()">
                     <Fa :brand="false" icon="chevron-right"/>
@@ -382,5 +393,11 @@
     .min-button {
         min-height: 65px;
         min-width: 65px;
+    }
+    .inputOfProduct {
+        width: 180px;
+    }
+    .labelOfProduct {
+        min-width: 60px;
     }
 </style>
