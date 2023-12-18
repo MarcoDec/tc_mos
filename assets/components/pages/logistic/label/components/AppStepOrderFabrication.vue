@@ -102,7 +102,7 @@
     async function validate() {
         const result = await getOf()
         if (result) {
-            console.log('validate ok', of.value)
+            //console.log('validate ok', of.value)
             emits('nextStep', of.value)
         }
         else {

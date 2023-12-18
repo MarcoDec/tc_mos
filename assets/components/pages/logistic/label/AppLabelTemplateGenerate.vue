@@ -5,28 +5,26 @@
     import AppItemCarte from './components/AppItemCarte.vue'
     import AppStepOperateur from './components/AppStepOperateur.vue'
     import AppStepOrderFabrication from './components/AppStepOrderFabrication.vue'
+    import AppStepProduit from './components/AppStepProduit.vue'
     import AppStepProgress from './components/AppStepProgress.vue'
     import CustomeSelect from './components/CustomeSelect.vue'
 
-    const inputProduitRef = ref(null)
     const route = useRoute()
     const router = useRouter()
     const idLabelTemplate = route.params.idLabelTemplate
-    const modeleEtiquette = ref({})
     const response = api(`/api/label-templates/${idLabelTemplate}`, 'get')
+    const modeleEtiquette = ref({})
+
+    response.then(data => {
+        modeleEtiquette.value = data
+    })
     const operateur = ref({ name: '<à définir>'})
-    const nbProduit = ref(0)
     const currentStep = ref(1)
-    const product = ref('<à définir>')
     const zpl = ref('')
     const zplHref = ref('')
     const imageUrl = ref('')
     const newLabel = ref({})
-    const checkResult = ref({
-        class: '',
-        text: '',
-        state: true
-    })
+
     function getOperateur(operateurData) {
         console.log('operateurData', operateurData)
         operateur.value = operateurData
@@ -38,127 +36,31 @@
         of.value = ofData
         currentStep.value += 1
     }
+    const products = ref({})
+    function getProducts(productsData) {
+        console.log('productsData', productsData)
+        products.value= productsData
+        currentStep.value += 1
+    }
+    const nbProduit = ref(0)
+
     const steps = ref([
-        {
-            id: 1,
-            label: 'Opérateur'
-        },
-        {
-            id: 2,
-            label: 'OF'
-        },
-        {
-            id: 3,
-            label: 'Scan Produits',
-            check() {
-                if (nbProduit.value === 0) {
-                    alert('Veuillez scanner au moins un produit')
-                    return false
-                }
-                if (this.scannedProducts.every(val => val === this.scannedProducts[0])) return true
-                alert('Les produits scannés ne sont pas tous identiques, veuillez recommencer depuis le début')
-                this.scannedProducts = []
-                return false
-            },
-            scannedProducts: [],
-            next() {
-                if (product.value === '') return
-                checkResult.value.class = ''
-                checkResult.value.text = ''
-                checkResult.value.state = true
-                if (this.scannedProducts.length === 0) {
-                    this.scannedProducts.push(product.value)
-                    nbProduit.value = this.scannedProducts.length
-                    product.value = ''
-                    return
-                }
-                if (this.scannedProducts.every(val => val === product.value)) {
-                    this.scannedProducts.push(product.value)
-                    nbProduit.value = this.scannedProducts.length
-                    product.value = ''
-                    return
-                }
-                checkResult.value.class = 'bg-danger'
-                checkResult.value.text = 'Le dernier produit scanné n\'a pas été compté car il diffère des précédents, veuillez recommencer'
-                checkResult.value.state = false
-                product.value = ''
-            },
-            validate() {
-                if (this.check()) {
-                    //Avant de passer à l'impression il faut créer l'étiquette avec l'ensemble des données
-                    const dataTosend = {
-                        labelKind: modeleEtiquette.value.labelKind,
-                        labelName: modeleEtiquette.value.labelName,
-                        manufacturer: modeleEtiquette.value.manufacturer,
-                        customerAddressName: modeleEtiquette.value.customerAddressName,
-                        productDescription: modeleEtiquette.value.productDescription,
-                        productReference: modeleEtiquette.value.productReference,
-                        productIndice: modeleEtiquette.value.productIndice,
-                        templateFamily: modeleEtiquette.value.templateFamily,
-                        operator: operateur.value,
-                        batchnumber: of.value,
-                        quantity: nbProduit.value
-                    }
-                    const response = api('/api/label-cartons', 'post', dataTosend)
-                    // et récupérer le code ZPL
-                    response.then(data => {
-                        newLabel.value = data
-                        var file = new Blob([data.zpl], {type: 'text/plain'})
-                        zplHref.value = URL.createObjectURL(file)
-                        // http://api.labelary.com/v1/printers/{dpmm}/labels/{width}x{height}/{index}/{zpl}
-                        const dpmm = '8dpmm'
-                        const width = modeleEtiquette.value.width
-                        const height = modeleEtiquette.value.height
-                        const index = '0'
-                        imageUrl.value = `http://api.labelary.com/v1/printers/${dpmm}/labels/${width}x${height}/${index}/${data.zpl}`
-                        currentStep.value += 1
-                    })
-                    // avant de passer à l'étape suivante
-                }
-                else alert('Veuillez scanner au moins un produit')
-            },
-            reset() {
-                this.scannedProducts = []
-                nbProduit.value = 0
-                product.value = ''
-            },
-            removeLast() {
-                this.scannedProducts.pop()
-                nbProduit.value = this.scannedProducts.length
-            }
-        },
+        {id: 1, label: 'Opérateur'},
+        {id: 2, label: 'OF'},
+        {id: 3, label: 'Scan Produits'},
         {id: 4, label: 'Impression', icon: 'print'}
     ])
-    response.then(data => {
-        modeleEtiquette.value = data
-    })
     function changeTemplate() {
         router.push({name: 'label-template-list'})
     }
     function resetAll() {
         currentStep.value = 1
-        operateur.value = '<à définir>'
-        of.value = '<à définir>'
-        nbProduit.value = 0
-        product.value = ''
-        inputOperateurRef.value.focus()
-        inputOperateurRef.value.select()
     }
     function restartFromOf() {
         currentStep.value = 2
-        of.value = '<à définir>'
-        nbProduit.value = 0
-        product.value = ''
-        inputOfRef.value.focus()
-        inputOfRef.value.select()
     }
     function restartNewCarton() {
         currentStep.value = 3
-        steps[2].scannedProducts= []
-        nbProduit.value = 0
-        product.value = ''
-        inputProduitRef.value.focus()
-        inputProduitRef.value.select()
     }
     function disconnect() {
         // route.push({name: 'AppLabelTemplateList'})
@@ -244,27 +146,14 @@
             class="form-step"
             @next-step="getOf"
         />
-        <div v-show="currentStep === 3" class="form-step">
-            <div class="step-title">Scan Produits</div>
-            <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-between" :class="checkResult.class">
-                <input id="product" ref="inputProduitRef" v-model="product" class="form-control m-2" type="text"/>
-                <button class="btn btn-success m-2" @click="steps[2].next()">
-                    <Fa :brand="false" icon="plus"/>
-                </button>
-            </div>
-            <div v-if="!checkResult.state" class="bg-danger text-center text-white">{{ checkResult.text }}</div>
-            <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-between mt-3">
-                <button class="btn btn-warning d-inline-block m-2" @click="steps[2].reset()" title="Recommencer">
-                   <Fa :brand="false" icon="backward-step"/> Recommencer les scans
-                </button>
-                <button class="btn btn-warning d-inline-block m-2" @click="steps[2].removeLast()">
-                    <Fa :brand="false" icon="rotate-left"/>
-                </button>
-                <button class="btn btn-success d-inline-block m-2" @click="steps[2].validate()">
-                    <Fa :brand="false" icon="chevron-right"/>
-                </button>
-            </div>
-        </div>
+        <AppStepProduit
+            v-if="currentStep === 3"
+            class="form-step"
+            :modele-etiquette="modeleEtiquette"
+            :of="of"
+            :operateur="operateur"
+            @change-products="nbProduit = $event"
+            @next-step="getProducts"/>
         <div v-show="currentStep === 4" class="form-step">
             <div class="step-title">Impression</div>
             <img id="imageToPrint" class="toPrint" :src="imageUrl" alt="aperçu etiquette" width="280"/>
