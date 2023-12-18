@@ -32,14 +32,8 @@
         checkResult.value.class = ''
         checkResult.value.text = ''
         checkResult.value.state = true
-        if (scannedProducts.value.length === 0) {
-            scannedProducts.value.push(product.value)
-            nbProduit.value = scannedProducts.value.length
-            emits('changeProducts', nbProduit.value)
-            product.value = ''
-            return
-        }
-        if (scannedProducts.value.every(val => val === product.value)) {
+        // On vérifie que la valeur product.value correspond à la valeur de props.of.data.productRef
+        if (product.value === props.of.data.productRef) {
             scannedProducts.value.push(product.value)
             nbProduit.value = scannedProducts.value.length
             emits('changeProducts', nbProduit.value)
@@ -47,10 +41,13 @@
             return
         }
         checkResult.value.class = 'bg-danger'
-        checkResult.value.text = 'Le dernier produit scanné n\'a pas été compté car il diffère des précédents, veuillez recommencer'
+        checkResult.value.text = `Le dernier produit scanné ne correspond pas à celui attendu ${props.of.data.productRef}, veuillez recommencer`
         checkResult.value.state = false
         product.value = ''
     }
+    const newLabel = ref({})
+    const zplHref = ref('')
+    const imageUrl = ref('')
     function validate() {
         if (check()) {
             //Avant de passer à l'impression il faut créer l'étiquette avec l'ensemble des données
@@ -61,7 +58,7 @@
                 manufacturer: props.modeleEtiquette.manufacturer,
                 customerAddressName: props.modeleEtiquette.customerAddressName,
                 operator: props.operateur.matricule,
-                batchnumber: of.data.ofnumber,
+                batchnumber: props.of.data.ofnumber,
                 productDescription: props.of.data.productDescription,
                 productReference: props.of.data.productRef,
                 productIndice: props.of.data.productIndice,
@@ -79,7 +76,11 @@
                 const height = props.modeleEtiquette.height
                 const index = '0'
                 imageUrl.value = `http://api.labelary.com/v1/printers/${dpmm}/labels/${width}x${height}/${index}/${data.zpl}`
-                currentStep.value += 1
+                emits('nextStep', {
+                    label: newLabel.value,
+                    zpl: data.zpl,
+                    imageUrl: imageUrl.value
+                })
             })
             // avant de passer à l'étape suivante
         }

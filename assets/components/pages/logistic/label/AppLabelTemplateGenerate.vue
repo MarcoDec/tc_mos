@@ -1,13 +1,14 @@
 <script setup>
     import {computed, onMounted, ref} from 'vue'
     import {useRoute, useRouter} from 'vue-router'
+    import useUser from '../../../../stores/security'
     import api from '../../../../api'
     import AppItemCarte from './components/AppItemCarte.vue'
     import AppStepOperateur from './components/AppStepOperateur.vue'
     import AppStepOrderFabrication from './components/AppStepOrderFabrication.vue'
+    import AppStepPrint from './components/AppStepPrint.vue'
     import AppStepProduit from './components/AppStepProduit.vue'
     import AppStepProgress from './components/AppStepProgress.vue'
-    import CustomeSelect from './components/CustomeSelect.vue'
 
     const route = useRoute()
     const router = useRouter()
@@ -20,10 +21,6 @@
     })
     const operateur = ref({ name: '<à définir>'})
     const currentStep = ref(1)
-    const zpl = ref('')
-    const zplHref = ref('')
-    const imageUrl = ref('')
-    const newLabel = ref({})
 
     function getOperateur(operateurData) {
         console.log('operateurData', operateurData)
@@ -65,34 +62,7 @@
     function disconnect() {
         // route.push({name: 'AppLabelTemplateList'})
     }
-    const printers = ref([])
-    function getPrinters() {
-        api('/api/printers', 'get')
-            .then(data => {
-                printers.value = data['hydra:member']
-            })
-    }
-    getPrinters()
-    const selectedPrinter = ref(null)
-    function onNetworkPrinterSelected(printer) {
-        selectedPrinter.value = printer
-    }
-    function imprimeLocal() {
-        window.print()
-    }
-    function imprimeReseau() {
-        if (selectedPrinter.value === null) {
-            alert('Veuillez choisir une imprimante réseau')
-            return
-        }
-        const data = {
-            printer: selectedPrinter.value['@id']
-        }
-        api(`/api/label-cartons/${newLabel.value.id}/print`, 'post', data)
-            .then(() => {
-                alert('Impression lancée')
-            })
-    }
+
     const ofNumberAndIndice = computed(() => {
         if (of.value === '<à définir>' || !of.value.data) return '<à définir>'
         return `${of.value.data.ofnumber}.${of.value.data.indice}`
@@ -101,6 +71,15 @@
         if (of.value === '<à définir>' || !of.value.data) return '<à définir>'
         return `${of.value.data.productRef}/${of.value.data.productIndice}`
     })
+    const currentUser = useUser()
+    onMounted(() => {
+        if (!currentUser.isLogged) router.push({name: 'login'})
+        if (!currentUser.isLogisticsWriter || !currentUser.isProductionWriter) router.push({name: 'home'})
+    })
+    function onPrinted() {
+        console.log('onPrinted')
+        currentStep.value += 1
+    }
 </script>
 
 <template>
@@ -154,30 +133,16 @@
             :operateur="operateur"
             @change-products="nbProduit = $event"
             @next-step="getProducts"/>
-        <div v-show="currentStep === 4" class="form-step">
-            <div class="step-title">Impression</div>
-            <img id="imageToPrint" class="toPrint" :src="imageUrl" alt="aperçu etiquette" width="280"/>
-            <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-center">
-                <a :href="zplHref" download="etiquette.zpl" class="btn btn-info d-flex justify-content-center min-button">
-                    <Fa :brand="false" icon="download"/> ZPL
-                </a>
-            </div>
-            <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-center mt-4">
-                <CustomeSelect
-                    :options="printers"
-                    title="Choix Imprimantes réseau"
-                    @update:model-value="onNetworkPrinterSelected"/>
-                <button class="btn btn-primary d-inline-block d-flex flex-column justify-content-center min-button align-items-center" @click="imprimeReseau">
-                    <Fa :brand="false" icon="network-wired"/> Réseau
-                </button>
-            </div>
-
-            <div class="align-items-stretch align-self-stretch d-flex flex-row justify-content-center mt-4">
-                <button class="align-items-center btn btn-success d-flex d-inline-block flex-column justify-content-center min-button" @click="imprimeLocal">
-                    <Fa :brand="false" icon="print"/> Local
-                </button>
-            </div>
-        </div>
+        <AppStepPrint
+            v-if="currentStep === 4"
+            class="form-step"
+            :modele-etiquette="modeleEtiquette"
+            :of="of"
+            :operateur="operateur"
+            :nb-produit="nbProduit"
+            :products="products"
+            @next-step="onPrinted"
+        />
         <div v-show="currentStep >= 5" class="form-step">
             <div class="step-title">
                 Choix

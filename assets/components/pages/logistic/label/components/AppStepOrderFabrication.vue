@@ -68,6 +68,7 @@
                 if (productJson !== 'null') {
                     of.value.data.productRef = productJson.ref
                     of.value.data.productIndice = productJson.indice
+                    of.value.data.productDescription = productJson.designation
                 } else {
                     //erreur
                     error = true
@@ -86,6 +87,7 @@
                 if (productJson !== 'null') {
                     of.value.data.productRef = productJson.ref
                     of.value.data.productIndice = productJson.indice
+                    of.value.data.productDescription = productJson.designation
                 } else {
                     //erreur
                     error = true
