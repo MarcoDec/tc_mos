@@ -48,6 +48,11 @@
     }
     const bool = computed(() => props.field.type === 'boolean')
     const color = computed(() => props.field.type === 'color')
+    const date = computed(() => props.field.type === 'date')
+    const shortDate = computed(() => {
+        if (typeof labelValue(value) !== 'undefined' && labelValue(value).length > 10) return labelValue(value).slice(0, 10)
+        return labelValue(value)
+    })
     const id = computed(() => `${props.row}-${props.field.name}`)
     const value = computed(() => get(props.item, props.field.name))
     const label = computed(() => labelValue(value))
@@ -55,6 +60,7 @@
     const array = computed(() => Array.isArray(label.value))
     const select = computed(() => props.field.type === 'select')
     const multiselectFetch = computed(() => props.field.type === 'multiselect-fetch')
+    const downloadText = computed(() => props.field.type === 'downloadText')
 </script>
 
 <template>
@@ -84,6 +90,12 @@
                 {{ v }}
             </li>
         </ul>
+        <div v-else-if="downloadText">
+            <a :href="`data:text/plain;charset=utf-8,${encodeURIComponent(label)}`" target="_blank" download="zpl.txt">Télécharger</a>
+        </div>
+        <template v-else-if="date">
+            {{ shortDate }}
+        </template>
         <template v-else>
             {{ label }}
         </template>

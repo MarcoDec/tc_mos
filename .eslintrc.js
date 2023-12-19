@@ -268,7 +268,7 @@ module.exports = {
         'vue/next-tick-style': 'error',
         'vue/no-arrow-functions-in-watch': 'error',
         'vue/no-async-in-computed-properties': 'error',
-        'vue/no-boolean-default': 'error',
+        //'vue/no-boolean-default': 'error',
         'vue/no-child-content': 'error',
         'vue/no-computed-properties-in-data': 'error',
         'vue/no-constant-condition': 'error',

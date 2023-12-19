@@ -22,7 +22,7 @@
                 optionsTransfered.value = props.field.optionsList
                 fieldTransfered.value = props.field
             }
-        } else {
+        } else if (props.field.optionsList === 'undefined') {
             const options = useOptions(props.field.options.base)
             // eslint-disable-next-line no-return-assign
             options.fetchOp().then(() => {
@@ -30,6 +30,9 @@
                 fieldTransfered.value = {...props.field, options: {options: options.items}}
                 formFieldKey.value++
             })
+        } else {
+            optionsTransfered.value = props.field.optionsList
+            fieldTransfered.value = props.field
         }
     })
     const emit = defineEmits(['update:modelValue'])
