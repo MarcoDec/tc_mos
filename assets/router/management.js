@@ -47,20 +47,49 @@ export default [
             apiBaseRoute: 'printers',
             disableRemove: true,
             fields: [
-                {create: false, label: 'Nom', name: 'name', search: false, sort: false, update: false},
-                {create: false, label: 'IP', name: 'ip', search: false, sort: false, update: false},
+                {create: true, label: 'Nom', name: 'name', search: true, sort: true, update: true},
+                {create: true, label: 'IP', name: 'ip', search: true, sort: true, update: true},
                 {
-                    create: false,
+                    create: true,
                     hideLabelValue: true,
                     label: 'Couleur',
                     name: 'color',
                     options: [{text: '#00cc00', value: 'green'}, {text: '#ffff33', value: 'yellow'}],
                     search: false,
-                    sort: false,
+                    sort: true,
                     type: 'color',
-                    update: false
+                    update: true
                 },
-                {create: false, label: 'Compagnie', name: 'company.name', search: false, sort: false, update: false}
+                {
+                    create: true,
+                    label: 'Compagnie',
+                    name: 'company',
+                    options: {base: 'companies'},
+                    search: true,
+                    sort: false,
+                    type: 'select',
+                    update: true
+                },
+                {
+                    create: true,
+                    label: 'Largeur Max Etiquette',
+                    name: 'maxLabelWidth',
+                    search: true,
+                    sort: true,
+                    step: 0.1,
+                    type: 'number',
+                    update: true
+                },
+                {
+                    create: true,
+                    label: 'Hauteur Max Etiquette',
+                    name: 'maxLabelHeight',
+                    search: true,
+                    sort: true,
+                    step: 0.1,
+                    type: 'number',
+                    update: true
+                }
             ],
             icon: 'print',
             sort: readonly({label: 'Nom', name: 'name'}),

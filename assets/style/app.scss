@@ -110,3 +110,19 @@ $dropdown-success: #57ec57 !default;
 .icon-mode .nav-link-text  {
   display: none;
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .toPrint, .toPrint * {
+    visibility: visible;
+  }
+
+  .toPrint {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}

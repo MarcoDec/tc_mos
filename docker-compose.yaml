@@ -73,6 +73,25 @@ services:
       - ./node_modules:/var/www/html/TConcept-GPAO/node_modules:delegated
       - ./var:/var/www/html/TConcept-GPAO/var:delegated
       - ./vendor:/var/www/html/TConcept-GPAO/vendor:delegated
+      - ./docker/php/client.conf:/etc/cups/client.conf
+    environment:
+      - CUPS_SERVER=cups:631
+#      - CUPS_SERVER=cups.newgp.localhost:631
+    networks:
+      - traefik_reseau_tc
+  cups:
+    image: olbat/cupsd:stable-2023-12-08
+    container_name: tconcept_gpao_cups
+    restart: always
+    ports:
+      - '631:631'
+    volumes:
+      - ./docker/cups/cupsd.conf:/etc/cups/cupsd.conf:delegated
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cups.rule=Host(`${CUPS_HOST}`)"
+      - "traefik.http.routers.cups.entrypoints=web"
+      - "traefik.http.services.cups.loadbalancer.server.port=631"
     networks:
       - traefik_reseau_tc
   phpmyadmin:

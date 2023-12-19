@@ -15,24 +15,23 @@
 
     function create() {
         props.machine.send('submit')
-        console.log(props.fields.fields)
         props.fields.fields.forEach(f => {
             if (f.type === 'date') {
-                localData.value[f.name] = localData.value[f.name].toISOString().slice(0, 10)
+                if (localData.value[f.name].length > 10)
+                    localData.value[f.name] = localData.value[f.name].toISOString().slice(0, 10)
             }
             if (f.type === 'select') {
-                if (/\/api\/\w+\/\d+/.test(localData.value[f.name])) {
-                    //On ne fait rien
-                } else {
-                    const theField = f.optionsList.find(o => o.text === localData.value[f.name])
-                    //console.log(f.name, theField['@id'], localData.value[f.name])
+                const newValue = localData.value[f.name]
+                if (typeof newValue === 'object') {
+                    const theField = f.optionsList.find(o => o.text === newValue)
                     if (typeof theField === 'undefined') localData.value[f.name] = null
                     else localData.value[f.name] = theField['@id']
+                } else {
+                    localData.value[f.name] = newValue
                 }
             }
         })
         props.store.createBody = localData.value
-        console.log(props.fields, localData.value)
         try {
             props.store.create().then(() => {
                 props.machine.send('success')
@@ -40,6 +39,23 @@
         } catch (violations) {
             props.machine.send('fail', {violations})
         }
+    }
+    function onInput(event) {
+        const newValue = event.target.value
+        const fieldName = event.target.name
+        props.fields.fields.forEach(f => {
+            if (f.name === fieldName) {
+                if (f.type === 'select') {
+                    if (typeof newValue === 'object') {
+                        const theField = f.optionsList.find(o => o.text === newValue)
+                        if (typeof theField === 'undefined') localData.value[f.name] = null
+                        else localData.value[f.name] = theField['@id']
+                    } else {
+                        localData.value[f.name] = newValue
+                    }
+                }
+            }
+        })
     }
 </script>
 
@@ -60,7 +76,8 @@
         reverse-icon="search"
         reverse-label="recherche"
         reverse-mode="search"
-        variant="success">
+        variant="success"
+        @input="onInput">
         <template #form="args">
             <slot name="btn" v-bind="args"/>
         </template>

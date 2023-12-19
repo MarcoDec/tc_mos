@@ -22,6 +22,6 @@ final class PrinterDataProvider implements CollectionDataProviderInterface, Rest
      * @param mixed[] $context
      */
     public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool {
-        return $resourceClass === Printer::class && $operationName === 'get';
+        return $resourceClass === Printer::class && $operationName === 'get' && false;
     }
 }
