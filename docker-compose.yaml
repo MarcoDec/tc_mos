@@ -74,11 +74,15 @@ services:
       - ./var:/var/www/html/TConcept-GPAO/var:delegated
       - ./vendor:/var/www/html/TConcept-GPAO/vendor:delegated
       - ./docker/php/client.conf:/etc/cups/client.conf
+    environment:
+      - CUPS_SERVER=cups:631
+#      - CUPS_SERVER=cups.newgp.localhost:631
     networks:
       - traefik_reseau_tc
   cups:
     image: olbat/cupsd:stable-2023-12-08
     container_name: tconcept_gpao_cups
+    restart: always
     ports:
       - '631:631'
     volumes:
