@@ -29,11 +29,11 @@ class LabelPrintingController
         // On récupère l'imprimante
         $printer = $mobileUnit->getPrinter();
         $printerName = $printer->getName();
-        $filePath = "label.zpl";
+        $filePath = "label_$idLabel.zpl";
         // On envoie la commande d'impression à l'imprimante
-        file_put_contents("label.zpl", $label->getZpl());
+        file_put_contents($filePath, $label->getZpl());
         exec("lp -d $printerName $filePath");
-        unlink("label.zpl");
+        unlink($filePath);
         return $label->getZpl();
     }
 }

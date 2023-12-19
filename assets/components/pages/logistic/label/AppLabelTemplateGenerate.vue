@@ -30,7 +30,6 @@
     }
     const of = ref({})
     function getOf(ofData) {
-        console.log('ofData', ofData)
         of.value = ofData
         currentStep.value += 1
     }
@@ -52,16 +51,19 @@
         router.push({name: 'label-template-list'})
     }
     function resetAll() {
-        currentStep.value = 1
+        window.location.reload()
     }
     function restartFromOf() {
+        nbProduit.value = 0
+        of.value = {}
         currentStep.value = 2
     }
     function restartNewCarton() {
+        nbProduit.value = 0
         currentStep.value = 3
     }
     function disconnect() {
-        // route.push({name: 'AppLabelTemplateList'})
+        router.push({name: 'login'})
     }
 
     const ofNumberAndIndice = computed(() => {
@@ -119,7 +121,6 @@
             if (printer) {
                 console.log('printer', printer)
                 selectedPrinter.value = printer
-                selectedPrinterName.value = response.printer.name
             } else {
                 console.error('printer not found')
             }
@@ -193,6 +194,7 @@
             :operateur="operateur"
             :nb-produit="nbProduit"
             :products="products"
+            :printer="selectedPrinter"
             @next-step="onPrinted"
         />
         <div v-show="currentStep >= 5" class="form-step">
