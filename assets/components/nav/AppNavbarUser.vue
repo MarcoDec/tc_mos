@@ -4,7 +4,6 @@
     import {useMachine} from '../../composable/xstate'
     import {useRouter} from 'vue-router'
     import useUser from '../../stores/security'
-    import {ref} from 'vue'
 
     const router = useRouter()
     const {send, state} = useMachine({
@@ -45,9 +44,9 @@
 
 <template>
     <div class="text-white">
-        <ul class="ms-auto navbar-nav mt-0 d-flex flex-row align-items-center">
+        <ul class="align-items-center d-flex flex-row ms-auto mt-0 navbar-nav">
             <span class="user">
-                <AppNavbarItem id="user" class="navbar-text m-0 p-0" icon="user-circle" :title="user.name">
+                <AppNavbarItem id="user" class="m-0 navbar-text p-0" icon="user-circle" :title="user.name">
                     <div v-for="tz in timezones" :key="tz.country" class="timelink">
                         <AppNavbarLinkTime :timezone="tz.timezone" :country="tz.country"/>
                     </div>

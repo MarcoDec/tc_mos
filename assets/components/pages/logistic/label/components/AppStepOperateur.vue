@@ -15,33 +15,26 @@
         await fetch(`http://gp.tconcept.local/dist/api/operateur.php?action=show&id=${operateurField.value}`)
             .then(response => response.json())
             .then(data => {
-                if (data === 'null') return operateur.value = {status: false}
-                else operateur.value = {status: true, data: data}
-                //console.log('getOperateur fetch then', data, operateur.value)
+                if (data === 'null') operateur.value = {status: false}
+                else operateur.value = {status: true, data}
             })
     }
 
     async function check() {
         await getOperateur()
-        //console.log('check', operateur.value)
         if (operateur.value.status) {
-            //console.log('check ok')
             if (operateur.value.data !== null) {
-                operateur.value.name = operateur.value.data.prenom + ' ' + operateur.value.data.nom
+                operateur.value.name = `${operateur.value.data.prenom} ${operateur.value.data.nom}`
                 return true
             }
         }
-        //console.log('check ko')
         operateur.value = {name: '<à définir>'}
         return false
     }
 
     async function validate() {
         const result = await check()
-        if (result) {
-            //console.log('validate ok', operateur.value)
-            emits('nextStep', operateur.value)
-        }
+        if (result) emits('nextStep', operateur.value)
         else alert('Veuillez scanner le badge de l\'opérateur')
     }
 
@@ -49,21 +42,18 @@
         inputOperateurRef.value.focus()
         inputOperateurRef.value.select()
     })
-
 </script>
 
 <template>
     <div>
-        <div class="step-title">Scanner le badge de l'opérateur</div>
-        <div class="d-flex flex-row align-items-baseline align-self-stretch">
+        <div class="step-title">
+            Scanner le badge de l'opérateur
+        </div>
+        <div class="align-items-baseline align-self-stretch d-flex flex-row">
             <input id="operateur" ref="inputOperateurRef" v-model="operateurField" class="form-control m-2" type="text"/>
-            <button class="btn btn-success m-2" @click="validate()">
+            <button class="btn btn-success m-2" @click="validate">
                 <Fa :brand="false" icon="chevron-right"/>
             </button>
         </div>
     </div>
 </template>
-
-<style scoped>
-
-</style>

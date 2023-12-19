@@ -120,7 +120,7 @@
     }
     const showAddForm = ref(false)
     function onShowAddForm() {
-        if(showAddForm.value) cancelTC()
+        if (showAddForm.value) cancelTC()
         showAddForm.value = !showAddForm.value
         //console.log('onShowAddForm', showAddForm.value)
         keyTC.value++
@@ -157,7 +157,7 @@
         :offset="15"
         :show-edit="false"
         :show-remove="false"
-        @click="onShowAddForm()"/>
+        @click="onShowAddForm"/>
     <IconWithText
         v-for="(tcTemplate, index) in labeltemplatesTC"
         :key="index"

@@ -14,15 +14,14 @@
     // const api = computed(() => `${location.value.protocol}//${location.value.hostname}:8000/api`)
     const user = useUser()
     const variantManagement = user.isManagementAdmin ? 'danger' : user.isManagementWriter ? 'warning' : user.isManagementReader ? 'info' : null
-    const variantLogistics = user.isLogisticsAdmin ? 'danger' : user.isLogisticsWriter ? 'warning' : user.isLogisticsReader ? 'info' : null
+    // const variantLogistics = user.isLogisticsAdmin ? 'danger' : user.isLogisticsWriter ? 'warning' : user.isLogisticsReader ? 'info' : null
     const variantProduction = user.isProductionAdmin ? 'danger' : user.isProductionWriter ? 'warning' : user.isProductionReader ? 'info' : null
-    const variantProject = user.isProjectAdmin ? 'danger' : user.isProjectWriter ? 'warning' : user.isProjectReader ? 'info' : null
-    const variantQuality = user.isQualityAdmin ? 'danger' : user.isQualityWriter ? 'warning' : user.isQualityReader ? 'info' : null
-    const variantHr = user.isHrAdmin ? 'danger' : user.isHrWriter ? 'warning' : user.isHrReader ? 'info' : null
-    const variantSelling = user.isSellingAdmin ? 'danger' : user.isSellingWriter ? 'warning' : user.isSellingReader ? 'info' : null
-    const variantPurchase = user.isPurchaseAdmin ? 'danger' : user.isPurchaseWriter ? 'warning' : user.isPurchaseReader ? 'info' : null
-    const variantIt = user.isItAdmin ? 'danger' : null
-
+    // const variantProject = user.isProjectAdmin ? 'danger' : user.isProjectWriter ? 'warning' : user.isProjectReader ? 'info' : null
+    // const variantQuality = user.isQualityAdmin ? 'danger' : user.isQualityWriter ? 'warning' : user.isQualityReader ? 'info' : null
+    // const variantHr = user.isHrAdmin ? 'danger' : user.isHrWriter ? 'warning' : user.isHrReader ? 'info' : null
+    // const variantSelling = user.isSellingAdmin ? 'danger' : user.isSellingWriter ? 'warning' : user.isSellingReader ? 'info' : null
+    // const variantPurchase = user.isPurchaseAdmin ? 'danger' : user.isPurchaseWriter ? 'warning' : user.isPurchaseReader ? 'info' : null
+    // const variantIt = user.isItAdmin ? 'danger' : null
 </script>
 
 <template>
@@ -66,39 +65,39 @@
                 <!--                <AppNavbarLink icon="calendar" to="agenda" variant="success">-->
                 <!--                    Agenda-->
                 <!--                </AppNavbarLink>-->
-<!--                <template v-if="user.isManagementReader">-->
-<!--                    <AppDropdownItem disabled variant="info">-->
-<!--                        Contributeur-->
-<!--                    </AppDropdownItem>-->
+                <!--                <template v-if="user.isManagementReader">-->
+                <!--                    <AppDropdownItem disabled variant="info">-->
+                <!--                        Contributeur-->
+                <!--                    </AppDropdownItem>-->
                 <AppNavbarLink icon="gauge-high" to="suivi_depenses_ventes" :variant="variantManagement">
                     Suivi des dépenses et ventes
                 </AppNavbarLink>
-<!--                </template>-->
-<!--                                <template v-if="user.isManagementAdmin">-->
-<!--                                    <AppDropdownItem disabled variant="warning">-->
-<!--                                        Administrateur-->
-<!--                                    </AppDropdownItem>-->
+                <!--                </template>-->
+                <!--                                <template v-if="user.isManagementAdmin">-->
+                <!--                                    <AppDropdownItem disabled variant="warning">-->
+                <!--                                        Administrateur-->
+                <!--                                    </AppDropdownItem>-->
                 <AppNavbarLink icon="print" to="printers" :variant="variantManagement">
                     Imprimantes
                 </AppNavbarLink>
-                <!--                    <AppNavbarLink icon="palette" to="colors" variant="warning">-->
-                <!--                        Couleurs-->
-                <!--                    </AppNavbarLink>-->
-                <!--                    <p>Devises</p>-->
-                <!--                    <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" variant="warning">-->
-                <!--                        Délais de paiement des factures-->
-                <!--                    </AppNavbarLink>-->
+            <!--                    <AppNavbarLink icon="palette" to="colors" variant="warning">-->
+            <!--                        Couleurs-->
+            <!--                    </AppNavbarLink>-->
+            <!--                    <p>Devises</p>-->
+            <!--                    <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" variant="warning">-->
+            <!--                        Délais de paiement des factures-->
+            <!--                    </AppNavbarLink>-->
 
-                <!--                    <AppNavbarLink icon="comments-dollar" to="vat-messages" variant="warning">-->
-                <!--                        Messages TVA-->
-                <!--                    </AppNavbarLink>-->
-                <!--                    <AppNavbarLink icon="ruler-horizontal" to="units" variant="warning">-->
-                <!--                        Unités-->
-                <!--                    </AppNavbarLink>-->
-                <!--                    <AppNavbarLink icon="people-group" to="teams" variant="warning">-->
-                <!--                        Equipes-->
-                <!--                    </AppNavbarLink>-->
-<!--                                </template>-->
+            <!--                    <AppNavbarLink icon="comments-dollar" to="vat-messages" variant="warning">-->
+            <!--                        Messages TVA-->
+            <!--                    </AppNavbarLink>-->
+            <!--                    <AppNavbarLink icon="ruler-horizontal" to="units" variant="warning">-->
+            <!--                        Unités-->
+            <!--                    </AppNavbarLink>-->
+            <!--                    <AppNavbarLink icon="people-group" to="teams" variant="warning">-->
+            <!--                        Equipes-->
+            <!--                    </AppNavbarLink>-->
+            <!--                                </template>-->
             </AppNavbarItem>
             <!--            <AppNavbarItem v-if="user.isItAdmin" id="it" icon="laptop" title="Informatique">-->
             <!--                <AppDropdownItem disabled variant="warning">-->
@@ -113,39 +112,37 @@
             <!--                    Application Programming Interface (API)-->
             <!--                </a>-->
             <!--            </AppNavbarItem>-->
-<!--            <AppNavbarItem v-if="user.isLogisticsReader" id="logistics" icon="boxes" title="Logistique">-->
-                <!--                            <AppDropdownItem disabled variant="success">-->
-                <!--                                Lecteur-->
-                <!--                            </AppDropdownItem>-->
-                <!--                            <AppNavbarLink icon="shuttle-van" to="carriers" variant="success">-->
-                <!--                                Transporteurs-->
-                <!--                            </AppNavbarLink>-->
-<!--                <template v-if="user.isLogisticsWriter">-->
-<!--                    <AppDropdownItem disabled variant="info">-->
-<!--                        Contributeur-->
-<!--                    </AppDropdownItem>-->
-
-
-<!--                    <template v-if="user.isLogisticsAdmin">-->
-                        <!--                                    <AppDropdownItem disabled variant="warning">-->
-                        <!--                                        Administrateur-->
-                        <!--                                    </AppDropdownItem>-->
-                        <!--                                <AppNavbarLink icon="file-contract" to="incoterms" variant="warning">-->
-                        <!--                                    Incoterms-->
-                        <!--                                </AppNavbarLink>-->
-                        <!--                                <AppNavbarLink icon="warehouse" to="warehouse-list" variant="warning">-->
-                        <!--                                    Entrepots-->
-                        <!--                                </AppNavbarLink>-->
-<!--                    </template>-->
-<!--                </template>-->
-<!--            </AppNavbarItem>-->
-                <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
-                    <AppNavbarLink to="label-template-list" icon="tags" :variant="variantProduction">
-                        Modèles d'étiquette
-                    </AppNavbarLink>
-                    <AppNavbarLink icon="tags" to="etiquette-list" :variant="variantProduction">
-                        Etiquettes Générées
-                    </AppNavbarLink>
+            <!--            <AppNavbarItem v-if="user.isLogisticsReader" id="logistics" icon="boxes" title="Logistique">-->
+            <!--                            <AppDropdownItem disabled variant="success">-->
+            <!--                                Lecteur-->
+            <!--                            </AppDropdownItem>-->
+            <!--                            <AppNavbarLink icon="shuttle-van" to="carriers" variant="success">-->
+            <!--                                Transporteurs-->
+            <!--                            </AppNavbarLink>-->
+            <!--                <template v-if="user.isLogisticsWriter">-->
+            <!--                    <AppDropdownItem disabled variant="info">-->
+            <!--                        Contributeur-->
+            <!--                    </AppDropdownItem>-->
+            <!--                    <template v-if="user.isLogisticsAdmin">-->
+            <!--                                    <AppDropdownItem disabled variant="warning">-->
+            <!--                                        Administrateur-->
+            <!--                                    </AppDropdownItem>-->
+            <!--                                <AppNavbarLink icon="file-contract" to="incoterms" variant="warning">-->
+            <!--                                    Incoterms-->
+            <!--                                </AppNavbarLink>-->
+            <!--                                <AppNavbarLink icon="warehouse" to="warehouse-list" variant="warning">-->
+            <!--                                    Entrepots-->
+            <!--                                </AppNavbarLink>-->
+            <!--                    </template>-->
+            <!--                </template>-->
+            <!--            </AppNavbarItem>-->
+            <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
+                <AppNavbarLink to="label-template-list" icon="tags" :variant="variantProduction">
+                    Modèles d'étiquette
+                </AppNavbarLink>
+                <AppNavbarLink icon="tags" to="etiquette-list" :variant="variantProduction">
+                    Etiquettes Générées
+                </AppNavbarLink>
             <!--                <AppDropdownItem disabled variant="success">-->
             <!--                    Lecteur-->
             <!--                </AppDropdownItem>-->
@@ -173,7 +170,7 @@
             <!--                        Paramètres-->
             <!--                    </AppNavbarLink>-->
             <!--                </template>-->
-                </AppNavbarItem>
+            </AppNavbarItem>
             <!--            <AppNavbarItem v-if="user.isProjectReader" id="project" icon="project-diagram" title="Projet">-->
             <!--                <AppDropdownItem disabled variant="success">-->
             <!--                    Lecteur-->
@@ -257,7 +254,7 @@
             <!--                </template>-->
             <!--            </AppNavbarItem>-->
         </ul>
-        <div class="d-flex flex-row align-items-center">
+        <div class="align-items-center d-flex flex-row">
             <AppSuspense variant="white">
                 <AppNotifications/>
             </AppSuspense>
