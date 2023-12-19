@@ -39,8 +39,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
                 'openapi_context' => [
                     'description' => 'Récupère les imprimantes',
                     'summary' => 'Récupère les imprimantes',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\') or is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
+                ]
             ],
             'post' => [
                 'openapi_context' => [

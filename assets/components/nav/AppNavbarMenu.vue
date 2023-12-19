@@ -69,7 +69,7 @@
                 <!--                    <AppDropdownItem disabled variant="info">-->
                 <!--                        Contributeur-->
                 <!--                    </AppDropdownItem>-->
-                <AppNavbarLink icon="gauge-high" to="suivi_depenses_ventes" :variant="variantManagement">
+                <AppNavbarLink v-if="user.isManagementAdmin" icon="gauge-high" to="suivi_depenses_ventes" :variant="variantManagement">
                     Suivi des dépenses et ventes
                 </AppNavbarLink>
                 <!--                </template>-->
@@ -77,7 +77,7 @@
                 <!--                                    <AppDropdownItem disabled variant="warning">-->
                 <!--                                        Administrateur-->
                 <!--                                    </AppDropdownItem>-->
-                <AppNavbarLink icon="print" to="printers" :variant="variantManagement">
+                <AppNavbarLink v-if="user.isManagementWriter" icon="print" to="printers" :variant="variantManagement">
                     Imprimantes
                 </AppNavbarLink>
             <!--                    <AppNavbarLink icon="palette" to="colors" variant="warning">-->
@@ -137,10 +137,10 @@
             <!--                </template>-->
             <!--            </AppNavbarItem>-->
             <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
-                <AppNavbarLink to="label-template-list" icon="tags" :variant="variantProduction">
+                <AppNavbarLink v-if="user.isProductionWriter" to="label-template-list" icon="tags" :variant="variantProduction">
                     Modèles d'étiquette
                 </AppNavbarLink>
-                <AppNavbarLink icon="tags" to="etiquette-list" :variant="variantProduction">
+                <AppNavbarLink v-if="user.isProductionAdmin" icon="tags" to="etiquette-list" :variant="variantProduction">
                     Etiquettes Générées
                 </AppNavbarLink>
             <!--                <AppDropdownItem disabled variant="success">-->

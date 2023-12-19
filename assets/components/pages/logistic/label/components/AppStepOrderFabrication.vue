@@ -141,18 +141,4 @@
     .height-80 {
         height: 80%;
     }
-    .labelOfProduct {
-        font-size: 2rem;
-        margin-right: 1rem;
-    }
-
-    .inputOfProduct {
-        font-size: 2rem;
-        width: 20rem;
-    }
-
-    .step-title {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-    }
 </style>

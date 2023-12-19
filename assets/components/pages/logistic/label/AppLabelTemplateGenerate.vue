@@ -110,7 +110,7 @@
     }
     onMounted(async () => {
         if (!currentUser.isLogged) router.push({name: 'login'})
-        if (!currentUser.isLogisticsWriter || !currentUser.isProductionWriter) router.push({name: 'home'})
+        //if (!currentUser.isLogisticsWriter || !currentUser.isProductionWriter) router.push({name: 'home'})
         //Récupération de l'imprimante associée au poste
         // via l'api /api/single-printer-mobile-units/getFromHost GET
         const response2 = await api('/api/single-printer-mobile-units/getFromHost', 'get')

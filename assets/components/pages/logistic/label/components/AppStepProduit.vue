@@ -120,7 +120,7 @@
                 <Fa :brand="false" icon="rotate-left"/>
             </button>
             <button class="btn btn-success d-inline-block m-2" @click="validate">
-                <Fa :brand="false" icon="chevron-right"/>
+                <Fa :brand="false" icon="print"/>
             </button>
         </div>
     </div>
