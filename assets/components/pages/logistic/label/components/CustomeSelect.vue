@@ -4,7 +4,7 @@
     const emits = defineEmits(['update:modelValue'])
     defineProps({
         options: {required: true, type: Array},
-        title: {default: 'Select an option', type: String}
+        title: {default: '', type: String}
     })
     const showDropdown = ref(false)
     const selectedOption = ref(null)
@@ -20,9 +20,10 @@
 
 <template>
     <div class="custom-select">
-        <div class="title">
+        <div v-if="title !== ''" class="title">
             {{ title }}
         </div>
+        <Fa :brand="false" icon="chevron-down" class="float-end"/>
         <div class="selected-value" @click="toggleDropdown">
             <Fa v-if="selectedOption" :style="{color: selectedOption.color}" :brand="false" icon="fa-square"/>
             {{ selectedOption ? selectedOption.name : '' }}

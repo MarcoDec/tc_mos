@@ -1,5 +1,5 @@
 <script setup>
-    import {defineProps, ref} from 'vue'
+    import {defineProps, onMounted, ref} from 'vue'
     import api from '../../../../../api'
     import CustomeSelect from './CustomeSelect.vue'
 
@@ -15,16 +15,9 @@
     const zplHref = ref('')
     const imageUrl = ref(props.products.imageUrl)
     const newLabel = ref(props.products.label)
-    const printers = ref([])
     const file = new Blob([zpl.value], {type: 'text/plain'})
     zplHref.value = URL.createObjectURL(file)
-    function getPrinters() {
-        api('/api/printers', 'get')
-            .then(data => {
-                printers.value = data['hydra:member']
-            })
-    }
-    getPrinters()
+
     const selectedPrinter = ref(null)
     function onNetworkPrinterSelected(printer) {
         selectedPrinter.value = printer
@@ -45,31 +38,53 @@
                 alert('Impression lancée')
             })
     }
+    const searchPrinter = ref(true)
+    const printerNotYetFound = ref(true)
+    onMounted(() => {
+
+        setTimeout(() => {
+            searchPrinter.value = false
+            printerNotYetFound.value = false
+        }, 2000)
+    })
 </script>
 
 <template>
     <div>
-        <div class="step-title">Impression</div>
-        <img id="imageToPrint" class="toPrint" :src="imageUrl" alt="aperçu etiquette" width="280"/>
-        <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-center">
-            <a :href="zplHref" download="etiquette.zpl" class="btn btn-info d-flex justify-content-center min-button">
-                <Fa :brand="false" icon="download"/> ZPL
-            </a>
-        </div>
-        <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-center mt-4">
-            <CustomeSelect
-                :options="printers"
-                title="Choix Imprimantes réseau"
-                @update:model-value="onNetworkPrinterSelected"/>
-            <button class="btn btn-primary d-inline-block d-flex flex-column justify-content-center min-button align-items-center" @click="imprimeReseau">
-                <Fa :brand="false" icon="network-wired"/> Réseau
-            </button>
-        </div>
+        <div class="step-title bg-info text-center" style="width: 100%; border-radius: 10px 10px 0px 0px; font-weight: bold;">Impression</div>
+        <p
+            v-if="searchPrinter"
+            class="m-2 d-flex justify-content-center align-items-center">
+            Recherche existence d'une imprimante associée au poste
+        </p>
+        <span
+            v-if="searchPrinter && printerNotYetFound"
+            class="spinner-border m-2"
+            role="status"/>
+        <div class="text-success">Imprimante trouvée !</div>
+        <div>
+            Aperçu de l'étiquette
+            <img id="imageToPrint" class="toPrint" :src="imageUrl" alt="aperçu etiquette" width="280"/>
 
-        <div class="align-items-stretch align-self-stretch d-flex flex-row justify-content-center mt-4">
-            <button class="align-items-center btn btn-success d-flex d-inline-block flex-column justify-content-center min-button" @click="imprimeLocal">
-                <Fa :brand="false" icon="print"/> Local
-            </button>
+        </div>
+        <div><span class="spinner-border" role="status"/>Lancement impression</div>
+        <div class="bg-danger text-white">Erreur d'impression</div>
+
+
+        <div class="bg-success text-white">Association de l'imprimante réussie</div>
+        <div class="text-danger">
+            Aucune imprimante trouvée
+            <div class="d-flex flex-row align-items-stretch align-self-stretch justify-content-center">
+                <a :href="zplHref" download="etiquette.zpl" class="btn btn-info d-flex justify-content-center min-button">
+                    <Fa :brand="false" icon="download"/> ZPL
+                </a>
+            </div>
+
+            <div class="align-items-stretch align-self-stretch d-flex flex-row justify-content-center mt-4">
+                <button class="align-items-center btn btn-success d-flex d-inline-block flex-column justify-content-center min-button" @click="imprimeLocal">
+                    <Fa :brand="false" icon="print"/> Local
+                </button>
+            </div>
         </div>
     </div>
 </template>

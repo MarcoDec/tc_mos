@@ -9,6 +9,7 @@
     import AppStepPrint from './components/AppStepPrint.vue'
     import AppStepProduit from './components/AppStepProduit.vue'
     import AppStepProgress from './components/AppStepProgress.vue'
+    import CustomeSelect from './components/CustomeSelect.vue'
 
     const route = useRoute()
     const router = useRouter()
@@ -72,18 +73,69 @@
         return `${of.value.data.productRef}/${of.value.data.productIndice}`
     })
     const currentUser = useUser()
-    onMounted(() => {
-        if (!currentUser.isLogged) router.push({name: 'login'})
-        if (!currentUser.isLogisticsWriter || !currentUser.isProductionWriter) router.push({name: 'home'})
-    })
+    const selectedPrinter = ref(null)
     function onPrinted() {
         console.log('onPrinted')
         currentStep.value += 1
     }
+
+    const printers = ref([])
+    function getPrinters() {
+        api('/api/printers', 'get')
+            .then(data => {
+                printers.value = data['hydra:member']
+            })
+    }
+    getPrinters()
+    const selectedPrinterName = computed(() => {
+        return printers.value.find(printer => printer['@id'] === selectedPrinter.value)['name']
+    })
+    const temporaryPrinter = ref(null)
+    function onNetworkPrinterSelected(printer) {
+        temporaryPrinter.value = printer
+    }
+    const temporaryPosteName = ref(null)
+    function lierImprimante() {
+        if (temporaryPrinter.value === null) {
+            return
+        }
+        const data = {
+            printer: temporaryPrinter.value['@id'],
+            name : temporaryPosteName.value
+        }
+        api('/api/single-printer-mobile-units/addNewAndLink', 'post', data)
+            .then(() => {
+                window.location.reload
+            })
+    }
+    onMounted(async () => {
+        if (!currentUser.isLogged) router.push({name: 'login'})
+        if (!currentUser.isLogisticsWriter || !currentUser.isProductionWriter) router.push({name: 'home'})
+        //Récupération de l'imprimante associée au poste
+        // via l'api /api/single-printer-mobile-units/getFromHost GET
+        const response = await api('/api/single-printer-mobile-units/getFromHost', 'get')
+        if (response) {
+            const printer = response.printer['@id']
+            if (printer) {
+                console.log('printer', printer)
+                selectedPrinter.value = printer
+                selectedPrinterName.value = response.printer.name
+            } else {
+                console.error('printer not found')
+            }
+        }
+    })
 </script>
 
 <template>
-    <div class="carton-label container-fluid">
+    <div v-if="selectedPrinter !== null" class="bg-success text-white text-center">
+        Imprimante associée au poste courant trouvée `{{ selectedPrinterName }}`
+    </div>
+    <div v-if="selectedPrinter === null" class="bg-danger text-white text-center">
+        Aucune imprimante n'est associé au poste courant<br>
+        Impossible de poursuivre tant qu'une imprimante n'aura pas été associée
+    </div>
+    <div v-if="selectedPrinter !== null" class="carton-label container-fluid">
         <div class="row">
             <div class="col-6">
                 <ul>
@@ -113,8 +165,8 @@
             </div>
         </div>
     </div>
-    <AppStepProgress :current-step="currentStep" :steps="steps"/>
-    <div class="step-forms">
+    <AppStepProgress v-if="selectedPrinter !== null" :current-step="currentStep" :steps="steps"/>
+    <div v-if="selectedPrinter !== null" class="step-forms">
         <AppStepOperateur
             v-if="currentStep === 1"
             class="form-step"
@@ -162,6 +214,27 @@
                 </button>
                 <button class="btn btn-success d-inline-block m-2" @click="disconnect">
                     Quitter
+                </button>
+            </div>
+        </div>
+    </div>
+    <div v-if="selectedPrinter === null" class="container">
+        <div class="row">
+            <div class="offset-3 col-6 p-2">
+                <div class="input-group m-2">
+                    <span class="input-group-text">Nom du poste</span>
+                    <input class="form-control" placeholder="Nom du poste" type="text" v-model="temporaryPosteName"/>
+                </div>
+                <div class="input-group m-2">
+                    <span class="input-group-text">Sélectionner l'imprimante réseau</span>
+                    <CustomeSelect
+                        :options="printers"
+                        @update:model-value="onNetworkPrinterSelected"
+                        style="width: 100px; width:100%"
+                    />
+                </div>
+                <button class="btn btn-success m-2" @click="lierImprimante">
+                    <Fa :brand="false" icon="save"/> Enregistrer
                 </button>
             </div>
         </div>

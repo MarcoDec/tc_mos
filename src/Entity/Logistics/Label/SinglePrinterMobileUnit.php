@@ -4,6 +4,7 @@ namespace App\Entity\Logistics\Label;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\Logistics\Label\AddNewSinglePrinterMobileController;
+use App\Controller\Logistics\Label\GetSinglePrinterMobileUnitFromHostController;
 use App\Entity\Entity;
 use App\Entity\Management\Printer;
 use ApiPlatform\Core\Annotation\ApiFilter;
@@ -44,12 +45,21 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'summary' => 'Créer un poste mobile d\'impression d\'étiquette et l\'associe à une imprimante réseau'
                 ],
                 'controller' => AddNewSinglePrinterMobileController::class
+            ],
+            'getFromHost' => [
+                'method' => 'GET',
+                'path' => '/single-printer-mobile-units/getFromHost',
+                'openapi_context' => [
+                    'description' => 'Récupère le poste mobile d\'impression d\'étiquette à partir de l\'adresse IP du poste',
+                    'summary' => 'Récupère le poste mobile d\'impression d\'étiquette à partir de l\'adresse IP du poste'
+                ],
+                'controller' => GetSinglePrinterMobileUnitFromHostController::class
             ]
         ],
         itemOperations: ['get', 'patch', 'delete'],
         denormalizationContext: ['groups' => ['write:single-printer-mobile-unit']],
         normalizationContext: [
-            'groups' => ['read:single-printer-mobile-unit', 'read:id', 'read:state'],
+            'groups' => ['read:single-printer-mobile-unit', 'read:id'],
             'openapi_definition_name' => 'SinglePrinterMobileUnit-read'
         ]
     ),

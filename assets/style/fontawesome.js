@@ -100,7 +100,7 @@ import {
     faForwardStep,
     faForwardFast,
     faSquare,
-    faNetworkWired, faRotateLeft
+    faNetworkWired, faRotateLeft, faSave
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -172,6 +172,7 @@ library.add(faPuzzlePiece)
 library.add(faReceipt)
 library.add(faRotateLeft)
 library.add(faRulerHorizontal)
+library.add(faSave)
 library.add(faScaleBalanced)
 library.add(faScrewdriverWrench)
 library.add(faSearch)

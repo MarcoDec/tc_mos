@@ -15,7 +15,7 @@ class AddNewSinglePrinterMobileController
 
     public function __invoke(Request $request) : SinglePrinterMobileUnit
     {
-        dump(['request' => $request->request->all()]);
+        //dump(['request' => $request->request->all()]);
         $content = json_decode($request->getContent(), true);
         $ipAdresseClient = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
         $mobileUnit = new SinglePrinterMobileUnit();
@@ -27,12 +27,12 @@ class AddNewSinglePrinterMobileController
         $mobileUnit->setPrinter($printer);
         $this->entityManager->persist($mobileUnit);
         $this->entityManager->flush();
-        dump([
-           'ipAdresseClient' => $ipAdresseClient,
-            'mobileUnit' => $mobileUnit,
-            'printer' => $printer,
-            'content' => $content
-        ]);
+//        dump([
+//           'ipAdresseClient' => $ipAdresseClient,
+//            'mobileUnit' => $mobileUnit,
+//            'printer' => $printer,
+//            'content' => $content
+//        ]);
         return $mobileUnit;
     }
 }
