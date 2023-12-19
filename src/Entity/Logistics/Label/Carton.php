@@ -97,12 +97,14 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
                 ]
             ],
             'print' => [
-                'method' => 'POST',
+                'method' => 'GET',
                 'path' => '/label-cartons/{id}/print',
                 'openapi_context' => [
                     'description' => 'Print a label carton by id',
                     'summary' => 'Print a label carton by id'
                 ],
+                'read' => false,
+                'write' => false,
                 'controller' => LabelPrintingController::class
             ],
         ],
@@ -134,7 +136,7 @@ class Carton extends Entity // implements MeasuredInterface, FileEntity
         ORM\Column(type: 'string', nullable: true),
         Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
-    private ?string $productIndice; // Indice du produit
+    private ?string $productIndice = ''; // Indice du produit
     #[
         ApiProperty(description: 'Nom du produit'),
         ORM\Column(type: 'string', nullable: true),

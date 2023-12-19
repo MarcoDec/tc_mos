@@ -84,7 +84,7 @@ class SinglePrinterMobileUnit extends Entity
 
     #[
         ApiProperty(description: 'Imprimante associé au poste mobile', example: '/api/printers/1'),
-        ORM\ManyToOne(targetEntity: Printer::class),
+        ORM\ManyToOne(targetEntity: Printer::class, fetch: 'EAGER'),
         Serializer\Groups(['read:single-printer-mobile-unit', 'write:single-printer-mobile-unit'])
     ]
     private ?Printer $printer = null;

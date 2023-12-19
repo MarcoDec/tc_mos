@@ -34,10 +34,6 @@ class LabelPrintingController
         file_put_contents("label.zpl", $label->getZpl());
         exec("lp -d $printerName $filePath");
         unlink("label.zpl");
-//        $filePath = BASE_URL.'/files/etiquette-'.$component->data['ref'].'.zpl';
-//        $file = fopen($filePath, 'w');
-//        fwrite($file, $zpl);
-//        fclose($file);
-//        system("lpr -P ".$_POST['imprimante']." -# ".$_POST['nb']." -o raw ".$filePath);
+        return $label->getZpl();
     }
 }
