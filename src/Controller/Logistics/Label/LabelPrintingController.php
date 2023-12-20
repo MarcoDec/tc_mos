@@ -27,12 +27,13 @@ class LabelPrintingController
             'deleted' => false
         ]);
         // On récupère l'imprimante
+        header('Content-type: text/plain; charset=utf-8');
         $printer = $mobileUnit->getPrinter();
         $printerName = $printer->getName();
         $filePath = "label_$idLabel.zpl";
         // On envoie la commande d'impression à l'imprimante
         file_put_contents($filePath, $label->getZpl());
-        exec("lp -d $printerName $filePath");
+        exec("lp -d ".$printerName." -n 1 -o raw ".$filePath);
         unlink($filePath);
         return $label->getZpl();
     }
