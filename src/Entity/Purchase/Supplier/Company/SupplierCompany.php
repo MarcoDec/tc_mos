@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['company'=>'exact', 'supplier'=>'exact']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['company'=>'exact', 'supplier'=>'exact', 'supplier.name' => 'partial']),
     ApiResource(
         description: 'SupplierCompany',
         collectionOperations: [

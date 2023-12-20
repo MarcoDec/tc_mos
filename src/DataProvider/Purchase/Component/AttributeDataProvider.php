@@ -24,7 +24,9 @@ final class AttributeDataProvider implements ContextAwareCollectionDataProviderI
     }
 
     /**
-     * @param Context $context
+     * @param string $resourceClass
+     * @param string|null $operationName
+     * @param array $context
      *
      * @return Paginator<Attribute>
      */

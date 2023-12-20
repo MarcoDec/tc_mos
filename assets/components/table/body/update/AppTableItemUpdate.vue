@@ -28,6 +28,9 @@
             props.machine.send('fail', {violations})
         }
     }
+    const machineViolations = computed(() => props.machine.state.value.context.violations)
+    const fieldViolations = computed(() => (Array.isArray(machineViolations.value) ? machineViolations.value : []))
+    const isMachineViolationGlobalError = computed(() => !Array.isArray(machineViolations.value))
 </script>
 
 <template>
@@ -42,13 +45,19 @@
             {{ normalizedIndex }}
         </td>
         <AppTableItemUpdateField
-            v-for="field in fields.fields"
+            v-for="(field, i) in fields.fields"
             :key="field.name"
             v-model="item.updated"
             :field="field"
+            :initial-field="fields.initialFields[i]"
             :form="form"
             :item="item"
             :row="id"
-            :violations="machine.state.value.context.violations"/>
+            :violations="fieldViolations"/>
+    </tr>
+    <tr v-if="isMachineViolationGlobalError">
+        <td :colspan="fields.fields.length + 2" class="bg-warning text-center">
+            <strong>{{ machineViolations }}</strong> - <small class="bg-white text-danger">Please take a screenshot of the page and send it to your IT administrator.</small>
+        </td>
     </tr>
 </template>

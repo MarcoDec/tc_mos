@@ -34,6 +34,6 @@ export default [
         component: () => import('./pages/customer/AppCustomerOrders.vue'),
         meta: {requiresAuth: true},
         name: 'customer-order-show',
-        path: '/customerOrder/show'
+        path: '/customerorder/show/:id'
     }
 ]

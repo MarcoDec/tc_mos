@@ -3,22 +3,27 @@
 namespace App\Entity\Hr\Employee\Skill;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Employee;
 use App\Entity\Hr\OutTrainer;
-use App\Entity\Production\Engine\Engine;
+use App\Entity\Production\Engine\Manufacturer\Engine;
 use App\Entity\Production\Engine\Group;
 use App\Entity\Project\Product\Product;
 use App\Filter\RelationFilter;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['employee']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['employee', 'inTrainer', 'type', 'family', 'engine', 'product', 'outTrainer']),
+    ApiFilter(filterClass: DateFilter::class, properties: ['startedDate', 'endedDate', 'remindedDate']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['level' => 'exact']),
+
     ApiResource(
         description: 'Compétence',
         collectionOperations: [
@@ -154,7 +159,7 @@ class Skill extends Entity {
     private ?DateTimeImmutable $startedDate = null;
 
     #[
-        ApiProperty(description: 'Type', readableLink: false, example: '/api/skill-types/4'),
+        ApiProperty(description: 'Type', readableLink: true, example: '/api/skill-types/4'),
         ORM\ManyToOne,
         Serializer\Groups(['read:skill', 'write:skill'])
     ]

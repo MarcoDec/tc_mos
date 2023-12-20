@@ -34,7 +34,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['warehouse', 'item']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['batchNumber' => 'partial', 'location' => 'partial', 'quantity.value' => 'partial', 'quantity.code' => 'partial','jail' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['batchNumber' => 'partial', 'location' => 'partial', 'quantity.value' => 'partial', 'quantity.code' => 'partial','jail' => 'partial', 'name' => 'partial', 'company']),
 
     ApiResource(
         description: 'Stock',

@@ -18,8 +18,12 @@
 </template>
 
 <style scoped>
-div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
-.gui-start-content {
-    font-size: 14px;
-}
+    div.tab-pane {
+        box-shadow: inset black 10px 10px 10px -10px;
+        padding: 5px 5px 5px 5px;
+    }
+    div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
+    .gui-start-content {
+        font-size: 14px;
+    }
 </style>

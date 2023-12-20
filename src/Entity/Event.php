@@ -21,7 +21,7 @@ abstract class Event extends Entity {
     #[
         ApiProperty(description: 'Fini', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:event','read:engine-maintenance-event'])
+        Serializer\Groups(['read:event','read:engine-maintenance-event', 'write:event'])
     ]
     protected bool $done = false;
 

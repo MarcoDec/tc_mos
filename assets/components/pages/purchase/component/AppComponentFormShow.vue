@@ -1,5 +1,5 @@
 <script setup>
-    import AppShowComponentTabAttributes from './tabs/AppShowComponentTabAttributes.vue'
+    // import AppShowComponentTabAttributes from './tabs/AppShowComponentTabAttributes.vue'
     import AppShowComponentTabFichiers from './tabs/AppShowComponentTabFichiers.vue'
     import AppShowComponentTabGeneral from './tabs/AppShowComponentTabGeneral.vue'
     import AppShowComponentTabLogistic from './tabs/AppShowComponentTabLogistic.vue'
@@ -23,7 +23,7 @@
             title="Attribut"
             icon="sitemap"
             tabs="gui-start">
-            <AppSuspense><AppShowComponentTabAttributes/></AppSuspense>
+            <!-- <AppSuspense><AppShowComponentTabAttributes/></AppSuspense> -->
         </AppTab>
         <AppTab
             id="gui-start-files"

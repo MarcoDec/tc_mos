@@ -26,7 +26,8 @@ class ClockingController extends FileUploadController
 
       return $data;
    }
-   public function performCustomEntityAction() {
+   public function performCustomEntityAction(): void
+   {
       $employee = $this->entity->getEmployee();
       $this->entity->setEnter($this->manager->isEnter($employee));
    }

@@ -1,50 +1,52 @@
 import {defineStore} from 'pinia'
+import api from '../../api'
 
 export const useBlCustomerOrderItemsStore = defineStore('blCustomerOrderItems', {
     actions: {
-        fetchItems() {
-            this.items = [
-                {
-                    currentPlace: 'in_creation',
-                    delete: true,
-                    departureDate: '2017-06-20',
-                    id: 1,
-                    number: 10011,
-                    update: false
-                },
-                {
-                    currentPlace: 'in_creation',
-                    delete: true,
-                    departureDate: '2017-07-04',
-                    id: 2,
-                    number: 10080,
-                    update: false
-                }
-            ]
+        async fetch(criteria = '') {
+            const response = await api(`/api/delivery-notes${criteria}`, 'GET')
+            console.log('responseBl', response);
+            this.blCustomerOrderItems = await this.updatePagination(response)
+        },
+        async updatePagination(response) {
+            const responseData = await response['hydra:member']
+            let paginationView = {}
+            if (Object.prototype.hasOwnProperty.call(response, 'hydra:view')) {
+                paginationView = response['hydra:view']
+            } else {
+                paginationView = responseData
+            }
+            if (Object.prototype.hasOwnProperty.call(paginationView, 'hydra:first')) {
+                this.pagination = true
+                this.firstPage = paginationView['hydra:first'] ? paginationView['hydra:first'].match(/page=(\d+)/)[1] : '1'
+                this.lastPage = paginationView['hydra:last'] ? paginationView['hydra:last'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
+                this.nextPage = paginationView['hydra:next'] ? paginationView['hydra:next'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
+                this.currentPage = paginationView['@id'].match(/page=(\d+)/)[1]
+                this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
+                return responseData
+            }
+            this.pagination = false
+            return responseData
+        },
+        async remove(id){
+            await api(`/api/manufacturing-orders/${id}`, 'DELETE')
+            this.blCustomerOrderItems = this.blCustomerOrderItems.filter(blCustomerOrderItem => Number(blCustomerOrderItem['@id'].match(/\d+/)[0]) !== id)
         }
-
     },
     getters: {
-        ariaSort() {
-            return field => (this.isSorter(field) ? this.order : 'none')
-        },
-        fetchBody() {
-            return {page: this.current, ...this.search, ...this.orderBody}
-        },
-        isSorter: state => field => field.name === state.sorted,
-        order: state => (state.asc ? 'ascending' : 'descending'),
-        pages: state => Math.ceil(state.total / 15)
-
+     
+        itemsBlCustomerOrder: state => state.blCustomerOrderItems.map(item => {
+            const newObject = {
+                '@id': item['@id'],
+                currentPlace:item.embState.state,
+                departureDate:item.date,
+                number: item.ref
+            }
+            return newObject
+        })
     },
+
     state: () => ({
-        asc: true,
-        current: 1,
-        first: 1,
-        items: [],
-        last: 1,
-        next: 1,
-        prev: 1,
-        search: {},
-        total: 0
+        blCustomerOrderItems: []
     })
 })

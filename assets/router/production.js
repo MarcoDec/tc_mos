@@ -6,7 +6,11 @@ import AppShowGuiWorkstation from '../components/pages/production/equipment/work
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTablePageType from '../components/pages/table/AppTablePageType.vue'
 import {readonly} from 'vue'
-
+const myOptions = [
+    {iri: 'counter-part', text: 'Contrepartie de test', value: 'counter-part'},
+    {iri: 'workstation', text: 'Poste de travail', value: 'workstation'},
+    {iri: 'tool', text: 'Outil', value: 'tool'}
+]
 export default [
     {
         component: AppTablePageType,
@@ -29,11 +33,7 @@ export default [
                 {
                     label: 'Type',
                     name: 'type',
-                    options: [
-                        {iri: 'counter-part', text: 'Contrepartie de test', value: 'counter-part'},
-                        {iri: 'workstation', text: 'Poste de travail', value: 'workstation'},
-                        {iri: 'tool', text: 'Outil', value: 'tool'}
-                    ],
+                    options: myOptions,
                     sort: false,
                     type: 'select',
                     update: false

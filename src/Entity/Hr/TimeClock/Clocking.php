@@ -15,8 +15,18 @@ use App\Entity\Traits\AttachmentTrait;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use App\Filter\RelationFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 
+/*   
+   ApiFilter(filterClass: SearchFilter::class, properties: ['employee'=> 'exact', 'creationDate' => 'partial', 'date' => 'partial', 'enter' => 'partial']),
+   ApiFilter(filterClass: RelationFilter:class, properties:['-creationDate']),
+   ApiFilter(OrderFilter::class, properties: ['creationDate' => 'DESC']),
+*/
 #[
+   ApiFilter(filterClass: OrderFilter::class, properties: ['creationDate' => 'desc']),
+   ApiFilter(filterClass: SearchFilter::class, properties: ['employee'=> 'exact', 'creationDate' => 'partial', 'date' => 'partial', 'enter' => 'partial']),
+
    ORM\Entity,
    ApiResource(
       description: 'Pointages',
@@ -37,6 +47,10 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             ]
          ],
          'post' => [
+             'method' => 'POST',
+             'path' => '/clockings/add',
+         ],
+         'clocking' => [
             'input_formats' => [
                'multipart' => ['multipart/form-data']
             ],
@@ -70,6 +84,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             ],
             'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
          ],
+         'patch',
          'delete' => [
             'openapi_context' => [
                'description' => 'Supprime un pointage employé',
@@ -80,9 +95,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
       attributes: [
          'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')'
       ],
-      paginationItemsPerPage: 2
-   ),
-   ApiFilter(SearchFilter::class, properties: ['employee' => 'exact'])
+      paginationItemsPerPage: 15
+   )
 ]
 class Clocking extends AbstractAttachment {
    use AttachmentTrait;
@@ -108,7 +122,8 @@ class Clocking extends AbstractAttachment {
     private bool $enter;
 
    #[
-      ORM\Column(type: "datetime", nullable: true)
+      ORM\Column(type: "datetime", nullable: true, options :["default" => "CURRENT_TIMESTAMP"]),
+      Serializer\Groups(['read:clocking:collection']),
    ]
    private DateTime $creationDate;
 
@@ -116,7 +131,7 @@ class Clocking extends AbstractAttachment {
       parent::__construct();
       $this->hasParameter = false; // Clocking n'a pas (besoin) de paramètres
       $this->enter = false;
-      $this->creationDate = new DateTime("now");
+      $this->creationDate = new DateTime();
       $this->setExpirationDate(new DateTime("now + 14 day")); // On positionne à 14 jours par défaut la durée de rétention du fichier
    }
 

@@ -4,6 +4,21 @@ import generateSupplier from './supplier'
 
 export const useSuppliersStore = defineStore('suppliers', {
     actions: {
+        async addNew(payload) {
+            const response = await api('/api/suppliers', payload)
+            this.supplier = response
+        },
+        async fetch(criteria = '?page=1') {
+            const response = await api(`/api/suppliers${criteria}`, 'GET')
+            this.suppliers = response['hydra:member']
+            if (response['hydra:view']) {
+                this.currentPage = response['hydra:view']['@id'].match(/page=(\d+)/)[1]
+                this.firstPage = response['hydra:view']['hydra:first'] ? response['hydra:view']['hydra:first'].match(/page=(\d+)/)[1] : '1'
+                this.lastPage = response['hydra:view']['hydra:last'] ? response['hydra:view']['hydra:last'].match(/page=(\d+)/)[1] : this.currentPage
+                this.nextPage = response['hydra:view']['hydra:next'] ? response['hydra:view']['hydra:next'].match(/page=(\d+)/)[1] : this.currentPage
+                this.previousPage = response['hydra:view']['hydra:previous'] ? response['hydra:view']['hydra:previous'].match(/page=(\d+)/)[1] : this.currentPage
+            }
+        },
         async fetchOne(id = 1) {
             const response = await api(`/api/suppliers/${id}`, 'GET')
             const item = generateSupplier(response, this)
@@ -44,6 +59,12 @@ export const useSuppliersStore = defineStore('suppliers', {
         })
     },
     state: () => ({
+        currentPage: '',
+        firstPage: '',
+        lastPage: '',
+        nextPage: '',
+        pagination: true,
+        previousPage: '',
         supplier: {},
         suppliers: {},
         vatMessage: []

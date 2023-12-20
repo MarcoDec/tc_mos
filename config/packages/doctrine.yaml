@@ -13,13 +13,25 @@ doctrine:
         mapping_types:
           enum: string
         profiling_collect_backtrace: '%profiling_collect_backtrace%'
-        url: '%env(resolve:DATABASE_URL)%'
+        # url: '%env(resolve:DATABASE_URL)%'
+        dbname: '%env(resolve:DATABASE_DBNAME)%'
+        password: '%env(resolve:DATABASE_PASSWORD)%'
+        user: '%env(resolve:DATABASE_USER)%'
+        server_version: '%env(resolve:SERVER_VERSION)%'
+        host: '%env(resolve:DATABASE_HOST)%'
+        port: '%env(resolve:DATABASE_PORT)%'
         wrapper_class: App\Doctrine\DBAL\Connection
       migrations:
         driver: pdo_mysql
         mapping_types:
           enum: string
-        url: '%env(resolve:DATABASE_ROOT_URL)%'
+        # url: '%env(resolve:DATABASE_URL)%'
+        dbname: '%env(resolve:DATABASE_DBNAME)%'
+        password: '%env(resolve:DATABASE_ROOT_PASSWORD)%'
+        user: '%env(resolve:DATABASE_ROOT_USER)%'
+        server_version: '%env(resolve:SERVER_VERSION)%'
+        host: '%env(resolve:DATABASE_HOST)%'
+        port: '%env(resolve:DATABASE_PORT)%'
     default_connection: default
     types:
       attribute: App\Doctrine\DBAL\Types\Purchase\Component\AttributeType

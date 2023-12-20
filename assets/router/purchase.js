@@ -9,6 +9,34 @@ import {readonly} from 'vue'
 export default [
     {
         component: AppTablePageSuspense,
+        meta: {title: 'Groupes d\'équivalence — T-Concept GPAO'},
+        name: 'component-equivalents',
+        path: '/component-equivalents',
+        props: {
+            apiBaseRoute: 'component-equivalents',
+            fields: [
+                {create: false, label: 'Code', name: 'code', update: false},
+                {label: 'Nom', name: 'name'},
+                {label: 'Description', name: 'description'},
+                {label: 'Unité', name: 'unit', options: {base: 'units'}, sortName: 'unit.code', type: 'select'},
+                {/*create: false,*/ label: 'Famille', name: 'family', options: {base: 'component-families'}, sortName: 'family.code', type: 'select'},
+                {
+                    create: false,
+                    label: 'Items',
+                    name: 'components',
+                    type: 'multiselect-fetch',
+                    api: '/api/components',
+                    filteredProperty: 'code',
+                    update: true
+                }
+            ],
+            icon: 'magnet',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Equivalences'
+        }
+    },
+    {
+        component: AppTablePageSuspense,
         meta: {title: 'Attributs — T-Concept GPAO'},
         name: 'attributes',
         path: '/attributes',

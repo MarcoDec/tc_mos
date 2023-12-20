@@ -10,39 +10,38 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\Embeddable]
 class Measure {
+    public const GROUPS=['read:measure', 'write:measure',
+        'read:balance-sheet', 'write:balance-sheet',
+        'write:customer',
+        'write:customer:accounting',
+        'write:customer:logistics',
+        'write:product',
+        'write:product:logistics',
+        'write:product:production',
+        'write:product:project',
+        'read:product-customer',
+        'read:operation-employee:collection',
+        'read:reference', 'write:reference',
+        'read:production-quality-value', 'write:production-quality-value'
+    ];
     #[
         ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true, options: ['collation' => 'utf8mb3_bin']),
-        Serializer\Groups(['read:measure',
-            'write:measure', 'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics',
-            'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project',
-            'read:production-quality-value', 'write:production-quality-value',
-            'read:reference', 'write:reference'
-        ])
+        Serializer\Groups(self::GROUPS)
     ]
     private ?string $code = null;
 
     #[
         ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true, options: ['collation' => 'utf8mb3_bin']),
-        Serializer\Groups(['read:measure', 'write:measure',
-            'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics',
-            'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project',
-            'read:production-quality-value', 'write:production-quality-value',
-            'read:reference', 'write:reference'
-        ])
+        Serializer\Groups(self::GROUPS)
     ]
     private ?string $denominator = null;
 
-    private ?Unit $denominatorUnit = null;
-    private ?Unit $unit = null;
+    private ?AbstractUnit $denominatorUnit = null;
+    private ?AbstractUnit $unit = null;
 
     #[
         ORM\Column(options: ['default' => 0]),
-        Serializer\Groups(['read:measure', 'write:measure',
-            'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics',
-            'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project',
-            'read:production-quality-value', 'write:production-quality-value',
-            'read:reference', 'write:reference'
-        ])
+        Serializer\Groups(self::GROUPS)
     ]
     private float $value = 0;
 
@@ -52,7 +51,7 @@ class Measure {
         return $this;
     }
 
-    final public function convert(Unit $unit, ?Unit $denominator = null): self {
+    final public function convert(AbstractUnit $unit, ?AbstractUnit $denominator = null): self {
         $this->getSafeUnit()->assertSameAs($unit);
         if ($this->getSafeUnit()->getCode() !== $unit->getCode()) {
             $this->value *= $this->getSafeUnit()->getConvertorDistance($unit);
@@ -85,18 +84,18 @@ class Measure {
         return $this->denominator;
     }
 
-    final public function getDenominatorUnit(): ?Unit {
+    final public function getDenominatorUnit(): ?AbstractUnit {
         return $this->denominatorUnit;
     }
 
-    final public function getSafeUnit(): Unit {
+    final public function getSafeUnit(): AbstractUnit {
         if ($this->unit === null) {
             throw new LogicException('Unit not loaded.');
         }
         return $this->unit;
     }
 
-    final public function getUnit(): ?Unit {
+    final public function getUnit(): ?AbstractUnit {
         return $this->unit;
     }
 
@@ -120,12 +119,12 @@ class Measure {
         return $this;
     }
 
-    final public function setDenominatorUnit(?Unit $denominatorUnit): self {
+    final public function setDenominatorUnit(?AbstractUnit $denominatorUnit): self {
         $this->denominatorUnit = $denominatorUnit;
         return $this;
     }
 
-    final public function setUnit(?Unit $unit): self {
+    final public function setUnit(?AbstractUnit $unit): self {
         $this->unit = $unit;
         return $this;
     }
@@ -140,9 +139,9 @@ class Measure {
     }
 
     private function convertToSame(self $measure): self {
-        /** @var Unit $unit */
+        /** @var AbstractUnit $unit */
         $unit = $this->getSafeUnit()->getLess($measure->getSafeUnit());
-        /** @var null|Unit $denominator */
+        /** @var null|AbstractUnit $denominator */
         $denominator = $this->denominatorUnit !== null && $measure->denominatorUnit !== null
             ? $this->denominatorUnit->getLess($measure->denominatorUnit)
             : null;

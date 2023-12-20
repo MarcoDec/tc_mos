@@ -15,7 +15,7 @@ class State extends AbstractState {
     #[
         ApiProperty(description: 'état', openapiContext: ['enum' => OrderStateType::TYPES]),
         ORM\Column(type: 'manufacturing_order_state', options: ['default' => 'asked']),
-        Serializer\Groups(['read:state'])
+        Serializer\Groups(['read:state', 'read:operation-employee:collection'])
     ]
     protected string $state = OrderStateType::TYPE_STATE_ASKED;
 }

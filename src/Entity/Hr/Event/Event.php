@@ -9,11 +9,15 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Event as AbstractEvent;
 use App\Entity\Hr\Employee\Employee;
 use App\Filter\RelationFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['employee']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['employee', 'type']),
+    ApiFilter(filterClass: DateFilter::class, properties: ['date']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial',]),
     ApiResource(
         description: 'Événement',
         collectionOperations: [
@@ -67,7 +71,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 ]
 class Event extends AbstractEvent {
     #[
-        ApiProperty(description: 'Employé', example: '/api/employees/1'),
+        ApiProperty(description: 'Employé',readableLink: false ,example: '/api/employees/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:event', 'write:event'])
     ]
