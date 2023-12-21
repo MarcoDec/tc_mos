@@ -27,28 +27,13 @@
         scannedProducts.value = []
         return false
     }
-    function next() {
-        if (product.value === '') return
-        checkResult.value['class'] = ''
-        checkResult.value.text = ''
-        checkResult.value.state = true
-        // On vérifie que la valeur product.value correspond à la valeur de props.of.data.productRef
-        if (product.value === props.of.data.productRef) {
-            scannedProducts.value.push(product.value)
-            nbProduit.value = scannedProducts.value.length
-            emits('changeProducts', nbProduit.value)
-            product.value = ''
-            return
-        }
-        checkResult.value['class'] = 'bg-danger'
-        checkResult.value.text = `Le dernier produit scanné ne correspond pas à celui attendu ${props.of.data.productRef}, veuillez recommencer`
-        checkResult.value.state = false
-        product.value = ''
-    }
     const newLabel = ref({})
     const zplHref = ref('')
     const imageUrl = ref('')
     function validate() {
+        const diff = nbProduit.value - Number(props.of.data.productConditionnement)
+        const test = diff < 0 ? confirm(`Le nombre de produit scanné ne correspond pas au conditionnement du produit ${props.of.data.productConditionnement}, voulez-vous continuer ?`) : true
+        if (test === false) return
         if (check()) {
             //Avant de passer à l'impression il faut créer l'étiquette avec l'ensemble des données
             const dataTosend = {
@@ -58,7 +43,7 @@
                 manufacturer: props.modeleEtiquette.manufacturer,
                 customerAddressName: props.modeleEtiquette.customerAddressName,
                 operator: props.operateur.matricule,
-                batchnumber: props.of.data.ofnumber,
+                batchnumber: `${props.of.data.ofnumber}.${props.of.data.indice}`,
                 productDescription: props.of.data.productDescription,
                 productReference: props.of.data.productRef,
                 productIndice: props.of.data.productIndice,
@@ -84,6 +69,30 @@
             })
             // avant de passer à l'étape suivante
         } else alert('Veuillez scanner au moins un produit')
+    }
+    function next() {
+        if (product.value === '') return
+        checkResult.value['class'] = ''
+        checkResult.value.text = ''
+        checkResult.value.state = true
+        // On vérifie que la valeur product.value correspond à la valeur de props.of.data.productRef
+        if (product.value === props.of.data.productRef) {
+            scannedProducts.value.push(product.value)
+            nbProduit.value = scannedProducts.value.length
+            const diff = nbProduit.value - Number(props.of.data.productConditionnement)
+            //console.log('nbProduit', nbProduit.value, props.of.data.productConditionnement, typeof nbProduit.value, typeof Number(props.of.data.productConditionnement), diff)
+            if (diff === 0) {
+                validate()
+                return
+            }
+            emits('changeProducts', nbProduit.value)
+            product.value = ''
+            return
+        }
+        checkResult.value['class'] = 'bg-danger'
+        checkResult.value.text = `Le dernier produit scanné ne correspond pas à celui attendu ${props.of.data.productRef}, veuillez recommencer`
+        checkResult.value.state = false
+        product.value = ''
     }
     function reset() {
         scannedProducts.value = []
@@ -119,7 +128,7 @@
             <button class="btn btn-warning d-inline-block m-2" @click="removeLast">
                 <Fa :brand="false" icon="rotate-left"/>
             </button>
-            <button class="btn btn-success d-inline-block m-2" @click="validate">
+            <button class="btn btn-success d-inline-block m-2" :disabled="nbProduit === 0" @click="validate">
                 <Fa :brand="false" icon="print"/>
             </button>
         </div>

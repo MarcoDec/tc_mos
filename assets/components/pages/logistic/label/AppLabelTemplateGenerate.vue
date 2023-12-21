@@ -126,7 +126,7 @@
             singlePrinterMobileUnitDefined.value = true
             localPrint.value = response2.localPrint
             printerMobileUnitName.value = response2.name
-            if (!localPrint.value) {
+            if (localPrint.value === false) {
                 //console.log('printer', response2.printer['@id'])
                 selectedPrinter.value = response2.printer['@id']
             } else {
@@ -210,9 +210,9 @@
                         <AppItemCarte label="Produit :" :value="productRefAndIndice"/>
                     </ul>
                 </div>
-                <div v-if="currentStep>2" class="col-12">
+                <div v-if="currentStep > 2" class="col-12">
                     <AppItemCarte label="Nb Produit scannés :">
-                        <strong class="font-50px">{{ nbProduit }}/{{of.data.productConditionnement}}</strong>
+                        <strong class="font-50px">{{ nbProduit }}/{{ of.data.productConditionnement }}</strong>
                     </AppItemCarte>
                 </div>
             </div>

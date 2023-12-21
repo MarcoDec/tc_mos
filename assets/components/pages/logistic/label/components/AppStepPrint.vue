@@ -26,7 +26,7 @@
     const printerLaunched = ref(false)
     onMounted(() => {
         console.log('AppStepPrint', props.products, props.localPrint)
-        if (!props.localPrint) {
+        if (props.localPrint === false) {
             console.log('impession réseau')
             imprimeReseau()
         } else {

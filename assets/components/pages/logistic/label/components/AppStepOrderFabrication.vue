@@ -5,6 +5,7 @@
     const of = ref('<à définir>')
     const ofField = ref('')
     const inputOfRef = ref(null)
+    const originGP = ref(true)
 
     async function getOf() {
         //region explications
@@ -65,7 +66,8 @@
                     ...of.value.data,
                     productRef: productJson.ref,
                     productIndice: productJson.indice,
-                    productDescription: productJson.designation
+                    productDescription: productJson.designation,
+                    productConditionnement: productJson.conditionnement
                 }
             } else {
                 //erreur
@@ -85,7 +87,8 @@
                     ...of.value.data,
                     productRef: productJson.ref,
                     productIndice: productJson.indice,
-                    productDescription: productJson.designation
+                    productDescription: productJson.designation,
+                    productConditionnement: productJson.conditionnement
                 }
             } else {
                 //erreur
