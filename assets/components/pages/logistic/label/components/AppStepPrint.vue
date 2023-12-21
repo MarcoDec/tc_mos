@@ -4,7 +4,8 @@
 
     const emits = defineEmits(['nextStep'])
     const props = defineProps({
-        products: {default: () => ({}), required: true, type: Object}
+        products: {default: () => ({}), required: true, type: Object},
+        localPrint: {default: () => true, required: true, type: Boolean}
     })
     const zpl = ref(props.products.zpl)
     const zplHref = ref('')
@@ -19,9 +20,19 @@
                 emits('nextStep')
             })
     }
+    function imprimeLocal() {
+        window.print()
+    }
     const printerLaunched = ref(false)
     onMounted(() => {
-        imprimeReseau()
+        console.log('AppStepPrint', props.products, props.localPrint)
+        if (!props.localPrint) {
+            console.log('impession réseau')
+            imprimeReseau()
+        } else {
+            console.log('impession local')
+            imprimeLocal()
+        }
     })
 </script>
 

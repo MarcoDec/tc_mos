@@ -21,10 +21,15 @@ class AddNewSinglePrinterMobileController
         $mobileUnit = new SinglePrinterMobileUnit();
         $mobileUnit->setName($content['name']);
         $mobileUnit->setMobileUnitIp($ipAdresseClient);
-        $segments = explode('/', $content['printer']);
-        $id = end($segments);
-        $printer = $this->entityManager->getRepository(Printer::class)->find($id);
-        $mobileUnit->setPrinter($printer);
+        $mobileUnit->setLocalPrint($content['localPrint']);
+        if ($mobileUnit->isLocalPrint() === true) {
+            $mobileUnit->setPrinter(null);
+        } else {
+            $segments = explode('/', $content['printer']);
+            $id = end($segments);
+            $printer = $this->entityManager->getRepository(Printer::class)->find($id);
+            $mobileUnit->setPrinter($printer);
+        }
         $this->entityManager->persist($mobileUnit);
         $this->entityManager->flush();
 //        dump([
