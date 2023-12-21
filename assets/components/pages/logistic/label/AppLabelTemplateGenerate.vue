@@ -1,4 +1,5 @@
 <script setup>
+    import {useCookies} from '@vueuse/integrations/useCookies'
     import {computed, onMounted, ref} from 'vue'
     import {useRoute, useRouter} from 'vue-router'
     import useUser from '../../../../stores/security'
@@ -17,6 +18,9 @@
     const idLabelTemplate = route.params.idLabelTemplate
     const response = api(`/api/label-templates/${idLabelTemplate}`, 'get')
     const modeleEtiquette = ref({})
+    const initPosteError = ref(null)
+    const isPosteConfigurationChangeNeed = ref(false)
+    const cookies = useCookies(['token'])
 
     response.then(data => {
         modeleEtiquette.value = data
@@ -25,7 +29,6 @@
     const currentStep = ref(1)
 
     function getOperateur(operateurData) {
-        console.log('operateurData', operateurData)
         operateur.value = operateurData
         currentStep.value += 1
     }
@@ -36,7 +39,6 @@
     }
     const products = ref({})
     function getProducts(productsData) {
-        console.log('productsData', productsData)
         products.value = productsData
         currentStep.value += 1
     }
@@ -78,7 +80,6 @@
     const currentUser = useUser()
     const selectedPrinter = ref(null)
     function onPrinted() {
-        console.log('onPrinted')
         currentStep.value += 1
     }
 
@@ -96,21 +97,78 @@
         temporaryPrinter.value = printer
     }
     const temporaryPosteName = ref(null)
-    function lierImprimante() {
-        //console.log('lierImprimante', temporaryPrinter.value, temporaryPosteName.value, localPrint.value)
-        if (!temporaryPosteName.value) return
+    const currentId = ref(null)
+    function updatePoste() {
+        if (!temporaryPosteName.value) {
+            initPosteError.value = 'Le nom du poste est obligatoire'
+            return
+        }
         let networkPrinter = null
-        if (temporaryPrinter.value && temporaryPrinter.value['@id'] && !localPrint.value) networkPrinter = temporaryPrinter.value['@id']
+        if (temporaryPrinter.value && temporaryPrinter.value['@id'] && !localPrint.value) {
+            networkPrinter = temporaryPrinter.value['@id']
+            initPosteError.value = null
+        }
+        if (!localPrint.value && (!temporaryPrinter.value || !temporaryPrinter.value['@id'])) {
+            initPosteError.value = 'Le choix d\'une imprimante réseau est obligatoire'
+            return
+        }
         const data = {
             printer: networkPrinter,
             name: temporaryPosteName.value,
             localPrint: localPrint.value
         }
-        //console.log('data', data)
+        fetch(`/api/single-printer-mobile-units/${currentId.value}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/merge-patch+json',
+                'Authorization': 'Bearer ' + cookies.get('token'),
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json(); // ou response.text() si la réponse n'est pas au format JSON
+            })
+            .then(data => {
+                window.location.reload()
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+    function addNewPoste() {
+        if (!temporaryPosteName.value) {
+            initPosteError.value = 'Le nom du poste est obligatoire'
+            return
+        }
+        let networkPrinter = null
+        if (temporaryPrinter.value && temporaryPrinter.value['@id'] && !localPrint.value) {
+            networkPrinter = temporaryPrinter.value['@id']
+            initPosteError.value = null
+        }
+        if (!localPrint.value && (!temporaryPrinter.value || !temporaryPrinter.value['@id'])) {
+            initPosteError.value = 'Le choix d\'une imprimante réseau est obligatoire'
+            return
+        }
+        const data = {
+            printer: networkPrinter,
+            name: temporaryPosteName.value,
+            localPrint: localPrint.value
+        }
         api('/api/single-printer-mobile-units/addNewAndLink', 'post', data)
             .then(() => {
                 window.location.reload()
             })
+    }
+    function lierImprimante() {
+        if (isPosteConfigurationChangeNeed.value) {
+            updatePoste()
+        } else {
+            addNewPoste()
+        }
+
     }
     const singlePrinterMobileUnitDefined = ref(false)
     const localPrint = ref(false)
@@ -126,27 +184,30 @@
             singlePrinterMobileUnitDefined.value = true
             localPrint.value = response2.localPrint
             printerMobileUnitName.value = response2.name
-            if (localPrint.value === false) {
-                //console.log('printer', response2.printer['@id'])
-                selectedPrinter.value = response2.printer['@id']
-            } else {
-                //console.log('localPrint', localPrint.value)
-                selectedPrinter.value = null
-            }
-        } else {
-            console.log('aucune imprimante associée au poste')
+            currentId.value = response2.id
+            if (localPrint.value === false)  selectedPrinter.value = response2.printer['@id']
+            else selectedPrinter.value = null
         }
     })
     function updateLocalPrint(value) {
         localPrint.value = value
     }
+    function onPosteConfigurationChange() {
+        isPosteConfigurationChangeNeed.value = true
+        temporaryPosteName.value = printerMobileUnitName.value
+        temporaryPrinter.value = printers.value.find(printer => printer['@id'] === selectedPrinter.value)
+        singlePrinterMobileUnitDefined.value = false
+    }
 </script>
 
 <template>
     <div v-if="!singlePrinterMobileUnitDefined">
-        <div class="bg-danger text-center text-white">
+        <div v-if="!isPosteConfigurationChangeNeed" class="bg-danger text-center text-white">
             Ce poste n'est pas reconnu ou son IP a changé<br/>
             Impossible de poursuivre tant qu'une imprimante ne lui aura été associée
+        </div>
+        <div v-else class="bg-info text-center text-white">
+            Pour modifier les données de ce poste veuillez modifier les données ci-dessous et enregistrer
         </div>
         <div class="container">
             <div class="row">
@@ -176,6 +237,7 @@
                     <button class="btn btn-success m-2" @click="lierImprimante">
                         <Fa :brand="false" icon="save"/> Enregistrer
                     </button>
+                    <div v-if="initPosteError !== null" class="bg-light text-danger"> {{ initPosteError }}</div>
                 </div>
             </div>
         </div>
@@ -183,9 +245,11 @@
     <div v-else>
         <div v-if="selectedPrinter !== null" class="bg-info text-center text-white">
             <strong>Poste:</strong> {{ printerMobileUnitName }} <strong>Impression Réseau vers:</strong> {{ selectedPrinterName }}
+            <Fa :brand="false" class="btn btn-primary m-1" icon="gear" title="Changer la configuation du poste" @click="onPosteConfigurationChange"/>
         </div>
         <div v-else class="bg-info text-center text-white">
             <strong>Poste:</strong> {{ printerMobileUnitName }} <strong>Impression locale</strong>
+            <Fa :brand="false" class="m-2 text-primary icon-mode icon-link icon-link-hover" icon="gear" title="Changer la configuation du poste" @click="onPosteConfigurationChange"/>
         </div>
         <div class="carton-label container-fluid">
             <div class="row">
