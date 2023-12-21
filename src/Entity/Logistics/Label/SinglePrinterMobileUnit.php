@@ -17,7 +17,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: [
         'name' => 'partial',
-        'mobileUnitIp' => 'partial'
+        'mobileUnitIp' => 'partial',
+        'localPrint' => 'exact'
     ]),
     ApiFilter(filterClass: RelationFilter::class, properties: [
         'printer'
@@ -89,6 +90,13 @@ class SinglePrinterMobileUnit extends Entity
     ]
     private ?Printer $printer = null;
 
+    #[
+        ApiProperty(description: 'Impression locale', example: 'false'),
+        ORM\Column(type: 'boolean', nullable: true),
+        Serializer\Groups(['read:single-printer-mobile-unit', 'write:single-printer-mobile-unit'])
+    ]
+    private bool $localPrint = false;
+
     /**
      * @return string|null
      */
@@ -140,6 +148,24 @@ class SinglePrinterMobileUnit extends Entity
     public function setPrinter(?Printer $printer): SinglePrinterMobileUnit
     {
         $this->printer = $printer;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLocalPrint(): bool
+    {
+        return $this->localPrint;
+    }
+
+    /**
+     * @param bool $localPrint
+     * @return SinglePrinterMobileUnit
+     */
+    public function setLocalPrint(bool $localPrint): SinglePrinterMobileUnit
+    {
+        $this->localPrint = $localPrint;
         return $this;
     }
 

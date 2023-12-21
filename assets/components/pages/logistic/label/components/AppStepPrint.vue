@@ -4,12 +4,14 @@
 
     const emits = defineEmits(['nextStep'])
     const props = defineProps({
-        products: {default: () => ({}), required: true, type: Object}
+        products: {default: () => ({}), required: true, type: Object},
+        localPrint: {default: () => true, required: true, type: Boolean}
     })
     const zpl = ref(props.products.zpl)
     const zplHref = ref('')
     const imageUrl = ref(props.products.imageUrl)
     const file = new Blob([zpl.value], {type: 'text/plain'})
+    const printerLaunched = ref(false)
     zplHref.value = URL.createObjectURL(file)
 
     function imprimeReseau() {
@@ -19,10 +21,24 @@
                 emits('nextStep')
             })
     }
-    const printerLaunched = ref(false)
+    function imprimeLocal() {
+        window.print()
+        printerLaunched.value = true
+        emits('nextStep')
+    }
     onMounted(() => {
-        imprimeReseau()
+        console.log('AppStepPrint', props.products, props.localPrint)
+        if (props.localPrint === false) {
+            console.log('impression réseau')
+            imprimeReseau()
+        }
     })
+    function onImageLoaded() {
+        if (props.localPrint) {
+            console.log('impression local')
+            imprimeLocal()
+        }
+    }
 </script>
 
 <template>
@@ -32,7 +48,7 @@
         </div>
         <div class="text-center">
             Aperçu de l'étiquette
-            <img id="imageToPrint" class="toPrint" :src="imageUrl" alt="aperçu etiquette" width="280"/>
+            <img id="imageToPrint" class="toPrint" :src="imageUrl" alt="aperçu etiquette" width="280" @load="onImageLoaded"/>
         </div>
         <div v-if="!printerLaunched">
             <span class="spinner-border" role="status"/>

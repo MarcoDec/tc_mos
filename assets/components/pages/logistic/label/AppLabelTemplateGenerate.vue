@@ -3,6 +3,7 @@
     import {useRoute, useRouter} from 'vue-router'
     import useUser from '../../../../stores/security'
     import api from '../../../../api'
+    import AppSwitch from '../../../form-cardable/fieldCardable/input/AppSwitch.vue'
     import AppItemCarte from './components/AppItemCarte.vue'
     import AppStepOperateur from './components/AppStepOperateur.vue'
     import AppStepOrderFabrication from './components/AppStepOrderFabrication.vue'
@@ -96,18 +97,25 @@
     }
     const temporaryPosteName = ref(null)
     function lierImprimante() {
-        if (temporaryPrinter.value === null) {
-            return
-        }
+        //console.log('lierImprimante', temporaryPrinter.value, temporaryPosteName.value, localPrint.value)
+        if (!temporaryPosteName.value) return
+        let networkPrinter = null
+        if (temporaryPrinter.value && temporaryPrinter.value['@id'] && !localPrint.value) networkPrinter = temporaryPrinter.value['@id']
         const data = {
-            printer: temporaryPrinter.value['@id'],
-            name: temporaryPosteName.value
+            printer: networkPrinter,
+            name: temporaryPosteName.value,
+            localPrint: localPrint.value
         }
+        //console.log('data', data)
         api('/api/single-printer-mobile-units/addNewAndLink', 'post', data)
             .then(() => {
                 window.location.reload()
             })
     }
+    const singlePrinterMobileUnitDefined = ref(false)
+    const localPrint = ref(false)
+    const printerMobileUnitName = ref(null)
+
     onMounted(async () => {
         if (!currentUser.isLogged) router.push({name: 'login'})
         //if (!currentUser.isLogisticsWriter || !currentUser.isProductionWriter) router.push({name: 'home'})
@@ -115,123 +123,150 @@
         // via l'api /api/single-printer-mobile-units/getFromHost GET
         const response2 = await api('/api/single-printer-mobile-units/getFromHost', 'get')
         if (response2) {
-            const printer = response2.printer['@id']
-            if (printer) {
-                console.log('printer', printer)
-                selectedPrinter.value = printer
+            singlePrinterMobileUnitDefined.value = true
+            localPrint.value = response2.localPrint
+            printerMobileUnitName.value = response2.name
+            if (localPrint.value === false) {
+                //console.log('printer', response2.printer['@id'])
+                selectedPrinter.value = response2.printer['@id']
             } else {
-                console.error('printer not found')
+                //console.log('localPrint', localPrint.value)
+                selectedPrinter.value = null
             }
+        } else {
+            console.log('aucune imprimante associée au poste')
         }
     })
+    function updateLocalPrint(value) {
+        localPrint.value = value
+    }
 </script>
 
 <template>
-    <div v-if="selectedPrinter !== null" class="bg-success text-center text-white">
-        Imprimante associée au poste courant trouvée `{{ selectedPrinterName }}`
+    <div v-if="!singlePrinterMobileUnitDefined">
+        <div class="bg-danger text-center text-white">
+            Ce poste n'est pas reconnu ou son IP a changé<br/>
+            Impossible de poursuivre tant qu'une imprimante ne lui aura été associée
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-6 offset-3 p-2">
+                    <div class="input-group m-2">
+                        <span class="input-group-text">Nom du poste</span>
+                        <input v-model="temporaryPosteName" class="form-control" placeholder="Nom du poste" type="text"/>
+                    </div>
+                    <div class="input-group m-2">
+                        <span class="input-group-text">Imprimante locale</span>
+                        <AppSwitch
+                            id="localOrNetWorkPrint"
+                            class="m-2"
+                            :disabled="false"
+                            :field="{label: 'Imprimante Local/Réseau', name: 'localPrint', type: 'boolean'}"
+                            form=""
+                            :model-value="localPrint"
+                            @update:model-value="updateLocalPrint"/>
+                    </div>
+                    <div v-if="!localPrint" class="input-group m-2">
+                        <span class="input-group-text">Sélectionner l'imprimante réseau</span>
+                        <CustomeSelect
+                            class="custome-select"
+                            :options="printers"
+                            @update:model-value="onNetworkPrinterSelected"/>
+                    </div>
+                    <button class="btn btn-success m-2" @click="lierImprimante">
+                        <Fa :brand="false" icon="save"/> Enregistrer
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-    <div v-if="selectedPrinter === null" class="bg-danger text-center text-white">
-        Aucune imprimante n'est associé au poste courant<br/>
-        Impossible de poursuivre tant qu'une imprimante n'aura pas été associée
-    </div>
-    <div v-if="selectedPrinter !== null" class="carton-label container-fluid">
-        <div class="row">
-            <div class="col-6">
-                <ul>
-                    <AppItemCarte
-                        label="Famille :">
-                        <Fa
-                            v-if="modeleEtiquette.templateFamily === 'carton'"
-                            :brand="false"
-                            class="color-carton font-size-15px"
-                            icon="box-open"/>
+    <div v-else>
+        <div v-if="selectedPrinter !== null" class="bg-info text-center text-white">
+            <strong>Poste:</strong> {{ printerMobileUnitName }} <strong>Impression Réseau vers:</strong> {{ selectedPrinterName }}
+        </div>
+        <div v-else class="bg-info text-center text-white">
+            <strong>Poste:</strong> {{ printerMobileUnitName }} <strong>Impression locale</strong>
+        </div>
+        <div class="carton-label container-fluid">
+            <div class="row">
+                <div class="col-6">
+                    <ul>
+                        <AppItemCarte
+                            label="Famille :">
+                            <Fa
+                                v-if="modeleEtiquette.templateFamily === 'carton'"
+                                :brand="false"
+                                class="color-carton font-size-15px"
+                                icon="box-open"/>
+                        </AppItemCarte>
+                        <AppItemCarte label="Format :" :value="modeleEtiquette.labelKind"/>
+                        <AppItemCarte label="Modèle :" :value="modeleEtiquette.labelName"/>
+                    </ul>
+                </div>
+                <div class="col-6">
+                    <ul>
+                        <AppItemCarte label="Opérateur :" :value="operateur.name"/>
+                        <AppItemCarte label="OF :" :value="ofNumberAndIndice"/>
+                        <AppItemCarte label="Produit :" :value="productRefAndIndice"/>
+                    </ul>
+                </div>
+                <div v-if="currentStep > 2" class="col-12">
+                    <AppItemCarte label="Nb Produit scannés :">
+                        <strong class="font-50px">{{ nbProduit }}/{{ of.data.productConditionnement }}</strong>
                     </AppItemCarte>
-                    <AppItemCarte label="Format :" :value="modeleEtiquette.labelKind"/>
-                    <AppItemCarte label="Modèle :" :value="modeleEtiquette.labelName"/>
-                </ul>
-            </div>
-            <div class="col-6">
-                <ul>
-                    <AppItemCarte label="Opérateur :" :value="operateur.name"/>
-                    <AppItemCarte label="OF :" :value="ofNumberAndIndice"/>
-                    <AppItemCarte label="Produit :" :value="productRefAndIndice"/>
-                </ul>
-            </div>
-            <div class="col-12">
-                <AppItemCarte label="Nb Produit scannés :">
-                    <strong class="font-50px">{{ nbProduit }}</strong>
-                </AppItemCarte>
+                </div>
             </div>
         </div>
-    </div>
-    <AppStepProgress v-if="selectedPrinter !== null" :current-step="currentStep" :steps="steps"/>
-    <div v-if="selectedPrinter !== null" class="step-forms">
-        <AppStepOperateur
-            v-if="currentStep === 1"
-            class="form-step"
-            @next-step="getOperateur"/>
-        <AppStepOrderFabrication
-            v-if="currentStep === 2"
-            class="form-step"
-            @next-step="getOf"/>
-        <AppStepProduit
-            v-if="currentStep === 3"
-            class="form-step"
-            :modele-etiquette="modeleEtiquette"
-            :of="of"
-            :operateur="operateur"
-            @change-products="nbProduit = $event"
-            @next-step="getProducts"/>
-        <AppStepPrint
-            v-if="currentStep === 4"
-            class="form-step"
-            :modele-etiquette="modeleEtiquette"
-            :of="of"
-            :operateur="operateur"
-            :nb-produit="nbProduit"
-            :products="products"
-            :printer="selectedPrinter"
-            @next-step="onPrinted"/>
-        <div v-show="currentStep >= 5" class="form-step">
-            <div class="step-title">
-                Choix
-            </div>
-            <div class="align-items-center d-flex flex-column">
-                <button class="btn btn-warning d-inline-block m-2" @click="changeTemplate">
-                    Changer de modèle
-                </button>
-                <button class="btn btn-warning d-inline-block m-2" @click="resetAll">
-                    Recommencer depuis le début
-                </button>
-                <button class="btn btn-success d-inline-block m-2" @click="restartFromOf">
-                    changer d'OF
-                </button>
-                <button class="btn btn-success d-inline-block m-2" @click="restartNewCarton">
-                    Faire un autre carton
-                </button>
-                <button class="btn btn-success d-inline-block m-2" @click="disconnect">
-                    Quitter
-                </button>
-            </div>
-        </div>
-    </div>
-    <div v-if="selectedPrinter === null" class="container">
-        <div class="row">
-            <div class="col-6 offset-3 p-2">
-                <div class="input-group m-2">
-                    <span class="input-group-text">Nom du poste</span>
-                    <input v-model="temporaryPosteName" class="form-control" placeholder="Nom du poste" type="text"/>
+        <AppStepProgress :current-step="currentStep" :steps="steps"/>
+        <div class="step-forms">
+            <AppStepOperateur
+                v-if="currentStep === 1"
+                class="form-step"
+                @next-step="getOperateur"/>
+            <AppStepOrderFabrication
+                v-if="currentStep === 2"
+                class="form-step"
+                @next-step="getOf"/>
+            <AppStepProduit
+                v-if="currentStep === 3"
+                class="form-step"
+                :modele-etiquette="modeleEtiquette"
+                :of="of"
+                :operateur="operateur"
+                @change-products="nbProduit = $event"
+                @next-step="getProducts"/>
+            <AppStepPrint
+                v-if="currentStep === 4"
+                class="form-step"
+                :local-print="localPrint"
+                :modele-etiquette="modeleEtiquette"
+                :nb-produit="nbProduit"
+                :of="of"
+                :operateur="operateur"
+                :printer="selectedPrinter"
+                :products="products"
+                @next-step="onPrinted"/>
+            <div v-show="currentStep >= 5" class="form-step">
+                <div class="step-title">
+                    Choix
                 </div>
-                <div class="input-group m-2">
-                    <span class="input-group-text">Sélectionner l'imprimante réseau</span>
-                    <CustomeSelect
-                        class="custome-select"
-                        :options="printers"
-                        @update:model-value="onNetworkPrinterSelected"/>
+                <div class="align-items-center d-flex flex-column">
+                    <button class="btn btn-warning d-inline-block m-2" @click="changeTemplate">
+                        Changer de modèle
+                    </button>
+                    <button class="btn btn-warning d-inline-block m-2" @click="resetAll">
+                        Recommencer depuis le début
+                    </button>
+                    <button class="btn btn-success d-inline-block m-2" @click="restartFromOf">
+                        changer d'OF
+                    </button>
+                    <button class="btn btn-success d-inline-block m-2" @click="restartNewCarton">
+                        Faire un autre carton
+                    </button>
+                    <button class="btn btn-success d-inline-block m-2" @click="disconnect">
+                        Quitter
+                    </button>
                 </div>
-                <button class="btn btn-success m-2" @click="lierImprimante">
-                    <Fa :brand="false" icon="save"/> Enregistrer
-                </button>
             </div>
         </div>
     </div>
