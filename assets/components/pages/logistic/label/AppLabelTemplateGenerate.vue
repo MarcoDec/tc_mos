@@ -121,22 +121,19 @@
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/merge-patch+json',
-                'Authorization': 'Bearer ' + cookies.get('token'),
+                Authorization: `Bearer ${cookies.get('token')}`
             },
             body: JSON.stringify(data)
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
+            .then(response2 => {
+                if (!response2.ok) {
+                    throw new Error(`Network response was not ok ${response2.statusText}`)
                 }
-                return response.json(); // ou response.text() si la réponse n'est pas au format JSON
+                return response2.json() // ou response.text() si la réponse n'est pas au format JSON
             })
-            .then(data => {
+            .then(() => {
                 window.location.reload()
             })
-            .catch(error => {
-                console.error('Error:', error);
-            });
     }
     function addNewPoste() {
         if (!temporaryPosteName.value) {
@@ -168,7 +165,6 @@
         } else {
             addNewPoste()
         }
-
     }
     const singlePrinterMobileUnitDefined = ref(false)
     const localPrint = ref(false)
@@ -185,7 +181,7 @@
             localPrint.value = response2.localPrint
             printerMobileUnitName.value = response2.name
             currentId.value = response2.id
-            if (localPrint.value === false)  selectedPrinter.value = response2.printer['@id']
+            if (localPrint.value === false) selectedPrinter.value = response2.printer['@id']
             else selectedPrinter.value = null
         }
     })
@@ -237,7 +233,9 @@
                     <button class="btn btn-success m-2" @click="lierImprimante">
                         <Fa :brand="false" icon="save"/> Enregistrer
                     </button>
-                    <div v-if="initPosteError !== null" class="bg-light text-danger"> {{ initPosteError }}</div>
+                    <div v-if="initPosteError !== null" class="bg-light text-danger">
+                        {{ initPosteError }}
+                    </div>
                 </div>
             </div>
         </div>
