@@ -206,7 +206,7 @@ class Carton extends Entity // implements MeasuredInterface, FileEntity
     private \DateTime $date;
     #[
         ApiProperty(description: 'Nombre de Cartons (=1)'),
-        ORM\Column(type: 'string', nullable: true),
+        ORM\Column(type: 'integer', nullable: true),
         Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private int $numberOfBoxes = 1;

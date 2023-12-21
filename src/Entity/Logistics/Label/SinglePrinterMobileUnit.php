@@ -95,7 +95,7 @@ class SinglePrinterMobileUnit extends Entity
         ORM\Column(type: 'boolean', nullable: true),
         Serializer\Groups(['read:single-printer-mobile-unit', 'write:single-printer-mobile-unit'])
     ]
-    private bool $localPrint = false;
+    private ?bool $localPrint = false;
 
     /**
      * @return string|null
@@ -152,18 +152,18 @@ class SinglePrinterMobileUnit extends Entity
     }
 
     /**
-     * @return bool
+     * @return ?bool
      */
-    public function isLocalPrint(): bool
+    public function isLocalPrint(): ?bool
     {
         return $this->localPrint;
     }
 
     /**
-     * @param bool $localPrint
+     * @param ?bool $localPrint
      * @return SinglePrinterMobileUnit
      */
-    public function setLocalPrint(bool $localPrint): SinglePrinterMobileUnit
+    public function setLocalPrint(?bool $localPrint): SinglePrinterMobileUnit
     {
         $this->localPrint = $localPrint;
         return $this;
