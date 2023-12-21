@@ -17,8 +17,8 @@
         // Le code barre scannée attendu est de la forme: productRef/productIndice/ofNumber.ofIndice
         // On ne cherche à recupérer que l'ofNumber et l'ofIndice
         //endregion
-        const ofNumber = ofField.value.split('/')[2].split('.')[0]
-        const ofIndice = ofField.value.split('/')[2].split('.')[1]
+        const ofNumber = ofField.value.split('.')[0]
+        const ofIndice = ofField.value.split('.')[1]
         // On regarde si on trouve l'OF coté GP
         let testGP = false
         let testAntenne = false
