@@ -19,45 +19,41 @@
         //endregion
         const ofNumber = ofField.value.split('.')[0]
         const ofIndice = ofField.value.split('.')[1]
-        // On regarde si on trouve l'OF coté GP
-        let testGP = false
-        let testAntenne = false
         let error = false
-        const GPresponse = await fetch(`http://gp.tconcept.local/dist/api/orderfabrication.php?action=show&ofNumber=${ofNumber}&ofIndice=${ofIndice}`)
-        if (GPresponse.ok) {
-            const GPJson = await GPresponse.json()
-            if (GPJson === 'null') testGP = false
-            else {
-                of.value = {status: true, data: GPJson}
-                testGP = true
+        let nullReturn = false
+        if (originGP.value) { // On regarde si on trouve l'OF coté GP
+            const GPresponse = await fetch(`http://gp.tconcept.local/dist/api/orderfabrication.php?action=show&ofNumber=${ofNumber}&ofIndice=${ofIndice}`)
+            if (GPresponse.ok) {
+                const GPJson = await GPresponse.json()
+                if (GPJson === 'null') nullReturn = true
+                else {
+                    of.value = {status: true, data: GPJson}
+                }
+            } else {
+                //erreur
+                error = true
+                console.error(`HTTP-Error GP: ${GPresponse.status}`)
             }
-        } else {
-            //erreur
-            error = true
-            console.error(`HTTP-Error GP: ${GPresponse.status}`)
-        }
-        if (!testGP) {
-            // On regarde si on trouve l'OF coté Antenne
+        } else { // On regarde si on trouve l'OF coté Antenne
             const Antenneresponse = await fetch(`http://antenne.tconcept.local/dist/api/orderfabrication.php?action=show&ofNumber=${ofNumber}&ofIndice=${ofIndice}`)
             if (Antenneresponse.ok) {
                 const AntenneJson = await Antenneresponse.json()
-                if (AntenneJson === 'null') testAntenne = false
+                if (AntenneJson === 'null') nullReturn = true
                 else {
                     of.value = {status: true, data: AntenneJson}
-                    testAntenne = true
                 }
             } else {
                 //erreur
                 error = true
                 console.error(`HTTP-Error Antenne: ${Antenneresponse.status}`)
             }
-            if (!testAntenne) {
+            if (nullReturn || error) {
                 // On a rien trouvé
                 of.value = {status: false}
             }
         }
         // si testGP Ok alors on charge coté GP le produit lié via la propriété de of nommée id_product
-        if (testGP) {
+        if (originGP.value && !nullReturn) {
             const productResponse = await fetch(`http://gp.tconcept.local/dist/api/product.php?action=show&id=${of.value.data.id_product}`)
             if (productResponse.ok) {
                 const productJson = await productResponse.json()
@@ -76,7 +72,7 @@
                 error = true
                 console.error(`HTTP-Error GP: ${productResponse.status}`)
             }
-        } else if (testAntenne) {
+        } else if (!originGP.value && !nullReturn) {
             // si testAntenne Ok alors on charge coté Antenne le produit lié via la propriété de of nommée id_product
             const productResponse = await fetch(`http://antenne.tconcept.local/dist/api/product.php?action=show&id=${of.value.data.id_product}`)
             if (productResponse.ok) {
@@ -97,7 +93,7 @@
                 console.error(`HTTP-Error Antenne: ${productResponse.status}`)
             }
         }
-        return !error && (testGP || testAntenne)
+        return !error && !nullReturn
     }
     async function validate() {
         const result = await getOf()
@@ -129,6 +125,10 @@
                     </label>
                     <input id="of" ref="inputOfRef" v-model="ofField" class="form-control inputOfProduct" type="text"/>
                 </div>
+                <div class="align-items-center d-flex flex-row justify-content-end mt-2 width-100px">
+                    <input id="origin_gp" v-model="originGP" type="checkbox"/>
+                    <label for="origin_gp"><span v-if="originGP">GP</span><span v-else>Antenne</span></label>
+                </div>
             </div>
             <button class="btn btn-success height-80 m-2" @click="validate">
                 <Fa :brand="false" icon="chevron-right"/>
@@ -140,5 +140,8 @@
 <style scoped>
     .height-80 {
         height: 80%;
+    }
+    .width-100px {
+        width: 100px;
     }
 </style>
