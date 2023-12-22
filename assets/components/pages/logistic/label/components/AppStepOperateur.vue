@@ -50,7 +50,13 @@
             Scanner le badge de l'opérateur
         </div>
         <div class="align-items-baseline align-self-stretch d-flex flex-row">
-            <input id="operateur" ref="inputOperateurRef" v-model="operateurField" class="form-control m-2" type="text"/>
+            <input
+                id="operateur"
+                ref="inputOperateurRef"
+                v-model="operateurField"
+                class="form-control m-2"
+                type="text"
+                @keyup.enter="validate"/>
             <button class="btn btn-success m-2" @click="validate">
                 <Fa :brand="false" icon="chevron-right"/>
             </button>
