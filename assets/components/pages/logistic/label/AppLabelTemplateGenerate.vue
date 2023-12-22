@@ -28,7 +28,7 @@
     const products = ref({})
     const nbProduit = ref(0)
     const steps = ref([
-        {id: 0, label: 'Choix Base'},
+        {id: 0, label: 'Choix GP/Antenne'},
         {id: 1, label: 'Opérateur'},
         {id: 2, label: 'OF'},
         {id: 3, label: 'Scan Produits'},
