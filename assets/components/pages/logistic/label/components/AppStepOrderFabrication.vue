@@ -2,10 +2,12 @@
     import {defineEmits, onMounted, ref} from 'vue'
 
     const emits = defineEmits(['nextStep'])
+    const props = defineProps({
+        originGP: {default: true, required: true, type: Boolean}
+    })
     const of = ref('<à définir>')
     const ofField = ref('')
     const inputOfRef = ref(null)
-    const originGP = ref(true)
 
     async function getOf() {
         //region explications
@@ -22,7 +24,7 @@
         const ofIndice = ofField.value.split('.')[1]
         let error = false
         let nullReturn = false
-        if (originGP.value) { // On regarde si on trouve l'OF coté GP
+        if (props.originGP) { // On regarde si on trouve l'OF coté GP
             const GPresponse = await fetch(`http://gp.tconcept.local/dist/api/orderfabrication.php?action=show&ofNumber=${ofNumber}&ofIndice=${ofIndice}`)
             if (GPresponse.ok) {
                 const GPJson = await GPresponse.json()
@@ -54,7 +56,7 @@
             }
         }
         // si testGP Ok alors on charge coté GP le produit lié via la propriété de of nommée id_product
-        if (originGP.value && !nullReturn) {
+        if (props.originGP && !nullReturn) {
             const productResponse = await fetch(`http://gp.tconcept.local/dist/api/product.php?action=show&id=${of.value.data.id_product}`)
             if (productResponse.ok) {
                 const productJson = await productResponse.json()
@@ -74,7 +76,7 @@
                 error = true
                 console.error(`HTTP-Error GP: ${productResponse.status}`)
             }
-        } else if (!originGP.value && !nullReturn) {
+        } else if (!props.originGP && !nullReturn) {
             // si testAntenne Ok alors on charge coté Antenne le produit lié via la propriété de of nommée id_product
             const productResponse = await fetch(`http://antenne.tconcept.local/dist/api/product.php?action=show&id=${of.value.data.id_product}`)
             if (productResponse.ok) {
@@ -119,19 +121,19 @@
             Entrer l'Ordre de Fabrication
         </div>
         <div class="align-items-center d-flex flex-row justify-content-end">
-            <div class="d-flex flex-column">
-                <div class="align-items-center d-flex flex-row justify-content-end">
-                    <label for="of" class="labelOfProduct">
-                        <strong>
-                            OF
-                        </strong>
-                    </label>
-                    <input id="of" ref="inputOfRef" v-model="ofField" class="form-control inputOfProduct" type="text"/>
-                </div>
-                <div class="align-items-center d-flex flex-row justify-content-end mt-2 width-100px">
-                    <input id="origin_gp" v-model="originGP" type="checkbox"/>
-                    <label for="origin_gp"><span v-if="originGP">GP</span><span v-else>Antenne</span></label>
-                </div>
+            <div class="align-items-center d-flex flex-row justify-content-end">
+                <label for="of" class="labelOfProduct">
+                    <strong>
+                        OF
+                    </strong>
+                </label>
+                <input
+                    id="of"
+                    ref="inputOfRef"
+                    v-model="ofField"
+                    class="form-control inputOfProduct"
+                    type="text"
+                    @keyup.enter="validate"/>
             </div>
             <button class="btn btn-success height-80 m-2" @click="validate">
                 <Fa :brand="false" icon="chevron-right"/>

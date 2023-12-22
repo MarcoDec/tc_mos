@@ -6,6 +6,7 @@
     import api from '../../../../api'
     import AppSwitch from '../../../form-cardable/fieldCardable/input/AppSwitch.vue'
     import AppItemCarte from './components/AppItemCarte.vue'
+    import AppStepBase from './components/AppStepBase.vue'
     import AppStepOperateur from './components/AppStepOperateur.vue'
     import AppStepOrderFabrication from './components/AppStepOrderFabrication.vue'
     import AppStepPrint from './components/AppStepPrint.vue'
@@ -21,35 +22,54 @@
     const initPosteError = ref(null)
     const isPosteConfigurationChangeNeed = ref(false)
     const cookies = useCookies(['token'])
-
-    response.then(data => {
-        modeleEtiquette.value = data
-    })
     const operateur = ref({name: '<à définir>'})
-    const currentStep = ref(1)
-
-    function getOperateur(operateurData) {
-        operateur.value = operateurData
-        currentStep.value += 1
-    }
+    const currentStep = ref(0)
     const of = ref({})
-    function getOf(ofData) {
-        of.value = ofData
-        currentStep.value += 1
-    }
     const products = ref({})
-    function getProducts(productsData) {
-        products.value = productsData
-        currentStep.value += 1
-    }
     const nbProduit = ref(0)
-
     const steps = ref([
+        {id: 0, label: 'Choix Base'},
         {id: 1, label: 'Opérateur'},
         {id: 2, label: 'OF'},
         {id: 3, label: 'Scan Produits'},
         {id: 4, label: 'Impression', icon: 'print'}
     ])
+    const ofNumberAndIndice = computed(() => {
+        if (of.value === '<à définir>' || !of.value.data) return '<à définir>'
+        return `${of.value.data.ofnumber}.${of.value.data.indice}`
+    })
+    const productRefAndIndice = computed(() => {
+        if (of.value === '<à définir>' || !of.value.data) return '<à définir>'
+        return `${of.value.data.productRef}/${of.value.data.productIndice}`
+    })
+    const currentUser = useUser()
+    const selectedPrinter = ref(null)
+    const printers = ref([])
+    const selectedPrinterName = computed(() => printers.value.find(printer => printer['@id'] === selectedPrinter.value).name)
+    const temporaryPrinter = ref(null)
+    const temporaryPosteName = ref(null)
+    const currentId = ref(null)
+    const singlePrinterMobileUnitDefined = ref(false)
+    const localPrint = ref(false)
+    const printerMobileUnitName = ref(null)
+    const originGP = ref(true)
+
+    response.then(data => {
+        modeleEtiquette.value = data
+    })
+
+    function getOperateur(operateurData) {
+        operateur.value = operateurData
+        currentStep.value += 1
+    }
+    function getOf(ofData) {
+        of.value = ofData
+        currentStep.value += 1
+    }
+    function getProducts(productsData) {
+        products.value = productsData
+        currentStep.value += 1
+    }
     function changeTemplate() {
         router.push({name: 'label-template-list'})
     }
@@ -69,21 +89,10 @@
         router.push({name: 'login'})
     }
 
-    const ofNumberAndIndice = computed(() => {
-        if (of.value === '<à définir>' || !of.value.data) return '<à définir>'
-        return `${of.value.data.ofnumber}.${of.value.data.indice}`
-    })
-    const productRefAndIndice = computed(() => {
-        if (of.value === '<à définir>' || !of.value.data) return '<à définir>'
-        return `${of.value.data.productRef}/${of.value.data.productIndice}`
-    })
-    const currentUser = useUser()
-    const selectedPrinter = ref(null)
     function onPrinted() {
         currentStep.value += 1
     }
 
-    const printers = ref([])
     function getPrinters() {
         api('/api/printers', 'get')
             .then(data => {
@@ -91,13 +100,9 @@
             })
     }
     getPrinters()
-    const selectedPrinterName = computed(() => printers.value.find(printer => printer['@id'] === selectedPrinter.value).name)
-    const temporaryPrinter = ref(null)
     function onNetworkPrinterSelected(printer) {
         temporaryPrinter.value = printer
     }
-    const temporaryPosteName = ref(null)
-    const currentId = ref(null)
     function updatePoste() {
         if (!temporaryPosteName.value) {
             initPosteError.value = 'Le nom du poste est obligatoire'
@@ -166,10 +171,19 @@
             addNewPoste()
         }
     }
-    const singlePrinterMobileUnitDefined = ref(false)
-    const localPrint = ref(false)
-    const printerMobileUnitName = ref(null)
-
+    function updateLocalPrint(value) {
+        localPrint.value = value
+    }
+    function onPosteConfigurationChange() {
+        isPosteConfigurationChangeNeed.value = true
+        temporaryPosteName.value = printerMobileUnitName.value
+        temporaryPrinter.value = printers.value.find(printer => printer['@id'] === selectedPrinter.value)
+        singlePrinterMobileUnitDefined.value = false
+    }
+    function getBase(data) {
+        originGP.value = data.originGP
+        currentStep.value += 1
+    }
     onMounted(async () => {
         if (!currentUser.isLogged) router.push({name: 'login'})
         //if (!currentUser.isLogisticsWriter || !currentUser.isProductionWriter) router.push({name: 'home'})
@@ -185,15 +199,6 @@
             else selectedPrinter.value = null
         }
     })
-    function updateLocalPrint(value) {
-        localPrint.value = value
-    }
-    function onPosteConfigurationChange() {
-        isPosteConfigurationChangeNeed.value = true
-        temporaryPosteName.value = printerMobileUnitName.value
-        temporaryPrinter.value = printers.value.find(printer => printer['@id'] === selectedPrinter.value)
-        singlePrinterMobileUnitDefined.value = false
-    }
 </script>
 
 <template>
@@ -281,6 +286,10 @@
         </div>
         <AppStepProgress :current-step="currentStep" :steps="steps"/>
         <div class="step-forms">
+            <AppStepBase
+                v-if="currentStep === 0"
+                class="form-step"
+                @next-step="getBase"/>
             <AppStepOperateur
                 v-if="currentStep === 1"
                 class="form-step"
@@ -288,6 +297,7 @@
             <AppStepOrderFabrication
                 v-if="currentStep === 2"
                 class="form-step"
+                :origin-g-p="originGP"
                 @next-step="getOf"/>
             <AppStepProduit
                 v-if="currentStep === 3"

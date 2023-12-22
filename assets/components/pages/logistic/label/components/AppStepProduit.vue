@@ -12,7 +12,7 @@
         text: '',
         state: true
     })
-    const product = ref('<à définir>')
+    const product = ref('')
     const inputProduitRef = ref(null)
     const scannedProducts = ref([])
     const nbProduit = ref(0)
@@ -113,7 +113,14 @@
             Scan Produits
         </div>
         <div class="align-items-stretch align-self-stretch d-flex flex-row justify-content-between" :class="checkResult['class']">
-            <input id="product" ref="inputProduitRef" v-model="product" class="form-control m-2" type="text"/>
+            <input
+                id="product"
+                ref="inputProduitRef"
+                v-model="product"
+                class="form-control m-2"
+                placeholder="<à définir>"
+                type="text"
+                @keyup.enter="next"/>
             <button class="btn btn-success m-2" @click="next">
                 <Fa :brand="false" icon="plus"/>
             </button>
