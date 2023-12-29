@@ -8,14 +8,14 @@ export const useCustomerProductStore = defineStore('customerProduct', {
             this.customerProduct = response
             console.log('customerProduct', this.customerProduct)
         },
-        async addCustomerProduct(payload) {
+        addCustomerProduct(payload) {
             console.log('payloadCustomerProduct', payload)
             for (let index = 0; index < payload.customer.length; index++) {
                 const customerProduct = {
                     customer: payload.customer[index],
                     product: payload.product
                 }
-                await api('/api/customer-products', 'POST', customerProduct)
+                api('/api/customer-products', 'POST', customerProduct)
             }
         }
     },

@@ -89,11 +89,11 @@
         const key = Object.keys(value)[0]
         if (Object.prototype.hasOwnProperty.call(generalData, key)) {
             if (typeof value[key] === 'object') {
-                if (value[key].value !== undefined) {
+                if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
                     generalData[key] = {...generalData[key], value: inputValue}
                 }
-                if (value[key].code !== undefined) {
+                if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
                     generalData[key] = {...generalData[key], code: inputCode}
                 }
@@ -108,11 +108,11 @@
         const key = Object.keys(value)[0]
         if (Object.prototype.hasOwnProperty.call(comptabilityData, key)) {
             if (typeof value[key] === 'object') {
-                if (value[key].value !== undefined) {
+                if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
                     comptabilityData[key] = {...comptabilityData[key], value: inputValue}
                 }
-                if (value[key].code !== undefined) {
+                if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
                     comptabilityData[key] = {...comptabilityData[key], code: inputCode}
                 }
@@ -127,11 +127,11 @@
         const key = Object.keys(value)[0]
         if (Object.prototype.hasOwnProperty.call(cuivreData, key)) {
             if (typeof value[key] === 'object') {
-                if (value[key].value !== undefined) {
+                if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
                     cuivreData[key] = {...cuivreData[key], value: inputValue}
                 }
-                if (value[key].code !== undefined) {
+                if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
                     cuivreData[key] = {...cuivreData[key], code: inputCode}
                 }

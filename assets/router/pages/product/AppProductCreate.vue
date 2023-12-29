@@ -117,11 +117,11 @@
         const key = Object.keys(value)[0]
         if (Object.prototype.hasOwnProperty.call(generalData, key)) {
             if (typeof value[key] === 'object') {
-                if (value[key].value !== undefined) {
+                if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
                     generalData[key] = {...generalData[key], value: inputValue}
                 }
-                if (value[key].code !== undefined) {
+                if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
                     generalData[key] = {...generalData[key], code: inputCode}
                 }
@@ -137,11 +137,11 @@
         const key = Object.keys(value)[0]
         if (Object.prototype.hasOwnProperty.call(customerData, key)) {
             if (typeof value[key] === 'object') {
-                if (value[key].value !== undefined) {
+                if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
                     customerData[key] = {...customerData[key], value: inputValue}
                 }
-                if (value[key].code !== undefined) {
+                if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
                     customerData[key] = {...customerData[key], code: inputCode}
                 }

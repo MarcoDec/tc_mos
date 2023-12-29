@@ -126,11 +126,11 @@
         if (Object.prototype.hasOwnProperty.call(formInput, key)) {
             // if (formInput.hasOwnProperty(key)) {
             if (typeof value[key] === 'object') {
-                if (value[key].value !== undefined) {
+                if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
                     formInput[key] = {...formInput[key], value: inputValue}
                 }
-                if (value[key].code !== undefined) {
+                if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
                     formInput[key] = {...formInput[key], code: inputCode}
                 }

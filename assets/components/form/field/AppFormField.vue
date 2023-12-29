@@ -9,7 +9,7 @@
         field: {required: true, type: Object},
         form: {required: true, type: String},
         modelValue: {default: null, type: Object},
-        newField: {required: false, type: Object}
+        newField: {default: null, required: false, type: Object}
     })
 
     const componentType = computed(() => {

@@ -93,11 +93,11 @@
         const key = Object.keys(value)[0]
         if (Object.prototype.hasOwnProperty.call(generalData, key)) {
             if (typeof value[key] === 'object') {
-                if (value[key].value !== undefined) {
+                if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
                     generalData[key] = {...generalData[key], value: inputValue}
                 }
-                if (value[key].code !== undefined) {
+                if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
                     generalData[key] = {...generalData[key], code: inputCode}
                 }
@@ -112,11 +112,11 @@
         const key = Object.keys(value)[0]
         if (Object.prototype.hasOwnProperty.call(qualityData, key)) {
             if (typeof value[key] === 'object') {
-                if (value[key].value !== undefined) {
+                if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
                     qualityData[key] = {...qualityData[key], value: inputValue}
                 }
-                if (value[key].code !== undefined) {
+                if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
                     qualityData[key] = {...qualityData[key], code: inputCode}
                 }
@@ -131,11 +131,11 @@
         const key = Object.keys(value)[0]
         if (Object.prototype.hasOwnProperty.call(comptabilityData, key)) {
             if (typeof value[key] === 'object') {
-                if (value[key].value !== undefined) {
+                if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
                     comptabilityData[key] = {...comptabilityData[key], value: inputValue}
                 }
-                if (value[key].code !== undefined) {
+                if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
                     comptabilityData[key] = {...comptabilityData[key], code: inputCode}
                 }
@@ -151,11 +151,11 @@
         if (Object.prototype.hasOwnProperty.call(cuivreData, key)) {
             // if (cuivreData.hasOwnProperty(key)) {
             if (typeof value[key] === 'object') {
-                if (value[key].value !== undefined) {
+                if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
                     cuivreData[key] = {...cuivreData[key], value: inputValue}
                 }
-                if (value[key].code !== undefined) {
+                if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
                     cuivreData[key] = {...cuivreData[key], code: inputCode}
                 }
@@ -198,7 +198,7 @@
                 openOrdersEnabled: comptabilityData?.openOrdersEnabled || false,
                 society: generalData?.society || '#'
             }
-            console.log('supplier', supplier)
+            // console.log('supplier', supplier)
             await storeSuppliersList.addSupplier(supplier)
             isPopupVisible.value = false
             isCreatedPopupVisible.value = true

@@ -73,7 +73,7 @@
     }
     function next() {
         if (product.value === '') return
-        checkResult.value['class'] = ''
+        checkResult.value.class = ''
         checkResult.value.text = ''
         checkResult.value.state = true
         // On vérifie que la valeur product.value correspond à la valeur de props.of.data.productRef
@@ -90,7 +90,7 @@
             product.value = ''
             return
         }
-        checkResult.value['class'] = 'bg-danger'
+        checkResult.value.class = 'bg-danger'
         checkResult.value.text = `Le dernier produit scanné ne correspond pas à celui attendu ${props.of.data.productRef}, veuillez recommencer`
         checkResult.value.state = false
         product.value = ''
@@ -113,7 +113,7 @@
         <div class="step-title">
             Scan Produits
         </div>
-        <div class="align-items-stretch align-self-stretch d-flex flex-row justify-content-between" :class="checkResult['class']">
+        <div class="align-items-stretch align-self-stretch d-flex flex-row justify-content-between" :class="checkResult.class">
             <input
                 id="product"
                 ref="inputProduitRef"

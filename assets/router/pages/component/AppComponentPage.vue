@@ -102,7 +102,7 @@
         } else {
             myBooleanFamily.value = true
         }
-        if (family.value !== undefined) {
+        if (typeof family.value !== 'undefined') {
             inputAttributes.value = {}
             await storeAttributes.getAttributes()
             await storeUnits.getUnits()

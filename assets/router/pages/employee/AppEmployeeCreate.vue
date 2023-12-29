@@ -68,11 +68,11 @@
         const key = Object.keys(value)[0]
         if (Object.prototype.hasOwnProperty.call(employeeData, key)) {
             if (typeof value[key] === 'object') {
-                if (value[key].value !== undefined) {
+                if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
                     employeeData[key] = {...employeeData[key], value: inputValue}
                 }
-                if (value[key].code !== undefined) {
+                if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
                     employeeData[key] = {...employeeData[key], code: inputCode}
                 }
