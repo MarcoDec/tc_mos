@@ -60,7 +60,7 @@
                 const width = props.modeleEtiquette.width
                 const height = props.modeleEtiquette.height
                 const index = '0'
-                imageUrl.value = `http://api.labelary.com/v1/printers/${dpmm}/labels/${width}x${height}/${index}/${data.zpl}`
+                imageUrl.value = `http://api.labelary.com/v1/printers/${dpmm}/labels/${width}x${height}/${index}/${encodeURIComponent(data.zpl)}`
                 emits('nextStep', {
                     label: newLabel.value,
                     zpl: data.zpl,
