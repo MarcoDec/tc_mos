@@ -32,7 +32,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['brand'=>'partial', 'code'=> 'partial', 'name' => 'partial', 'serialNumber' => 'partial', 'zone.company']),
     ApiFilter(filterClass: DateFilter::class, properties: ['entryDate']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['zone', 'manufacturerEngine']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['group', 'zone', 'manufacturerEngine']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['brand', 'code', 'entryDate', 'manufacturerEngine.name', 'name', 'serialNumber']),
     //ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
@@ -127,14 +127,14 @@ abstract class Engine extends Entity implements BarCodeInterface {
     #[
         ApiProperty(description: 'Marque', example: 'Apple'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event',  'read:operation-employee:collection'])
     ]
     protected ?string $brand = null;
 
     #[
         ApiProperty(description: 'Référence', example: 'MA-1'),
         ORM\Column(length: 10, nullable: true),
-        Serializer\Groups(['read:engine','read:manufacturing-operation','read:engine-maintenance-event'])
+        Serializer\Groups(['read:engine','read:manufacturing-operation','read:engine-maintenance-event', 'read:skill', 'read:operation-employee:collection'])
     ]
     protected ?string $code = null;
 
@@ -152,7 +152,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
     #[
         ApiProperty(description: 'Nom', example: 'Compresseur d\'air'),
         ORM\Column,
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event', 'read:operation-employee:collection'])
     ]
     protected ?string $name = null;
 
@@ -190,13 +190,13 @@ abstract class Engine extends Entity implements BarCodeInterface {
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:engine','read:manufacturing-operation'])
+        Serializer\Groups(['read:engine','read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private Blocker $embBlocker;
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:engine','read:manufacturing-operation'])
+        Serializer\Groups(['read:engine','read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private EmployeeEngineState $embState;
 

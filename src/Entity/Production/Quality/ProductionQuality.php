@@ -11,6 +11,9 @@ use App\Entity\Production\Manufacturing\Operation;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use DateTimeImmutable;
+
+use App\Controller\Production\Quality\ItemProductionQualityComponentController;
 
 #[
     ApiResource(
@@ -27,6 +30,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Ajoute un Contrôle Qualité de production',
                     'summary' => 'Ajoute un Contrôle Qualité de production'
                 ]
+            ], 
+            'filtreComponent' => [
+                'controller' => ItemProductionQualityComponentController::class,
+                'method' => 'GET',
+                'openapi_context' => [
+                    'description' => 'Filtrer par composant',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'api',
+                        'schema' => [
+                            'type' => 'integer',
+                        ]
+                    ]],
+                    'summary' => 'Filtrer par composant'
+                ],
+                'path' => '/production-quality/componentFilter/{api}',
+                'read' => false,
+                'write' => false
             ]
         ],
         itemOperations: [

@@ -1,5 +1,9 @@
 <script setup>
+    import AppFormFieldset from './AppFormFieldset.vue'
+    import AppFormGroupJS from './AppFormGroupJS'
     import {computed, defineEmits, defineProps} from 'vue'
+    // import AppFormFieldset from './AppFormFieldset.vue'
+
     const emit = defineEmits(['update:modelValue', 'input'])
     const props = defineProps({
         field: {required: true, type: Object},
@@ -7,18 +11,15 @@
         modelValue: {default: null, type: Object},
         newField: {required: false, type: Object}
     })
-    // console.log('newField',props.newField);
-    // console.log('field',props.field);
-    // const myFieled = computed(()=>props.newField?props.newField:props.field)
-    // console.log('myFieled', myFieled);
-    const td = computed(() => {
+
+    const componentType = computed(() => {
         switch (props.field.mode) {
             case 'tab':
                 return 'AppFormTabs'
             case 'fieldset':
-                return 'AppFormFieldSet'
+                return AppFormFieldset
             default:
-                return 'AppFormGroupJS'
+                return AppFormGroupJS
         }
     })
     function input(value) {
@@ -28,9 +29,10 @@
 
 <template>
     <component
-        :is="td"
+        :is="componentType"
         :field="field"
         :form="form"
+        :name="field.name"
         :model-value="modelValue"
         :new-field="newField"
         :values="modelValue"

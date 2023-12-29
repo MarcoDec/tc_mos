@@ -6,6 +6,8 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
+
 use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\ComponentManufacturingOperationState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -22,10 +24,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Filter\SetFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use App\Entity\Production\Manufacturing\OperationEmployee;
 
-#[    
+#[
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['pic.id'=> 'partial', 'embState.state' => 'partial', 'embBlocker.state' => 'partial', 'order.ref' => 'partial', 'workstation.name' => 'partial', 'startedDate' => 'partial', 'duration' => 'partial', 'actualQuantity.code' => 'partial', 'actualQuantity.value' => 'partial', 'quantityProduced.code' => 'partial', 'quantityProduced.value', 'quantityProduced.value' => 'partial', 'operation.cadence.value' => 'partial', 'operation.cadence.code' => 'partial', 'operationEmployees' => 'partial']),
+    ApiFilter(filterClass: DateFilter::class, properties: ['startedDate' => '>']),
     ApiResource(
         description: 'Opération de production',
         collectionOperations: [
@@ -92,11 +98,11 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:manufacturing-operation', 'write:measure'],
+            'groups' => ['write:manufacturing-operation', 'write:measure', 'write:employee'],
             'openapi_definition_name' => 'ManufacturingOperation-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:manufacturing-operation', 'read:state', 'read:measure'],
+            'groups' => ['read:id', 'read:manufacturing-operation', 'read:state', 'read:measure', 'read:employee'],
             'openapi_definition_name' => 'ManufacturingOperation-read',
             'skip_null_values' => false
         ],
@@ -109,25 +115,25 @@ class Operation extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Quantité actuelle', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
-        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private Measure $actualQuantity;
    #[
       ApiProperty(description: 'Durée', example: 'HH:mm:ss'),
       ORM\Column(type: 'string', nullable: true),
-      Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
+      Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation', 'read:operation-employee:collection'])
    ]
    private string|null $duration = null;
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private Closer $embBlocker;
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-operation' , 'read:operation-employee:collection'])
     ]
     private ComponentManufacturingOperationState $embState;
 
@@ -141,50 +147,47 @@ class Operation extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Opération'),
         ORM\ManyToOne(inversedBy: 'operations'),
-        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?PrimaryOperation $operation = null;
-
-    /** @var Collection<int, Employee> */
     #[
         ApiProperty(description: 'Opérateurs'),
-        ORM\ManyToMany(targetEntity: Employee::class),
-        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
+        ORM\OneToMany(mappedBy: "operation", targetEntity: OperationEmployee::class),
     ]
-    private Collection $operators;
+    private Collection $operationEmployees;
 
     #[
         ApiProperty(description: 'Commande'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
+        Serializer\Groups(['read:production-quality', 'read:manufacturing-operation', 'write:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?Order $order = null;
 
     #[
         ApiProperty(description: 'Personne en charge', readableLink: false, example: '/api/employees/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?Employee $pic = null;
 
     #[
         ApiProperty(description: 'Quantité produite', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
-        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private Measure $quantityProduced;
 
     #[
         ApiProperty(description: 'Date de démarrage', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?DateTimeImmutable $startedDate = null;
 
     #[
         ApiProperty(description: 'Poste de travail'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation', 'read:employee', 'read:operation-employee:collection'])
     ]
     private ?Workstation $workstation = null;
 
@@ -199,16 +202,10 @@ class Operation extends Entity implements MeasuredInterface {
         $this->actualQuantity = new Measure();
         $this->embBlocker = new Closer();
         $this->embState = new ComponentManufacturingOperationState();
-        $this->operators = new ArrayCollection();
+        $this->operationEmployees = new ArrayCollection();
         $this->quantityProduced = new Measure();
     }
 
-    final public function addOperator(Employee $operator): self {
-        if (!$this->operators->contains($operator)) {
-            $this->operators->add($operator);
-        }
-        return $this;
-    }
 
     final public function getActualQuantity(): Measure {
         return $this->actualQuantity;
@@ -232,13 +229,6 @@ class Operation extends Entity implements MeasuredInterface {
 
     final public function getOperation(): ?PrimaryOperation {
         return $this->operation;
-    }
-
-    /**
-     * @return Collection<int, Employee>
-     */
-    final public function getOperators(): Collection {
-        return $this->operators;
     }
 
     final public function getOrder(): ?Order {
@@ -273,10 +263,12 @@ class Operation extends Entity implements MeasuredInterface {
         return $this->zone;
     }
 
-    final public function removeOperator(Employee $operator): self {
-        if ($this->operators->contains($operator)) {
-            $this->operators->removeElement($operator);
-        }
+    final public function getOperationEmployees(): ?Collection {
+        return $this->operationEmployees;
+    }
+
+    final public function setOperationEmployees(Collection $operEmployees): self {
+        $this->operationEmployees = $operEmployees;
         return $this;
     }
 
@@ -366,7 +358,17 @@ class Operation extends Entity implements MeasuredInterface {
       return [$this->actualQuantity, $this->quantityProduced];
    }
 
-   public function getUnit(): ?Unit
+   public function getUnitMeasures(): array
+   {
+       return [$this->actualQuantity, $this->quantityProduced];
+   }
+
+   public function getCurrencyMeasures(): array
+   {
+       return [];
+   }
+
+    public function getUnit(): ?Unit
    {
       return $this->order->getProduct()->getUnit();
    }

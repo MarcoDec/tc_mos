@@ -9,7 +9,6 @@
         title: {required: true, type: String}
     })
     const tab = useTabs(props.tabs).push({active: props.active, icon: props.icon, id: props.id, title: props.title})
-    // console.log('tab', tab)
 </script>
 
 <template>
@@ -19,8 +18,12 @@
 </template>
 
 <style scoped>
-div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
-.gui-start-content {
-    font-size: 14px;
-}
+    div.tab-pane {
+        box-shadow: inset black 10px 10px 10px -10px;
+        padding: 5px 5px 5px 5px;
+    }
+    div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
+    .gui-start-content {
+        font-size: 14px;
+    }
 </style>

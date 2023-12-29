@@ -1,6 +1,5 @@
 <?php
 namespace App\Entity\Production\Engine\Manufacturer;
-
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Entity;
@@ -17,7 +16,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 
 #[
     ApiFilter(OrderFilter::class, properties: ['code', 'manufacturer.name', 'name', 'partNumber', 'type']),
-    ApiFilter(SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial', 'partNumber' => 'partial', 'type' => 'partial']),
+    ApiFilter(SearchFilter::class, properties: ['code' => 'partial', 'manufacturer.name' => 'partial', 'name' => 'partial', 'partNumber' => 'partial', 'type' => 'partial']),
     ApiFilter(RelationFilter::class, properties: ['manufacturer']),
     ApiResource(
         description: 'Équipement : fiche fabricant',
@@ -78,7 +77,7 @@ class Engine extends Entity {
     #[
         ApiProperty(description: 'Nom', example: 'Machine'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:manufacturer-engine', 'write:manufacturer-engine'])
+        Serializer\Groups(['read:engine-engine', 'write:engine-engine', 'read:manufacturer-engine', 'write:manufacturer-engine'])
     ]
     protected ?string $name = null;
     #[

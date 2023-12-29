@@ -76,7 +76,7 @@ class Type extends Entity {
         Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
         ORM\Column(length: 50),
-        Serializer\Groups(['read:type', 'write:name'])
+        Serializer\Groups(['read:type', 'write:name', 'read:skill'])
     ]
     private ?string $name = null;
 

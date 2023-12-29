@@ -8,18 +8,107 @@
 
     const fetchProductStore = useProductStore()
     const productionFields = [
-        {label: 'Duration Auto', measure: {code: 'h', value: 'valeur'}, name: 'autoDuration', type: 'measure'},
-        {label: 'Duration Manual', measure: {code: 'h', value: 'valeur'}, name: 'manualDuration', type: 'measure'},
-        {label: 'Production Min', measure: {code: 'U', value: 'valeur'}, name: 'minProd', type: 'measure'},
-        {label: 'Production Delay', measure: {code: 'j', value: 'valeur'}, name: 'productionDelay', type: 'measure'},
+        {
+            label: 'Duration Auto',
+            measure: {
+                code: {
+                    label: 'unité',
+                    name: 'code',
+                    type: 'text'
+                },
+                value: {
+                    label: 'valeur',
+                    name: 'value',
+                    type: 'number',
+                    step: 0.01
+                }
+            },
+            name: 'autoDuration',
+            type: 'measure'
+        },
+        {
+            label: 'Duration Manual',
+            measure: {
+                code: {
+                    label: 'unité',
+                    name: 'code',
+                    type: 'text'
+                },
+                value: {
+                    label: 'valeur',
+                    name: 'value',
+                    type: 'number',
+                    step: 0.01
+                }
+            },
+            name: 'manualDuration',
+            type: 'measure'
+        },
+        {
+            label: 'Production Min',
+            measure: {
+                code: {
+                    label: 'unité',
+                    name: 'code',
+                    type: 'text'
+                },
+                value: {
+                    label: 'valeur',
+                    name: 'value',
+                    type: 'number',
+                    step: 0.01
+                }
+            },
+            name: 'minProd',
+            type: 'measure'
+        },
+        {
+            label: 'Production Delay',
+            measure: {
+                code: {
+                    label: 'unité',
+                    name: 'code',
+                    type: 'text'
+                },
+                value: {
+                    label: 'valeur',
+                    name: 'value',
+                    type: 'number',
+                    step: 0.01
+                }
+            },
+            name: 'productionDelay',
+            type: 'measure'
+        },
         // {
         //     label: 'Volume prévisionnel (champ calculé)',
         //     measure: {code: 'U', value: 'valeur'},
         //     name: 'forecastVolume',
         //     type: 'measure'
         // },
-        {label: 'Packaging', measure: {code: 'Devise', value: 'valeur'}, name: 'packaging', type: 'measure'},
-        {label: 'Packaging Kind', name: 'packagingKind', type: 'text'}
+        {
+            label: 'Packaging',
+            measure: {
+                code: {
+                    label: 'unité',
+                    name: 'code',
+                    type: 'text'
+                },
+                value: {
+                    label: 'valeur',
+                    name: 'value',
+                    type: 'number',
+                    step: 0.01
+                }
+            },
+            name: 'packaging',
+            type: 'measure'
+        },
+        {
+            label: 'Packaging Kind',
+            name: 'packagingKind',
+            type: 'text'
+        }
     ]
     async function updateProduction(value) {
         const form = document.getElementById('addProduction')

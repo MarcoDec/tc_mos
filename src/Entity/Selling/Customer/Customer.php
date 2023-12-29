@@ -30,7 +30,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
     ApiResource(
@@ -234,7 +234,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Kaporingol'),
         ORM\Column,
-        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:admin'])
+        Serializer\Groups(['read:nomenclature', 'create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:admin', 'read:item'])
     ]
     private ?string $name = null;
 

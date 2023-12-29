@@ -182,6 +182,13 @@ class Receipt extends Entity implements MeasuredInterface {
         return [$this->quantity];
     }
 
+    final public function getUnitMeasures(): array {
+        return [$this->quantity];
+    }
+    final public function getCurrencyMeasures(): array {
+        return [];
+    }
+
     final public function getQuantity(): Measure {
         return $this->quantity;
     }

@@ -4342,7 +4342,7 @@ CREATE TABLE `skill` (
     `started_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `type_id` INT UNSIGNED DEFAULT NULL,
     CONSTRAINT `IDX_5E3DE4778C03F15C` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`),
-    CONSTRAINT `IDX_5E3DE477E78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`),
+    CONSTRAINT `IDX_5E3DE477E78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `manufacturer_engine` (`id`),
     CONSTRAINT `IDX_5E3DE477C35E566A` FOREIGN KEY (`family_id`) REFERENCES `engine_group` (`id`),
     CONSTRAINT `IDX_5E3DE477B4B58540` FOREIGN KEY (`in_trainer_id`) REFERENCES `employee` (`id`),
     CONSTRAINT `IDX_5E3DE47778A19B66` FOREIGN KEY (`out_trainer_id`) REFERENCES `out_trainer` (`id`),
@@ -4607,6 +4607,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `company` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `currency_id` INT UNSIGNED DEFAULT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `delivery_time` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)',
     `delivery_time_open_days` BOOLEAN DEFAULT TRUE NOT NULL,
@@ -4620,14 +4621,16 @@ CREATE TABLE `company` (
     `number_of_team_per_day` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)',
     `society_id` INT UNSIGNED DEFAULT NULL,
     `work_timetable` VARCHAR(255) DEFAULT NULL,
-    CONSTRAINT `IDX_4FBF094FE6389D24` FOREIGN KEY (`society_id`) REFERENCES `society` (`id`)
+    CONSTRAINT `IDX_4FBF094FE6389D24` FOREIGN KEY (`society_id`) REFERENCES `society` (`id`),
+    CONSTRAINT `FK_4FBF094F38248176` FOREIGN KEY (`currency_id`) REFERENCES `currency` (`id`)
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `company` (`name`, `society_id`)
-SELECT `society_old`.`nom`, `society`.`id`
+INSERT INTO `company` (`name`, `society_id`, `currency_id`)
+SELECT `society_old`.`nom`, `society`.`id`, `currency`.`id`
 FROM `society_old`
 INNER JOIN `society` ON `society_old`.`id` = `society`.`old_id`
+LEFT JOIN `currency` ON `currency`.`code` = 'EUR'
 WHERE `society_old`.`is_company` = 1 AND `society_old`.`statut` = 0
 SQL);
         $this->addQuery(<<<'SQL'

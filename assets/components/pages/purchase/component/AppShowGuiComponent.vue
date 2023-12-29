@@ -4,6 +4,7 @@
     import {useComponentListStore} from '../../../../stores/purchase/component/components'
     import useOptions from '../../../../stores/option/options'
     import {useRoute} from 'vue-router'
+    import AppComponentShowInlist from './AppComponentShowInlist.vue'
 
     const route = useRoute()
     const idComponent = Number(route.params.id_component)
@@ -25,11 +26,7 @@
                 <AppSuspense><AppComponentFormShow v-if="useFetchComponentStore.isLoaded && fetchUnits.isLoaded"/></AppSuspense>
             </template>
             <template #gui-bottom>
-                <!--            <AppTabs id="gui-bottom">-->
-                <!--                <AppTab id="gui-bottom-components" active icon="puzzle-piece" tabs="gui-bottom" title="Fournitures"/>-->
-                <!--                <AppTab id="gui-bottom-receipts" icon="receipt" tabs="gui-bottom" title="Réceptions"/>-->
-                <!--                <AppTab id="gui-bottom-orders" icon="shopping-cart" tabs="gui-bottom" title="Commandes"/>-->
-                <!--            </AppTabs>-->
+                <AppSuspense><AppComponentShowInlist/></AppSuspense>
             </template>
             <template #gui-right/>
         </AppShowGuiGen>

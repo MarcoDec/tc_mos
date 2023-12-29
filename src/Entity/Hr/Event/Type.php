@@ -96,7 +96,7 @@ class Type extends Entity {
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
         ORM\Column(length: 30),
-        Serializer\Groups(['read:type', 'write:type'])
+        Serializer\Groups(['read:type', 'write:type', 'read:event'])
     ]
     private ?string $name = null;
 

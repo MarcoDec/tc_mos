@@ -14,7 +14,7 @@ class Blocker extends State {
     #[
         ApiProperty(description: 'état', openapiContext: ['enum' => BlockerStateType::TYPES]),
         ORM\Column(type: 'blocker_state', options: ['default' => 'enabled']),
-        Serializer\Groups(['read:state'])
+        Serializer\Groups(['read:state',  'read:operation-employee:collection'])
     ]
     protected string $state = BlockerStateType::TYPE_STATE_ENABLED;
 }

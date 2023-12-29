@@ -1,4 +1,6 @@
 <script setup>
+    import {onBeforeMount, ref} from 'vue'
+    import useOptions from '../../../../../stores/option/options'
     import AppOptionGroups from './AppOptionGroups.vue'
     import AppOptions from './AppOptions.vue'
 
@@ -9,13 +11,30 @@
         id: {required: true, type: String},
         modelValue: {default: null, type: String}
     })
-    function getOptions() {
-        if (typeof props.field.optionsList === 'undefined') {
-            return props.field.options.options
+    const optionsTransfered = ref({})
+    const fieldTransfered = ref({})
+    const formFieldKey = ref(0)
+    onBeforeMount(() => {
+        if (typeof props.field.options.base === 'undefined') {
+            if (typeof props.field.optionsList === 'undefined') {
+                optionsTransfered.value = props.field.options.options
+            } else {
+                optionsTransfered.value = props.field.optionsList
+                fieldTransfered.value = props.field
+            }
+        } else if (props.field.optionsList === 'undefined') {
+            const options = useOptions(props.field.options.base)
+            // eslint-disable-next-line no-return-assign
+            options.fetchOp().then(() => {
+                optionsTransfered.value = options.items.map(item => ({...item, value: item['@id']}))
+                fieldTransfered.value = {...props.field, options: {options: options.items}}
+                formFieldKey.value++
+            })
+        } else {
+            optionsTransfered.value = props.field.optionsList
+            fieldTransfered.value = props.field
         }
-        return props.field.optionsList
-    }
-
+    })
     const emit = defineEmits(['update:modelValue'])
 
     function update(v) {
@@ -31,6 +50,7 @@
     <AppMultiselect
         v-if="field.big"
         :id="id"
+        :key="formFieldKey"
         :disabled="disabled"
         :field="field"
         :form="form"
@@ -42,6 +62,7 @@
     <select
         v-else
         :id="id"
+        :key="formFieldKey"
         :disabled="disabled"
         :form="form"
         :name="field.name"
@@ -50,6 +71,6 @@
         @input="input"
         @update:model-value="update">
         <AppOptionGroups v-if="field.hasGroups" :groups="field.groups"/>
-        <AppOptions v-else :options="getOptions()"/>
+        <AppOptions v-else :options="optionsTransfered"/>
     </select>
 </template>

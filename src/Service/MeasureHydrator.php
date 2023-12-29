@@ -4,7 +4,9 @@ namespace App\Service;
 
 use App\Entity\Embeddable\Measure;
 use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Currency;
 use App\Entity\Management\Unit;
+use App\Repository\CurrencyRepository;
 use App\Repository\Management\UnitRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,15 +15,15 @@ use Symfony\Contracts\Cache\CacheInterface;
 
 final class MeasureHydrator {
     public function __construct(
-        private readonly CacheInterface $cache,
-        private readonly UnitRepository $repo,
-        private readonly RequestStack $stack,
-        private LoggerInterface $logger
+        private readonly CacheInterface     $cache,
+        private readonly UnitRepository     $unitRepo,
+        private readonly CurrencyRepository $currencyRepo,
+        private readonly RequestStack       $stack,
+        private LoggerInterface             $logger
     ) {
     }
 
-    public function hydrate(Measure $measure): Measure {
-        #$this->logger->debug('MeasureHydrator:hydrate',[$measure->getCode(), $measure->getUnit()]);
+    public function hydrateUnit(Measure $measure): Measure {
         if (!$this->isSafe()) {
             return $measure;
         }
@@ -29,13 +31,26 @@ final class MeasureHydrator {
         $measure->setDenominatorUnit($this->getUnit($measure->getDenominator()));
         return $measure;
     }
+    public function hydrateCurrency(Measure $measure): Measure {
+        if (!$this->isSafe()) {
+            return $measure;
+        }
+        $measure->setUnit($this->getCurrency($measure->getCode()));
+        $measure->setDenominatorUnit($this->getUnit($measure->getDenominator()));
+        return $measure;
+    }
 
     public function hydrateIn(MeasuredInterface $entity): MeasuredInterface {
+//        dump(["MeasureHydrator:hydrateIn Before" => $entity]);
         if ($this->isSafe()) {
-            foreach ($entity->getMeasures() as $measure) {
-                $this->hydrate($measure);
+            foreach ($entity->getUnitMeasures() as $measure) {
+                $this->hydrateUnit($measure);
+            }
+            foreach ($entity->getCurrencyMeasures() as $measure) {
+                $this->hydrateCurrency($measure);
             }
         }
+//        dump(["MeasureHydrator:hydrateIn After" => $entity]);
         return $entity;
     }
 
@@ -43,9 +58,15 @@ final class MeasureHydrator {
         if (empty($code)) {
             return null;
         }
-        $units = $this->cache->get('measure-units', fn () => $this->repo->loadAll());
-        #$this->logger->debug("units from cache",$units);
+        $units = $this->cache->get('measure-units', fn () => $this->unitRepo->loadAll());
         return $units[$code] ?? null;
+    }
+    private function getCurrency(?string $code): ?Currency {
+        if (empty($code)) {
+            return null;
+        }
+        $currencies = $this->cache->get('measure-currencies', fn () => $this->currencyRepo->loadAll());
+        return $currencies[$code] ?? null;
     }
 
     private function isSafe(): bool {

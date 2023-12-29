@@ -5,6 +5,8 @@
         currentPage: {required: true, type: String},
         fields: {required: true, type: Array},
         items: {required: true, type: Array},
+        shouldDelete: {required: false, default: true},
+        shouldSee: {required: false, default: true},
         pagine: {required: true, type: Boolean}
     })
     const emit = defineEmits(['deleted', 'update'])
@@ -28,6 +30,6 @@
         <th scope="row" :title="currentPage">
             {{ calculIndice(index, currentPage) }}
         </th>
-        <AppCardableTableBody :item="item" :fields="fields" @update="update" @deleted="deleted"/>
+        <AppCardableTableBody :item="item" :fields="fields" :should-delete="shouldDelete" :should-see="shouldSee" @update="update" @deleted="deleted"/>
     </tr>
 </template>

@@ -16,10 +16,12 @@ use App\Entity\Purchase\Component\Component;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['component.id']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['component']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['height.value.value' => 'partial', 'height.value.code' => 'partial', 'section.code' => 'exact', 'section.value' => 'partial', 'tensile.value.code' => 'exact', 'tensile.value.value' => 'partial', 'width.value.code' => 'exact', 'width.value.value' => 'partial']),
     ApiResource(
         description: 'Valeur de référence du composant',
         collectionOperations: [
@@ -160,6 +162,15 @@ class ComponentReferenceValue extends Entity implements MeasuredInterface {
     public function getMeasures(): array
     {
         return [$this->section];
+    }
+
+    public function getUnitMeasures(): array
+    {
+        return [$this->section];
+    }
+    public function getCurrencyMeasures(): array
+    {
+        return [];
     }
 
     public function getUnit(): ?Unit

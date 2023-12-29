@@ -13,6 +13,7 @@ use App\Entity\Production\Engine\Event\Event;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use App\Controller\Production\Engine\ItemEventEnginePlanningController;
 
 #[
 ApiResource(
@@ -22,9 +23,27 @@ ApiResource(
          'openapi_context' => [
             'description' => 'Récupère les événements de maintenance préventive',
             'summary' => 'Récupère les événements de maintenance préventive',
-         ]
+         ],
+      ],
+      'filtreEnginePlanning' => [
+         'controller' => ItemEventEnginePlanningController::class,
+         'method' => 'GET',
+         'openapi_context' => [
+               'description' => 'Filtrer par engine', 
+               'parameters' => [[
+                  'in' => 'path',
+                 'name' => 'api',
+                 'schema' => [
+                     'type' => 'integer',
+                  ]
+               ]],
+             'summary' => 'Filtrer par engine'
+         ],
+         'path' => '/engine-events/filtreEngine/{api}',
+         'read' => false,
+         'write' => false
       ]
-   ],
+      ],
    itemOperations: [
       'delete' => [
          'openapi_context' => [

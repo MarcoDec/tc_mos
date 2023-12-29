@@ -118,6 +118,14 @@ class ComponentAttribute extends Entity implements MeasuredInterface {
     final public function getMeasures(): array {
         return [$this->measure];
     }
+    final public function getUnitMeasures(): array
+    {
+        return [$this->measure];
+    }
+    final public function getCurrencyMeasures(): array
+    {
+        return [];
+    }
 
     final public function getType(): string {
         return $this->attribute?->getType() ?? AttributeType::TYPE_TEXT;

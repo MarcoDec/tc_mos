@@ -15,7 +15,7 @@ class ComponentManufacturingOperationState extends AbstractState {
     #[
         ApiProperty(description: 'état', openapiContext: ['enum' => ComponentManufacturingOperationStateType::TYPES]),
         ORM\Column(type: 'component_manufacturing_operation_state', options: ['default' => 'draft']),
-        Serializer\Groups(['read:state'])
+        Serializer\Groups(['read:state', 'read:operation-employee:collection'])
     ]
     protected string $state = ComponentManufacturingOperationStateType::TYPE_STATE_DRAFT;
 }
