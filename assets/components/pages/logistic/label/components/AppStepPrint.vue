@@ -13,6 +13,30 @@
     const file = new Blob([zpl.value], {type: 'text/plain'})
     const printerLaunched = ref(false)
     zplHref.value = URL.createObjectURL(file)
+    function calculateDPI() {
+        // Créer un élément div temporaire
+        const div = document.createElement('div')
+        div.style.height = '1in' // Hauteur en pouces
+        div.style.width = '1in' // Largeur en pouces
+        div.style.top = '-100%' // Placer le div hors de l'écran
+        div.style.left = '-100%'
+        div.style.position = 'absolute'
+        // Ajouter le div au body
+        document.body.appendChild(div)
+        // Mesurer le nombre de pixels dans un pouce
+        const dpi = div.offsetWidth
+        // Supprimer le div
+        document.body.removeChild(div)
+        return dpi
+    }
+
+    const screenDPI = calculateDPI()
+    console.log('DPI de l\'écran :', screenDPI)
+    //imprimantes locales : 203dpi => 8dpmm
+    const dpiImprimante = 203
+    const ratio = dpiImprimante / screenDPI
+    const labelWidth = props.products.label.labelKind === 'TConcept' ? 4 * dpiImprimante / ratio : 3 * dpiImprimante / ratio
+    const labelHeight = props.products.label.labelKind === 'TConcept' ? 6 * dpiImprimante / ratio : 8.3 * dpiImprimante / ratio
 
     function imprimeReseau() {
         api(`/api/label-cartons/${props.products.label.id}/print`, 'get')
@@ -27,15 +51,12 @@
         emits('nextStep')
     }
     onMounted(() => {
-        console.log('AppStepPrint', props.products, props.localPrint)
         if (props.localPrint === false) {
-            console.log('impression réseau')
             imprimeReseau()
         }
     })
     function onImageLoaded() {
         if (props.localPrint) {
-            console.log('impression local')
             imprimeLocal()
         }
     }
@@ -48,7 +69,7 @@
         </div>
         <div class="text-center">
             Aperçu de l'étiquette
-            <img id="imageToPrint" class="toPrint" :src="imageUrl" alt="aperçu etiquette" width="280" @load="onImageLoaded"/>
+            <img id="imageToPrint" class="toPrint" :src="imageUrl" alt="aperçu etiquette" :width="labelWidth" :height="labelHeight" @load="onImageLoaded"/>
         </div>
         <div v-if="!printerLaunched">
             <span class="spinner-border" role="status"/>

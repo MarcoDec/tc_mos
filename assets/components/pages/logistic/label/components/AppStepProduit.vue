@@ -56,6 +56,7 @@
                 const file = new Blob([data.zpl], {type: 'text/plain'})
                 zplHref.value = URL.createObjectURL(file)
                 // http://api.labelary.com/v1/printers/{dpmm}/labels/{width}x{height}/{index}/{zpl}
+                // Imprimante à 203dpi => 8dpmm
                 const dpmm = '8dpmm'
                 const width = props.modeleEtiquette.width
                 const height = props.modeleEtiquette.height
