@@ -111,13 +111,13 @@ export default [
         }
     },
     {
-        component: () => import('./pages/employee/AppEmployeeListPage.vue'),
+        component: () => import('../components/pages/hr/employee/AppEmployeeListPage.vue'),
         meta: {requiresAuth: true},
         name: 'employee-list',
         path: '/employee-list',
         props: {
             icon: 'user-tag',
-            title: 'Crée un employée'
+            title: 'Liste des employés'
         }
     }
 ]

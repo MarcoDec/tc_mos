@@ -1,9 +1,9 @@
 <script setup>
     import {computed, ref} from 'vue-demi'
     import AppEmployeeCreate from './AppEmployeeCreate.vue'
-    import useFetchCriteria from '../../../stores/fetch-criteria/fetchCriteria'
-    import {useEmployeesStore} from '../../../stores/employee/employees'
-    import useUser from '../../../stores/security'
+    import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
+    import {useEmployeesStore} from '../../../../stores/employee/employees'
+    import useUser from '../../../../stores/security'
 
     defineProps({
         icon: {required: true, type: String},
@@ -87,6 +87,9 @@
         employeeListCriteria.addSort(payload.name, payload.direction)
         await storeEmployeesList.fetch(employeeListCriteria.getFetchCriteria)
     }
+    async function onEmployeeCreated() {
+        await refreshTable()
+    }
 </script>
 
 <template>
@@ -109,7 +112,7 @@
         </div>
     </div>
     <div class="row">
-        <AppEmployeeCreate :current-company="currentCompany" :modal-id="modalId" :title="title" :target="target"/>
+        <AppEmployeeCreate :current-company="currentCompany" :modal-id="modalId" :title="title" :target="target" @created="onEmployeeCreated"/>
         <div class="col">
             <AppSuspense>
                 <AppCardableTable

@@ -1,6 +1,6 @@
 <script setup>
     import AppEmployeePage from './AppEmployeePage.vue'
-    import AppSuspense from '../../../components/AppSuspense.vue'
+    import AppSuspense from '../../../AppSuspense.vue'
 
     defineProps({
         icon: {required: true, type: String},

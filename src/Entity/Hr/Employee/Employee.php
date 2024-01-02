@@ -205,7 +205,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection', 'write:employee', 'write:employee:it'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:user', 'read:employee:collection', 'write:employee', 'write:employee:it'])
     ]
     private ?Company $company = null;
 

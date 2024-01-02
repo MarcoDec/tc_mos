@@ -1,8 +1,8 @@
 <script setup>
-    import {computed, ref} from 'vue-demi'
-    import AppFormJS from '../../../components/form/AppFormJS.js'
-    import {useEmployeesStore} from '../../../stores/employee/employees'
-    import useOptions from '../../../stores/option/options'
+    import {computed, defineEmits, defineProps, ref} from 'vue'
+    import AppFormJS from '../../../form/AppFormJS.js'
+    import {useEmployeesStore} from '../../../../stores/employee/employees'
+    import useOptions from '../../../../stores/option/options'
 
     const props = defineProps({
         currentCompany: {required: true, type: String},
@@ -10,6 +10,7 @@
         target: {required: true, type: String},
         modalId: {required: true, type: String}
     })
+    const emits = defineEmits(['created'])
 
     const storeEmployeesList = useEmployeesStore()
     let violations = []
@@ -63,25 +64,26 @@
         }
     ])
 
-    const employeeData = {}
+    let employeeData = {}
     function employeeForm(value) {
-        const key = Object.keys(value)[0]
-        if (Object.prototype.hasOwnProperty.call(employeeData, key)) {
-            if (typeof value[key] === 'object') {
-                if (typeof value[key].value !== 'undefined') {
-                    const inputValue = parseFloat(value[key].value)
-                    employeeData[key] = {...employeeData[key], value: inputValue}
-                }
-                if (typeof value[key].code !== 'undefined') {
-                    const inputCode = value[key].code
-                    employeeData[key] = {...employeeData[key], code: inputCode}
+        Object.keys(value).forEach(key => {
+            if (Object.prototype.hasOwnProperty.call(employeeData, key)) {
+                if (typeof value[key] === 'object') {
+                    if (typeof value[key].value !== 'undefined') {
+                        const inputValue = parseFloat(value[key].value)
+                        employeeData[key] = {...employeeData[key], value: inputValue}
+                    }
+                    if (typeof value[key].code !== 'undefined') {
+                        const inputCode = value[key].code
+                        employeeData[key] = {...employeeData[key], code: inputCode}
+                    }
+                } else {
+                    employeeData[key] = value[key]
                 }
             } else {
                 employeeData[key] = value[key]
             }
-        } else {
-            employeeData[key] = value[key]
-        }
+        })
     }
 
     async function employeeFormCreate(){
@@ -101,6 +103,7 @@
             isPopupVisible.value = false
             isCreatedPopupVisible.value = true
             success = 'employée crée'
+            emits('created')
         } catch (error) {
             violations = error
             isPopupVisible.value = true
@@ -110,7 +113,7 @@
 </script>
 
 <template>
-    <AppModal :id="modalId" class="four" :title="title">
+    <AppModal :id="modalId" class="four" title="Création d'un nouvel employé">
         <AppFormJS id="employee" :fields="fields" :model-value="empCompany" @update:model-value="employeeForm"/>
         <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
             <li>{{ violations }}</li>
