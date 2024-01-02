@@ -5,6 +5,8 @@ namespace App\DataPersister\Hr\Employee;
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Hr\Employee\Employee;
+use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface AS Logger;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -22,6 +24,24 @@ class EmployeePostDataPersister implements ContextAwareDataPersisterInterface
 
     }
 
+    /**
+     * @throws Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
+     */
+    private function getNextTimeCard()
+    {
+        $conn = $this->em->getConnection();
+
+        $sql = 'SELECT get_next_timecard() as nextTimeCard';
+        /** @var Statement $stmt */
+        $stmt = $conn->prepare($sql);
+        $result=$stmt->execute();
+
+        // Récupère le résultat
+        $results = $result->fetchAssociative();
+        return $results['nextTimeCard'];
+    }
+
     public function supports($data, array $context = []): bool
     {
         return $data instanceof Employee
@@ -33,16 +53,16 @@ class EmployeePostDataPersister implements ContextAwareDataPersisterInterface
      * @param Employee $data
      * @param array $context
      * @return Employee
+     * @throws Exception
      */
-    public function persist($data, array $context = [])
+    public function persist($data, array $context = []): Employee
     {
-        dump("Persist New Employee", $this->requests->getCurrentRequest());
         $content = json_decode($this->requests->getCurrentRequest()->getContent());
         if (isset($content->embRoles)) {
             $roles = array_merge([Roles::ROLE_USER],$content->embRoles);
-            dump($roles);
             $data->setRoles($roles);
         }
+        $data->setTimeCard($this->getNextTimeCard());
         /** @var Employee $data */
         if ($data->getPlainPassword() != "") {
             $hashedPassword = $this->passwordHasher->hashPassword($data, $data->getPlainPassword());
@@ -50,7 +70,6 @@ class EmployeePostDataPersister implements ContextAwareDataPersisterInterface
             $data->setPassword($hashedPassword);
             $this->em->persist($data);
             $this->em->flush();
-            dump($data);
             $this->logger->info(`Création du mot de passe de l'utilisateur `.$data->getId());
         }
         return $data;

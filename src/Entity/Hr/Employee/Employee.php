@@ -322,10 +322,10 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[
         ApiProperty(description: 'Carte de pointage', example: '65465224'),
-        ORM\Column(nullable: true),
+        ORM\Column(type: 'integer' , nullable: true),
         Serializer\Groups(['read:employee', 'read:employee:collection', 'write:employee', 'write:employee:it'])
     ]
-    private ?string $timeCard = null;
+    private ?int $timeCard = null;
 
     #[
         ApiProperty(description: 'Compte validé', required: true, example: false),
@@ -536,7 +536,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->team;
     }
 
-    final public function getTimeCard(): ?string {
+    final public function getTimeCard(): ?int {
         return $this->timeCard;
     }
 
@@ -704,7 +704,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
-    final public function setTimeCard(?string $timeCard): self {
+    final public function setTimeCard(?int $timeCard): self {
         $this->timeCard = $timeCard;
         return $this;
     }
