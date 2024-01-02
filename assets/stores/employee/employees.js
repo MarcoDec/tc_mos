@@ -31,7 +31,6 @@ export const useEmployeesStore = defineStore('employees', {
         },
         async remove(id){
             await api(`/api/employees/${id}`, 'DELETE')
-            this.employees = this.employees.filter(employee => Number(employee['@id'].match(/\d+/)[0]) !== id)
         },
         async addEmployee(payload) {
             await api('/api/employees', 'POST', payload)
