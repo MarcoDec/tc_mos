@@ -30,10 +30,10 @@
     const empCompany = {company: props.currentCompany}
 
     const levelOptions = [
-        {text: 'Opérateur', value: '1'},
-        {text: 'Animateur', value: '2'},
-        {text: 'Responsable', value: '3'},
-        {text: 'Directeur', value: '4'}
+        {text: 'Opérateur', value: 'ROLE_LEVEL_OPERATOR'},
+        {text: 'Animateur', value: 'ROLE_LEVEL_ANIMATOR'},
+        {text: 'Responsable', value: 'ROLE_LEVEL_MANAGER'},
+        {text: 'Directeur', value: 'ROLE_LEVEL_DIRECTOR'}
     ]
 
     const fields = computed(() => [
@@ -42,8 +42,7 @@
         {label: 'Initiales', name: 'initials', type: 'text'},
         {label: 'Compte utilisateur', name: 'userEnabled', type: 'boolean'},
         {label: 'Identifiant', name: 'username', type: 'text'},
-        {label: 'mot de passe', name: 'password', type: 'text'},
-        {label: 'Mot de passe simple', name: 'plainPassword', type: 'text'},
+        {label: 'Mot de passe', name: 'plainPassword', type: 'text'},
         {label: 'Company',
          name: 'company',
          options: {
@@ -89,7 +88,7 @@
     async function employeeFormCreate(){
         try {
             const employee = {
-                embRoles: employeeData?.level || '',
+                embRoles: [employeeData.level],
                 initials: employeeData?.initials || '',
                 name: employeeData?.name || '',
                 password: employeeData?.password || '',

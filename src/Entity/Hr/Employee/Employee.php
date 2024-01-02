@@ -360,6 +360,8 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         $this->attachments = new ArrayCollection();
         $this->embState = new EmployeeEngineState();
         $this->address = new Address();
+        $this->clockings = new ArrayCollection();
+        $this->operationEmployees = new ArrayCollection();
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -673,7 +675,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     }
 
     final public function setRoles(array $embRoles): self {
-        $this->embRoles = $embRoles;
+        $this->embRoles->setRoles($embRoles);
         return $this;
     }
 

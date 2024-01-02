@@ -9,7 +9,7 @@ use Psr\Log\LoggerInterface AS Logger;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use function PHPUnit\Framework\isEmpty;
 
-class EmployeeDataPersister implements ContextAwareDataPersisterInterface
+class EmployeePatchDataPersister implements ContextAwareDataPersisterInterface
 {
     public function __construct(private UserPasswordHasherInterface $passwordHasher, private Logger $logger, private EntityManagerInterface $em) {
 
