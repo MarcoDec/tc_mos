@@ -49,9 +49,6 @@
 <!--                <AppNavbarLink icon="user-tag" to="component-list" variant="warning">-->
 <!--                    Composant List-->
 <!--                </AppNavbarLink>-->
-<!--                <AppNavbarLink icon="user-tag" to="employee-list" variant="warning">-->
-<!--                    Employee List-->
-<!--                </AppNavbarLink>-->
 <!--                <AppNavbarLink icon="user-tag" to="customer-list" variant="warning">-->
 <!--                    Client List-->
 <!--                </AppNavbarLink>-->

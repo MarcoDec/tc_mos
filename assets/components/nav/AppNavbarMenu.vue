@@ -18,7 +18,7 @@
     const variantProduction = user.isProductionAdmin ? 'danger' : user.isProductionWriter ? 'warning' : user.isProductionReader ? 'info' : null
     // const variantProject = user.isProjectAdmin ? 'danger' : user.isProjectWriter ? 'warning' : user.isProjectReader ? 'info' : null
     // const variantQuality = user.isQualityAdmin ? 'danger' : user.isQualityWriter ? 'warning' : user.isQualityReader ? 'info' : null
-    // const variantHr = user.isHrAdmin ? 'danger' : user.isHrWriter ? 'warning' : user.isHrReader ? 'info' : null
+    const variantHr = user.isHrAdmin ? 'danger' : user.isHrWriter ? 'warning' : user.isHrReader ? 'info' : null
     // const variantSelling = user.isSellingAdmin ? 'danger' : user.isSellingWriter ? 'warning' : user.isSellingReader ? 'info' : null
     // const variantPurchase = user.isPurchaseAdmin ? 'danger' : user.isPurchaseWriter ? 'warning' : user.isPurchaseReader ? 'info' : null
     // const variantIt = user.isItAdmin ? 'danger' : null
@@ -212,7 +212,10 @@
             <!--                    </AppNavbarLink>-->
             <!--                </template>-->
             <!--            </AppNavbarItem>-->
-            <!--            <AppNavbarItem v-if="user.isHrReader" id="hr" icon="male" title="RH">-->
+                        <AppNavbarItem v-if="user.isHrReader" id="hr" icon="male" title="RH">
+                            <AppNavbarLink icon="user-tag" to="employee-list" :variant="variantHr">
+                                Liste des employés
+                            </AppNavbarLink>
             <!--                <AppDropdownItem disabled variant="success">-->
             <!--                    Lecteur-->
             <!--                </AppDropdownItem>-->
@@ -236,7 +239,7 @@
             <!--                        Types de Compétences-->
             <!--                    </AppNavbarLink>-->
             <!--                </template>-->
-            <!--            </AppNavbarItem>-->
+                        </AppNavbarItem>
             <!--            <AppNavbarItem v-if="user.isSellingReader" id="selling" icon="euro-sign" title="Ventes">-->
             <!--                <AppDropdownItem disabled variant="success">-->
             <!--                    Lecteur-->
