@@ -56,14 +56,14 @@
     // })
 
     const fields = computed(() => [
-        {label: 'Nom', name: 'name', type: 'text'},
-        {label: 'Société mère / Groupe', name: 'society', options: {label: value => optionsSociety.value.find(option => option.type === value)?.text ?? null, options: optionsSociety.value}, type: 'select'},
+        {label: 'Nom *', name: 'name', type: 'text'},
+        {label: 'Société mère / Groupe *', name: 'society', options: {label: value => optionsSociety.value.find(option => option.type === value)?.text ?? null, options: optionsSociety.value}, type: 'select'},
         {label: 'Adresse', name: 'address', type: 'text'},
         {label: 'complément d\'adresse', name: 'address2', type: 'text'},
         {label: 'ville', name: 'city', type: 'text'},
         {label: 'Code postal', name: 'zipCode', type: 'text'},
         // {label: 'Pays*', name: 'country',options: {label: value =>optionsCountry.value.find(option => option.type === value)?.text ?? null, options: optionsCountry.value}, type: 'select'},
-        {label: 'Pays*', name: 'country', type: 'text'},
+        {label: 'Pays *', name: 'country', type: 'text'},
         {label: 'Téléphone', name: 'phoneNumber', type: 'text'},
         {label: 'Email', name: 'email', type: 'text'}
     ])
@@ -77,6 +77,12 @@
         name: 'managed',
         type: 'boolean'
     }]
+
+    const typeOptions = [
+        {text: 'à la livraison', value: 'à la livraison'},
+        {text: 'mensuel', value: 'mensuel'},
+        {text: 'semestriel', value: 'semestriel'}
+    ]
     const conditionnedFieldsCuivre = [{
         label: 'Indice du cuivre',
         name: 'copperIndex ',
@@ -88,7 +94,12 @@
     }, {
         label: 'Fréquence de la mise à jour',
         name: 'type',
-        type: 'text'
+        options: {
+            label: value =>
+                typeOptions.find(option => option.type === value)?.text ?? null,
+            options: typeOptions
+        },
+        type: 'select'
     }]
     // const fieldsCuivre = computed(() => [
     //     {label: 'Gest. cuivre', name: 'managed', type: 'boolean'},
