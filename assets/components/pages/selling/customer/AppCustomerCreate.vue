@@ -13,7 +13,7 @@
     })
 
     const storeCustomersList = useCustomersStore()
-    let violations = []
+    const violations = ref([])
     let success = []
     const isPopupVisible = ref(false)
     const isCreatedPopupVisible = ref(false)
@@ -56,20 +56,20 @@
     // })
 
     const fields = computed(() => [
-        {label: 'Nom *', name: 'name', type: 'text'},
+        {label: 'Nom*', name: 'name', type: 'text'},
         {label: 'Société mère / Groupe *', name: 'society', options: {label: value => optionsSociety.value.find(option => option.type === value)?.text ?? null, options: optionsSociety.value}, type: 'select'},
         {label: 'Adresse', name: 'address', type: 'text'},
         {label: 'complément d\'adresse', name: 'address2', type: 'text'},
         {label: 'ville', name: 'city', type: 'text'},
         {label: 'Code postal', name: 'zipCode', type: 'text'},
         // {label: 'Pays*', name: 'country',options: {label: value =>optionsCountry.value.find(option => option.type === value)?.text ?? null, options: optionsCountry.value}, type: 'select'},
-        {label: 'Pays *', name: 'country', type: 'text'},
+        {label: 'Pays', name: 'country', type: 'text'},
         {label: 'Téléphone', name: 'phoneNumber', type: 'text'},
         {label: 'Email', name: 'email', type: 'text'}
     ])
 
     const fieldsComp = computed(() => [
-        {label: 'Devise (chiffrage et facturation)', name: 'currency', options: {label: value => optionsCurrency.find(option => option.type === value)?.text ?? null, options: optionsCurrency}, type: 'select'},
+        {label: 'Devise (chiffrage et facturation)*', name: 'currency', options: {label: value => optionsCurrency.find(option => option.type === value)?.text ?? null, options: optionsCurrency}, type: 'select'},
         {label: 'modalités de paiement', name: 'paymentTerms', options: {label: value => optionsInvoiceTimeDue.find(option => option.type === value)?.text ?? null, options: optionsInvoiceTimeDue}, type: 'select'}
     ])
     const baseFieldsCuivre = [{
@@ -92,7 +92,7 @@
         name: 'last',
         type: 'date'
     }, {
-        label: 'Fréquence de la mise à jour',
+        label: 'Périodicité',
         name: 'type',
         options: {
             label: value =>
@@ -113,7 +113,6 @@
         managed: false
     })
     const fieldsCuivre = computed(() => {
-        console.log('cuivreData.managed', cuivreData.value.managed)
         if (cuivreData.value.managed) {
             return baseFieldsCuivre.concat(conditionnedFieldsCuivre)
         }
@@ -201,45 +200,83 @@
         console.log('copperKey', copperKey)
         console.log('fieldsCuivre', fieldsCuivre.value)
     }
+    const customerData = ref({
+        address: null,
+        copper: {
+            index: {
+                code: '',
+                value: 0
+            },
+            managed: false
+        },
+        currency: null,
+        name: '',
+        paymentTerms: '/api/invoice-time-dues/1',
+        society: null
+    })
 
     async function customerFormCreate(){
-        try {
-            const customer = {
-                address: {
-                    address: generalData?.address || '',
-                    address2: generalData?.address2 || '',
-                    city: generalData?.city || '',
-                    country: 'FR',
-                    // "country":  generalForm?.value?.value?.country || '',
-                    email: generalData?.email || '',
-                    phoneNumber: generalData?.phoneNumber || '',
-                    zipCode: generalData?.zipCode || ''
-                },
-                copper: {
-                    index: {
-                        code: cuivreData.value?.copperType || '',
-                        value: cuivreData.value?.copperIndex || 0
-                    },
-                    last: cuivreData.value?.last || null,
-                    managed: cuivreData.value?.managed || false,
-                    next: cuivreData.value?.next || null,
-                    type: cuivreData.value?.type || ''
-                },
-                currency: comptabilityData?.currency || '#',
-                name: generalData?.name || '#',
-                paymentTerms: '/api/invoice-time-dues/1',
-                society: generalData?.society || '#'
+        if (typeof generalData.address !== 'undefined') {
+            console.log('generalData.address', generalData.address)
+            customerData.value.address = {
+                address: generalData.address,
+                address2: generalData.address2,
+                city: generalData.city,
+                country: generalData.country,
+                email: generalData.email,
+                phoneNumber: generalData.phoneNumber,
+                zipCode: generalData.zipCode
             }
-            console.log('customer', customer)
-            await storeCustomersList.addCustomer(customer)
+        }
+        if (typeof generalData.society !== 'undefined') {
+            console.log('generalData.society', generalData.society)
+            customerData.value.society = generalData.society
+        }
+        if (typeof comptabilityData.currency !== 'undefined') {
+            console.log('comptabilityData.currency', comptabilityData.currency)
+            customerData.value.currency = comptabilityData.currency
+        }
+        if (typeof generalData.name !== 'undefined') {
+            console.log('generalData.name', generalData.name)
+            customerData.value.name = generalData.name
+        }
+        if (typeof generalData.paymentTerms !== 'undefined') {
+            console.log('generalData.paymentTerms', generalData.paymentTerms)
+            customerData.value.paymentTerms = generalData.paymentTerms
+        }
+        if (typeof cuivreData.value !== 'undefined') {
+            console.log('cuivreData.value', cuivreData.value)
+            if (typeof cuivreData.value.managed !== 'undefined') {
+                console.log('cuivreData.value.managed', cuivreData.value.managed)
+                customerData.value.copper.managed = cuivreData.value.managed
+            }
+            if (typeof cuivreData.value.copperIndex !== 'undefined') {
+                console.log('cuivreData.value.copperIndex', cuivreData.value.copperIndex)
+                customerData.value.copper.index.value = cuivreData.value.copperIndex
+            }
+            if (typeof cuivreData.value.copperType !== 'undefined') {
+                console.log('cuivreData.value.copperType', cuivreData.value.copperType)
+                customerData.value.copper.index.code = cuivreData.value.copperType
+            }
+            if (typeof cuivreData.value.next !== 'undefined') {
+                console.log('cuivreData.value.next', cuivreData.value.next)
+                customerData.value.copper.next = cuivreData.value.next
+            }
+            if (typeof cuivreData.value.last !== 'undefined') {
+                console.log('cuivreData.value.last', cuivreData.value.last)
+                customerData.value.copper.last = cuivreData.value.last
+            }
+        }
+        try {
+            await storeCustomersList.addCustomer(customerData.value)
             isPopupVisible.value = false
             isCreatedPopupVisible.value = true
             success = 'client crée'
         } catch (error) {
-            violations = error
+            violations.value = error
             isPopupVisible.value = true
             isCreatedPopupVisible.value = false
-            console.log('violations', violations)
+            console.log('violations', violations.value)
         }
     }
 </script>
@@ -248,13 +285,13 @@
     <AppModal :id="modalId" class="four" :title="title">
         <AppTabs id="gui-start" class="gui-start-content">
             <AppTab id="gui-start-general" active icon="sitemap" title="Général">
-                <AppFormJS id="supplier" :fields="fields" @update:model-value="generalForm"/>
+                <AppFormJS id="supplier" :fields="fields" :violations="violations" @update:model-value="generalForm"/>
             </AppTab>
             <AppTab id="gui-start-comptabilite" icon="chart-line" title="Comptabilité">
-                <AppFormJS id="comptabilite" :fields="fieldsComp" @update:model-value="comptabilityForm"/>
+                <AppFormJS id="comptabilite" :fields="fieldsComp" :violations="violations" @update:model-value="comptabilityForm"/>
             </AppTab>
             <AppTab id="gui-start-cuivre" icon="clipboard-list" title="Cuivre">
-                <AppFormJS id="cuivre" :key="copperKey" :fields="fieldsCuivre" :model-value="cuivreData" @update:model-value="cuivreForm"/>
+                <AppFormJS id="cuivre" :key="copperKey" :fields="fieldsCuivre" :violations="violations" :model-value="cuivreData" @update:model-value="cuivreForm"/>
             </AppTab>
         </AppTabs>
         <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
@@ -279,5 +316,8 @@
 <style>
 .cardOrderSupplier {
   border: 6px solid #1d583d;
+}
+.tab-pane {
+    padding: 10px;
 }
 </style>

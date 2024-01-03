@@ -56,8 +56,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Créer un client',
                     'summary' => 'Créer un client'
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')',
-                'validation_groups' => ['Product-create']
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -172,6 +171,7 @@ class Customer extends Entity {
 
     #[
         ApiProperty(description: 'Cuivre'),
+        Assert\NotNull,
         ORM\Embedded,
         Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:accounting'])
     ]
@@ -179,6 +179,7 @@ class Customer extends Entity {
 
     #[
         ApiProperty(description: 'Monnaie', readableLink: false, example: '/api/currencies/1'),
+        Assert\NotNull,
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['create:customer', 'read:customer', 'write:customer', 'write:customer:accounting'])
@@ -233,6 +234,7 @@ class Customer extends Entity {
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Kaporingol'),
+        Assert\NotBlank,
         ORM\Column,
         Serializer\Groups(['read:nomenclature', 'create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:admin', 'read:item'])
     ]
@@ -319,6 +321,7 @@ class Customer extends Entity {
     }
     #[
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/1'),
+        Assert\NotNull,
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:admin'])
