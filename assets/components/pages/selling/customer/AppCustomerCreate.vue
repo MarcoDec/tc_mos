@@ -56,8 +56,8 @@
     // })
 
     const fields = computed(() => [
-        {label: 'Société', name: 'society', options: {label: value => optionsSociety.value.find(option => option.type === value)?.text ?? null, options: optionsSociety.value}, type: 'select'},
         {label: 'Nom', name: 'name', type: 'text'},
+        {label: 'Société mère / Groupe', name: 'society', options: {label: value => optionsSociety.value.find(option => option.type === value)?.text ?? null, options: optionsSociety.value}, type: 'select'},
         {label: 'Adresse', name: 'address', type: 'text'},
         {label: 'complément d\'adresse', name: 'address2', type: 'text'},
         {label: 'ville', name: 'city', type: 'text'},
@@ -65,25 +65,51 @@
         // {label: 'Pays*', name: 'country',options: {label: value =>optionsCountry.value.find(option => option.type === value)?.text ?? null, options: optionsCountry.value}, type: 'select'},
         {label: 'Pays*', name: 'country', type: 'text'},
         {label: 'Téléphone', name: 'phoneNumber', type: 'text'},
-        {label: 'Email', name: 'email', type: 'text'},
-        {label: 'modalités de paiement', name: 'paymentTerms', options: {label: value => optionsInvoiceTimeDue.find(option => option.type === value)?.text ?? null, options: optionsInvoiceTimeDue}, type: 'select'}
+        {label: 'Email', name: 'email', type: 'text'}
     ])
 
     const fieldsComp = computed(() => [
-        {label: 'Devise', name: 'currency', options: {label: value => optionsCurrency.find(option => option.type === value)?.text ?? null, options: optionsCurrency}, type: 'select'}
+        {label: 'Devise (chiffrage et facturation)', name: 'currency', options: {label: value => optionsCurrency.find(option => option.type === value)?.text ?? null, options: optionsCurrency}, type: 'select'},
+        {label: 'modalités de paiement', name: 'paymentTerms', options: {label: value => optionsInvoiceTimeDue.find(option => option.type === value)?.text ?? null, options: optionsInvoiceTimeDue}, type: 'select'}
     ])
-    const fieldsCuivre = computed(() => [
-        {label: 'CopperIndex', name: 'copperIndex ', type: 'number'},
-        {label: 'CopperType', name: 'copperType', type: 'text'},
-        {label: 'Gest. cuivre', name: 'managed', type: 'boolean'},
-        {label: 'Date du prochain indice', name: 'next', type: 'date'},
-        {label: 'Date du dernier indice', name: 'last', type: 'date'},
-        {label: 'type', name: 'type', type: 'text'}
-    ])
-
+    const baseFieldsCuivre = [{
+        label: 'Gest. cuivre',
+        name: 'managed',
+        type: 'boolean'
+    }]
+    const conditionnedFieldsCuivre = [{
+        label: 'Indice du cuivre',
+        name: 'copperIndex ',
+        type: 'number'
+    }, {
+        label: 'Date de l\'indice',
+        name: 'last',
+        type: 'date'
+    }, {
+        label: 'Fréquence de la mise à jour',
+        name: 'type',
+        type: 'text'
+    }]
+    // const fieldsCuivre = computed(() => [
+    //     {label: 'Gest. cuivre', name: 'managed', type: 'boolean'},
+    //     {label: 'CopperIndex', name: 'copperIndex ', type: 'number'},
+    //     {label: 'CopperType', name: 'copperType', type: 'text'},
+    //     {label: 'Date du prochain indice', name: 'next', type: 'date'},
+    //     {label: 'Date du dernier indice', name: 'last', type: 'date'},
+    //     {label: 'type', name: 'type', type: 'text'}
+    // ])
+    const cuivreData = ref({
+        managed: false
+    })
+    const fieldsCuivre = computed(() => {
+        console.log('cuivreData.managed', cuivreData.value.managed)
+        if (cuivreData.value.managed) {
+            return baseFieldsCuivre.concat(conditionnedFieldsCuivre)
+        }
+        return baseFieldsCuivre
+    })
     const generalData = {}
     const comptabilityData = {}
-    const cuivreData = {}
 
     function generalForm(value) {
         const key = Object.keys(value)[0]
@@ -123,24 +149,46 @@
             comptabilityData[key] = value[key]
         }
     }
+    let copperKey = 0
     function cuivreForm(value) {
+        console.log('cuivreForm value', value)
         const key = Object.keys(value)[0]
-        if (Object.prototype.hasOwnProperty.call(cuivreData, key)) {
+        if (Object.prototype.hasOwnProperty.call(cuivreData.value, key)) {
             if (typeof value[key] === 'object') {
                 if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
-                    cuivreData[key] = {...cuivreData[key], value: inputValue}
+                    cuivreData.value[key] = {...cuivreData.value[key], value: inputValue}
                 }
                 if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
-                    cuivreData[key] = {...cuivreData[key], code: inputCode}
+                    cuivreData.value[key] = {...cuivreData.value[key], code: inputCode}
                 }
             } else {
-                cuivreData[key] = value[key]
+                cuivreData.value[key] = value[key]
             }
         } else {
-            cuivreData[key] = value[key]
+            cuivreData.value[key] = value[key]
         }
+        if (key === 'managed' && !value[key]) {
+            cuivreData.value.copperIndex = null
+            cuivreData.value.copperType = null
+            cuivreData.value.next = null
+            cuivreData.value.last = null
+            cuivreData.value.type = null
+            cuivreData.value.managed = false
+        }
+        if (key === 'managed' && value[key]) {
+            cuivreData.value.copperIndex = 0
+            cuivreData.value.copperType = ''
+            cuivreData.value.next = null
+            cuivreData.value.last = null
+            cuivreData.value.type = ''
+            cuivreData.value.managed = true
+        }
+        copperKey += 1
+        console.log('cuivreData', cuivreData.value)
+        console.log('copperKey', copperKey)
+        console.log('fieldsCuivre', fieldsCuivre.value)
     }
 
     async function customerFormCreate(){
@@ -158,13 +206,13 @@
                 },
                 copper: {
                     index: {
-                        code: cuivreData?.copperType || '',
-                        value: cuivreData?.copperIndex || 0
+                        code: cuivreData.value?.copperType || '',
+                        value: cuivreData.value?.copperIndex || 0
                     },
-                    last: cuivreData?.last || null,
-                    managed: cuivreData?.managed || false,
-                    next: cuivreData?.next || null,
-                    type: cuivreData?.type || ''
+                    last: cuivreData.value?.last || null,
+                    managed: cuivreData.value?.managed || false,
+                    next: cuivreData.value?.next || null,
+                    type: cuivreData.value?.type || ''
                 },
                 currency: comptabilityData?.currency || '#',
                 name: generalData?.name || '#',
@@ -195,7 +243,7 @@
                 <AppFormJS id="comptabilite" :fields="fieldsComp" @update:model-value="comptabilityForm"/>
             </AppTab>
             <AppTab id="gui-start-cuivre" icon="clipboard-list" title="Cuivre">
-                <AppFormJS id="cuivre" :fields="fieldsCuivre" @update:model-value="cuivreForm"/>
+                <AppFormJS id="cuivre" :key="copperKey" :fields="fieldsCuivre" :model-value="cuivreData" @update:model-value="cuivreForm"/>
             </AppTab>
         </AppTabs>
         <div v-if="isPopupVisible" class="alert alert-danger" role="alert">

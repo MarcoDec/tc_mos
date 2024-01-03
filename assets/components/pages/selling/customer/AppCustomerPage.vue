@@ -101,7 +101,7 @@
         </div>
     </div>
     <div class="row">
-        <AppCustomerCreate :modal-id="modalId" :title="title" :target="target"/>
+        <AppCustomerCreate :modal-id="modalId" title="Création nouveau client" :target="target"/>
         <div class="col">
             <AppSuspense>
                 <AppCardableTable
