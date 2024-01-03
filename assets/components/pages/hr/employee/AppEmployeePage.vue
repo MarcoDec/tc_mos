@@ -67,13 +67,14 @@
 
     async function search(inputValues) {
         employeeListCriteria.resetAllFilter()
+        console.log('search', inputValues)
         employeeListCriteria.addFilter('company', currentCompany)
         if (inputValues.timeCard) employeeListCriteria.addFilter('timeCard', inputValues.timeCard)
-        if (inputValues.surName) employeeListCriteria.addFilter('surName', inputValues.surName)
+        if (inputValues.surName) employeeListCriteria.addFilter('surname', inputValues.surName)
         if (inputValues.name) employeeListCriteria.addFilter('name', inputValues.name)
         if (inputValues.initials) employeeListCriteria.addFilter('initials', inputValues.initials)
         if (inputValues.username) employeeListCriteria.addFilter('username', inputValues.username)
-        if (inputValues.userEnabled) employeeListCriteria.addFilter('userEnabled', inputValues.userEnabled)
+        if (typeof inputValues.userEnabled !== 'undefined') employeeListCriteria.addFilter('userEnabled', inputValues.userEnabled)
         if (inputValues.state) employeeListCriteria.addFilter('embState.state[]', inputValues.state)
         await storeEmployeesList.fetch(employeeListCriteria.getFetchCriteria)
     }

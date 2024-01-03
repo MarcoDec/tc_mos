@@ -43,7 +43,16 @@ use App\Entity\Production\Manufacturing\OperationEmployee;
     ApiFilter(filterClass: NumericFilter::class, properties: ['id']),
     ApiFilter(
         filterClass: SearchFilter::class,
-        properties: ['initials' => 'partial', 'name' => 'partial', 'surname' => 'partial', 'username' => 'partial', 'company'=>'exact', 'notes' => 'partial', 'entryDate' => 'partial']
+        properties: [
+            'initials' => 'partial',
+            'name' => 'partial',
+            'surname' => 'partial',
+            'username' => 'partial',
+            'company'=>'exact',
+            'notes' => 'partial',
+            'entryDate' => 'partial',
+            'timeCard' => 'partial'
+        ]
     ),
     ApiFilter(filterClass: OrderFilter::class, properties: ['initials', 'id', 'name', 'surname', 'username']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
