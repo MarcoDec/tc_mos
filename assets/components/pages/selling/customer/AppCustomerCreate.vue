@@ -1,11 +1,11 @@
 <script setup>
     import {computed, ref} from 'vue-demi'
-    import AppFormJS from '../../../components/form/AppFormJS.js'
-    import AppTab from '../../../components/tabs/AppTab.vue'
-    import AppTabs from '../../../components/tabs/AppTabs.vue'
-    import useOptions from '../../../stores/option/options'
-    import {useCustomersStore} from '../../../stores/customer/customers'
-    import {useInvoiceTimeDuesStore} from '../../../stores/management/invoiceTimeDues'
+    import AppFormJS from '../../../form/AppFormJS.js'
+    import AppTab from '../../../tabs/AppTab.vue'
+    import AppTabs from '../../../tabs/AppTabs.vue'
+    import useOptions from '../../../../stores/option/options'
+    import {useCustomersStore} from '../../../../stores/customer/customers'
+    import {useInvoiceTimeDuesStore} from '../../../../stores/management/invoiceTimeDues'
     defineProps({
         title: {required: true, type: String},
         target: {required: true, type: String},

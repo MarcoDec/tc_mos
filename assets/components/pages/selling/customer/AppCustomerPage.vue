@@ -1,10 +1,10 @@
 <script setup>
     import {computed, ref} from 'vue-demi'
-    import useFetchCriteria from '../../../stores/fetch-criteria/fetchCriteria'
+    import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
     import AppCustomerCreate from './AppCustomerCreate.vue'
-    import AppSuspense from '../../../components/AppSuspense.vue'
-    import {useCustomersStore} from '../../../stores/customer/customers'
-    import useUser from '../../../stores/security'
+    import AppSuspense from '../../../AppSuspense.vue'
+    import {useCustomersStore} from '../../../../stores/customer/customers'
+    import useUser from '../../../../stores/security'
 
     defineProps({
         icon: {required: true, type: String},

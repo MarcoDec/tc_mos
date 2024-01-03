@@ -31,7 +31,7 @@ export default [
         }
     },
     {
-        component: () => import('./pages/customer/AppCustomerListPage.vue'),
+        component: () => import('../components/pages/selling/customer/AppCustomerListPage.vue'),
         meta: {requiresAuth: true},
         name: 'customer-list',
         path: '/customer-list',
