@@ -52,8 +52,8 @@ export const useEmployeesStore = defineStore('employees', {
                 username: item.username,
                 userEnabled: item.userEnabled,
                 state: item.embState.state,
-                company: item.company
-
+                company: item.company,
+                id: item.id
             }
             return newObject
         }),

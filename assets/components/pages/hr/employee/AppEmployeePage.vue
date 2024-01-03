@@ -4,12 +4,14 @@
     import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
     import {useEmployeesStore} from '../../../../stores/employee/employees'
     import useUser from '../../../../stores/security'
+    import {useRouter} from 'vue-router'
 
     defineProps({
         icon: {required: true, type: String},
         title: {required: true, type: String}
     })
 
+    const router = useRouter()
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
 
@@ -92,6 +94,10 @@
     async function onEmployeeCreated() {
         await refreshTable()
     }
+    function onEmployeeShow(item) {
+        console.log('onEmployeeShow', item)
+        router.push({name: 'employee', params: {id_employee: item.id}})
+    }
 </script>
 
 <template>
@@ -132,6 +138,7 @@
                     @get-page="getPage"
                     @trier-alphabet="trierAlphabet"
                     @search="search"
+                    @update="onEmployeeShow"
                     @cancel-search="cancelSearch"/>
             </AppSuspense>
         </div>
