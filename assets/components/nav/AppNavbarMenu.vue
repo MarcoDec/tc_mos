@@ -19,7 +19,7 @@
     // const variantProject = user.isProjectAdmin ? 'danger' : user.isProjectWriter ? 'warning' : user.isProjectReader ? 'info' : null
     // const variantQuality = user.isQualityAdmin ? 'danger' : user.isQualityWriter ? 'warning' : user.isQualityReader ? 'info' : null
     const variantHr = user.isHrAdmin ? 'danger' : user.isHrWriter ? 'warning' : user.isHrReader ? 'info' : null
-    // const variantSelling = user.isSellingAdmin ? 'danger' : user.isSellingWriter ? 'warning' : user.isSellingReader ? 'info' : null
+    const variantSelling = user.isSellingAdmin ? 'danger' : user.isSellingWriter ? 'warning' : user.isSellingReader ? 'info' : null
     // const variantPurchase = user.isPurchaseAdmin ? 'danger' : user.isPurchaseWriter ? 'warning' : user.isPurchaseReader ? 'info' : null
     // const variantIt = user.isItAdmin ? 'danger' : null
 </script>
@@ -240,7 +240,10 @@
             <!--                    </AppNavbarLink>-->
             <!--                </template>-->
                         </AppNavbarItem>
-            <!--            <AppNavbarItem v-if="user.isSellingReader" id="selling" icon="euro-sign" title="Ventes">-->
+                        <AppNavbarItem v-if="user.isSellingReader" id="selling" icon="euro-sign" title="Ventes">
+                            <AppNavbarLink icon="user-tie" to="customer-list" :variant="variantSelling">
+                                Liste des clients
+                            </AppNavbarLink>
             <!--                <AppDropdownItem disabled variant="success">-->
             <!--                    Lecteur-->
             <!--                </AppDropdownItem>-->
@@ -255,7 +258,7 @@
             <!--                        Paramètres-->
             <!--                    </AppNavbarLink>-->
             <!--                </template>-->
-            <!--            </AppNavbarItem>-->
+                        </AppNavbarItem>
         </ul>
         <div class="align-items-center d-flex flex-row">
             <AppSuspense variant="white">

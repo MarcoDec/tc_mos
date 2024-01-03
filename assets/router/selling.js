@@ -36,8 +36,8 @@ export default [
         name: 'customer-list',
         path: '/customer-list',
         props: {
-            icon: 'user-tag',
-            title: 'Créer un client'
+            icon: 'user-tie',
+            title: 'Liste des clients'
         }
     }
 ]
