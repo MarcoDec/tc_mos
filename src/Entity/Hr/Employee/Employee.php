@@ -54,7 +54,9 @@ use App\Entity\Production\Manufacturing\OperationEmployee;
             'timeCard' => 'partial'
         ]
     ),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['initials', 'id', 'name', 'surname', 'username']),
+    ApiFilter(
+        filterClass: OrderFilter::class,
+        properties: ['initials', 'id', 'name', 'surname', 'username', 'timeCard', 'initials']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
         description: 'Employé',

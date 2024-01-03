@@ -37,8 +37,8 @@
     ]
 
     const fields = computed(() => [
-        {label: 'Matricule', name: 'timeCard', trie: false, type: 'text'},
-        {label: 'Nom', name: 'surName', trie: true, type: 'text'},
+        {label: 'Matricule', name: 'timeCard', trie: true, type: 'text'},
+        {label: 'Nom', name: 'surname', trie: true, type: 'text'},
         {label: 'prenom', name: 'name', trie: true, type: 'text'},
         {label: 'Initiales', name: 'initials', trie: true, type: 'text'},
         {label: 'Identifiant', name: 'username', trie: true, type: 'text'},
@@ -67,7 +67,7 @@
 
     async function search(inputValues) {
         employeeListCriteria.resetAllFilter()
-        console.log('search', inputValues)
+        // console.log('search', inputValues)
         employeeListCriteria.addFilter('company', currentCompany)
         if (inputValues.timeCard) employeeListCriteria.addFilter('timeCard', inputValues.timeCard)
         if (inputValues.surName) employeeListCriteria.addFilter('surname', inputValues.surName)
@@ -80,6 +80,7 @@
     }
     async function cancelSearch() {
         employeeListCriteria.resetAllFilter()
+        employeeListCriteria.resetSort()
         employeeListCriteria.addFilter('company', currentCompany)
         await storeEmployeesList.fetch(employeeListCriteria.getFetchCriteria)
     }

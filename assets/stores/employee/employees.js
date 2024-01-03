@@ -46,7 +46,7 @@ export const useEmployeesStore = defineStore('employees', {
             const newObject = {
                 '@id': item['@id'],
                 timeCard: item.timeCard,
-                surName: item.surname,
+                surname: item.surname,
                 name: item.name,
                 initials: item.initials,
                 username: item.username,
