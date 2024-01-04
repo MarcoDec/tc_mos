@@ -22,14 +22,14 @@
     const user = useUser()
     const currentCompany = user.company
 
-    const fecthOptionsSociety = useOptions('societies')
-    await fecthOptionsSociety.fetchOp()
-    const optionsSociety = computed(() =>
-        fecthOptionsSociety.options.map(op => {
-            const text = op.text
-            const value = op.value
-            return {text, value}
-        }))
+    // const fecthOptionsSociety = useOptions('societies')
+    // await fecthOptionsSociety.fetchOp()
+    // const optionsSociety = computed(() =>
+    //     fecthOptionsSociety.options.map(op => {
+    //         const text = op.text
+    //         const value = op.value
+    //         return {text, value}
+    //     }))
 
     const storeinvoiceTimeDuesList = useInvoiceTimeDuesStore()
     await storeinvoiceTimeDuesList.invoiceTimeDuesOption()
@@ -61,7 +61,24 @@
 
     const fields = computed(() => [
         {label: 'Nom*', name: 'name', type: 'text'},
-        {label: 'Société mère / Groupe *', name: 'society', options: {label: value => optionsSociety.value.find(option => option.type === value)?.text ?? null, options: optionsSociety.value}, type: 'select'},
+        {
+            label: 'Société mère / Groupe *',
+            name: 'society',
+            type: 'multiselect-fetch',
+            api: '/api/societies',
+            filteredProperty: 'name',
+            min: true,
+            max: 1
+        },
+        // {
+        //     label: 'Société mère / Groupe *',
+        //     name: 'society',
+        //     options: {
+        //         label: value => optionsSociety.value.find(option => option.type === value)?.text ?? null,
+        //         options: optionsSociety.value
+        //     },
+        //     type: 'select'
+        // },
         {label: 'Adresse', name: 'address', type: 'text'},
         {label: 'complément d\'adresse', name: 'address2', type: 'text'},
         {label: 'ville', name: 'city', type: 'text'},
@@ -230,7 +247,7 @@
             }
         }
         if (typeof generalData.value.society !== 'undefined') {
-            customerData.value.society = generalData.value.society
+            customerData.value.society = generalData.value.society[0]
         }
         if (typeof comptabilityData.value.currency !== 'undefined') {
             customerData.value.currency = comptabilityData.value.currency
