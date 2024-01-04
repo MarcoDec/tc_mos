@@ -153,7 +153,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
         ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'customers'),
-        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:main'])
+        Serializer\Groups(['create:customer', 'read:customer', 'write:customer', 'write:customer:main'])
     ]
     private Collection $administeredBy;
 

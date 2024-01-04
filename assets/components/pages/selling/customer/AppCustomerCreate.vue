@@ -6,6 +6,8 @@
     import useOptions from '../../../../stores/option/options'
     import {useCustomersStore} from '../../../../stores/customer/customers'
     import {useInvoiceTimeDuesStore} from '../../../../stores/management/invoiceTimeDues'
+    import useUser from '../../../../stores/security'
+
     defineProps({
         title: {required: true, type: String},
         target: {required: true, type: String},
@@ -17,6 +19,8 @@
     let success = []
     const isPopupVisible = ref(false)
     const isCreatedPopupVisible = ref(false)
+    const user = useUser()
+    const currentCompany = user.company
 
     const fecthOptionsSociety = useOptions('societies')
     await fecthOptionsSociety.fetchOp()
@@ -119,7 +123,7 @@
         return baseFieldsCuivre
     })
     const generalData = ref({})
-    const comptabilityData = {}
+    const comptabilityData = ref({})
 
     function generalForm(value) {
         const key = Object.keys(value)[0]
@@ -142,21 +146,21 @@
     }
     function comptabilityForm(value) {
         const key = Object.keys(value)[0]
-        if (Object.prototype.hasOwnProperty.call(comptabilityData, key)) {
+        if (Object.prototype.hasOwnProperty.call(comptabilityData.value, key)) {
             if (typeof value[key] === 'object') {
                 if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
-                    comptabilityData[key] = {...comptabilityData[key], value: inputValue}
+                    comptabilityData.value[key] = {...comptabilityData.value[key], value: inputValue}
                 }
                 if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
-                    comptabilityData[key] = {...comptabilityData[key], code: inputCode}
+                    comptabilityData.value[key] = {...comptabilityData.value[key], code: inputCode}
                 }
             } else {
-                comptabilityData[key] = value[key]
+                comptabilityData.value[key] = value[key]
             }
         } else {
-            comptabilityData[key] = value[key]
+            comptabilityData.value[key] = value[key]
         }
     }
     let copperKey = 0
@@ -198,6 +202,7 @@
         copperKey += 1
     }
     const customerData = ref({
+        administeredBy: [currentCompany],
         address: null,
         copper: {
             index: {
@@ -215,26 +220,26 @@
     async function customerFormCreate(){
         if (typeof generalData.value.address !== 'undefined') {
             customerData.value.address = {
-                address: generalData.address,
-                address2: generalData.address2,
-                city: generalData.city,
-                country: generalData.country,
-                email: generalData.email,
-                phoneNumber: generalData.phoneNumber,
-                zipCode: generalData.zipCode
+                address: generalData.value.address,
+                address2: generalData.value.address2,
+                city: generalData.value.city,
+                country: generalData.value.country,
+                email: generalData.value.email,
+                phoneNumber: generalData.value.phoneNumber,
+                zipCode: generalData.value.zipCode
             }
         }
-        if (typeof generalData.society !== 'undefined') {
-            customerData.value.society = generalData.society
+        if (typeof generalData.value.society !== 'undefined') {
+            customerData.value.society = generalData.value.society
         }
-        if (typeof comptabilityData.currency !== 'undefined') {
-            customerData.value.currency = comptabilityData.currency
+        if (typeof comptabilityData.value.currency !== 'undefined') {
+            customerData.value.currency = comptabilityData.value.currency
         }
-        if (typeof generalData.name !== 'undefined') {
-            customerData.value.name = generalData.name
+        if (typeof generalData.value.name !== 'undefined') {
+            customerData.value.name = generalData.value.name
         }
-        if (typeof generalData.paymentTerms !== 'undefined') {
-            customerData.value.paymentTerms = generalData.paymentTerms
+        if (typeof generalData.value.paymentTerms !== 'undefined') {
+            customerData.value.paymentTerms = generalData.value.paymentTerms
         }
         if (typeof cuivreData.value !== 'undefined') {
             if (typeof cuivreData.value.managed !== 'undefined') {
@@ -261,6 +266,7 @@
             emits('created')
             // Remise à zéro des données
             customerData.value = {
+                administeredBy: [currentCompany],
                 address: null,
                 copper: {
                     index: {
@@ -274,16 +280,17 @@
                 paymentTerms: '/api/invoice-time-dues/1',
                 society: null
             }
-            generalData = {}
-            comptabilityData = {}
+            generalData.value = {}
+            comptabilityData.value = {}
             cuivreData.value = {
                 managed: false
             }
+            violations.value = []
         } catch (error) {
             violations.value = error
             isPopupVisible.value = true
             isCreatedPopupVisible.value = false
-            console.log('violations', violations.value)
+            console.error('violations', violations.value)
         }
     }
 </script>
