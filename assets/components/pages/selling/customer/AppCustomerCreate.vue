@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, ref} from 'vue-demi'
+    import {computed, defineEmits, defineProps, ref} from 'vue'
     import AppFormJS from '../../../form/AppFormJS.js'
     import AppTab from '../../../tabs/AppTab.vue'
     import AppTabs from '../../../tabs/AppTabs.vue'
@@ -11,7 +11,7 @@
         target: {required: true, type: String},
         modalId: {required: true, type: String}
     })
-
+    const emits = defineEmits(['created'])
     const storeCustomersList = useCustomersStore()
     const violations = ref([])
     let success = []
@@ -118,26 +118,26 @@
         }
         return baseFieldsCuivre
     })
-    const generalData = {}
+    const generalData = ref({})
     const comptabilityData = {}
 
     function generalForm(value) {
         const key = Object.keys(value)[0]
-        if (Object.prototype.hasOwnProperty.call(generalData, key)) {
+        if (Object.prototype.hasOwnProperty.call(generalData.value, key)) {
             if (typeof value[key] === 'object') {
                 if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
-                    generalData[key] = {...generalData[key], value: inputValue}
+                    generalData.value[key] = {...generalData.value[key], value: inputValue}
                 }
                 if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
-                    generalData[key] = {...generalData[key], code: inputCode}
+                    generalData.value[key] = {...generalData.value[key], code: inputCode}
                 }
             } else {
-                generalData[key] = value[key]
+                generalData.value[key] = value[key]
             }
         } else {
-            generalData[key] = value[key]
+            generalData.value[key] = value[key]
         }
     }
     function comptabilityForm(value) {
@@ -196,9 +196,6 @@
             cuivreData.value.managed = true
         }
         copperKey += 1
-        console.log('cuivreData', cuivreData.value)
-        console.log('copperKey', copperKey)
-        console.log('fieldsCuivre', fieldsCuivre.value)
     }
     const customerData = ref({
         address: null,
@@ -216,8 +213,7 @@
     })
 
     async function customerFormCreate(){
-        if (typeof generalData.address !== 'undefined') {
-            console.log('generalData.address', generalData.address)
+        if (typeof generalData.value.address !== 'undefined') {
             customerData.value.address = {
                 address: generalData.address,
                 address2: generalData.address2,
@@ -229,41 +225,31 @@
             }
         }
         if (typeof generalData.society !== 'undefined') {
-            console.log('generalData.society', generalData.society)
             customerData.value.society = generalData.society
         }
         if (typeof comptabilityData.currency !== 'undefined') {
-            console.log('comptabilityData.currency', comptabilityData.currency)
             customerData.value.currency = comptabilityData.currency
         }
         if (typeof generalData.name !== 'undefined') {
-            console.log('generalData.name', generalData.name)
             customerData.value.name = generalData.name
         }
         if (typeof generalData.paymentTerms !== 'undefined') {
-            console.log('generalData.paymentTerms', generalData.paymentTerms)
             customerData.value.paymentTerms = generalData.paymentTerms
         }
         if (typeof cuivreData.value !== 'undefined') {
-            console.log('cuivreData.value', cuivreData.value)
             if (typeof cuivreData.value.managed !== 'undefined') {
-                console.log('cuivreData.value.managed', cuivreData.value.managed)
                 customerData.value.copper.managed = cuivreData.value.managed
             }
             if (typeof cuivreData.value.copperIndex !== 'undefined') {
-                console.log('cuivreData.value.copperIndex', cuivreData.value.copperIndex)
                 customerData.value.copper.index.value = cuivreData.value.copperIndex
             }
             if (typeof cuivreData.value.copperType !== 'undefined') {
-                console.log('cuivreData.value.copperType', cuivreData.value.copperType)
                 customerData.value.copper.index.code = cuivreData.value.copperType
             }
             if (typeof cuivreData.value.next !== 'undefined') {
-                console.log('cuivreData.value.next', cuivreData.value.next)
                 customerData.value.copper.next = cuivreData.value.next
             }
             if (typeof cuivreData.value.last !== 'undefined') {
-                console.log('cuivreData.value.last', cuivreData.value.last)
                 customerData.value.copper.last = cuivreData.value.last
             }
         }
@@ -272,6 +258,27 @@
             isPopupVisible.value = false
             isCreatedPopupVisible.value = true
             success = 'client crée'
+            emits('created')
+            // Remise à zéro des données
+            customerData.value = {
+                address: null,
+                copper: {
+                    index: {
+                        code: '',
+                        value: 0
+                    },
+                    managed: false
+                },
+                currency: null,
+                name: '',
+                paymentTerms: '/api/invoice-time-dues/1',
+                society: null
+            }
+            generalData = {}
+            comptabilityData = {}
+            cuivreData.value = {
+                managed: false
+            }
         } catch (error) {
             violations.value = error
             isPopupVisible.value = true

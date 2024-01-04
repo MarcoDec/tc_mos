@@ -1,10 +1,11 @@
 <script setup>
-    import {computed, ref} from 'vue-demi'
+    import {computed, ref} from 'vue'
     import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
     import AppCustomerCreate from './AppCustomerCreate.vue'
     import AppSuspense from '../../../AppSuspense.vue'
     import {useCustomersStore} from '../../../../stores/customer/customers'
     import useUser from '../../../../stores/security'
+    import {Modal} from 'bootstrap'
 
     defineProps({
         icon: {required: true, type: String},
@@ -13,6 +14,7 @@
 
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
+    const customerCreateModal = ref(null)
 
     const fetchUser = useUser()
     const currentCompany = fetchUser.company
@@ -79,6 +81,14 @@
         customerListCriteria.addSort(payload.name, payload.direction)
         await storeCustomersList.fetch(customerListCriteria.getFetchCriteria)
     }
+    function onCreatedNewCustomer() {
+        refreshTable()
+        if (customerCreateModal.value) {
+            const modalElement = customerCreateModal.value.$el
+            const bootstrapModal = Modal.getInstance(modalElement)
+            bootstrapModal.hide()
+        }
+    }
 </script>
 
 <template>
@@ -101,7 +111,7 @@
         </div>
     </div>
     <div class="row">
-        <AppCustomerCreate :modal-id="modalId" title="Création nouveau client" :target="target"/>
+        <AppCustomerCreate ref="customerCreateModal" :modal-id="modalId" title="Création nouveau client" :target="target" @created="onCreatedNewCustomer"/>
         <div class="col">
             <AppSuspense>
                 <AppCardableTable
