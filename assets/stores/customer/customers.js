@@ -47,7 +47,10 @@ export const useCustomersStore = defineStore('customers', {
             const newObject = {
                 '@id': item['@id'],
                 name: item.name,
-                state: item.embState.state
+                state: item.embState.state,
+                'address.zipCode': item.address.zipCode,
+                'address.city': item.address.city,
+                'copper.index.value': item.copper.index.value,
             }
             return newObject
         }),

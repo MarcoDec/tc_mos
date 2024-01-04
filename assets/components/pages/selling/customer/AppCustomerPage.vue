@@ -40,7 +40,7 @@
     ]
 
     const fields = computed(() => [
-        {label: 'Nom', name: 'name', trie: true, type: 'text'},
+        {label: 'Raison sociale', name: 'name', trie: true, type: 'text'},
         {
             label: 'Etat',
             name: 'state',
@@ -51,7 +51,10 @@
             },
             trie: false,
             type: 'select'
-        }
+        },
+        {label: 'CP', name: 'address.zipCode', trie: true, type: 'text', filter: false},
+        {label: 'Ville', name: 'address.city', trie: true, type: 'text', filter: false},
+        {label: 'Indice Cu', name: 'copper.index.value', trie: true, type: 'number', filter: false},
     ])
 
     async function deleted(id){
@@ -69,6 +72,7 @@
         customerListCriteria.addFilter('company', currentCompany)
         if (inputValues.name) customerListCriteria.addFilter('name', inputValues.name)
         if (inputValues.state) customerListCriteria.addFilter('embState.state[]', inputValues.state)
+        if (inputValues['address.zipCode']) customerListCriteria.addFilter('address.zipCode', inputValues['address.zipCode'])
         await storeCustomersList.fetch(customerListCriteria.getFetchCriteria)
     }
     async function cancelSearch() {
