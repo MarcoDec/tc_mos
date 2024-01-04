@@ -22,7 +22,8 @@ class Measure {
         'read:product-customer',
         'read:operation-employee:collection',
         'read:reference', 'write:reference',
-        'read:production-quality-value', 'write:production-quality-value'
+        'read:production-quality-value', 'write:production-quality-value',
+        'read:manufacturing-order',
     ];
     #[
         ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true, options: ['collation' => 'utf8mb3_bin']),

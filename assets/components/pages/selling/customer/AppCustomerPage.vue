@@ -6,6 +6,7 @@
     import {useCustomersStore} from '../../../../stores/customer/customers'
     import useUser from '../../../../stores/security'
     import {Modal} from 'bootstrap'
+    import {useRouter} from 'vue-router'
 
     defineProps({
         icon: {required: true, type: String},
@@ -20,6 +21,8 @@
     const currentCompany = fetchUser.company
     const isPurchaseWriterOrAdmin = fetchUser.isPurchaseWriter || fetchUser.isPurchaseAdmin
     const roleuser = ref(isPurchaseWriterOrAdmin ? 'writer' : 'reader')
+
+    const router = useRouter()
 
     const storeCustomersList = useCustomersStore()
     await storeCustomersList.fetch()
@@ -93,6 +96,10 @@
             bootstrapModal.hide()
         }
     }
+    function onCustomerDetailsOpenRequest(customer) {
+        console.log('onCustomerDetailsOpenRequest', customer)
+        router.push({name: 'customer', params: {id_customer: customer.id}})
+    }
 </script>
 
 <template>
@@ -133,6 +140,7 @@
                     @get-page="getPage"
                     @trier-alphabet="trierAlphabet"
                     @search="search"
+                    @update="onCustomerDetailsOpenRequest"
                     @cancel-search="cancelSearch"/>
             </AppSuspense>
         </div>

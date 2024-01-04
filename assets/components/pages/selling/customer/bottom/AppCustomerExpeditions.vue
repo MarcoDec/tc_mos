@@ -1,6 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useCustomerListBLStore} from '../../../../../stores/selling/customers/customerListBL'
+    import {useCustomerExpeditionStore} from '../../../../../stores/selling/customers/customerExpeditions'
     import {useRoute} from 'vue-router'
     import useField from '../../../../../stores/field/field'
 
@@ -17,7 +17,7 @@
     const maRoute = useRoute()
     const customerId = maRoute.params.id_customer
 
-    const storeCustomerListBL = useCustomerListBLStore()
+    const storeCustomerListBL = useCustomerExpeditionStore()
     storeCustomerListBL.setIdCustomer(customerId)
     await storeCustomerListBL.fetch()
     const itemsTable = ref(storeCustomerListBL.itemsCustomerBL)

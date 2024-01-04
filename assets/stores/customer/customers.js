@@ -9,6 +9,11 @@ export const useCustomersStore = defineStore('customers', {
             const response = await api(`/api/customers${criteria}`, 'GET')
             this.customers = await this.updatePagination(response)
         },
+        async fetchOne(id) {
+            const response = await api(`/api/customers/${id}`, 'GET')
+            this.customer = response
+            return response
+        },
         async updatePagination(response) {
             const responseData = await response['hydra:member']
             let paginationView = {}
@@ -51,6 +56,7 @@ export const useCustomersStore = defineStore('customers', {
                 'address.zipCode': item.address.zipCode,
                 'address.city': item.address.city,
                 'copper.index.value': item.copper.index.value,
+                id: item.id
             }
             return newObject
         }),
@@ -69,6 +75,7 @@ export const useCustomersStore = defineStore('customers', {
 
     state: () => ({
         items: [],
-        customers: {}
+        customers: {},
+        customer: {}
     })
 })

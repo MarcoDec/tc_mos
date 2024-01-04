@@ -2,7 +2,7 @@
     import AppCustomerListProduct from './AppCustomerListProduct.vue'
     import AppCustomerListOF from './AppCustomerListOF.vue'
     import AppCustomerListCommande from './AppCustomerListCommande.vue'
-    import AppCustomerListBL from './AppCustomerListBL.vue'
+    import AppCustomerExpeditions from './AppCustomerExpeditions.vue'
     import AppCustomerListFacture from './AppCustomerListFacture.vue'
 </script>
 
@@ -24,9 +24,9 @@
                     <AppCustomerListCommande/>
                 </AppSuspense>
             </AppTab>
-            <AppTab id="gui-start-bl" title="BL" icon="clipboard-list" tabs="gui-start-bottom">
+            <AppTab id="gui-start-exp" title="Expeditions" icon="clipboard-list" tabs="gui-start-bottom">
                 <AppSuspense>
-                    <AppCustomerListBL/>
+                    <AppCustomerExpeditions/>
                 </AppSuspense>
             </AppTab>
             <AppTab id="gui-start-factures" title="Factures" icon="file-invoice" tabs="gui-start-bottom">

@@ -1,7 +1,7 @@
 import api from '../../../api'
 import {defineStore} from 'pinia'
 
-export const useCustomerListBLStore = defineStore('customerListBL', {
+export const useCustomerExpeditionStore = defineStore('customerExpeditions', {
     actions: {
         setIdCustomer(id){
             this.customerID = id
@@ -238,15 +238,15 @@ export const useCustomerListBLStore = defineStore('customerListBL', {
     },
     getters: {
         itemsCustomerBL: state => state.customerBL.map(item => {
-            const dt = item.note.date.split('T')[0]
+            const dt = item.date.split('T')[0]
             const newObject = {
                 '@id': item['@id'],
-                ref: item.note.ref,
+                ref: item.note ? item.note.ref : '',
                 name: null,
-                etat: item.note.embState.state,
+                etat: item.note ? item.note.embState.state : '',
                 date: dt,
-                supplementFret: `${item.note.freightSurcharge.value} ${item.note.freightSurcharge.code}`,
-                noBl: item.note.nonBillable
+                supplementFret: item.note ? `${item.note.freightSurcharge.value} ${item.note.freightSurcharge.code}` : '',
+                noBl: item.note ? item.note.nonBillable : null
             }
             return newObject
         })
