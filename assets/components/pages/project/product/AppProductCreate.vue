@@ -1,12 +1,12 @@
 <script setup>
     import {computed, ref} from 'vue-demi'
-    import AppFormJS from '../../../components/form/AppFormJS.js'
-    import {useCustomerProductStore} from '../../../stores/customer/customerProduct'
-    import {useCustomersStore} from '../../../stores/customer/customers'
-    import {useProductStore} from '../../../stores/project/product/products'
-    import AppTab from '../../../components/tabs/AppTab.vue'
-    import AppTabs from '../../../components/tabs/AppTabs.vue'
-    import useOptions from '../../../stores/option/options'
+    import AppFormJS from '../../../form/AppFormJS.js'
+    import {useCustomerProductStore} from '../../../../stores/customer/customerProduct'
+    import {useCustomersStore} from '../../../../stores/customer/customers'
+    import {useProductStore} from '../../../../stores/project/product/products'
+    import AppTab from '../../../tabs/AppTab.vue'
+    import AppTabs from '../../../tabs/AppTabs.vue'
+    import useOptions from '../../../../stores/option/options'
 
     const props = defineProps({
         title: {required: true, type: String},

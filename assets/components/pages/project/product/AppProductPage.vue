@@ -1,10 +1,11 @@
 <script setup>
     import AppProductCreate from './AppProductCreate.vue'
     import {computed, ref} from 'vue'
-    import useUser from '../../../stores/security'
-    import useFetchCriteria from '../../../stores/fetch-criteria/fetchCriteria'
-    import {useProductStore} from '../../../stores/project/product/products'
-    import useOptions from '../../../stores/option/options'
+    import useUser from '../../../../stores/security'
+    import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
+    import {useProductStore} from '../../../../stores/project/product/products'
+    import useOptions from '../../../../stores/option/options'
+    import FontAwesomeIcon from '@fortawesome/vue-fontawesome/src/components/FontAwesomeIcon'
 
     defineProps({
         icon: {required: true, type: String},
@@ -150,7 +151,7 @@
     <div class="row">
         <div class="col">
             <h1>
-                <Fa :icon="icon"/>
+                <font-awesome-icon icon="fa-brands fa-product-hunt" />
                 {{ title }}
                 <span v-if="isProjectWriterOrAdmin" class="btn-float-right">
                     <AppBtn
