@@ -1,6 +1,6 @@
 <script setup>
     import AppProductCreate from './AppProductCreate.vue'
-    import {computed, ref} from 'vue-demi'
+    import {computed, ref} from 'vue'
     import useUser from '../../../stores/security'
     import useFetchCriteria from '../../../stores/fetch-criteria/fetchCriteria'
     import {useProductStore} from '../../../stores/project/product/products'
@@ -59,8 +59,17 @@
         }))
 
     const fields = computed(() => [
-        {label: 'nom', name: 'name', trie: true, type: 'text'},
         {label: 'Référence', name: 'code', trie: true, type: 'text'},
+        {label: 'Indice', name: 'index', trie: true, type: 'text'},
+        {label: 'Désignation', name: 'name', trie: true, type: 'text'},
+        // {
+        //     label: 'Compagnies',
+        //     name: 'companies',
+        //     type: 'multiselect-fetch',
+        //     api: '/api/companies',
+        //     filteredProperty: 'name',
+        //     max: 3
+        // },
         {
             label: 'Famille',
             name: 'family',
@@ -157,7 +166,7 @@
     </div>
     <div class="row">
         <AppSuspense>
-            <AppProductCreate :modal-id="modalId" :title="title" :options-product-families="optionsProductFamilies" :target="target"/>
+            <AppProductCreate :modal-id="modalId" title="Création d'un nouveau Produit" :options-product-families="optionsProductFamilies" :target="target"/>
         </AppSuspense>
         <div class="col">
             <AppSuspense>

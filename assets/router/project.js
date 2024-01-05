@@ -106,7 +106,7 @@ export default [
         path: '/product-list',
         props: {
             icon: 'user-tag',
-            title: 'Créer un produit'
+            title: 'Liste des produits'
         }
     }
 ]

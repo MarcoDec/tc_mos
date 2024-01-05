@@ -35,6 +35,7 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\Selling\Customer\Product as ProductCustomer;
 
 #[
     ApiFilter(filterClass: DateFilter::class, properties: ['endOfLife']),
@@ -184,6 +185,14 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
    /** @var DoctrineCollection<int, ProductAttachment> */
     #[ORM\OneToMany(mappedBy: 'product',targetEntity: ProductAttachment::class)]
     private DoctrineCollection $attachments;
+
+    /** @var DoctrineCollection<int, ProductCustomer> */
+    #[
+        ApiProperty(description: 'Relations Clients', readableLink: false, example: ['/api/customer-products/1']),
+        Serializer\Groups(['read:product', 'read:product:collection']),
+        ORM\OneToMany(mappedBy: 'product', targetEntity: ProductCustomer::class)
+    ]
+    private DoctrineCollection $productCustomers;
 
     #[
         ApiProperty(description: 'Temps auto', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
@@ -454,6 +463,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->transfertPriceSupplies = new Measure();
         $this->transfertPriceWork = new Measure();
         $this->weight = new Measure();
+        $this->productCustomers = new ArrayCollection();
     }
 
     public function __clone() {
@@ -913,4 +923,45 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
       $this->attachments = $attachments;
    }
 
+    /**
+     * @return DoctrineCollection
+     */
+    public function getProductCustomers(): DoctrineCollection
+    {
+        return $this->productCustomers;
+    }
+
+    /**
+     * @param DoctrineCollection $productCustomers
+     * @return Product
+     */
+    public function setProductCustomers(DoctrineCollection $productCustomers): Product
+    {
+        $this->productCustomers = $productCustomers;
+        return $this;
+    }
+    #[
+        ApiProperty(description: 'Clients', readableLink: false, example: ['{@id: "/api/customers/4", @type: "Customer"}']),
+        Serializer\Groups(['read:product', 'read:product:collection']),
+    ]
+    public function getCustomers() : DoctrineCollection
+    {
+        $customers = new ArrayCollection();
+        foreach ($this->productCustomers as $productCustomer) {
+            $customers->add($productCustomer->getCustomer());
+        }
+        return $customers;
+    }
+    #[
+        ApiProperty(description: 'Compagnies gérantes', readableLink: false, example: '[{@id: "/api/companies/1", @type: "Company"}]'),
+        Serializer\Groups(['read:product', 'read:product:collection']),
+    ]
+    public function getCompanies() : DoctrineCollection
+    {
+        $companies = [];
+        foreach ($this->productCustomers as $productCustomer) {
+            $companies = array_merge($companies, $productCustomer->getAdministeredBy()->toArray());
+        }
+        return new ArrayCollection($companies);
+    }
 }

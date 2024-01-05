@@ -1,5 +1,5 @@
-import api from '../../../api'
 import {defineStore} from 'pinia'
+import api from '../../../api'
 import generateProduct from './product'
 
 export const useProductStore = defineStore('products', {
@@ -60,13 +60,20 @@ export const useProductStore = defineStore('products', {
                 '@id': item['@id'],
                 type: item['@type'],
                 code: item.code,
+                index: item.index,
                 stateBlocker: item.embBlocker.state,
                 state: item.embState.state,
                 endOfLife: item.endOfLife,
                 family: item.family,
                 id: item.index,
                 kind: item.kind,
-                name: item.name
+                name: item.name,
+                companies: item.companies.map(company => {
+                    return {
+                        id: Number(company['@id'].split('/').pop())
+                    }
+                }),
+                customers: item.customers,
             }
             return newObject
         })
