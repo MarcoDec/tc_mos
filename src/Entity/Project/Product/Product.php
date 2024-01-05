@@ -262,7 +262,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     private ?Family $family = null;
 
     #[
-        ApiProperty(description: 'Volume prévisionnel', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ApiProperty(description: 'Volume prévisionnel année en cours', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         AppAssert\Measure(groups: ['Product-create']),
         ORM\Embedded,
         Serializer\Groups(['create:product', 'read:product', 'read:product-customer', 'read:nomenclature'])

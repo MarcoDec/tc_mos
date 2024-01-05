@@ -90,9 +90,9 @@
             },
             type: 'select'
         },
-        {label: 'Date d\'expiration', name: 'endOfLife', trie: false, type: 'date'},
+        // {label: 'Date d\'expiration', name: 'endOfLife', trie: false, type: 'date'},
         {
-            label: 'Etat',
+            label: 'Etat de maturité',
             name: 'state',
             options: {
                 label: value =>
@@ -125,11 +125,12 @@
     async function search(inputValues) {
         productListCriteria.resetAllFilter()
         productListCriteria.addFilter('company', currentCompany)
-        if (inputValues.name) productListCriteria.addFilter('name', inputValues.name)
         if (inputValues.code) productListCriteria.addFilter('code', inputValues.code)
+        if (inputValues.index) productListCriteria.addFilter('index', inputValues.index)
+        if (inputValues.name) productListCriteria.addFilter('name', inputValues.name)
         if (inputValues.family) productListCriteria.addFilter('family', inputValues.family)
         if (inputValues.kind) productListCriteria.addFilter('kind', inputValues.kind)
-        if (inputValues.endOfLife) productListCriteria.addFilter('endOfLife', inputValues.endOfLife)
+        // if (inputValues.endOfLife) productListCriteria.addFilter('endOfLife', inputValues.endOfLife)
         if (inputValues.stateBlocker) productListCriteria.addFilter('embBlocker.state[]', inputValues.stateBlocker)
         if (inputValues.state) productListCriteria.addFilter('embState.state[]', inputValues.state)
         await storeProductsList.fetch(productListCriteria.getFetchCriteria)
