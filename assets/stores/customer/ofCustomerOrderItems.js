@@ -33,16 +33,16 @@ export const useOfCustomerOrderItemsStore = defineStore('ofCustomerOrderItems', 
         }
     },
     getters: {
-     
+
         itemsofCustomerOrder: state => state.ofCustomerOrderItems.map(item => {
             const newObject = {
                 '@id': item['@id'],
                 manufacturingCompany: item.manufacturingCompany,
-                quantityRequested:{
+                quantityRequested: {
                     code: item.quantityRequested.code,
                     value: item.quantityRequested.value
                 },
-                currentPlace:item.embState.state
+                currentPlace: item.embState.state
             }
             return newObject
         })

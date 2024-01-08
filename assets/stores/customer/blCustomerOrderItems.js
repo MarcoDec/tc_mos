@@ -5,7 +5,6 @@ export const useBlCustomerOrderItemsStore = defineStore('blCustomerOrderItems', 
     actions: {
         async fetch(criteria = '') {
             const response = await api(`/api/delivery-notes${criteria}`, 'GET')
-            console.log('responseBl', response);
             this.blCustomerOrderItems = await this.updatePagination(response)
         },
         async updatePagination(response) {
@@ -29,17 +28,17 @@ export const useBlCustomerOrderItemsStore = defineStore('blCustomerOrderItems', 
             return responseData
         },
         async remove(id){
-            await api(`/api/manufacturing-orders/${id}`, 'DELETE')
+            await api(`/api/delivery-notes/${id}`, 'DELETE')
             this.blCustomerOrderItems = this.blCustomerOrderItems.filter(blCustomerOrderItem => Number(blCustomerOrderItem['@id'].match(/\d+/)[0]) !== id)
         }
     },
     getters: {
-     
+
         itemsBlCustomerOrder: state => state.blCustomerOrderItems.map(item => {
             const newObject = {
                 '@id': item['@id'],
-                currentPlace:item.embState.state,
-                departureDate:item.date,
+                currentPlace: item.embState.state,
+                departureDate: item.date,
                 number: item.ref
             }
             return newObject

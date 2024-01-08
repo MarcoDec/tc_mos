@@ -6,9 +6,21 @@ export const useCustomerAddressStore = defineStore('customerAddress', {
         async fetchDeliveryAddress() {
             const response = await api('/api/delivery-addresses', 'GET')
             this.deliveryAddresses = response['hydra:member']
+        },
+        async fetchBillingAddress() {
+            const response = await api('/api/billing-addresses', 'GET')
+            this.billingAddresses = response['hydra:member']
         }
     },
     getters: {
+        billingAddressesOption: state => state.billingAddresses.map(billingAddress => {
+            const opt = {
+                customer: billingAddress.customer['@id'],
+                text: billingAddress.address.address,
+                value: billingAddress['@id']
+            }
+            return opt
+        }),
         deliveryAddressesOption: state => state.deliveryAddresses.map(deliveryAddress => {
             const opt = {
                 customer: deliveryAddress.customer['@id'],
@@ -19,6 +31,7 @@ export const useCustomerAddressStore = defineStore('customerAddress', {
         })
     },
     state: () => ({
+        billingAddresses: [],
         deliveryAddresses: []
     })
 })

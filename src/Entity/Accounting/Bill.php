@@ -26,9 +26,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[          
-    ApiFilter(filterClass: OrderFilter::class, properties: ['dueDate']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['dueDate', 'ref', 'billingDate', 'dueDate', 'exclTax.value', 'inclTax.value', 'vat.value', 'customer']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['ref' => 'partial', 'billingDate' => 'partial', 'dueDate' => 'partial', 'forceVat' => 'partial', 'notes' => 'partial', 'vatMessage.name' => 'partial',
-        'exclTax.value' => 'partial', 'exclTax.code' => 'partial', 'inclTax.value' => 'partial', 'inclTax.code' => 'partial', 'vat.value' => 'partial', 'vat.code' => 'partial', 'customer' => 'exact'
+        'exclTax.value' => 'partial', 'exclTax.code' => 'partial', 'inclTax.value' => 'partial', 'inclTax.code' => 'partial', 'vat.value' => 'partial', 'vat.code' => 'partial', 'customer' => 'exact', 'embState.state' =>'partial'
     ]),
     ApiResource(
         description: 'Facture',

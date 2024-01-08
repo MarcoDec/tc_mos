@@ -13,7 +13,6 @@
     const updated = ref(false)
     const disable = ref(true)
     const localData = ref({})
-    console.log('props.componentAttribute', props.componentAttribute);
     onBeforeMount(() => {
         localData.value = props.componentAttribute
     })
