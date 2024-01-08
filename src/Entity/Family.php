@@ -61,7 +61,10 @@ abstract class Family extends Entity implements FileEntity {
         return $this->customsCode;
     }
 
-    #[Serializer\Groups(['read:family', 'read:product-family'])]
+    #[
+        ApiProperty(description: 'Nom complet', example: 'Faisceaux / Faisceaux 1'),
+        Serializer\Groups(['read:family', 'read:product-family'])
+    ]
     final public function getFullName(): ?string {
         if (empty($this->parent)) {
             return $this->name;

@@ -169,6 +169,6 @@ class Family extends AbstractFamily {
     }
     #[Serializer\Groups(['read:product-family:option'])]
     public function getText(): ?string {
-        return $this->getName();
+        return $this->getFullName();
     }
 }
