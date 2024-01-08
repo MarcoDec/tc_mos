@@ -10,10 +10,8 @@
     defineProps({id: {required: true, type: String}})
 
     const location = useBrowserLocation()
-    console.log('location', location.value)
     const databaseHostName = computed(() => location.value.hostname.replace('desktop.','phpmyadmin.'))
     const database = computed(() => `${location.value.protocol}//${databaseHostName.value}`)
-    console.log('database', database.value)
     const api = computed(() => `${location.value.protocol}//${location.value.hostname}/api`)
     const user = useUser()
     const variantManagement = user.isManagementAdmin ? 'danger' : user.isManagementWriter ? 'warning' : user.isManagementReader ? 'info' : null
