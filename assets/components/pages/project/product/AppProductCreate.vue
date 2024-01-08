@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, ref} from 'vue-demi'
+    import {computed, ref} from 'vue'
     import AppFormJS from '../../../form/AppFormJS.js'
     import {useCustomerProductStore} from '../../../../stores/customer/customerProduct'
     import {useCustomersStore} from '../../../../stores/customer/customers'
@@ -24,6 +24,7 @@
     const isPopupVisible = ref(false)
     const isCreatedPopupVisible = ref(false)
 
+    //region options
     const options = [
         {text: 'Prototype', value: 'Prototype'},
         {text: 'EI', value: 'EI'},
@@ -40,10 +41,80 @@
             return {text, value}
         }))
 
+    const fecthOptionsIncoterms = useOptions('incoterms')
+    await fecthOptionsIncoterms.fetchOp()
+    const optionsIncoterms = computed(() =>
+        fecthOptionsIncoterms.options.map(op => {
+            const text = op.text
+            const value = op.value
+            return {text, value}
+        }))
+    const fecthOptionsCompanies = useOptions('companies')
+    await fecthOptionsCompanies.fetchOp()
+    const optionsCompanies = computed(() =>
+        fecthOptionsCompanies.options.map(op => {
+            const text = op.text
+            const value = op.value
+            return {text, value}
+        }))
+
+    //endregion
+    //region fields
+    const logisticFields = computed(() => [
+        {
+          label: 'Incoterm',
+            name: 'incoterm',
+            options: {
+                label: value =>
+                    optionsIncoterms.value.find(option => option.type === value)?.text ?? null,
+                options: optionsIncoterms.value
+            },
+            type: 'select'
+        },
+        {
+            label: 'Conditionnement',
+            name: 'packaging',
+            options: {
+                label: value =>
+                    optionsUnits.value.find(option => option.type === value)?.text ?? null,
+                options: optionsUnits.value
+            },
+            type: 'measureSelect'
+        },
+        {
+            label: 'Minimum Livraison',
+            name: 'minDelivery',
+            options: {
+                label: value =>
+                    optionsUnits.value.find(option => option.type === value)?.text ?? null,
+                options: optionsUnits.value
+            },
+            type: 'measureSelect'
+        },
+        {label: 'Conditionnement (type)', name: 'packagingKind', type: 'text'},
+        {
+            label: 'Poids',
+            name: 'weight',
+            options: {
+                label: value =>
+                    optionsUnits.value.find(option => option.type === value)?.text ?? null,
+                options: optionsUnits.value
+            },
+            type: 'measureSelect'
+        }
+    ])
+
     const generalFields = computed(() => [
-        {label: 'Nom', name: 'name', type: 'text'},
-        {label: 'Réf', name: 'code', type: 'text'},
-        {label: 'Date d\'expiration', name: 'endOfLife', type: 'date'},
+        {
+            label: 'Type de Produit',
+            name: 'kind',
+            options: {
+                label: value =>
+                    options.find(option => option.value === value)?.text ?? null,
+                options
+            },
+            type: 'select'
+        },
         {
             label: 'Famille de Produit',
             name: 'family',
@@ -51,6 +122,19 @@
                 label: value =>
                     props.optionsProductFamilies.find(option => option.value === value)?.text ?? null,
                 options: props.optionsProductFamilies
+            },
+            type: 'select'
+        },
+        {label: 'Nom', name: 'name', type: 'text'},
+        {label: 'Réf', name: 'code', type: 'text'},
+        {label: 'Indice', name: 'index', type: 'text'},
+        {
+            label: 'Unité',
+            name: 'unit',
+            options: {
+                label: value =>
+                    optionsUnits.value.find(option => option.type === value)?.text ?? null,
+                options: optionsUnits.value
             },
             type: 'select'
         },
@@ -64,44 +148,12 @@
             },
             type: 'measureSelect'
         },
-        {label: 'id', name: 'index', type: 'text'},
-        {
-            label: 'Type de Produit',
-            name: 'kind',
-            options: {
-                label: value =>
-                    options.find(option => option.value === value)?.text ?? null,
-                options
-            },
-            type: 'select'
-        },
-        {label: 'Infos publiques', name: 'notes', type: 'text'},
-        {
-            label: 'Conditionnement',
-            name: 'packaging',
-            options: {
-                label: value =>
-                    optionsUnits.value.find(option => option.type === value)?.text ?? null,
-                options: optionsUnits.value
-            },
-            type: 'measureSelect'
-        },
-        {label: 'Conditionnement (type)', name: 'packagingKind', type: 'text'},
-        {
-            label: 'Unité',
-            name: 'unit',
-            options: {
-                label: value =>
-                    optionsUnits.value.find(option => option.type === value)?.text ?? null,
-                options: optionsUnits.value
-            },
-            type: 'select'
-        }
+        {label: 'Date d\'expiration', name: 'endOfLife', type: 'date'},
+        {label: 'Note', name: 'notes', type: 'textarea'}
     ])
-
     const clientFields = computed(() => [
         {
-            label: 'Client principal',
+            label: 'Clients',
             name: 'client',
             options: {
                 label: value =>
@@ -111,81 +163,214 @@
             type: 'multiselect'
         }
     ])
-
-    const generalData = {}
+    const manufacturingCompanyFields = computed(() => [
+        {
+            label: 'Compagnies Fournisseurs de ce produit',
+            name: 'companies',
+            options: {
+                label: value =>
+                    optionsCompanies.value.find(option => option.value === value)?.text ?? null,
+                options: optionsCompanies.value
+            },
+            type: 'multiselect'
+        },
+        {
+            label: 'Minimum Production Série',
+            name: 'minProd',
+            options: {
+                label: value =>
+                    optionsUnits.value.find(option => option.type === value)?.text ?? null,
+                options: optionsUnits.value
+            },
+            type: 'measureSelect'
+        },
+        {
+            label: 'Max Production Prototype',
+            name: 'maxProto',
+            options: {
+                label: value =>
+                    optionsUnits.value.find(option => option.type === value)?.text ?? null,
+                options: optionsUnits.value
+            },
+            type: 'measureSelect'
+        }
+    ])
+    //endregion
+    //region data
+    const generalData = ref({
+        code: '',
+        endOfLife: '',
+        family: '',
+        forecastVolume: {
+            code: '/api/units/1',
+            value: 0
+        },
+        index: '',
+        kind: 'Série',
+        name: '',
+        notes: '',
+        unit: '/api/units/1'
+    })
+    const customerData = ref([])
+    const manufacturingCompanyData = ref({
+        companies: [],
+        minProd: {
+            code: '/api/units/1',
+            value: 0
+        },
+        maxProto: {
+            code: '/api/units/1',
+            value: 0
+        }
+        })
+    const logisticData = ref({
+        incoterm: '',
+        packaging: {
+            code: '/api/units/1',
+            value: 0
+        },
+        packagingKind: '',
+        weight: {
+            code: '/api/units/5',
+            value: 0
+        },
+        minDelivery: {
+            code: '/api/units/1',
+            value: 0
+        }
+    })
+    //endregion
+    // region functions
     function generalForm(value) {
-        const key = Object.keys(value)[0]
-        if (Object.prototype.hasOwnProperty.call(generalData, key)) {
-            if (typeof value[key] === 'object') {
-                if (typeof value[key].value !== 'undefined') {
-                    const inputValue = parseFloat(value[key].value)
-                    generalData[key] = {...generalData[key], value: inputValue}
-                }
-                if (typeof value[key].code !== 'undefined') {
-                    const inputCode = value[key].code
-                    generalData[key] = {...generalData[key], code: inputCode}
+        //console.log('update General Form', value)
+        Object.keys(value).forEach(key => {
+            if (Object.prototype.hasOwnProperty.call(generalData.value, key)) {
+                if (typeof value[key] === 'object') {
+                    if (typeof value[key].value !== 'undefined') {
+                        const inputValue = parseFloat(value[key].value)
+                        generalData.value[key] = {...generalData.value[key], value: inputValue}
+                    }
+                    if (typeof value[key].code !== 'undefined') {
+                        const inputCode = value[key].code
+                        generalData.value[key] = {...generalData.value[key], code: inputCode}
+                    }
+                } else {
+                    generalData.value[key] = value[key]
                 }
             } else {
-                generalData[key] = value[key]
+                generalData.value[key] = value[key]
             }
-        } else {
-            generalData[key] = value[key]
-        }
+        })
+        //console.log('generalData', generalData.value)
     }
-    const customerData = {}
     function customerForm(value) {
+        //console.log('update Customer Form', value)
         const key = Object.keys(value)[0]
-        if (Object.prototype.hasOwnProperty.call(customerData, key)) {
+        //console.log('key', key)
+        if (Object.prototype.hasOwnProperty.call(customerData.value, key)) {
             if (typeof value[key] === 'object') {
                 if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
-                    customerData[key] = {...customerData[key], value: inputValue}
+                    customerData.value[key] = {...customerData.value[key], value: inputValue}
                 }
                 if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
-                    customerData[key] = {...customerData[key], code: inputCode}
+                    customerData.value[key] = {...customerData.value[key], code: inputCode}
                 }
                 if (Array.isArray(value[key])) {
-                    customerData[key] = value[key]
+                    customerData.value[key] = value[key]
                 }
             } else {
-                customerData[key] = value[key]
+                customerData.value[key] = value[key]
             }
         } else {
-            customerData[key] = value[key]
+            customerData.value[key] = value[key]
         }
+        //console.log('customerData', customerData.value)
+    }
+    function logisticForm (value) {
+        console.log('update Logistic Form', value)
+        Object.keys(value).forEach(key => {
+            if (Object.prototype.hasOwnProperty.call(logisticData.value, key)) {
+                if (typeof value[key] === 'object') {
+                    if (typeof value[key].value !== 'undefined') {
+                        const inputValue = parseFloat(value[key].value)
+                        logisticData.value[key] = {...logisticData.value[key], value: inputValue}
+                    }
+                    if (typeof value[key].code !== 'undefined') {
+                        const inputCode = value[key].code
+                        logisticData.value[key] = {...logisticData.value[key], code: inputCode}
+                    }
+                    if (Array.isArray(value[key])) {
+                        logisticData.value[key] = value[key]
+                    }
+                } else {
+                    logisticData.value[key] = value[key]
+                }
+            } else {
+                logisticData.value[key] = value[key]
+            }
+        })
+        console.log('logisticData', logisticData.value)
+    }
+    function manufacturingCompanyForm (value) {
+        console.log('update Manufacturing Company Form', value)
+        Object.keys(value).forEach(key => {
+            if (Object.prototype.hasOwnProperty.call(manufacturingCompanyData.value, key)) {
+                if (typeof value[key] === 'object') {
+                    if (typeof value[key].value !== 'undefined') {
+                        const inputValue = parseFloat(value[key].value)
+                        manufacturingCompanyData.value[key] = {
+                            ...manufacturingCompanyData.value[key],
+                            value: inputValue
+                        }
+                    }
+                    if (typeof value[key].code !== 'undefined') {
+                        const inputCode = value[key].code
+                        manufacturingCompanyData.value[key] = {...manufacturingCompanyData.value[key], code: inputCode}
+                    }
+                    if (Array.isArray(value[key])) {
+                        manufacturingCompanyData.value[key] = value[key]
+                    }
+                } else {
+                    manufacturingCompanyData.value[key] = value[key]
+                }
+            } else {
+                manufacturingCompanyData.value[key] = value[key]
+            }
+        })
+        console.log(manufacturingCompanyData.value)
     }
 
     async function productFormCreate(){
         try {
             const product = {
-                code: generalData?.code || '',
-                endOfLife: generalData?.endOfLife || '',
-                family: generalData?.family || '',
+                code: generalData.value?.code || '',
+                endOfLife: generalData.value?.endOfLife || '',
+                family: generalData.value?.family || '',
                 forecastVolume: {
                     // code: generalData?.forecastVolume.code || '',
                     code: 'U',
-                    value: parseFloat(generalData?.forecastVolume.value || '0')
+                    value: parseFloat(generalData.value?.forecastVolume.value || '0')
                 },
-                index: generalData?.index || '',
-                kind: generalData?.kind || '',
-                name: generalData?.name || '',
-                notes: generalData?.notes || '',
+                index: generalData.value?.index || '',
+                kind: generalData.value?.kind || '',
+                name: generalData.value?.name || '',
+                notes: generalData.value?.notes || '',
                 packaging: {
                     // code: generalData?.packaging.code || '',
                     code: 'U',
-                    value: parseFloat(generalData?.packaging.value || '0')
+                    value: parseFloat(generalData.value?.packaging.value || '0')
                 },
-                packagingKind: generalData?.packagingKind || '',
-                unit: generalData?.unit || ''
+                packagingKind: generalData.value?.packagingKind || '',
+                unit: generalData.value?.unit || ''
             }
             await storeProductsList.addProduct(product)
             isPopupVisible.value = false
             isCreatedPopupVisible.value = true
             success = 'Produit crée'
-
             const customerProduct = {
-                customer: customerData?.client || '',
+                customer: customerData.value?.client || '',
                 product: storeProductsList.currentProduct
             }
             await storeCustomerProductList.addCustomerProduct(customerProduct)
@@ -196,16 +381,45 @@
             isCreatedPopupVisible.value = false
         }
     }
+    // endregion
 </script>
 
 <template>
     <AppModal :id="modalId" :title="title">
         <AppTabs id="gui-start" class="gui-start-content">
-            <AppTab id="gui-start-general" class="css-tab" active icon="sitemap" title="Général">
-                <AppFormJS id="general" :fields="generalFields" @update:model-value="generalForm"/>
+            <AppTab id="gui-start-general" class="css-tab" active icon="fa-brands fa-product-hunt" title="Général">
+                <AppFormJS
+                    id="general"
+                    :fields="generalFields"
+                    :model-value="generalData"
+                    @update:model-value="generalForm"/>
             </AppTab>
-            <AppTab id="gui-start-customer" class="css-tab" icon="chart-line" title="Clients">
-                <AppFormJS id="client" :fields="clientFields" @update:model-value="customerForm"/>
+            <AppTab id="gui-start-customer" class="css-tab" icon="user-tie" title="Clients">
+                <p class="bg-info text-white p-2">
+                    Les données de chiffrage pourront être renseignées dans la fiche produit une fois créée.
+                </p>
+                <AppFormJS
+                    id="client"
+                    :fields="clientFields"
+                    :model-value="customerData"
+                    @update:model-value="customerForm"/>
+            </AppTab>
+            <AppTab id="gui-start-manufacturing-company" class="css-tab" icon="industry" title="Fabrication">
+                <p class="bg-info text-white p-2">
+                    Les données de répartition de la fabrication pourront être renseignées dans la fiche produit une fois créée.
+                </p>
+                <AppFormJS
+                    id="manufacturingCompany"
+                    :fields="manufacturingCompanyFields"
+                    :model-value="manufacturingCompanyData"
+                    @update:model-value="manufacturingCompanyForm"/>
+            </AppTab>
+            <AppTab id="gui-start-logistic" class="css-tab" icon="boxes" title="Logistique">
+                <AppFormJS
+                    id="logistic"
+                    :fields="logisticFields"
+                    :model-value="logisticData"
+                    @update:model-value="logisticForm"/>
             </AppTab>
         </AppTabs>
         <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
