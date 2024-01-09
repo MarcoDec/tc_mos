@@ -81,6 +81,7 @@
             },
             type: 'measureSelect'
         },
+        {label: 'Conditionnement (type)', name: 'packagingKind', type: 'text'},
         {
             label: 'Minimum Livraison',
             name: 'minDelivery',
@@ -91,7 +92,6 @@
             },
             type: 'measureSelect'
         },
-        {label: 'Conditionnement (type)', name: 'packagingKind', type: 'text'},
         {
             label: 'Poids',
             name: 'weight',
@@ -289,7 +289,7 @@
         //console.log('customerData', customerData.value)
     }
     function logisticForm (value) {
-        console.log('update Logistic Form', value)
+        // console.log('update Logistic Form', value)
         Object.keys(value).forEach(key => {
             if (Object.prototype.hasOwnProperty.call(logisticData.value, key)) {
                 if (typeof value[key] === 'object') {
@@ -311,10 +311,10 @@
                 logisticData.value[key] = value[key]
             }
         })
-        console.log('logisticData', logisticData.value)
+        // console.log('logisticData', logisticData.value)
     }
     function manufacturingCompanyForm (value) {
-        console.log('update Manufacturing Company Form', value)
+        // console.log('update Manufacturing Company Form', value)
         Object.keys(value).forEach(key => {
             if (Object.prototype.hasOwnProperty.call(manufacturingCompanyData.value, key)) {
                 if (typeof value[key] === 'object') {
@@ -339,33 +339,93 @@
                 manufacturingCompanyData.value[key] = value[key]
             }
         })
-        console.log(manufacturingCompanyData.value)
+        // console.log(manufacturingCompanyData.value)
     }
 
     async function productFormCreate(){
         try {
+            // console.log('generalData', generalData.value)
+            // console.log('customerData', customerData.value)
+            // console.log('manufacturingCompanyData', manufacturingCompanyData.value)
+            // console.log('logisticData', logisticData.value)
             const product = {
                 code: generalData.value?.code || '',
                 endOfLife: generalData.value?.endOfLife || '',
                 family: generalData.value?.family || '',
-                forecastVolume: {
-                    // code: generalData?.forecastVolume.code || '',
-                    code: 'U',
-                    value: parseFloat(generalData.value?.forecastVolume.value || '0')
-                },
+                forecastVolume: typeof generalData.value.forecastVolume === 'undefined' ?
+                    {
+                        code: 'U',
+                        value: 0
+                    }
+                    :
+                    {
+                        code: optionsUnits.value.find(option => {
+                            // console.log('option', option)
+                            return option.value === generalData.value.forecastVolume.code
+                        }).text,
+                        value: parseFloat(generalData.value.forecastVolume.value)
+                    },
+                incoterm: logisticData.value?.incoterm || '',
                 index: generalData.value?.index || '',
                 kind: generalData.value?.kind || '',
+                maxProto: typeof manufacturingCompanyData.value.maxProto === 'undefined' ?
+                    {
+                        code: 'U',
+                        value: 0
+                    }
+                    :
+                    {
+                        code: optionsUnits.value.find(option => option.value === manufacturingCompanyData.value.maxProto.code).text,
+                        value: parseFloat(manufacturingCompanyData.value.maxProto.value)
+                    },
+                minDelivery: typeof logisticData.value.minDelivery === 'undefined' ?
+                    {
+                        code: 'U',
+                        value: 0
+                    }
+                    :
+                    {
+                        code: optionsUnits.value.find(option => option.value === logisticData.value.minDelivery.code).text,
+                        value: parseFloat(logisticData.value.minDelivery.value)
+                    },
+                minProd: typeof manufacturingCompanyData.value.minProd === 'undefined' ?
+                    {
+                        code: 'U',
+                        value: 0
+                    }
+                    :
+                    {
+                        code: optionsUnits.value.find(option => option.value === manufacturingCompanyData.value.minProd.code).text,
+                        value: parseFloat(manufacturingCompanyData.value.minProd.value)
+                    },
                 name: generalData.value?.name || '',
                 notes: generalData.value?.notes || '',
-                packaging: {
-                    // code: generalData?.packaging.code || '',
-                    code: 'U',
-                    value: parseFloat(generalData.value?.packaging.value || '0')
-                },
+                packaging: typeof logisticData.value.packaging === 'undefined' ?
+                    {
+                        code: 'U',
+                        value: 0
+                    }
+                    :
+                    {
+                        code: optionsUnits.value.find(option => option.value === logisticData.value.packaging.code).text,
+                        value: parseFloat(logisticData.value.packaging.value)
+                    },
                 packagingKind: generalData.value?.packagingKind || '',
-                unit: generalData.value?.unit || ''
+                unit: generalData.value?.unit || '',
+                weight: typeof logisticData.value.weight === 'undefined' ?
+                    {
+                        code: 'Kg',
+                        value: 0
+                    }
+                    :
+                    {
+                        code: optionsUnits.value.find(option => option.value === logisticData.value.weight.code).text,
+                        value: parseFloat(logisticData.value.weight.value)
+                    }
             }
-            await storeProductsList.addProduct(product)
+            // console.log('product', product)
+            const response = await storeProductsList.addProduct(product)
+            // console.log('response', response)
             isPopupVisible.value = false
             isCreatedPopupVisible.value = true
             success = 'Produit crée'
