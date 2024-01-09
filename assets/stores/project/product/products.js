@@ -65,7 +65,7 @@ export const useProductStore = defineStore('products', {
                 state: item.embState.state,
                 endOfLife: item.endOfLife,
                 family: item.family,
-                id: item.index,
+                id: item.id,
                 kind: item.kind,
                 name: item.name,
                 companies: item.companies.map(company => {

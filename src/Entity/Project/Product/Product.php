@@ -50,7 +50,7 @@ use App\Entity\Selling\Customer\Product as ProductCustomer;
         collectionOperations: [
             'get' => [
                 'normalization_context' => [
-                    'groups' => ['read:measure', 'read:product:collection', 'read:state'],
+                    'groups' => ['read:measure', 'read:product:collection', 'read:state', 'read:id'],
                     'openapi_definition_name' => 'Product-collection',
                     'skip_null_values' => false
                 ],

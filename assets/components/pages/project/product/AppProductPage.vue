@@ -6,11 +6,14 @@
     import {useProductStore} from '../../../../stores/project/product/products'
     import useOptions from '../../../../stores/option/options'
     import FontAwesomeIcon from '@fortawesome/vue-fontawesome/src/components/FontAwesomeIcon'
+    import {useRouter} from 'vue-router'
 
     defineProps({
         icon: {required: true, type: String},
         title: {required: true, type: String}
     })
+    const router = useRouter()
+
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
 
@@ -145,6 +148,10 @@
         productListCriteria.addSort(payload.name, payload.direction)
         await storeProductsList.fetch(productListCriteria.getFetchCriteria)
     }
+    function onProductShowRequest(item) {
+        console.log('onProductShowRequest', item)
+        router.push({name: 'product', params: {id_product: item.id}})
+    }
 </script>
 
 <template>
@@ -183,11 +190,12 @@
                     :previous-page="storeProductsList.previousPage"
                     :user="roleuser"
                     form="formProductCardableTable"
+                    @cancel-search="cancelSearch"
                     @deleted="deleted"
                     @get-page="getPage"
-                    @trier-alphabet="trierAlphabet"
                     @search="search"
-                    @cancel-search="cancelSearch"/>
+                    @trier-alphabet="trierAlphabet"
+                    @update="onProductShowRequest"/>
             </AppSuspense>
         </div>
     </div>
