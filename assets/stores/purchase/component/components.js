@@ -36,6 +36,12 @@ export const useComponentListStore = defineStore('component', {
         async updateQuality(data, id) {
             await api(`/api/components/${id}/quality`, 'PATCH', data)
             await this.fetchOne(id)
+        },
+        reset() {
+            this.component = {}
+            this.components = []
+            this.isLoaded = false
+            this.isLoading = false
         }
     },
     getters: {

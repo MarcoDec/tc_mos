@@ -1,4 +1,5 @@
 <script setup>
+    import {onBeforeUnmount} from 'vue'
     import AppProductFormShow from './AppProductFormShow.vue'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
     import useOptions from '../../../../stores/option/options'
@@ -15,12 +16,15 @@
     } catch (e) {
         console.error(e)
     }
+    onBeforeUnmount(() => {
+        useFetchProductStore.reset()
+    })
 </script>
 
 <template>
     <AppShowGuiGen>
         <template #gui-header>
-            <div v-if="useFetchProductStore.isLoaded" class="bg-white border-1 border-dark">
+            <div class="bg-white border-1 border-dark">
                 <b>{{ useFetchProductStore.product.code }}</b>: {{ useFetchProductStore.product.name }}
             </div>
         </template>

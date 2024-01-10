@@ -52,6 +52,16 @@ export const useProductStore = defineStore('products', {
         async addProduct(payload) {
             const response = await api('/api/products', 'POST', payload)
             this.currentProduct = response['@id']
+        },
+        reset() {
+            this.product = {}
+            this.products = []
+            this.isLoaded = false
+            this.isLoading = false
+            this.productsFamily = []
+            this.component = {}
+            this.productsItems = []
+            this.currentProduct = ''
         }
     },
     getters: {

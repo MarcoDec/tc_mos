@@ -1,4 +1,5 @@
 <script setup>
+    import {onBeforeUnmount} from 'vue'
     import AppComponentFormShow from './AppComponentFormShow.vue'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
     import {useComponentListStore} from '../../../../stores/purchase/component/components'
@@ -12,13 +13,17 @@
     const useFetchComponentStore = useComponentListStore()
     fetchUnits.fetchOp()
     useFetchComponentStore.fetchOne(idComponent)
+    onBeforeUnmount(() => {
+        useFetchComponentStore.reset()
+    })
 </script>
 
 <template>
     <AppSuspense>
         <AppShowGuiGen>
             <template #gui-header>
-                <div v-if="useFetchComponentStore.isLoaded" class="bg-white border-1 border-dark">
+                <div class="bg-white border-1 border-dark" style="position:relative; top:0px;left:0px;">
+<!--                    <font-awesome-icon icon="puzzle-piece"/>-->
                     <b>{{ useFetchComponentStore.component.code }}</b>: {{ useFetchComponentStore.component.name }}
                 </div>
             </template>
