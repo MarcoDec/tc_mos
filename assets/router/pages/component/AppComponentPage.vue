@@ -10,10 +10,13 @@
     import {useTableMachine} from '../../../machine'
     import useUnitsStore from '../../../stores/unit/units'
     import useUser from '../../../stores/security'
+    import {useRouter} from 'vue-router'
 
     const title = 'Créer un Composant'
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
+
+    const router = useRouter()
 
     const machineComponet = useTableMachine('machine-component')
     const StoreComponents = useComponentsStore()
@@ -223,6 +226,10 @@
             StoreComponentAttributes.addComponentAttributes(tabInput[key])
         }
     }
+    function onComponentShowRequest(item) {
+        console.log('onComponentShowRequest', item)
+        router.push({name: 'component', params: {id_component: item.id}})
+    }
 </script>
 
 <template>
@@ -261,7 +268,7 @@
                     @get-page="getPage"
                     @search="search"
                     @trier-alphabet="trierAlphabet"
-                    @update="onProductShowRequest"/>
+                    @update="onComponentShowRequest"/>
 <!--            <AppTablePage-->
 <!--                :fields="fields"-->
 <!--                icon="user-tag"-->
