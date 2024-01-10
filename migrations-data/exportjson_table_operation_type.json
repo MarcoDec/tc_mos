@@ -1,0 +1,112 @@
+[
+  {
+    "id": "1",
+    "name": "Compactage",
+    "isAssemblage": 0
+  },
+  {
+    "id": "3",
+    "name": "Enroulement",
+    "isAssemblage": 1
+  },
+  {
+    "id": "4",
+    "name": "Etamage",
+    "isAssemblage": 0
+  },
+  {
+    "id": "5",
+    "name": "Dénudage",
+    "isAssemblage": 0
+  },
+  {
+    "id": "6",
+    "name": "Dégainage",
+    "isAssemblage": 0
+  },
+  {
+    "id": "7",
+    "name": "Débit fil",
+    "isAssemblage": 0
+  },
+  {
+    "id": "8",
+    "name": "Sertissage",
+    "isAssemblage": 0
+  },
+  {
+    "id": "9",
+    "name": "Composite : Débit Fil & Sertissage",
+    "isAssemblage": 0
+  },
+  {
+    "id": "10",
+    "name": "Débit mousse / Feutrine",
+    "isAssemblage": 0
+  },
+  {
+    "id": "11",
+    "name": "Débit Tresse - Chaussette",
+    "isAssemblage": 0
+  },
+  {
+    "id": "12",
+    "name": "Débit gaine",
+    "isAssemblage": 0
+  },
+  {
+    "id": "13",
+    "name": "Débit manchon",
+    "isAssemblage": 0
+  },
+  {
+    "id": "14",
+    "name": "Rétractation",
+    "isAssemblage": 1
+  },
+  {
+    "id": "15",
+    "name": "Composite : Débit Gaine / Manchon",
+    "isAssemblage": 0
+  },
+  {
+    "id": "16",
+    "name": "Mise en place Gaine",
+    "isAssemblage": 1
+  },
+  {
+    "id": "17",
+    "name": "Câblage connecteur",
+    "isAssemblage": 1
+  },
+  {
+    "id": "18",
+    "name": "Câblage bornier",
+    "isAssemblage": 1
+  },
+  {
+    "id": "19",
+    "name": "Scotchage",
+    "isAssemblage": 1
+  },
+  {
+    "id": "20",
+    "name": "Injection",
+    "isAssemblage": 1
+  },
+  {
+    "id": "21",
+    "name": "Soudure",
+    "isAssemblage": 1
+  },
+  {
+    "id": "22",
+    "name": "Contrôle électrique",
+    "isAssemblage": 1
+  },
+  {
+    "id": "23",
+    "name": "Auto mo ?",
+    "isAssemblage": 0
+  }
+]

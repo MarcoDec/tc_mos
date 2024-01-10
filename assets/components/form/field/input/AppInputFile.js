@@ -7,6 +7,7 @@ function AppInputFile(props, context) {
         disabled: props.disabled,
         form: props.form,
         id: props.id,
+        multiple: props.field.multiple,
         name: props.field.name,
         onInput: e => context.emit('update:modelValue', URL.createObjectURL(e.target.files[0])),
         type: props.field.type ?? 'text'
