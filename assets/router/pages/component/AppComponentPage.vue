@@ -1,4 +1,5 @@
 <script setup>
+    import FontAwesomeIcon from '@fortawesome/vue-fontawesome/src/components/FontAwesomeIcon'
     import {computed, onMounted, ref} from 'vue'
     import useFetchCriteria from '../../../stores/fetch-criteria/fetchCriteria'
     import useOptions from '../../../stores/option/options'
@@ -269,6 +270,24 @@
 
 <template>
     <div class="row">
+        <div class="row">
+            <div class="col">
+                <h1>
+                    <font-awesome-icon icon="puzzle-piece" />
+                    Liste des composants
+                    <span v-if="isPurchaseWriterOrAdmin" class="btn-float-right">
+                        <AppBtn
+                            variant="success"
+                            label="Créer"
+                            data-bs-toggle="modal"
+                            :data-bs-target="target">
+                            <Fa icon="plus"/>
+                            Créer
+                        </AppBtn>
+                    </span>
+                </h1>
+            </div>
+        </div>
         <AppModal :id="modalId" class="four" :title="title" size="xl">
             <AppSuspense>
                 <AppComponentCreate :fields-attributs="fieldsAttributs" :my-boolean-family="myBooleanFamily" @update:model-value="input" @data-attribute="inputAttribute"/>

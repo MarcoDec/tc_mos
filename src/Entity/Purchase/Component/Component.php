@@ -394,7 +394,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ORM\Column,
         Serializer\Groups(['read:component', 'read:component:collection', 'read:stock', 'read:item', 'read:component-preparation'])
     ]
-    private ?string $code;
+    private ?string $code='';
 
     public function __construct() {
         $this->attributes = new ArrayCollection();
@@ -406,6 +406,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->references = new ArrayCollection();
         $this->supplierComponents = new ArrayCollection();
         $this->weight = new Measure();
+        $this->code = '';
         $this->code = $this->getCode();
     }
 

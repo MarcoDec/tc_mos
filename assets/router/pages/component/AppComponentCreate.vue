@@ -1,4 +1,5 @@
 <script setup>
+    import useOptions from '../../../stores/option/options'
     import AppAttributeCreate from './AppAttributeCreate.vue'
     import AppFormJS from '../../../components/form/AppFormJS.js'
     import AppSuspense from '../../../components/AppSuspense.vue'
@@ -19,6 +20,9 @@
     const storeUnits = useUnitsStore()
     await storeUnits.getUnits()
 
+    const familyOptions = useOptions('component-families')
+    await familyOptions.fetchOp()
+    //console.log(familyOptions.options)
     const listFamilies = storeComponentFamilly.familiesOption
     const listUnits = storeUnits.unitsOption
     const listUnitSelect = storeUnits.unitsSelect
@@ -35,8 +39,8 @@
                             label: 'Famille',
                             name: 'family',
                             options: {
-                                label: value => listFamilies.find(option => option.type === value)?.text ?? null,
-                                options: listFamilies
+                                label: value => familyOptions.options.find(option => option['@id'] === value)?.text ?? null,
+                                options: familyOptions.options
                             },
                             type: 'select'
                         },
@@ -114,7 +118,7 @@
         //     name: 'prix'
         // },
         {
-            icon: 'puzzle-piece',
+            icon: 'at',
             label: 'Attributs',
             mode: 'tab',
             name: 'attributs'
@@ -152,7 +156,7 @@
     <AppSuspense>
         <div class="gui-card">
             <AppTabs id="gui-form-create" class="display-block-important">
-                <AppTab v-for="field in fields" :id="field.name" :key="field.name" :icon="field.icon" tabs="gui-form-create" :title="field.label">
+                <AppTab v-for="(field, index) in fields" :active="index===0" :id="field.name" :key="field.name" :icon="field.icon" tabs="gui-form-create" :title="field.label">
                     <AppFormJS v-if="field.children" :id="`${field.name}_appForm`" :fields="field.children" @update:model-value="input"/>
                     <p v-else-if="field.name === 'attributs'">
                         <AppSuspense>
@@ -160,7 +164,7 @@
                         </AppSuspense>
                     </p>
                     <p v-else>
-                        {{ field.label }} à définir
+                        field.children à définir {{ field.label }}
                     </p>
                 </AppTab>
             </AppTabs>

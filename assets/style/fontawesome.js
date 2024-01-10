@@ -105,11 +105,12 @@ import {
     faForwardStep,
     faForwardFast,
     faSquare,
-    faNetworkWired, faRotateLeft, faSave
+    faNetworkWired, faRotateLeft, faSave, faAt
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
 
+library.add(faAt)
 library.add(faAddressCard)
 library.add(faAngleDoubleLeft)
 library.add(faArrowRightToBracket)

@@ -111,6 +111,10 @@ $dropdown-success: #57ec57 !default;
   display: none;
 }
 
+.btn-float-right {
+  float: right;
+}
+
 @media print {
   body * {
     visibility: hidden;

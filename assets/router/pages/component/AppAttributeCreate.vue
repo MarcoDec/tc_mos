@@ -47,6 +47,7 @@
 <template>
     <AppSuspense>
         <AppFormJS v-if="fieldsAttributs.length !== 0" id="addAttributes" :fields="fieldsAttributs" @update:model-value="inputAttribute"/>
+        <p v-else class="bg-info text-white m-2">Si aucun attribut ne s'affiche c'est soit qu'aucune famille n'a été définie pour ce composant, soit qu'aucun attribut n'a été associé à la famille sélectionnées.</p>
     </AppSuspense>
 </template>
 
