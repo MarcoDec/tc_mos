@@ -1,5 +1,6 @@
 <script setup>
     import {computed, onMounted, ref} from 'vue'
+    import useFetchCriteria from '../../../stores/fetch-criteria/fetchCriteria'
     import useOptions from '../../../stores/option/options'
     import AppComponentCreate from './AppComponentCreate.vue'
     import AppSuspense from '../../../components/AppSuspense.vue'
@@ -53,19 +54,19 @@
         {
             label: 'Référence',
             name: 'code',
-            trie: false,
+            trie: true,
             type: 'text'
         },
         {
             label: 'Indice',
             name: 'index',
-            trie: false,
+            trie: true,
             type: 'text'
         },
         {
             label: 'Désignation',
             name: 'name',
-            trie: false,
+            trie: true,
             type: 'text'
         },
         {
@@ -121,6 +122,7 @@
     const attributesFiltered = ref([])
     const inputAttributes = ref({})
     let tabInput = []
+    const componentListCriteria = useFetchCriteria('component-list-criteria')
 
     onMounted(async () => {
         await StoreComponents.fetch()
@@ -130,6 +132,10 @@
         await storeColors.getListColors()
         console.log(itemsTable.value)
     })
+
+    async function refreshTable() {
+        await StoreComponents.fetch(componentListCriteria.getFetchCriteria)
+    }
 
     async function input(formInput) {
         fInput = computed(() => formInput)
@@ -229,6 +235,35 @@
     function onComponentShowRequest(item) {
         console.log('onComponentShowRequest', item)
         router.push({name: 'component', params: {id_component: item.id}})
+    }
+
+    async function cancelSearch() {
+        componentListCriteria.resetAllFilter()
+        await StoreComponents.fetch(componentListCriteria.getFetchCriteria)
+    }
+    async function deleted(id){
+        await StoreComponents.remove(id)
+        await refreshTable()
+    }
+    async function getPage(nPage){
+        componentListCriteria.gotoPage(parseFloat(nPage))
+        await StoreComponents.fetch(componentListCriteria.getFetchCriteria)
+    }
+    async function search(inputValues) {
+        componentListCriteria.resetAllFilter()
+        if (inputValues.code) componentListCriteria.addFilter('code', inputValues.code)
+        if (inputValues.index) componentListCriteria.addFilter('index', inputValues.index)
+        if (inputValues.name) componentListCriteria.addFilter('name', inputValues.name)
+        if (inputValues.family) componentListCriteria.addFilter('family', inputValues.family)
+        //if (inputValues.kind) componentListCriteria.addFilter('kind', inputValues.kind)
+        // if (inputValues.endOfLife) componentListCriteria.addFilter('endOfLife', inputValues.endOfLife)
+        //if (inputValues.stateBlocker) componentListCriteria.addFilter('embBlocker.state[]', inputValues.stateBlocker)
+        if (inputValues.state) componentListCriteria.addFilter('embState.state[]', inputValues.state)
+        await StoreComponents.fetch(componentListCriteria.getFetchCriteria)
+    }
+    async function trierAlphabet(payload) {
+        componentListCriteria.addSort(payload.name, payload.direction)
+        await StoreComponents.fetch(componentListCriteria.getFetchCriteria)
     }
 </script>
 

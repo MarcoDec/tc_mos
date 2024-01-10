@@ -32,10 +32,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Purchase\Supplier\Component as SupplierComponent;
+use App\Filter\SetFilter;
 
 #[
-    ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name', 'code']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['index' => 'partial', 'name' => 'partial', 'code' => 'partial']),
     ApiResource(
         description: 'Composant',
