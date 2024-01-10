@@ -126,7 +126,7 @@ export default [
         }
     },
     {
-        component: () => import('./pages/component/AppComponentPage.vue'),
+        component: () => import('../components/pages/purchase/component/AppComponentPage.vue'),
         meta: {requiresAuth: true},
         name: 'component-list',
         path: '/component-list'

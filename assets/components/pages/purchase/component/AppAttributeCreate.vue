@@ -1,7 +1,7 @@
 <script setup>
-    import AppFormJS from '../../../components/form/AppFormJS.js'
-    import AppSuspense from '../../../components/AppSuspense.vue'
-    import useAttributesStore from '../../../stores/attribute/attributes'
+    import AppFormJS from '../../../form/AppFormJS.js'
+    import AppSuspense from '../../../AppSuspense.vue'
+    import useAttributesStore from '../../../../stores/attribute/attributes'
 
     const emit = defineEmits(['dataAttribute'])
     const storeAttributes = useAttributesStore()

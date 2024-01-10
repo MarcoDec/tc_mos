@@ -1,13 +1,13 @@
 <script setup>
-    import useOptions from '../../../stores/option/options'
+    import useOptions from '../../../../stores/option/options'
     import AppAttributeCreate from './AppAttributeCreate.vue'
-    import AppFormJS from '../../../components/form/AppFormJS.js'
-    import AppSuspense from '../../../components/AppSuspense.vue'
-    import AppTab from '../../../components/tab/AppTab.vue'
-    import AppTabs from '../../../components/tab/AppTabs.vue'
+    import AppFormJS from '../../../form/AppFormJS.js'
+    import AppSuspense from '../../../AppSuspense.vue'
+    import AppTab from '../../../tab/AppTab.vue'
+    import AppTabs from '../../../tab/AppTabs.vue'
     import {computed} from 'vue-demi'
-    import useComponentFamilyStore from '../../../stores/component/componentFamily'
-    import useUnitsStore from '../../../stores/unit/units'
+    import useComponentFamilyStore from '../../../../stores/component/componentFamily'
+    import useUnitsStore from '../../../../stores/unit/units'
 
     defineProps({
         fieldsAttributs: {required: true, type: Array},
