@@ -30,7 +30,12 @@
         <ul class="me-auto navbar-nav pt-0">
             <AppNavbarItem v-if="user.isPurchaseReader !== null" id="purchase" icon="shopping-bag" title="Achats">
             <!--TODO                <p>Fournisseur</p>-->
-            <!--TODO                <p>Composant</p>-->
+            <AppNavbarLink icon="layer-group" to="component-list" :variant="variantPurchase">
+                Liste des composants
+            </AppNavbarLink>
+            <AppNavbarLink icon="magnet" to="component-equivalents" :variant="variantPurchase">
+                Groupes d'équivalences
+            </AppNavbarLink>
                 <template v-if="user.isPurchaseAdmin">
                     <AppDropdownItem disabled variant="danger">
                         <span class="text-white">Administration</span>
