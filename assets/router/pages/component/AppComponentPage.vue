@@ -1,97 +1,132 @@
 <script setup>
-    import {computed, ref} from 'vue'
+    import {computed, onMounted, ref} from 'vue'
+    import useOptions from '../../../stores/option/options'
     import AppComponentCreate from './AppComponentCreate.vue'
     import AppSuspense from '../../../components/AppSuspense.vue'
-    import AppTablePage from '../AppTablePage'
     import useAttributesStore from '../../../stores/attribute/attributes'
     import useColorsStore from '../../../stores/color/colors'
     import useComponentAttributesStore from '../../../stores/component/componentAttribute'
     import useComponentsStore from '../../../stores/component/components'
     import {useTableMachine} from '../../../machine'
     import useUnitsStore from '../../../stores/unit/units'
+    import useUser from '../../../stores/security'
 
     const title = 'Créer un Composant'
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
+
     const machineComponet = useTableMachine('machine-component')
     const StoreComponents = useComponentsStore()
+    const fecthOptionsComponentFamilies = useOptions('component-families')
+
+    const optionsComponentFamilies = computed(() =>
+        fecthOptionsComponentFamilies.options.map(op => {
+            const text = op.text
+            const value = op.value
+            return {text, value}
+        }))
+
     const StoreComponentAttributes = useComponentAttributesStore()
     const storeAttributes = useAttributesStore()
+
     const storeUnits = useUnitsStore()
     const storeColors = useColorsStore()
 
+
+    const optionsEtat = [
+        {text: 'agreed', value: 'agreed'},
+        {text: 'draft', value: 'draft'},
+        {text: 'to_validate', value: 'to_validate'},
+        {text: 'warning', value: 'warning'}
+    ]
+
     const fields = [
+        // {
+        //     label: 'Img',
+        //     name: 'img',
+        //     trie: false,
+        //     type: 'img'
+        // },
         {
-            create: false,
-            label: 'Img',
-            name: 'img',
-            sort: false,
-            update: true
-        },
-        {
-            create: false,
             label: 'Référence',
-            name: 'ref',
-            sort: false,
-            update: true
+            name: 'code',
+            trie: false,
+            type: 'text'
         },
         {
-            create: false,
             label: 'Indice',
-            name: 'indice',
-            sort: false,
-            update: true
+            name: 'index',
+            trie: false,
+            type: 'text'
         },
         {
-            create: false,
             label: 'Désignation',
-            name: 'designation',
-            sort: false,
-            update: true
+            name: 'name',
+            trie: false,
+            type: 'text'
         },
         {
-            create: false,
             label: 'Famille',
-            name: 'famille',
-            sort: false,
-            update: true
+            name: 'family',
+            trie: false,
+            type: 'select',
+            options: {
+                label: value =>
+                    optionsComponentFamilies.value.find(option => option.value === value)?.text ?? null,
+                options: optionsComponentFamilies.value
+            }
         },
+        // {
+        //     label: 'Fournisseurs',
+        //     name: 'fournisseurs',
+        //     trie: false,
+        //     type: 'text'
+        // },
+        // {
+        //     label: 'Stocks',
+        //     name: 'stocks',
+        //     trie: false,
+        //     type: 'text'
+        // },
+        // {
+        //     label: 'Besoins enregistrés',
+        //     name: 'besoin',
+        //     trie: false,
+        //     type: 'text'
+        // },
         {
-            create: false,
-            label: 'Fournisseurs',
-            name: 'fournisseurs',
-            sort: false,
-            update: true
-        },
-        {
-            create: false,
-            label: 'Stocks',
-            name: 'stocks',
-            sort: false,
-            update: true
-        },
-        {
-            create: false,
-            label: 'Besoins enregistrés',
-            name: 'besoin',
-            sort: false,
-            update: true
-        },
-        {
-            create: false,
             label: 'Etat',
-            name: 'etat',
-            sort: false,
-            type: 'trafficLight',
-            update: true
+            name: 'state',
+            trie: false,
+            options: {
+                label: value =>
+                    optionsEtat.find(option => option.type === value)?.text ?? null,
+                options: optionsEtat
+            },
+            type: 'select'
         }
     ]
+    const fetchUser = useUser()
+    const isPurchaseWriterOrAdmin = fetchUser.isPurchaseWriter || fetchUser.isPurchaseAdmin
+    const roleuser = ref(isPurchaseWriterOrAdmin ? 'writer' : 'reader')
+    const itemsTable = computed(() => StoreComponents.componentItems)
+
     let fInput = {}
     const family = ref('')
     const myBooleanFamily = ref(false)
     const fieldsAttributs = ref([])
     const attributesFiltered = ref([])
     const inputAttributes = ref({})
+    let tabInput = []
+
+    onMounted(async () => {
+        await StoreComponents.fetch()
+        await fecthOptionsComponentFamilies.fetchOp()
+        await storeAttributes.getAttributes()
+        await storeUnits.getUnits()
+        await storeColors.getListColors()
+        console.log(itemsTable.value)
+    })
 
     async function input(formInput) {
         fInput = computed(() => formInput)
@@ -148,7 +183,6 @@
     function inputAttribute(data) {
         inputAttributes.value = data
     }
-    let tabInput = []
     async function Componentcreate() {
         const componentInput = {
             family: fInput.value.family,
@@ -210,25 +244,44 @@
         </AppModal>
 
         <div class="col">
-            <AppTablePage
-                :fields="fields"
-                icon="user-tag"
-                :machine="machineComponet"
-                :store="StoreComponents"
-                title="La liste de composants">
-                <template #cell(etat)>
-                    <AppTrafficLight/>
-                </template>
-                <template #btn>
-                    <AppBtn
-                        variant="success"
-                        label="créer"
-                        data-bs-toggle="modal"
-                        :data-bs-target="target">
-                        Créer
-                    </AppBtn>
-                </template>
-            </AppTablePage>
+            <Suspense>
+                <AppCardableTable
+                    :current-page="StoreComponents.currentPage"
+                    :fields="fields"
+                    :first-page="StoreComponents.firstPage"
+                    :items="itemsTable"
+                    :last-page="StoreComponents.lastPage"
+                    :next-page="StoreComponents.nextPage"
+                    :pag="StoreComponents.pagination"
+                    :previous-page="StoreComponents.previousPage"
+                    :user="roleuser"
+                    form="formComponentCardableTable"
+                    @cancel-search="cancelSearch"
+                    @deleted="deleted"
+                    @get-page="getPage"
+                    @search="search"
+                    @trier-alphabet="trierAlphabet"
+                    @update="onProductShowRequest"/>
+<!--            <AppTablePage-->
+<!--                :fields="fields"-->
+<!--                icon="user-tag"-->
+<!--                :machine="machineComponet"-->
+<!--                :store="StoreComponents"-->
+<!--                title="La liste de composants">-->
+<!--                <template #cell(etat)>-->
+<!--                    <AppTrafficLight/>-->
+<!--                </template>-->
+<!--                <template #btn>-->
+<!--                    <AppBtn-->
+<!--                        variant="success"-->
+<!--                        label="créer"-->
+<!--                        data-bs-toggle="modal"-->
+<!--                        :data-bs-target="target">-->
+<!--                        Créer-->
+<!--                    </AppBtn>-->
+<!--                </template>-->
+<!--            </AppTablePage>-->
+            </Suspense>
         </div>
     </div>
 </template>

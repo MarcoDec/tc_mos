@@ -45,7 +45,7 @@
     const css = computed(() => ({'is-invalid': hasViolation.value}))
 
     const localField = ref(props.field)
-    if (props.initialField.type === 'multiselect-fetch') {
+    if (props.initialField && props.initialField.type === 'multiselect-fetch') {
         localField.value = {...localField.value, ...props.initialField}
         console.log('localField', localField.value)
     }

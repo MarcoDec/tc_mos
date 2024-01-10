@@ -134,8 +134,8 @@ export default [
     {
         component: () => import('./pages/supplier/AppSupplierPage.vue'),
         meta: {requiresAuth: true},
-        name: 'supplier-listt',
-        path: '/supplier-listt'
+        name: 'supplier-list',
+        path: '/supplier-list'
     },
     {
         component: () => import('../components/pages/purchase/supplier/AppSupplierListPage.vue'),

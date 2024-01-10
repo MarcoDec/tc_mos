@@ -42,7 +42,7 @@ use App\Entity\Purchase\Supplier\Component as SupplierComponent;
         collectionOperations: [
             'get' => [
                 'normalization_context' => [
-                    'groups' => ['read:component:collection', 'read:measure', 'read:state'],
+                    'groups' => ['read:component:collection', 'read:measure', 'read:state', 'read:id'],
                     'openapi_definition_name' => 'Component-collection',
                     'skip_null_values' => false
                 ],
@@ -241,7 +241,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Famille', readableLink: false, required: true, example: '/api/component-families/1'),
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(targetEntity: Family::class, fetch: 'EAGER', inversedBy: 'components'),
+        ORM\ManyToOne(targetEntity: Family::class, fetch: 'LAZY', inversedBy: 'components'),
         Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin'])
     ]
     private ?Family $family = null;
@@ -375,7 +375,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         Assert\NotBlank(groups: ['Component-create', 'Component-logistics']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(fetch:'EAGER'),
+        ORM\ManyToOne(fetch:'LAZY'),
         Serializer\Groups(['read:component:collection', 'create:component', 'read:component', 'write:component', 'write:component:logistics'])
     ]
     private ?Unit $unit = null;
