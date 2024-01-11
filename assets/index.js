@@ -71,7 +71,7 @@ import AppTreeForm from './components/tree/card/form/AppTreeForm.vue'
 import AppTreeLabel from './components/tree/node/AppTreeLabel.vue'
 import AppTreeNodes from './components/tree/node/AppTreeNodes.vue'
 import AppTreePage from './components/pages/tree/AppTreePage.vue'
-// import CountryFlag from 'vue-country-flag-next'
+import CountryFlag from 'vue-country-flag-next'
 import Fa from './components/Fa'
 import {createApp} from 'vue'
 import pinia from './stores'
@@ -147,7 +147,7 @@ const app = createApp(App)
     .component('AppTreeLabel', AppTreeLabel)
     .component('AppTreeNodes', AppTreeNodes)
     .component('AppTreePage', AppTreePage)
-    // .component('CountryFlag', CountryFlag)
+    .component('CountryFlag', CountryFlag)
     .component('Fa', Fa)
     .use(pinia)
 useUser().fetch().then(() => app.use(router).mount('#vue'))

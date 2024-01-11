@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, inject} from 'vue-demi'
+    import {computed, inject} from 'vue'
     import useCountries from '../../../../stores/countries/countries'
 
     const emit = defineEmits('update:modelValue')
