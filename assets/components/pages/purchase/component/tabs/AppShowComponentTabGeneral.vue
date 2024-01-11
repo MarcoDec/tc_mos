@@ -11,9 +11,9 @@
     //await useFetchComponentStore.fetchOne(idComponent)
     const Géneralitésfields = [
         {label: 'Famille', name: 'family', type: 'select', options: {
-                label: value => componentFamilyOptions.options.find(option => option['@id'] === value)?.text ?? null,
-                options: componentFamilyOptions.options
-            }},
+            label: value => componentFamilyOptions.options.find(option => option['@id'] === value)?.text ?? null,
+            options: componentFamilyOptions.options
+        }},
         {label: 'Indice', name: 'index', type: 'number'},
         {label: 'Désignation', name: 'name', type: 'text'},
         {label: 'Notes', name: 'notes', type: 'textarea'}

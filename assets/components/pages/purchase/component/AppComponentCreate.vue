@@ -23,7 +23,6 @@
     const familyOptions = useOptions('component-families')
     await familyOptions.fetchOp()
     //console.log(familyOptions.options)
-    const listFamilies = storeComponentFamilly.familiesOption
     const listUnits = storeUnits.unitsOption
     const listUnitSelect = storeUnits.unitsSelect
     let changed = 0
@@ -156,7 +155,7 @@
     <AppSuspense>
         <div class="gui-card">
             <AppTabs id="gui-form-create" class="display-block-important">
-                <AppTab v-for="(field, index) in fields" :active="index===0" :id="field.name" :key="field.name" :icon="field.icon" tabs="gui-form-create" :title="field.label">
+                <AppTab v-for="(field, index) in fields" :id="field.name" :key="field.name" :active="index === 0" :icon="field.icon" tabs="gui-form-create" :title="field.label">
                     <AppFormJS v-if="field.children" :id="`${field.name}_appForm`" :fields="field.children" @update:model-value="input"/>
                     <p v-else-if="field.name === 'attributs'">
                         <AppSuspense>

@@ -108,7 +108,7 @@ export default [
         path: '/manufacturer-engines',
         props: {
             icon: 'city',
-            title: 'Références Equipement'
+            title: 'Modèle d\'équipement'
         }
     },
     {

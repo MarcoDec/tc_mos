@@ -150,6 +150,7 @@
     }
     function onProductShowRequest(item) {
         console.log('onProductShowRequest', item)
+        /* eslint-disable camelcase */
         router.push({name: 'product', params: {id_product: item.id}})
     }
 </script>
@@ -158,7 +159,8 @@
     <div class="row">
         <div class="col">
             <h1>
-                <font-awesome-icon icon="fa-brands fa-product-hunt" />
+                <FontAwesomeIcon :icon="icon"/>
+                <!--    fa-brands fa-product-hunt-->
                 {{ title }}
                 <span v-if="isProjectWriterOrAdmin" class="btn-float-right">
                     <AppBtn

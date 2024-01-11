@@ -10,7 +10,7 @@
     defineProps({id: {required: true, type: String}})
 
     const location = useBrowserLocation()
-    const databaseHostName = computed(() => location.value.hostname.replace('desktop.','phpmyadmin.'))
+    const databaseHostName = computed(() => location.value.hostname.replace('desktop.', 'phpmyadmin.'))
     const database = computed(() => `${location.value.protocol}//${databaseHostName.value}`)
     const api = computed(() => `${location.value.protocol}//${location.value.hostname}/api`)
     const user = useUser()
@@ -22,20 +22,20 @@
     const variantHr = user.isHrAdmin ? 'danger' : user.isHrWriter ? 'warning' : user.isHrReader ? 'info' : null
     const variantSelling = user.isSellingAdmin ? 'danger' : user.isSellingWriter ? 'warning' : user.isSellingReader ? 'info' : null
     const variantPurchase = user.isPurchaseAdmin ? 'danger' : user.isPurchaseWriter ? 'warning' : user.isPurchaseReader ? 'info' : null
-    const variantIt = user.isItAdmin ? 'danger' : null
+    //const variantIt = user.isItAdmin ? 'danger' : null
 </script>
 
 <template>
     <div :id="id" class="collapse navbar-collapse">
         <ul class="me-auto navbar-nav pt-0">
             <AppNavbarItem v-if="user.isPurchaseReader !== null" id="purchase" icon="shopping-bag" title="Achats">
-            <!--TODO                <p>Fournisseur</p>-->
-            <AppNavbarLink icon="layer-group" to="component-list" :variant="variantPurchase">
-                Liste des composants
-            </AppNavbarLink>
-            <AppNavbarLink icon="magnet" to="component-equivalents" :variant="variantPurchase">
-                Groupes d'équivalences
-            </AppNavbarLink>
+                <!--TODO                <p>Fournisseur</p>-->
+                <AppNavbarLink icon="layer-group" to="component-list" :variant="variantPurchase">
+                    Liste des composants
+                </AppNavbarLink>
+                <AppNavbarLink icon="magnet" to="component-equivalents" :variant="variantPurchase">
+                    Groupes d'équivalences
+                </AppNavbarLink>
                 <template v-if="user.isPurchaseAdmin">
                     <AppDropdownItem disabled variant="danger">
                         <span class="text-white">Administration</span>
@@ -108,8 +108,6 @@
                 <AppNavbarLink icon="shuttle-van" to="carriers" :variant="variantLogistics">
                     Transporteurs
                 </AppNavbarLink>
-                <template v-if="user.isLogisticsWriter">
-                </template>
                 <template v-if="user.isLogisticsAdmin">
                     <AppDropdownItem disabled variant="danger">
                         <span class="text-white">Administration</span>
@@ -148,7 +146,7 @@
                         Fabricants Equipement
                     </AppNavbarLink>
                     <AppNavbarLink icon="oil-well" to="manufacturer-engines" :variant="variantProduction">
-                        Equipements de référence
+                        Modèles d'équipements
                     </AppNavbarLink>
                     <AppNavbarLink icon="gear" to="production parameters" :variant="variantProduction">
                         Paramètres
@@ -156,23 +154,19 @@
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isProjectReader" id="project" icon="project-diagram" title="Projet">
-            <!--                <AppDropdownItem disabled variant="success">-->
-            <!--                    Lecteur-->
-            <!--                </AppDropdownItem>-->
-            <!--                <AppNavbarLink icon="atom" to="project-operations" variant="success">-->
-            <!--                    Opérations-->
-            <!--                </AppNavbarLink>-->
                 <AppNavbarLink icon="fa-brands fa-product-hunt" to="product-list" :variant="variantProject">
                     Liste des Produits
+                </AppNavbarLink>
+                <AppNavbarLink icon="fa-solid fa-atom" to="project-operations" :variant="variantProject">
+                    Opérations
                 </AppNavbarLink>
                 <template v-if="user.isProjectAdmin">
                     <AppDropdownItem disabled variant="danger">
                         <span class="text-white">Administration</span>
                     </AppDropdownItem>
-            <!--                    <AppNavbarLink brands icon="elementor" to="operation-types" variant="warning">-->
-            <!--                        Types d'opérations-->
-            <!--                    </AppNavbarLink>-->
-
+                    <AppNavbarLink icon="fa-brands fa-elementor" to="operation-types" :variant="variantProject">
+                        Types d'Opération
+                    </AppNavbarLink>
                     <AppNavbarLink icon="layer-group" to="product-families" :variant="variantProject">
                         Familles de produits
                     </AppNavbarLink>

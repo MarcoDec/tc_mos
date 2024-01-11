@@ -282,6 +282,7 @@
             success = 'client crée'
             emits('created')
             // Remise à zéro des données
+            /* eslint-disable require-atomic-updates */
             customerData.value = {
                 administeredBy: [currentCompany],
                 address: null,
@@ -297,8 +298,11 @@
                 paymentTerms: '/api/invoice-time-dues/1',
                 society: null
             }
+            /* eslint-disable require-atomic-updates */
             generalData.value = {}
+            /* eslint-disable require-atomic-updates */
             comptabilityData.value = {}
+            /* eslint-disable require-atomic-updates */
             cuivreData.value = {
                 managed: false
             }

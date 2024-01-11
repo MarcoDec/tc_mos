@@ -26,7 +26,9 @@
             //console.log(props.field.name, props.modelValue[props.field.name])
             const res = props.field.options.options.find(e => {
                 const iri = e.value ? e.value : e['@id']
-                const searchedIri = typeof get(props.modelValue, props.field.name) === 'object' ? get(props.modelValue, props.field.name)['@id'] : get(props.modelValue, props.field.name)
+                const data = get(props.modelValue, props.field.name)
+                if (typeof data === 'undefined' || data === null) return false
+                const searchedIri = typeof data === 'object' ? data['@id'] : data
                 return iri === searchedIri
             })
             //console.log('res', res)

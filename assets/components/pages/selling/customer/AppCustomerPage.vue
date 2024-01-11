@@ -57,7 +57,7 @@
         },
         {label: 'CP', name: 'address.zipCode', trie: true, type: 'text', filter: false},
         {label: 'Ville', name: 'address.city', trie: true, type: 'text', filter: false},
-        {label: 'Indice Cu', name: 'copper.index.value', trie: true, type: 'number', filter: false},
+        {label: 'Indice Cu', name: 'copper.index.value', trie: true, type: 'number', filter: false}
     ])
 
     async function deleted(id){
@@ -98,6 +98,7 @@
     }
     function onCustomerDetailsOpenRequest(customer) {
         console.log('onCustomerDetailsOpenRequest', customer)
+        /* eslint-disable camelcase */
         router.push({name: 'customer', params: {id_customer: customer.id}})
     }
 </script>

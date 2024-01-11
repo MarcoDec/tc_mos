@@ -9,7 +9,6 @@
     import useColorsStore from '../../../../stores/color/colors'
     import useComponentAttributesStore from '../../../../stores/component/componentAttribute'
     import useComponentsStore from '../../../../stores/component/components'
-    import {useTableMachine} from '../../../../machine'
     import useUnitsStore from '../../../../stores/unit/units'
     import useUser from '../../../../stores/security'
     import {useRouter} from 'vue-router'
@@ -20,7 +19,6 @@
 
     const router = useRouter()
 
-    const machineComponet = useTableMachine('machine-component')
     const StoreComponents = useComponentsStore()
     const fecthOptionsComponentFamilies = useOptions('component-families')
 
@@ -36,7 +34,6 @@
 
     const storeUnits = useUnitsStore()
     const storeColors = useColorsStore()
-
 
     const optionsEtat = [
         {text: 'agreed', value: 'agreed'},
@@ -235,6 +232,7 @@
     }
     function onComponentShowRequest(item) {
         console.log('onComponentShowRequest', item)
+        /* eslint-disable camelcase */
         router.push({name: 'component', params: {id_component: item.id}})
     }
 
@@ -256,9 +254,6 @@
         if (inputValues.index) componentListCriteria.addFilter('index', inputValues.index)
         if (inputValues.name) componentListCriteria.addFilter('name', inputValues.name)
         if (inputValues.family) componentListCriteria.addFilter('family', inputValues.family)
-        //if (inputValues.kind) componentListCriteria.addFilter('kind', inputValues.kind)
-        // if (inputValues.endOfLife) componentListCriteria.addFilter('endOfLife', inputValues.endOfLife)
-        //if (inputValues.stateBlocker) componentListCriteria.addFilter('embBlocker.state[]', inputValues.stateBlocker)
         if (inputValues.state) componentListCriteria.addFilter('embState.state[]', inputValues.state)
         await StoreComponents.fetch(componentListCriteria.getFetchCriteria)
     }
@@ -273,7 +268,7 @@
         <div class="row">
             <div class="col">
                 <h1>
-                    <font-awesome-icon icon="puzzle-piece" />
+                    <FontAwesomeIcon icon="puzzle-piece"/>
                     Liste des composants
                     <span v-if="isPurchaseWriterOrAdmin" class="btn-float-right">
                         <AppBtn
@@ -323,25 +318,6 @@
                     @search="search"
                     @trier-alphabet="trierAlphabet"
                     @update="onComponentShowRequest"/>
-<!--            <AppTablePage-->
-<!--                :fields="fields"-->
-<!--                icon="user-tag"-->
-<!--                :machine="machineComponet"-->
-<!--                :store="StoreComponents"-->
-<!--                title="La liste de composants">-->
-<!--                <template #cell(etat)>-->
-<!--                    <AppTrafficLight/>-->
-<!--                </template>-->
-<!--                <template #btn>-->
-<!--                    <AppBtn-->
-<!--                        variant="success"-->
-<!--                        label="créer"-->
-<!--                        data-bs-toggle="modal"-->
-<!--                        :data-bs-target="target">-->
-<!--                        Créer-->
-<!--                    </AppBtn>-->
-<!--                </template>-->
-<!--            </AppTablePage>-->
             </Suspense>
         </div>
     </div>

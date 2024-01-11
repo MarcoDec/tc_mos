@@ -6,7 +6,6 @@
 
     const props = defineProps({
         currentCompany: {required: true, type: String},
-        title: {required: true, type: String},
         target: {required: true, type: String},
         modalId: {required: true, type: String}
     })
@@ -63,24 +62,24 @@
         }
     ])
 
-    let employeeData = {}
+    const employeeData = ref({})
     function employeeForm(value) {
         Object.keys(value).forEach(key => {
-            if (Object.prototype.hasOwnProperty.call(employeeData, key)) {
+            if (Object.prototype.hasOwnProperty.call(employeeData.value, key)) {
                 if (typeof value[key] === 'object') {
                     if (typeof value[key].value !== 'undefined') {
                         const inputValue = parseFloat(value[key].value)
-                        employeeData[key] = {...employeeData[key], value: inputValue}
+                        employeeData.value[key] = {...employeeData.value[key], value: inputValue}
                     }
                     if (typeof value[key].code !== 'undefined') {
                         const inputCode = value[key].code
-                        employeeData[key] = {...employeeData[key], code: inputCode}
+                        employeeData.value[key] = {...employeeData.value[key], code: inputCode}
                     }
                 } else {
-                    employeeData[key] = value[key]
+                    employeeData.value[key] = value[key]
                 }
             } else {
-                employeeData[key] = value[key]
+                employeeData.value[key] = value[key]
             }
         })
     }
@@ -88,15 +87,15 @@
     async function employeeFormCreate(){
         try {
             const employee = {
-                embRoles: [employeeData.level],
-                initials: employeeData?.initials || '',
-                name: employeeData?.name || '',
-                password: employeeData?.password || '',
-                plainPassword: employeeData?.plainPassword || '',
-                surname: employeeData?.surname || '',
-                userEnabled: employeeData?.userEnabled || false,
-                username: employeeData?.username || '',
-                company: employeeData?.company || props.currentCompany
+                embRoles: [employeeData.value.level],
+                initials: employeeData.value.initials ?? '',
+                name: employeeData.value.name ?? '',
+                password: employeeData.value.password ?? '',
+                plainPassword: employeeData.value.plainPassword ?? '',
+                surname: employeeData.value.surname ?? '',
+                userEnabled: employeeData.value.userEnabled ?? false,
+                username: employeeData.value.username ?? '',
+                company: employeeData.value.company ?? props.currentCompany
             }
             await storeEmployeesList.addEmployee(employee)
             isPopupVisible.value = false

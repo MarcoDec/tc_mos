@@ -7,7 +7,7 @@
     // Dimensions de la fenêtre du navigateur
     const windowSize = ref({height: window.innerHeight, width: window.innerWidth})
     // Hauteur de la barre de menu
-    const appNavBarHeight = computed(()=>document.getElementById('app-nav-bar').getBoundingClientRect().height)
+    const appNavBarHeight = computed(() => document.getElementById('app-nav-bar').getBoundingClientRect().height)
     // Styles à appliquer au wrapper
     const guiWrapperStyle = ref({height: '50vh'})
     // Styles à appliquer à la ligne d'entête

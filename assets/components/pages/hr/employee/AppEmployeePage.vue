@@ -96,6 +96,7 @@
     }
     function onEmployeeShow(item) {
         console.log('onEmployeeShow', item)
+        /* eslint-disable camelcase */
         router.push({name: 'employee', params: {id_employee: item.id}})
     }
 </script>

@@ -22,8 +22,8 @@
     <AppSuspense>
         <AppShowGuiGen>
             <template #gui-header>
-                <div class="bg-white border-1 border-dark" style="position:relative; top:0px;left:0px;">
-<!--                    <font-awesome-icon icon="puzzle-piece"/>-->
+                <div class="bg-white border-1 border-dark">
+                    <!--    <font-awesome-icon icon="puzzle-piece"/>-->
                     <b>{{ useFetchComponentStore.component.code }}</b>: {{ useFetchComponentStore.component.name }}
                 </div>
             </template>

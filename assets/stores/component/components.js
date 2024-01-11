@@ -79,7 +79,7 @@ export default defineStore('components', {
             component: [],
             items: [],
             currentPage: 1,
-            pagination: true,
+            pagination: true
         }
     )
 })
