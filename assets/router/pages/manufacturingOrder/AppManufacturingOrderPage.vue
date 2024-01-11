@@ -2,7 +2,7 @@
     import AppManufacturingOrderCreate from './AppManufacturingOrderCreate.vue'
     import AppTablePage from '../AppTablePage'
     import {computed} from 'vue-demi'
-    import useManufacturingOrders from '../../../stores/manufacturingOrder/manufacturingOrders'
+    import useManufacturingOrders from '../../../stores/production/manufacturingOrder/manufacturingOrders'
     import {useTableMachine} from '../../../machine'
 
     const title = 'Créer un OF'

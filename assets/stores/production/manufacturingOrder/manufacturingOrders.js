@@ -1,4 +1,4 @@
-import {actionsItems, gettersItems} from '../tables/items'
+import {actionsItems, gettersItems} from '../../tables/items'
 import {defineStore} from 'pinia'
 import generateManufacturingOrders from './manufacturingOrder'
 

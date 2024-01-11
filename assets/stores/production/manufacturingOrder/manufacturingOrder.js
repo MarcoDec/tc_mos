@@ -1,4 +1,4 @@
-import {actionsItem, gettersItem} from '../tables/item'
+import {actionsItem, gettersItem} from '../../tables/item'
 import {defineStore} from 'pinia'
 
 export default function generateManufacturingOrders(order, root) {
