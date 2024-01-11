@@ -1,7 +1,7 @@
 <script setup>
     import {computed, onMounted} from 'vue-demi'
-    import useCompagnies from '../../../stores/compagnie/compagnies'
-    import useProducts from '../../../stores/product/products'
+    import useCompagnies from '../../../../stores/compagnie/compagnies'
+    import useProducts from '../../../../stores/product/products'
 
     const emit = defineEmits(['update:modelValue'])
     const products = useProducts()

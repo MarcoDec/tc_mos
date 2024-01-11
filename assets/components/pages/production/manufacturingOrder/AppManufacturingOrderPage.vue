@@ -1,9 +1,9 @@
 <script setup>
     import AppManufacturingOrderCreate from './AppManufacturingOrderCreate.vue'
-    import AppTablePage from '../AppTablePage'
+    import AppTablePage from '../../table/AppTablePage.vue'
     import {computed} from 'vue-demi'
-    import useManufacturingOrders from '../../../stores/production/manufacturingOrder/manufacturingOrders'
-    import {useTableMachine} from '../../../machine'
+    import useManufacturingOrders from '../../../../stores/production/manufacturingOrder/manufacturingOrders'
+    import {useTableMachine} from '../../../../machine'
 
     const title = 'Créer un OF'
     const modalId = computed(() => 'target')
