@@ -131,12 +131,12 @@ export default [
         name: 'component-list',
         path: '/component-list'
     },
-    {
-        component: () => import('./pages/supplier/AppSupplierPage.vue'),
-        meta: {requiresAuth: true},
-        name: 'supplier-list',
-        path: '/supplier-list'
-    },
+    // {
+    //     component: () => import('./pages/supplier/AppSupplierPage.vue'),
+    //     meta: {requiresAuth: true},
+    //     name: 'supplier-list',
+    //     path: '/supplier-list'
+    // },
     {
         component: () => import('../components/pages/purchase/supplier/AppSupplierListPage.vue'),
         meta: {requiresAuth: true},
