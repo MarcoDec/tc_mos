@@ -1,8 +1,8 @@
 <script setup>
     import {computed, ref} from 'vue-demi'
     import AppFormJS from '../../../../components/form/AppFormJS.js'
-    import AppTab from '../../../../components/tabs/AppTab.vue'
-    import AppTabs from '../../../../components/tabs/AppTabs.vue'
+    import AppTab from '../../../../components/tab/AppTab.vue'
+    import AppTabs from '../../../../components/tab/AppTabs.vue'
     import useOptions from '../../../../stores/option/options'
     import {useSuppliersStore} from '../../../../stores/purchase/supplier/suppliers'
 
@@ -215,28 +215,28 @@
 <template>
     <AppModal :id="modalId" class="four" :title="title">
         <AppTabs id="gui-start" class="gui-start-content">
-            <AppTab id="gui-start-general" active icon="sitemap" title="Général">
+            <AppTab id="gui-start-general" active icon="sitemap" tabs="gui-start" title="Général">
                 <AppFormJS
                     id="supplier"
                     :fields="fields"
                     @update:model-value="generalForm"/>
             </AppTab>
-            <AppTab id="gui-start-qte" icon="folder" title="Qualité">
+            <AppTab id="gui-start-qte" icon="folder" tabs="gui-start" title="Qualité">
                 <AppFormJS id="qte" :fields="fieldsQuality" @update:model-value="qualityForm"/>
             </AppTab>
-            <AppTab id="gui-start-comptabilite" icon="chart-line" title="Comptabilité">
+            <AppTab id="gui-start-comptabilite" icon="chart-line" tabs="gui-start" title="Comptabilité">
                 <AppFormJS id="comptabilite" :fields="fieldsComp" @update:model-value="comptabilityForm"/>
             </AppTab>
-            <AppTab id="gui-start-cuivre" icon="clipboard-list" title="Cuivre">
+            <AppTab id="gui-start-cuivre" icon="clipboard-list" tabs="gui-start" title="Cuivre">
                 <AppFormJS id="cuivre" :fields="fieldsCuivre" @update:model-value="cuivreForm"/>
             </AppTab>
         </AppTabs>
-        <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+        <ul v-if="isPopupVisible" class="alert alert-danger" role="list">
             <li>{{ violations }}</li>
-        </div>
-        <div v-if="isCreatedPopupVisible" class="alert alert-success" role="alert">
+        </ul>
+        <ul v-if="isCreatedPopupVisible" class="alert alert-success" role="list">
             <li>{{ success }}</li>
-        </div>
+        </ul>
         <template #buttons>
             <AppBtn
                 variant="success"

@@ -3,8 +3,8 @@
     import AppFormField from './AppFormField.vue'
     // import AppTab from '../../tab/AppTab.vue'
     // import AppTabs from '../../tab/AppTabs.vue'
-    import AppTab from '../../tabs/AppTab.vue'
-    import AppTabs from '../../tabs/AppTabs.vue'
+    import AppTab from '../../tab/AppTab.vue'
+    import AppTabs from '../../tab/AppTabs.vue'
 
     const emit = defineEmits(['update:modelValue'])
 

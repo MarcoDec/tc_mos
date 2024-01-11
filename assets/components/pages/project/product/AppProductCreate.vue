@@ -4,8 +4,8 @@
     import {useCustomerProductStore} from '../../../../stores/customer/customerProduct'
     import {useCustomersStore} from '../../../../stores/customer/customers'
     import {useProductStore} from '../../../../stores/project/product/products'
-    import AppTab from '../../../tabs/AppTab.vue'
-    import AppTabs from '../../../tabs/AppTabs.vue'
+    import AppTab from '../../../tab/AppTab.vue'
+    import AppTabs from '../../../tab/AppTabs.vue'
     import useOptions from '../../../../stores/option/options'
 
     const props = defineProps({
@@ -421,14 +421,14 @@
 <template>
     <AppModal :id="modalId" :title="title">
         <AppTabs id="gui-start" class="gui-start-content">
-            <AppTab id="gui-start-general" class="css-tab" active icon="fa-brands fa-product-hunt" title="Général">
+            <AppTab id="gui-start-general" class="css-tab" active icon="fa-brands fa-product-hunt" tabs="gui-start" title="Général">
                 <AppFormJS
                     id="general"
                     :fields="generalFields"
                     :model-value="generalData"
                     @update:model-value="generalForm"/>
             </AppTab>
-            <AppTab id="gui-start-customer" class="css-tab" icon="user-tie" title="Clients">
+            <AppTab id="gui-start-customer" class="css-tab" icon="user-tie" tabs="gui-start" title="Clients">
                 <p class="bg-info text-white p-2">
                     Les données de chiffrage pourront être renseignées dans la fiche produit une fois créée.
                 </p>
@@ -438,7 +438,7 @@
                     :model-value="customerData"
                     @update:model-value="customerForm"/>
             </AppTab>
-            <AppTab id="gui-start-manufacturing-company" class="css-tab" icon="industry" title="Fabrication">
+            <AppTab id="gui-start-manufacturing-company" class="css-tab" icon="industry" tabs="gui-start" title="Fabrication">
                 <p class="bg-info text-white p-2">
                     Les données de répartition de la fabrication pourront être renseignées dans la fiche produit une fois créée.
                 </p>
@@ -448,7 +448,7 @@
                     :model-value="manufacturingCompanyData"
                     @update:model-value="manufacturingCompanyForm"/>
             </AppTab>
-            <AppTab id="gui-start-logistic" class="css-tab" icon="boxes" title="Logistique">
+            <AppTab id="gui-start-logistic" class="css-tab" icon="boxes" tabs="gui-start" title="Logistique">
                 <AppFormJS
                     id="logistic"
                     :fields="logisticFields"
@@ -456,12 +456,12 @@
                     @update:model-value="logisticForm"/>
             </AppTab>
         </AppTabs>
-        <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+        <ul v-if="isPopupVisible" class="alert alert-danger" role="list">
             <li>{{ violations }}</li>
-        </div>
-        <div v-if="isCreatedPopupVisible" class="alert alert-success" role="alert">
+        </ul>
+        <ul v-if="isCreatedPopupVisible" class="alert alert-success" role="list">
             <li>{{ success }}</li>
-        </div>
+        </ul>
         <template #buttons>
             <AppBtn
                 variant="success"
