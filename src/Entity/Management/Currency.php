@@ -11,8 +11,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\Serializer\Annotation as Serializer;
-
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 #[
+    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial', 'active' => 'exact', 'symbol' => 'partial', 'base' => 'partial']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'name', 'symbol', 'base']),
     ApiResource(
         description: 'Devises',
         collectionOperations: [
@@ -62,8 +66,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'Currency-read',
             'skip_null_values' => false
         ],
-        order: ['code' => 'asc'],
-        paginationEnabled: false
+        //order: ['code' => 'asc'],
+        paginationEnabled: true
     ),
     ORM\Entity(repositoryClass: CurrencyRepository::class)
 ]

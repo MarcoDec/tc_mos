@@ -78,6 +78,9 @@
                         Suivi des dépenses et ventes
                     </AppNavbarLink>
                     <!-- TODO                    <p>Devises</p>-->
+                    <AppNavbarLink to="currencies" icon="comments-dollar" :variant="variantManagement">
+                        Devises
+                    </AppNavbarLink>
                     <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" :variant="variantManagement">
                         Délais de paiement des factures
                     </AppNavbarLink>
