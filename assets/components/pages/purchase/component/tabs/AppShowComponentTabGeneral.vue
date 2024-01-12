@@ -36,8 +36,10 @@
 <template>
     <AppCardShow
         id="addGeneralites"
+        class="font-small mx-2 mt-1"
         :fields="Géneralitésfields"
         :component-attribute="useFetchComponentStore.component"
+        title="Informations générales"
         @update="updateGeneral"/>
 </template>
 

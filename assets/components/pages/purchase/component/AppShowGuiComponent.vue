@@ -41,7 +41,7 @@
     <AppSuspense>
         <AppShowGuiGen>
             <template #gui-left>
-                <div class="border-1 border-dark p-1">
+                <div class="bg-white border-1 border-dark p-1">
                     <FontAwesomeIcon icon="puzzle-piece"/>
                     <b>{{ useFetchComponentStore.component.code }}</b>: {{ useFetchComponentStore.component.name }}
                     <span class="btn-float-right">
