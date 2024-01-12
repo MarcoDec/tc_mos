@@ -129,6 +129,7 @@
         await storeUnits.getUnits()
         await storeColors.getListColors()
         console.log(itemsTable.value)
+        console.log(optionsComponentFamilies.value)
     })
 
     async function refreshTable() {

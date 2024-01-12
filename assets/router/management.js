@@ -234,16 +234,16 @@ export default [
             disableAdd: true,
             disableRemove: true,
             fields: [
-                { label: 'Nom', name: 'code', create: true, update: false, search: true, sort: true },
-                { label: 'Description', name: 'name', create: true, update: false, search: true, sort: true },
-                { label: 'Symbol', name: 'symbol', create: true, update: false, search: true, sort: true },
-                { label: 'Activé/Desactivé', name: 'active', type: 'boolean', create: true, update: true, search: true, sort: false },
-                { label: 'Devise parente', name: 'parent', type: 'select', options: { base: 'currencies' }, create: true, update: false, search: true, sort: false },
-                { label: 'Ratio / parent', name: 'base', type: 'number', step: 0.01, create: true, update: false, search: true, sort: true }
+                {label: 'Nom', name: 'code', create: true, update: false, search: true, sort: true},
+                {label: 'Description', name: 'name', create: true, update: false, search: true, sort: true},
+                {label: 'Symbol', name: 'symbol', create: true, update: false, search: true, sort: true},
+                {label: 'Activé/Desactivé', name: 'active', type: 'boolean', create: true, update: true, search: true, sort: false},
+                {label: 'Devise parente', name: 'parent', type: 'select', options: {base: 'currencies'}, create: true, update: false, search: true, sort: false},
+                {label: 'Ratio / parent', name: 'base', type: 'number', step: 0.01, create: true, update: false, search: true, sort: true}
             ],
             icon: 'comments-dollar',
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Gestion des devises'
         }
-    },
+    }
 ]

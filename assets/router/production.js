@@ -6,7 +6,7 @@ import AppShowGuiWorkstation from '../components/pages/production/equipment/work
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTablePageType from '../components/pages/table/AppTablePageType.vue'
 import {readonly} from 'vue'
-import AppEquipementListEvent from '../components/pages/equipement/bottom/AppEquipementListEvent.vue'
+
 const myOptions = [
     {iri: 'counter-part', text: 'Contrepartie de test', value: 'counter-part'},
     {iri: 'workstation', text: 'Poste de travail', value: 'workstation'},
