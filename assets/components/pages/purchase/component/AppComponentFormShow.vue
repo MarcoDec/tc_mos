@@ -13,15 +13,8 @@
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab
-            id="gui-start-main"
-            active
-            title="Généralités"
-            icon="pencil"
-            tabs="gui-start">
-            <AppSuspense><AppShowComponentTabGeneral/></AppSuspense>
-        </AppTab>
-        <AppTab
             id="gui-start-attribut"
+            active
             title="Attribut"
             icon="sitemap"
             tabs="gui-start">

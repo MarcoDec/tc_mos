@@ -10,12 +10,9 @@
 </script>
 
 <template>
-    <div>
-        <AppTabs id="gui-start-bottom" class="gui-start-content-bottom" format-nav="block">
+        <AppTabs id="gui-start-bottom" class="gui-start-content">
             <AppTab id="gui-start-casEmplois" active title="Cas d'emplois" icon="list-squares" tabs="gui-start-bottom">
-                <AppSuspense>
-                    <AppComponentListCasEmplois/>
-                </AppSuspense>
+                <AppSuspense><AppComponentListCasEmplois/></AppSuspense>
             </AppTab>
             <AppTab id="gui-start-outils" title="OF en cours" icon="screwdriver-wrench" tabs="gui-start-bottom">
                 <AppSuspense>
@@ -27,7 +24,7 @@
                     <AppComponentListBesoinEnregistre/>
                 </AppSuspense>
             </AppTab>
-            <AppTab id="gui-start-stocks" title="Stocks" icon="shopping-cart" tabs="gui-start-bottom">
+            <AppTab id="gui-start-stocks" title="Stocks" icon="cubes-stacked" tabs="gui-start-bottom">
                 <AppSuspense>
                     <AppComponentListStock/>
                 </AppSuspense>
@@ -53,7 +50,6 @@
                 </AppSuspense>
             </AppTab>
         </AppTabs>
-    </div>
 </template>
 
 <style scoped>
