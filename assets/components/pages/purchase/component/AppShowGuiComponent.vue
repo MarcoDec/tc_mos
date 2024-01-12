@@ -7,6 +7,7 @@
     import {useComponentListStore} from '../../../../stores/purchase/component/components'
     import useOptions from '../../../../stores/option/options'
     import {useRoute} from 'vue-router'
+    import {BImg} from 'bootstrap-vue-next'
     import AppComponentShowInlist from './AppComponentShowInlist.vue'
     import AppShowComponentTabGeneral from './tabs/AppShowComponentTabGeneral.vue'
 
@@ -49,10 +50,16 @@
                         <AppBtn label="Exploitation" icon="industry" variant="warning" @click="requestExploitation"/>
                     </span>
                 </div>
-                <AppSuspense><AppShowComponentTabGeneral/></AppSuspense>
+                <div class="d-flex flex-row">
+                    <div class="m-1" style="width:30%">
+                        <BImg thumbnail fluid :src="useFetchComponentStore.component.filePath" alt="Image 1"></BImg>
+                    </div>
+                    <AppSuspense><AppShowComponentTabGeneral style="width:70%"/></AppSuspense>
+                </div>
+
             </template>
             <template #gui-bottom>
-                <div class="full-visible-width">
+                <div class="full-visible-width font-small">
                     <AppSuspense><AppComponentFormShow v-if="useFetchComponentStore.isLoaded && fetchUnits.isLoaded && modeDetail"/></AppSuspense>
                     <AppSuspense><AppComponentShowInlist v-if="!modeDetail"/></AppSuspense>
                 </div>

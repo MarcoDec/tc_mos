@@ -16,12 +16,14 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
+use App\Entity\Interfaces\FileEntity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Attachment\ComponentAttachment;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Purchase\ComponentReference;
 use App\Entity\Traits\BarCodeTrait;
+use App\Entity\Traits\FileTrait;
 use App\Filter\RelationFilter;
 use App\Repository\Purchase\Component\ComponentRepository;
 use App\Validator as AppAssert;
@@ -29,6 +31,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
+use PHPUnit\TextUI\XmlConfiguration\File;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Purchase\Supplier\Component as SupplierComponent;
@@ -185,7 +188,7 @@ use App\Filter\SetFilter;
             'openapi_definition_name' => 'Component-write'
         ],
         normalizationContext: [
-            'groups' => ['read:component', 'read:measure', 'read:state', 'read:id'],
+            'groups' => ['read:component', 'read:measure', 'read:state', 'read:id', 'read:file'],
             'openapi_definition_name' => 'Component-read',
             'skip_null_values' => false
         ],
@@ -193,8 +196,8 @@ use App\Filter\SetFilter;
     ),
     ORM\Entity(repositoryClass: ComponentRepository::class)
 ]
-class Component extends Entity implements BarCodeInterface, MeasuredInterface {
-    use BarCodeTrait;
+class Component extends Entity implements BarCodeInterface, MeasuredInterface, FileEntity {
+    use BarCodeTrait, FileTrait;
 
    /** @var DoctrineCollection<int, ComponentAttachment> */
     #[ ORM\OneToMany(mappedBy: 'component', targetEntity: ComponentAttachment::class) ]
@@ -247,6 +250,13 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin'])
     ]
     private ?Family $family = null;
+
+    #[
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:product-family'])
+    ]
+    protected ?string $filePath = null;
 
     #[
         ApiProperty(description: 'Poids cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
@@ -785,5 +795,15 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
       $this->attachments = $attachments;
    }
 
-
+    #[
+        ApiProperty(description: 'Icône', example: '/uploads/component-families/1.jpg'),
+        Serializer\Groups(['read:file'])
+    ]
+    final public function getFilepath(): ?string {
+        return $this->filePath;
+    }
+    public function setFilePath(?string $filePath): void
+    {
+        $this->filePath = $filePath;
+    }
 }
