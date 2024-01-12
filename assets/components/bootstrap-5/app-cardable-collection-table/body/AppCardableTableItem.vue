@@ -35,7 +35,7 @@
             </button>
         </template>
     </td>
-    <td v-for="field in fields" :key="field.name" :style="{ width: field.width ? field.width + 'px' : null }">
+    <td v-for="field in fields" :key="field.name" :style="{width: field.width ? `${field.width}px` : null}">
         <template v-if="item[field.name] !== null">
             <div v-if="field.type === 'select'">
                 <template v-if="isObject(item[field.name])">

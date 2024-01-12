@@ -18,10 +18,10 @@
 </script>
 
 <template>
-    <th v-if="field.trie" scope="col" :class="`${trier} sortable`" :style="{ width: field.width ? field.width + 'px' : null }" @click="trierAlphabet(field.name)">
+    <th v-if="field.trie" scope="col" :class="`${trier} sortable`" :style="{width: field.width ? `${field.width}px` : null}" @click="trierAlphabet(field.name)">
         {{ field.label }}
     </th>
-    <th v-else scope="col" class="sortable" :style="{ width: field.width ? field.width + 'px' : null }">
+    <th v-else scope="col" class="sortable" :style="{width: field.width ? `${field.width}px` : null}">
         {{ field.label }}
     </th>
 </template>

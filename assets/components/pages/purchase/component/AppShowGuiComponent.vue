@@ -52,7 +52,7 @@
                 <AppSuspense><AppShowComponentTabGeneral/></AppSuspense>
             </template>
             <template #gui-bottom>
-                <div style="min-width:calc(100vw - 35px); padding: 2px;">
+                <div class="full-visible-width">
                     <AppSuspense><AppComponentFormShow v-if="useFetchComponentStore.isLoaded && fetchUnits.isLoaded && modeDetail"/></AppSuspense>
                     <AppSuspense><AppComponentShowInlist v-if="!modeDetail"/></AppSuspense>
                 </div>
@@ -65,5 +65,9 @@
 <style>
     .border-dark {
         border-bottom: 1px solid grey;
+    }
+    .full-visible-width {
+        min-width:calc(100vw - 35px);
+        padding: 2px;
     }
 </style>
