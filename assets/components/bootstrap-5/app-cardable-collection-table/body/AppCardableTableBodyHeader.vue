@@ -45,7 +45,7 @@
             </button>
         </td>
 
-        <td v-for="field in tabFields" :key="field.name">
+        <td v-for="field in tabFields" :key="field.name" :style="{ width: field.width ? field.width + 'px' : null }">
             <template v-if="field.filter !== false">
                 <AppInputGuesser v-if="!field.searchDisabled" :id="field.name" v-model="inputValues[field.name]" :form="form" :field="field" @update:model-value="onUpdateModelValue($event, field.name)"/>
             </template>
