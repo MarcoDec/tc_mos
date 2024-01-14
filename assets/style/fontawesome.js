@@ -105,7 +105,7 @@ import {
     faForwardStep,
     faForwardFast,
     faSquare,
-    faNetworkWired, faRotateLeft, faSave, faAt
+    faNetworkWired, faRotateLeft, faSave, faAt, faMagnifyingGlassPlus, faMagnifyingGlassMinus
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -176,6 +176,8 @@ library.add(faLocationDot)
 library.add(faLocationDot)
 library.add(faMagnet)
 library.add(faMale)
+library.add(faMagnifyingGlassMinus)
+library.add(faMagnifyingGlassPlus)
 library.add(faMapMarked)
 library.add(faMapMarkedAlt)
 library.add(faMoneyBill1)

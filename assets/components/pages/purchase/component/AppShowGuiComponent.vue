@@ -17,6 +17,7 @@
     const fetchUnits = useOptions('units')
     const useFetchComponentStore = useComponentListStore()
     const modeDetail = ref(true)
+    const isFullScreen = ref(false)
     //endregion
     //region Chargement des données
     fetchUnits.fetchOp()
@@ -28,6 +29,12 @@
     }
     const requestExploitation = () => {
         modeDetail.value = false
+    }
+    const activateFullScreen = () => {
+        isFullScreen.value = true
+    }
+    const deactivateFullScreen = () => {
+        isFullScreen.value = false
     }
     //endregion
     //region déchargement des données
@@ -59,7 +66,11 @@
 
             </template>
             <template #gui-bottom>
-                <div class="full-visible-width font-small">
+                <div :class="{ 'full-screen': isFullScreen }" class="full-visible-width font-small">
+                    <div class="btn-container">
+                        <FontAwesomeIcon v-if="isFullScreen" @click="deactivateFullScreen" icon="fa-solid fa-magnifying-glass-minus" />
+                        <FontAwesomeIcon v-else @click="activateFullScreen" icon="fa-solid fa-magnifying-glass-plus" />
+                    </div>
                     <AppSuspense><AppComponentFormShow v-if="useFetchComponentStore.isLoaded && fetchUnits.isLoaded && modeDetail"/></AppSuspense>
                     <AppSuspense><AppComponentShowInlist v-if="!modeDetail"/></AppSuspense>
                 </div>
@@ -76,5 +87,22 @@
     .full-visible-width {
         min-width:calc(100vw - 35px);
         padding: 2px;
+    }
+    .full-screen {
+        position: fixed;
+        top: 10px;
+        left: 0;
+        width: 95vw;
+        height: 100vh;
+        z-index: 10000; /* Assurez-vous que c'est au-dessus des autres éléments */
+        background-color: white; /* ou toute autre couleur de fond souhaitée */
+    }
+    .btn-container {
+        position: relative;
+        float: right;
+        background-color: white;
+        top: 0;
+        right: 0;
+        z-index: 10010; /* Assurez qu'il reste au-dessus du contenu */
     }
 </style>
