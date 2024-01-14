@@ -19,7 +19,7 @@
             :aria-selected="tab.active"
             :class="tab.activeCss"
             :data-bs-target="tab.target"
-            class="nav-link"
+            class="font-xsmall nav-link"
             data-bs-toggle="tab"
             role="tab"
             type="button">
