@@ -33,11 +33,14 @@
 
 <style scoped>
     button {
-        border: 0px;
         border-radius: 10px;
+        border: 1px solid grey;
+        box-shadow: black 3px 3px 3px;
+        margin-right: 5px;
     }
     button:hover {
-        box-shadow: inset black 0px 0px 10px;
+        box-shadow: black 3px 3px 10px;
+        background-color: #43abd7 !important;
     }
     button.active {
         background-color: #43abd7 !important;
