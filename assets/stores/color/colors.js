@@ -6,6 +6,9 @@ export default defineStore('colors', {
         async getListColors() {
             const response = await api('api/colors', 'GET')
             this.listColors = response['hydra:member']
+        },
+        reset() {
+            this.listColors = []
         }
     },
     getters: {

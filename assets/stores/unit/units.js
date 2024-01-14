@@ -8,6 +8,9 @@ export default defineStore('units', {
             const response = await api('/api/units?pagination=false', 'GET')
             // console.log('responseListUnits', response)
             this.listUnits = response['hydra:member']
+        },
+        reset() {
+            this.listUnits = []
         }
     },
     getters: {

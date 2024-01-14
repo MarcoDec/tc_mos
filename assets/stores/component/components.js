@@ -43,6 +43,13 @@ export default defineStore('components', {
             }
             this.pagination = false
             return responseData
+        },
+        reset() {
+            this.isLoaded = false
+            this.isLoading = false
+            this.items = []
+            this.currentPage = 1
+            this.pagination = true
         }
     },
     getters: {
@@ -60,6 +67,7 @@ export default defineStore('components', {
                 '@id': item['@id'],
                 type: item['@type'],
                 code: item.code,
+                filePath: item.filePath,
                 index: item.index,
                 stateBlocker: item.embBlocker.state,
                 state: item.embState.state,

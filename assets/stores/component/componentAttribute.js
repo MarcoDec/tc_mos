@@ -10,6 +10,9 @@ export default defineStore('componentAttributes', {
         },
         async addComponentAttributes(payload){
             this.componentAttributes = await api('/api/component-attributes', 'POST', payload)
+        },
+        reset() {
+            this.listComponentAttribute = []
         }
     },
     getters: {

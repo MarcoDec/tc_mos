@@ -27,6 +27,10 @@ export default defineStore('attributes', {
         async getAttributes(){
             const response = await api('/api/attributes?pagination=false', 'GET')
             this.listAttributes = response['hydra:member']
+        },
+        reset() {
+            this.attributes = []
+            this.isLoaded = false
         }
     },
     getters: {

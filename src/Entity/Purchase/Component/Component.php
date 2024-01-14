@@ -254,7 +254,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     #[
         ApiProperty(description: 'Lien image'),
         ORM\Column(type: 'string'),
-        Serializer\Groups(['read:file', 'read:product-family'])
+        Serializer\Groups(['read:file', 'read:component:collection', 'read:product-family'])
     ]
     protected ?string $filePath = null;
 
