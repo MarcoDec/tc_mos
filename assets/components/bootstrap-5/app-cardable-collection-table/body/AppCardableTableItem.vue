@@ -1,4 +1,5 @@
 <script setup>
+    import {BImg} from 'bootstrap-vue-next'
     import AppSwitch from '../../../form-cardable/fieldCardable/input/AppSwitch.vue'
     import {computed} from 'vue'
 
@@ -63,6 +64,10 @@
             </div>
             <div v-else-if="field.type === 'link'">
                 <a v-if="item[field.name] !== null && item[field.name] !== ''" :href="item[field.name]" target="_blank">Download file</a>
+            </div>
+            <div v-else-if="field.type === 'img'" class="text-center">
+                <BImg v-if="item[field.name].length>0" thumbnail fluid :src="item[field.name]" alt="Image 1"></BImg>
+                <span v-else class="font-xsmall text-secondary">Image non disponible</span>
             </div>
             <div v-else>
                 <span v-if="isObject(item[field.name])" class="bg-danger text-white">Object given for field '{{ field.name }}' - {{ item[field.name] }}</span>

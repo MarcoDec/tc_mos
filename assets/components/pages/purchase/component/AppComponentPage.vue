@@ -1,6 +1,6 @@
 <script setup>
     import FontAwesomeIcon from '@fortawesome/vue-fontawesome/src/components/FontAwesomeIcon'
-    import {computed, onMounted, ref} from 'vue'
+    import {computed, onMounted, onUnmounted, ref} from 'vue'
     import {useRouter} from 'vue-router'
     import useAttributesStore from '../../../../stores/attribute/attributes'
     import useColorsStore from '../../../../stores/color/colors'
@@ -67,12 +67,14 @@
             return {text, value}
         }))
     const fields = computed(() => [
-        // {
-        //     label: 'Img',
-        //     name: 'img',
-        //     trie: false,
-        //     type: 'img'
-        // },
+        {
+            label: 'Img',
+            name: 'filePath',
+            trie: false,
+            type: 'img',
+            width: 100,
+            search: false
+        },
         {
             label: 'Réf',
             name: 'code',
@@ -136,9 +138,6 @@
     ])
     const itemsTable = computed(() => StoreComponents.componentItems)
     //endregion
-    onMounted(() => {
-        console.log('onMounted')
-    })
     //region déclaration des fonctions
     async function refreshTable() {
         await StoreComponents.fetch(componentListCriteria.getFetchCriteria)
@@ -268,6 +267,20 @@
         await StoreComponents.fetch(componentListCriteria.getFetchCriteria)
     }
     //endregion
+
+    onMounted(() => {
+        console.log('onMounted')
+    })
+    onUnmounted(() => {
+        console.log('onUnmounted')
+        StoreComponents.reset()
+        fetchOptionsComponentFamilies.resetItems()
+        storeUnits.reset()
+        storeColors.reset()
+        componentListCriteria.reset()
+        StoreComponentAttributes.reset()
+        storeAttributes.reset()
+    })
 </script>
 
 <template>
@@ -316,7 +329,7 @@
                     :items="itemsTable"
                     :last-page="StoreComponents.lastPage?.toString() ?? ''"
                     :next-page="StoreComponents.nextPage?.toString() ?? ''"
-                    :pag="StoreComponents.pagination?.toString() ?? ''"
+                    :pag="StoreComponents.pagination"
                     :previous-page="StoreComponents.previousPage?.toString() ?? ''"
                     :user="roleUser"
                     form="formComponentCardableTable"
