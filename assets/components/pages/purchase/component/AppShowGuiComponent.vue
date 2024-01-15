@@ -53,8 +53,8 @@
                     <FontAwesomeIcon icon="puzzle-piece"/>
                     <b>{{ useFetchComponentStore.component.code }}</b>: {{ useFetchComponentStore.component.name }}
                     <span class="btn-float-right">
-                        <AppBtn label="Détails" icon="eye" @click="requestDetails"/>
-                        <AppBtn label="Exploitation" icon="industry" variant="warning" @click="requestExploitation"/>
+                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
+                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
                     </span>
                 </div>
                 <div class="d-flex flex-row">
@@ -81,6 +81,11 @@
 </template>
 
 <style>
+    .selected-detail {
+        background-color: #46e046 !important;
+        color: white !important;
+        border: 1px solid #46e046;
+    }
     .border-dark {
         border-bottom: 1px solid grey;
     }
