@@ -1,4 +1,5 @@
 <script setup>
+    import {onUnmounted} from 'vue'
     import useOptions from '../../../../../stores/option/options'
     import {useComponentListStore} from '../../../../../stores/purchase/component/components'
     import {useRoute} from 'vue-router'
@@ -31,6 +32,10 @@
         await useFetchComponentStore.updateMain(data, idComponent) //pour notes
         await useFetchComponentStore.fetchOne(idComponent)
     }
+    onUnmounted(() => {
+        useFetchComponentStore.reset()
+        componentFamilyOptions.resetItems()
+    })
 </script>
 
 <template>

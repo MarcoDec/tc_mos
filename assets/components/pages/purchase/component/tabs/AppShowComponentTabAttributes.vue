@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, ref} from 'vue'
+    import {computed, onUnmounted, ref} from 'vue'
     //import generateComponentAttribute from '../../../../stores/component/componentAttribute'
     import useAttributes from '../../../../../stores/attribute/attributes'
     import {useColorsStore} from '../../../../../stores/management/colors/colors'
@@ -7,22 +7,24 @@
     import useOptions from '../../../../../stores/option/options'
     import {useRoute} from 'vue-router'
 
+    //region définition des constantes
     const route = useRoute()
+    const fetchOptions = useOptions('units')
+    const componentAttributesStore = useComponentAttributesStore()
+    const attributesStore = useAttributes()
+    const fecthColors = useColorsStore()
     const idComponent = route.params.id_component
 
-    const fecthOptions = useOptions('units')
-    await fecthOptions.fetchOp()
+    await fetchOptions.fetchOp()
     const optionsUnit = computed(() =>
-        fecthOptions.options.map(op => {
+        fetchOptions.options.map(op => {
             const text = op.text
             const value = op.text
             return {text, value}
         }))
-    const componentAttributesStore = useComponentAttributesStore()
-    const attributesStore = useAttributes()
+    //console.log('componentAttributesStore', componentAttributesStore)
     await componentAttributesStore.fetchByComponentId(idComponent)
     await attributesStore.fetch()
-    const fecthColors = useColorsStore()
     await fecthColors.fetch()
     const optionsColors = computed(() =>
         fecthColors.colors.map(op => {
@@ -77,6 +79,12 @@
             }
         })
     }
+    onUnmounted(() => {
+        componentAttributesStore.reset()
+        attributesStore.reset()
+        fecthColors.reset()
+        fetchOptions.resetItems()
+    })
 </script>
 
 <template>

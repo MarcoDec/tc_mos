@@ -3,8 +3,8 @@
     import {computed, onMounted, onUnmounted, ref} from 'vue'
     import {useRouter} from 'vue-router'
     import useAttributesStore from '../../../../stores/attribute/attributes'
-    import useColorsStore from '../../../../stores/color/colors'
-    import useComponentAttributesStore from '../../../../stores/component/componentAttribute'
+    import {useColorsStore} from '../../../../stores/management/colors/colors'
+    import {useComponentAttributesStore} from '../../../../stores/purchase/component/componentAttributesList.js'
     import useComponentsStore from '../../../../stores/component/components'
     import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
     import useOptions from '../../../../stores/option/options'
@@ -55,6 +55,7 @@
     storeUnits.getUnits().then(() => {
         //tableKey.value += 1
     })
+    //console.log('storeColors', storeColors)
     storeColors.getListColors().then(() => {
         //tableKey.value += 1
     })
