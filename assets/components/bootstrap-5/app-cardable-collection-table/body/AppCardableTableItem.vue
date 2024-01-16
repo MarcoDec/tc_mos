@@ -66,7 +66,7 @@
                 <a v-if="item[field.name] !== null && item[field.name] !== ''" :href="item[field.name]" target="_blank">Download file</a>
             </div>
             <div v-else-if="field.type === 'img'" class="text-center">
-                <BImg v-if="item[field.name].length>0" thumbnail fluid :src="item[field.name]" alt="Image 1"></BImg>
+                <BImg v-if="item[field.name].length > 0" thumbnail fluid :src="item[field.name]" alt="Image 1"/>
                 <span v-else class="font-xsmall text-secondary">Image non disponible</span>
             </div>
             <div v-else>

@@ -36,7 +36,7 @@
     const deactivateFullScreen = () => {
         isFullScreen.value = false
     }
-    const imageUpdateUrl = '/api/components/' + idComponent + '/image'
+    const imageUpdateUrl = `/api/components/${idComponent}/image`
     //endregion
     //region déchargement des données
     onBeforeUnmount(() => {
@@ -63,10 +63,10 @@
                 </div>
                 <div class="d-flex flex-row">
                     <AppImg
+                        class="width30"
                         :file-path="useFetchComponentStore.component.filePath"
                         :image-update-url="imageUpdateUrl"
-                        class="width30"
-                    @update:file-path="onImageUpdate"/>
+                        @update:file-path="onImageUpdate"/>
                     <AppSuspense><AppShowComponentTabGeneral class="width70"/></AppSuspense>
                 </div>
             </template>

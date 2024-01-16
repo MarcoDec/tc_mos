@@ -37,7 +37,7 @@
 </script>
 
 <template>
-    <div class="card"  style="border: 1px solid black">
+    <div class="border-1 card">
         <div class="bg-secondary card-header pt-0 pb-0">
             <div>
                 <AppBtnJS v-if="!updated" icon="pencil-alt" variant="primary" @click="update"/>
@@ -51,8 +51,9 @@
         <ul v-if="disable" class="card-body p-1">
             <AppFormJS :id="id" :fields="fields" :model-value="localData" disabled/>
         </ul>
-        <ul v-else class="card-body" style="border: 1px solid black">
+        <ul v-else class="border-1 card-body">
             <AppFormJS :id="id" :fields="fields" :model-value="localData" @update:model-value="input"/>
         </ul>
     </div>
 </template>
+
