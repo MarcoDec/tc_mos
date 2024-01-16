@@ -115,6 +115,24 @@ use App\Filter\SetFilter;
                     'summary' => 'Récupère un composant',
                 ]
             ],
+            'patch image' => [
+                'openapi_context' => [
+                  'description' => 'Modifie l\'image d\'un composant',
+                  'summary' => 'Modifie l\'image d\'un composant'
+                ],
+                'denormalization_context' => [
+                    'groups' => ['write:component:image'],
+                    'openapi_definition_name' => 'Component-image'
+                ],
+                'normalization_context' => [
+                    'groups' => ['read:component:image'],
+                    'openapi_definition_name' => 'Component-image'
+                ],
+                'path' => '/components/{id}/image',
+                'controller' => PlaceholderAction::class,
+                'method' => 'POST',
+                'input_formats' => ['multipart'],
+            ],
             'patch' => [
                 'controller' => ComponentController::class,
                 'method' => 'PATCH',

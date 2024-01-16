@@ -11,6 +11,8 @@
     import AppComponentShowInlist from './AppComponentShowInlist.vue'
     import AppShowComponentTabGeneral from './tabs/AppShowComponentTabGeneral.vue'
 
+    import {useCookies} from '@vueuse/integrations/useCookies'
+
     //region définition des constantes
     const route = useRoute()
     const idComponent = Number(route.params.id_component)
@@ -18,6 +20,8 @@
     const useFetchComponentStore = useComponentListStore()
     const modeDetail = ref(true)
     const isFullScreen = ref(false)
+    const fileInput = ref(null)
+    const token = useCookies(['token']).get('token')
     //endregion
     //region Chargement des données
     fetchUnits.fetchOp()
@@ -35,6 +39,41 @@
     }
     const deactivateFullScreen = () => {
         isFullScreen.value = false
+    }
+    const imageUpdateUrl = '/api/components/' + idComponent + '/image'
+
+    const handleFileChange = async () => {
+        const file = fileInput.value.files[0]
+        if (file) {
+            const formData = new FormData()
+            formData.append('file', file)
+
+            try {
+                console.log(imageUpdateUrl, `Bearer ${token}`)
+                const response = await fetch(imageUpdateUrl, { // Utilisez l'URL réelle ici
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                    // N'ajoutez pas d'en-tête 'Content-Type'. Laissez le navigateur le définir automatiquement.
+                })
+
+                if (response.ok) {
+                    const result = await response.json()
+                    // Traitez le résultat ici, par exemple, mettre à jour l'image affichée
+                } else {
+                    // Gérer les réponses non réussies
+                    console.error('Échec de l\'envoi du fichier')
+                }
+            } catch (error) {
+                // Gérer les erreurs de réseau ou de connexion
+                console.error('Erreur lors de l’envoi de la requête:', error)
+            }
+        }
+    }
+    const openFilePicker = () => {
+        fileInput.value.click()
     }
     //endregion
     //region déchargement des données
@@ -58,8 +97,10 @@
                     </span>
                 </div>
                 <div class="d-flex flex-row">
-                    <div class="m-1" style="width:30%">
+                    <div class="image-container m-1" style="width:30%">
                         <BImg thumbnail fluid :src="useFetchComponentStore.component.filePath" alt="Image 1"></BImg>
+                        <FontAwesomeIcon icon="fa-solid fa-pencil-alt" class="image-edit-icon bg-primary text-white" @click="openFilePicker"/>
+                        <input type="file" ref="fileInput" @change="handleFileChange" style="display: none;" accept="image/png, image/gif, image/jpeg"/>
                     </div>
                     <AppSuspense><AppShowComponentTabGeneral style="width:70%"/></AppSuspense>
                 </div>
@@ -109,5 +150,17 @@
         top: 0;
         right: 0;
         z-index: 10010; /* Assurez qu'il reste au-dessus du contenu */
+    }
+    .image-edit-icon {
+        position: absolute;
+        top:calc(0% + 10px);
+        left: 50%;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+        z-index: 100; /* Assurez qu'il reste au-dessus du contenu */
+    }
+    .image-container {
+        position: relative;
+        display: inline-block; /* ou autre selon le besoin */
     }
 </style>
