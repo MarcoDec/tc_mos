@@ -1,6 +1,6 @@
 <script setup>
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
-    import {onBeforeUnmount, ref} from 'vue'
+    import {computed, onBeforeUnmount, ref} from 'vue'
     import AppBtn from '../../../AppBtn.vue'
     import AppComponentFormShow from './AppComponentFormShow.vue'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
@@ -22,6 +22,13 @@
     const isFullScreen = ref(false)
     const fileInput = ref(null)
     const token = useCookies(['token']).get('token')
+    const imageUrlNoImage = '/upload/img/no-image.png'
+    const imageUrlToShow = computed(() => {
+        if (typeof useFetchComponentStore.component.filePath == 'undefined' || useFetchComponentStore.component.filePath == '') {
+            return imageUrlNoImage
+        }
+        return useFetchComponentStore.component.filePath
+    })
     //endregion
     //region Chargement des données
     fetchUnits.fetchOp()
@@ -61,6 +68,7 @@
 
                 if (response.ok) {
                     const result = await response.json()
+                    useFetchComponentStore.fetchOne(idComponent)
                     // Traitez le résultat ici, par exemple, mettre à jour l'image affichée
                 } else {
                     // Gérer les réponses non réussies
@@ -97,12 +105,13 @@
                     </span>
                 </div>
                 <div class="d-flex flex-row">
-                    <div class="image-container m-1" style="width:30%">
-                        <BImg thumbnail fluid :src="useFetchComponentStore.component.filePath" alt="Image 1"></BImg>
+                    <div class="image-container m-1 width30">
+                        <BImg v-if="imageUrlToShow != imageUrlNoImage" thumbnail fluid :src="useFetchComponentStore.component.filePath" alt="Image 1"></BImg>
+                        <BImg v-else thumbnail fluid src="/img/no-image.png" alt="No image"></BImg>
                         <FontAwesomeIcon icon="fa-solid fa-pencil-alt" class="image-edit-icon bg-primary text-white" @click="openFilePicker"/>
                         <input type="file" ref="fileInput" @change="handleFileChange" style="display: none;" accept="image/png, image/gif, image/jpeg"/>
                     </div>
-                    <AppSuspense><AppShowComponentTabGeneral style="width:70%"/></AppSuspense>
+                    <AppSuspense><AppShowComponentTabGeneral class="width70"/></AppSuspense>
                 </div>
 
             </template>
@@ -154,7 +163,7 @@
     .image-edit-icon {
         position: absolute;
         top:calc(0% + 10px);
-        left: 50%;
+        left: 10px;
         transform: translate(-50%, -50%);
         cursor: pointer;
         z-index: 100; /* Assurez qu'il reste au-dessus du contenu */

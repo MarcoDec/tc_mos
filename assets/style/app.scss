@@ -121,6 +121,13 @@ $dropdown-success: #57ec57 !default;
   float: right;
 }
 
+.width30 {
+  width: 30%;
+}
+.width70 {
+  width: 70%;
+}
+
 @media print {
   body * {
     visibility: hidden;
