@@ -1,5 +1,9 @@
 # TConcept-GPAO
 
+## Objectifs de la branche preprod
+La branche de `preprod` a pour objectif de mettre l'application dans des conditions proches de la production.
+Elle dérive de la branche `develop` et est destinée à être fusionnée dans la branche `master`.
+
 ## Installation
 
 Le projet est prévu pour s'installer sur un système d'exploitation en base Linux. Il est possible sur Windows d'utiliser
@@ -12,7 +16,7 @@ Certains alias ont été définis pour rendre plus pratique la gestion des conte
 1. vérifiez que les alias présents dans le fichier [`.bash_aliases`](./.bash_aliases) n'entrent pas en conflit avec vos
    propres alias&nbsp;;
 2. ajoutez les lignes suivantes dans votre fichier de configuration de votre shell (par exemple `~/.bashrc` si vous
-   utilisez BASH)&nbsp;::
+   utilisez BASH)&nbsp;:
 
 ```sh
 # Aliases TConcept-GPAO

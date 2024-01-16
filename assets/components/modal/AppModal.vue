@@ -1,5 +1,6 @@
 <script setup>
-    import {defineProps, onMounted, onUnmounted, ref} from 'vue'
+    import {onMounted, onUnmounted, ref} from 'vue'
+    import AppBtnJS from '../AppBtnJS'
     import {Modal} from 'bootstrap'
 
     const props = defineProps({
@@ -41,9 +42,10 @@
                     <slot/>
                 </div>
                 <div class="modal-footer">
-                    <AppBtn data-bs-dismiss="modal" variant="danger">
+                    <AppBtnJS data-bs-dismiss="modal" variant="danger">
                         Fermer
-                    </AppBtn>
+                    </AppBtnJS>
+                    <slot name="buttons"/>
                 </div>
             </div>
         </div>
