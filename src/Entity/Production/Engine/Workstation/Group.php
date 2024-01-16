@@ -47,13 +47,9 @@ use Doctrine\ORM\Mapping as ORM;
             'groups' => ['read:engine-group', 'read:id'],
             'openapi_definition_name' => 'WorkstationGroup-read',
             'skip_null_values' => false
-        ],
-        paginationEnabled: false
+        ]
     ),
     ORM\Entity,
 ]
 class Group extends EngineGroup {
-    final public function getType(): string {
-        return 'workstation';
-    }
 }

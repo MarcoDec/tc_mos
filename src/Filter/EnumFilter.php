@@ -5,23 +5,19 @@ namespace App\Filter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\AbstractFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
-use App\Collection;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\QueryBuilder;
+use Illuminate\Support\Collection;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionProperty;
 
-/**
- * @phpstan-type FilterSchema array{enum: string[], type: string}
- * @phpstan-type FilterSchemaArray array{items: FilterSchema, type: 'array'}
- */
-class EnumFilter extends AbstractFilter {
+final class EnumFilter extends AbstractFilter {
     /**
      * @param ReflectionClass<object> $class
      */
-    final protected static function getReflectionProperty(ReflectionClass $class, string $property): ReflectionProperty {
+    private static function getReflectionProperty(ReflectionClass $class, string $property): ReflectionProperty {
         $matches = [];
         if (preg_match('/(\w+)\.(.+)/', $property, $matches) === 1) {
             /** @var ReflectionNamedType $type */
@@ -34,14 +30,13 @@ class EnumFilter extends AbstractFilter {
     }
 
     /**
-     * @return array<string, array{property: string, required: bool, schema: FilterSchema|FilterSchemaArray}>
+     * @return mixed[]
      */
     public function getDescription(string $resourceClass): array {
         $description = [];
         $metadata = $this->getClassMetadata($resourceClass);
         $reflClass = $metadata->getReflectionClass();
         foreach ($this->properties as $property => $strategy) {
-            /** @var string $property */
             $description[$property] = [
                 'property' => $property,
                 'required' => false,
@@ -55,7 +50,7 @@ class EnumFilter extends AbstractFilter {
     }
 
     /**
-     * @param string|string[] $value
+     * @param mixed $value
      */
     protected function filterProperty(string $property, $value, QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?string $operationName = null): void {
         if (!$this->isPropertyEnabled($property, $resourceClass) || !$this->isPropertyMapped($property, $resourceClass)) {
@@ -69,10 +64,10 @@ class EnumFilter extends AbstractFilter {
     }
 
     /**
-     * @return string[]
+     * @return mixed[]
      */
-    final protected function getEnum(ReflectionProperty $property): array {
-        /** @var Collection<int, string> $enum */
+    private function getEnum(ReflectionProperty $property): array {
+        /** @var Collection<int, mixed> $enum */
         $enum = new Collection();
         foreach ($property->getAttributes(ApiProperty::class) as $attribute) {
             /** @var ApiProperty $apiProperty */
@@ -81,19 +76,16 @@ class EnumFilter extends AbstractFilter {
                 !empty($apiProperty->attributes)
                 && isset($apiProperty->attributes['openapi_context'])
                 && !empty($context = $apiProperty->attributes['openapi_context'])
+                && isset($context['enum'])
+                && !empty($context['enum'])
             ) {
-                /** @var array{enum?: array<int, string>, items?: array{enum?: array<int, string>}} $context */
-                if (isset($context['enum']) && !empty($context['enum'])) {
-                    $enum = $enum->merge($context['enum']);
-                } elseif (isset($context['items']['enum']) && !empty($context['items']['enum'])) {
-                    $enum = $enum->merge($context['items']['enum']);
-                }
+                $enum = $enum->merge($context['enum']);
             }
         }
-        return $enum->all();
+        return $enum->values()->all();
     }
 
-    final protected function getType(?string $doctrineType): string {
+    private function getType(?string $doctrineType): string {
         return match ($doctrineType) {
             Types::ARRAY => 'array',
             Types::BIGINT, Types::INTEGER, Types::SMALLINT => 'int',

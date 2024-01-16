@@ -1,4 +1,7 @@
 pentatrion_vite:
   base: /build/
   public_dir: /public
-  script_attributes: { defer: true }
+  server:
+    host: localhost
+    port: 8001
+    https: false

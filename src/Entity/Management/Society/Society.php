@@ -2,7 +2,6 @@
 
 namespace App\Entity\Management\Society;
 
-use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -19,8 +18,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
-    ApiFilter(filterClass: SearchFilter::class, id: 'address', properties: ['address.address'=>'partial', 'address.address2'=>'partial','address.city' => 'partial','address.country' => 'partial']),
-    ApiFilter(filterClass: OrderFilter::class, id: 'address-sorter', properties: ['address.address', 'address.address2', 'address.city', 'address.country']),
     ApiFilter(OrderFilter::class, properties: ['name']),
     ApiResource(
         description: 'Société',
@@ -34,23 +31,6 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'groups' => ['read:society:collection'],
                     'openapi_definition_name' => 'Society-collection'
                 ]
-            ],
-            'options' => [
-                'controller' => PlaceholderAction::class,
-                'filters' => [],
-                'method' => 'GET',
-                'normalization_context' => [
-                    'groups' => ['read:id', 'read:society:option'],
-                    'openapi_definition_name' => 'Society-options',
-                    'skip_null_values' => false
-                ],
-                'openapi_context' => [
-                    'description' => 'Récupère les sociétés pour les select',
-                    'summary' => 'Récupère les sociétés pour les select',
-                ],
-                'order' => ['name' => 'asc'],
-                'pagination_enabled' => false,
-                'path' => '/societies/options'
             ],
             'post' => [
                 'denormalization_context' => [
@@ -96,8 +76,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:address', 'read:copper', 'read:id', 'read:measure', 'read:society'],
-            'openapi_definition_name' => 'Society-read',
-            "skip_null_values" => false
+            'openapi_definition_name' => 'Society-read'
         ],
     ),
     ORM\Entity
@@ -111,7 +90,7 @@ class Society extends Entity {
         ApiProperty(description: 'Adresse'),
         Assert\Valid(groups: ['Default', 'Society-create']),
         ORM\Embedded,
-        Serializer\Groups(['create:society', 'read:society', 'write:society','read:address', 'read:society:collection'])
+        Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
     private Address $address;
 
@@ -133,7 +112,7 @@ class Society extends Entity {
     #[
         ApiProperty(description: 'Forme juridique', required: false, example: 'SARL'),
         ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(['read:society', 'write:society'])
+        Serializer\Groups(['read:society'])
     ]
     private ?string $legalForm = null;
 
@@ -148,20 +127,20 @@ class Society extends Entity {
     #[
         ApiProperty(description: 'Notes', required: false, example: 'Notes libres sur la société'),
         ORM\Column(type: 'text', nullable: true),
-        Serializer\Groups(['read:society', 'write:society'])
+        Serializer\Groups(['read:society'])
     ]
     private ?string $notes = null;
 
     #[
         ApiProperty(description: 'SIREN', required: false, example: '123 456 789'),
         ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(['read:society', 'write:society'])
+        Serializer\Groups(['read:society'])
     ]
     private ?string $siren = null;
 
     #[
         ApiProperty(description: 'Site internet', required: false, example: 'https://www.societe.fr'),
-        // Assert\Url(groups: ['Default', 'Society-create']),
+        Assert\Url(groups: ['Default', 'Society-create']),
         ORM\Column(nullable: true),
         Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
@@ -199,11 +178,6 @@ class Society extends Entity {
 
     final public function getSiren(): ?string {
         return $this->siren;
-    }
-
-    #[Serializer\Groups(['read:society:option'])]
-    final public function getText(): ?string {
-        return $this->getName();
     }
 
     final public function getWeb(): ?string {

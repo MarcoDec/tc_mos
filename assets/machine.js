@@ -6,7 +6,6 @@ export function useMachine(id) {
         context: {violations: []},
         id,
         initial: 'loading',
-        predictableActionArguments: true,
         states: {
             error: {on: {submit: {actions: [assign({violations: []})], target: 'loading'}}},
             form: {on: {submit: {actions: [assign({violations: []})], target: 'loading'}}},
@@ -27,7 +26,6 @@ export function useTableMachine(id) {
         context: {updated: null, violations: []},
         id,
         initial: 'search',
-        predictableActionArguments: true,
         states: {
             create: {
                 initial: 'form',

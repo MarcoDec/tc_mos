@@ -2,7 +2,7 @@
 
 namespace App\OpenApi;
 
-use App\Collection;
+use Illuminate\Support\Collection;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
@@ -34,13 +34,13 @@ final class OpenApiNormalizer implements NormalizerInterface {
                 if (isset($operation['parameters']) && !empty($operation['parameters'])) {
                     /** @var mixed[] $parameters */
                     $parameters = $operation['parameters'];
-                    $operation['parameters'] = Collection::collect($parameters)->sortBy('name')->all();
+                    $operation['parameters'] = collect($parameters)->sortBy('name')->values()->all();
                 }
 
                 $item[$method] = $operation;
                 $tag = $operation['tags'][0];
             }
-            if (!$sorted->has($tag)) {
+            if (!$sorted->offsetExists($tag)) {
                 /** @var Collection<string, mixed> $empty */
                 $empty = new Collection();
                 $sorted->put($tag, $empty);
@@ -52,7 +52,7 @@ final class OpenApiNormalizer implements NormalizerInterface {
         return $sorted
             ->map(static fn (Collection $paths): array => $paths->sortKeys()->all())
             ->sortKeys()
-            ->flatten(1, true)
+            ->collapse()
             ->all();
     }
 
@@ -62,7 +62,7 @@ final class OpenApiNormalizer implements NormalizerInterface {
     public function normalize($object, ?string $format = null, array $context = []): array {
         /** @var array{components: array{schemas: array<string, mixed>}, paths: Paths} $normalized */
         $normalized = $this->decorated->normalize($object, $format, $context);
-        $normalized['components']['schemas'] = Collection::collect($normalized['components']['schemas'])->sortKeys()->all();
+        $normalized['components']['schemas'] = collect($normalized['components']['schemas'])->sortKeys()->all();
         $normalized['paths'] = self::sortPaths($normalized['paths']);
         return $normalized;
     }

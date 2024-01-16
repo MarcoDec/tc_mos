@@ -15,14 +15,9 @@ alias debug:router='php /var/www/html/TConcept-GPAO/bin/console debug:router'
 ### GPAO
 alias gpao:cron='php /var/www/html/TConcept-GPAO/bin/console gpao:cron'
 alias gpao:currency:rate='php /var/www/html/TConcept-GPAO/bin/console gpao:currency:rate'
-alias gpao:database:load='php -d memory_limit=-1 /var/www/html/TConcept-GPAO/bin/console gpao:database:load'
+alias gpao:database:load='php /var/www/html/TConcept-GPAO/bin/console gpao:database:load'
 alias gpao:fixtures:load='php /var/www/html/TConcept-GPAO/bin/console gpao:fixtures:load'
 alias gpao:schema:update='php /var/www/html/TConcept-GPAO/bin/console gpao:schema:update'
-### Workflow
-dump_workflow() {
-    php bin/console workflow:dump $1 | dot -Tpng -o "$1.png"
-}
-alias dump:workflow='dump_workflow'
 
 ## PHP Coding Standards Fixer
 gpao_fix_code() {
@@ -36,10 +31,3 @@ gpao_fix_code() {
     php /var/www/html/TConcept-GPAO/bin/phpunit
 }
 alias gpao:fix:code='gpao_fix_code'
-
-# API
-alias api:database:load='/var/www/html/TConcept-GPAO/api/bin/console gpao:database:load'
-alias api:fix:code='/var/www/html/TConcept-GPAO/api/vendor/bin/php-cs-fixer fix && /var/www/html/TConcept-GPAO/api/vendor/bin/rector process && /var/www/html/TConcept-GPAO/api/vendor/bin/phpstan analyse --memory-limit=500M && php /var/www/html/TConcept-GPAO/api/bin/console cache:clear'
-alias migration:status='php bin/console doctrine:migrations:status'
-alias migration:diff='php bin/console doctrine:migrations:diff'
-alias migration:migrate='php bin/console doctrine:migrations:migrate'

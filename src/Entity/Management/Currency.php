@@ -2,7 +2,6 @@
 
 namespace App\Entity\Management;
 
-use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -21,23 +20,6 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère les devises',
                     'summary' => 'Récupère les devises',
                 ]
-            ],
-            'options' => [
-                'controller' => PlaceholderAction::class,
-                'filters' => [],
-                'method' => 'GET',
-                'normalization_context' => [
-                    'groups' => ['read:id', 'read:currency:option'],
-                    'openapi_definition_name' => 'Currency-options',
-                    'skip_null_values' => false
-                ],
-                'openapi_context' => [
-                    'description' => 'Récupère les devises pour les select',
-                    'summary' => 'Récupère les devises pour les select',
-                ],
-                'order' => ['code' => 'asc'],
-                'pagination_enabled' => false,
-                'path' => '/currencies/options'
             ]
         ],
         itemOperations: [
@@ -74,7 +56,7 @@ class Currency extends AbstractUnit {
     #[
         ApiProperty(description: 'Code ', required: true, example: 'EUR'),
         ORM\Column(type: 'char', length: 3),
-        Serializer\Groups(['read:currency', 'read:unit', 'write:unit'])
+        Serializer\Groups(['read:unit', 'write:unit'])
     ]
     protected ?string $code = null;
 
@@ -85,7 +67,7 @@ class Currency extends AbstractUnit {
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
         Serializer\Groups(['read:currency'])
     ]
-    protected ?AbstractUnit $parent;
+    protected $parent;
 
     #[
         ApiProperty(description: 'Active', example: true),
@@ -108,11 +90,6 @@ class Currency extends AbstractUnit {
     ]
     final public function getSymbol(): ?string {
         return !empty($this->getCode()) ? Currencies::getSymbol($this->getCode()) : null;
-    }
-
-    #[Serializer\Groups(['read:currency:option'])]
-    final public function getText(): ?string {
-        return $this->getSymbol()??$this->getCode();
     }
 
     final public function isActive(): bool {

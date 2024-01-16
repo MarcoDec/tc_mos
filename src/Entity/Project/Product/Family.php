@@ -5,14 +5,10 @@ namespace App\Entity\Project\Product;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Collection;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
-use App\Entity\Quality\Reception\Check;
-use App\Entity\Quality\Reception\Reference\Selling\FamilyReference;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection as DoctrineCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -68,7 +64,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'ProductFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:product-family', 'read:file', 'read:id'],
+            'groups' => ['read:family', 'read:file', 'read:id'],
             'openapi_definition_name' => 'ProductFamily-read',
             'skip_null_values' => false
         ],
@@ -80,76 +76,29 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Family extends AbstractFamily {
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove'])]
-    protected DoctrineCollection $children;
-
-    #[
-        ApiProperty(description: 'Lien image'),
-        ORM\Column(type: 'string'),
-        Serializer\Groups(['read:file', 'read:product-family'])
-    ]
-    protected ?string $filePath = null;
+    protected Collection $children;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Faisceaux'),
-        Assert\Length(min: 3, max: 50),
+        Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
-        ORM\Column(length: 50),
-        Serializer\Groups(['read:product-family', 'write:family'])
+        ORM\Column(length: 30),
+        Serializer\Groups(['read:family', 'write:family'])
     ]
     protected ?string $name = null;
 
     #[
         ApiProperty(description: 'Famille parente', readableLink: false, example: '/api/product-families/1'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
-        Serializer\Groups(['read:product-family', 'write:family'])
+        Serializer\Groups(['read:family', 'write:family'])
     ]
     protected $parent;
 
-    /** @var DoctrineCollection<int, FamilyReference> */
-    #[ORM\ManyToMany(targetEntity: FamilyReference::class, mappedBy: 'items')]
-    private DoctrineCollection $references;
-
-    public function __construct() {
-        parent::__construct();
-        $this->references = new ArrayCollection();
-    }
-
-    final public function addReference(FamilyReference $reference): self {
-        if (!$this->references->contains($reference)) {
-            $this->references->add($reference);
-            $reference->addItem($this);
-        }
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Check<Product, self>>
-     */
-    final public function getChecks(): Collection {
-        return Collection::collect($this->references->getValues())
-            ->map(static function (FamilyReference $reference): Check {
-                /** @var Check<Product, self> $check */
-                $check = new Check();
-                return $check->setReference($reference);
-            });
-    }
-
+    #[
+        ApiProperty(description: 'Icône', example: '/uploads/product-families/1.jpg'),
+        Serializer\Groups(['read:file'])
+    ]
     final public function getFilepath(): ?string {
         return parent::getFilepath();
-    }
-
-    /**
-     * @return DoctrineCollection<int, FamilyReference>
-     */
-    final public function getReferences(): DoctrineCollection {
-        return $this->references;
-    }
-
-    final public function removeReference(FamilyReference $reference): self {
-        if ($this->references->contains($reference)) {
-            $this->references->removeElement($reference);
-            $reference->removeItem($this);
-        }
-        return $this;
     }
 }

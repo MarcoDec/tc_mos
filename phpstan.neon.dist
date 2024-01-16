@@ -1,6 +1,4 @@
 parameters:
-    excludePaths:
-        - src/Controller/TemplateController.php
     level: 9
     paths:
         - dev

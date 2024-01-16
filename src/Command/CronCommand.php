@@ -3,11 +3,9 @@
 namespace App\Command;
 
 use App\Attributes\CronJob as CronJobAttribute;
-use App\Collection;
 use App\Entity\CronJob;
 use Doctrine\ORM\EntityManagerInterface;
 use ReflectionClass;
-use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LazyCommand;
 use Symfony\Component\Console\Exception\LogicException;
@@ -16,10 +14,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/** @method static string getDefaultName() */
-#[AsCommand(name: 'gpao:cron', description: 'Lance les CRON.')]
+/**
+ * @method static string getDefaultName()
+ */
 final class CronCommand extends AbstractCommand {
-    final public const OPTION_SCAN = 'scan';
+    public const OPTION_SCAN = 'scan';
+
+    protected static $defaultDescription = 'Lance les CRON.';
+    protected static $defaultName = 'gpao:cron';
 
     public function __construct(private readonly EntityManagerInterface $em) {
         parent::__construct();
@@ -50,7 +52,7 @@ final class CronCommand extends AbstractCommand {
      * @return array<string, array{command: Command, cron: CronJobAttribute}>
      */
     private function getJobs(): array {
-        return Collection::collect($this->getApplication()->all('gpao'))
+        return collect($this->getApplication()->all('gpao'))
             ->mapWithKeys(static function (Command $command): array {
                 if (empty($name = $command->getName())) {
                     throw new LogicException('Undefined command name.');

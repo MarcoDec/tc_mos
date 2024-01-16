@@ -6,7 +6,6 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -16,7 +15,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
     ApiResource(
         description: 'Type de compétence',
         collectionOperations: [
@@ -63,8 +61,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:id', 'read:type'],
             'openapi_definition_name' => 'SkillType-read',
             'skip_null_values' => false
-        ],
-        paginationEnabled: false
+        ]
     ),
     ORM\Entity,
     ORM\Table(name: 'skill_type'),
@@ -76,7 +73,7 @@ class Type extends Entity {
         Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
         ORM\Column(length: 50),
-        Serializer\Groups(['read:type', 'write:name', 'read:skill'])
+        Serializer\Groups(['read:type', 'write:type'])
     ]
     private ?string $name = null;
 

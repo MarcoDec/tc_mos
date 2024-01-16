@@ -1,41 +1,46 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import AppHome from '../components/pages/AppHome'
-import AppLogin from '../components/pages/AppLogin.vue'
-import hr from './hr'
-import logistics from './logistics'
-import management from './management'
-import production from './production'
-import project from './project'
-import purchase from './purchase'
-import quality from './quality'
-import selling from './selling'
-import useUser from '../stores/security'
+import AppHome from './pages/AppHome'
+import AppLogin from './pages/AppLogin.vue'
+import hr from './routes/hr'
+import logistics from './routes/logistics'
+import management from './routes/management'
+import production from './routes/production'
+import project from './routes/project'
+import purchase from './routes/purchase'
+import quality from './routes/quality'
+import useUserStore from '../stores/hr/employee/user'
 
 const router = createRouter({
-    history: createWebHistory(), routes: [
+    history: createWebHistory(),
+    routes: [
+        {
+            component: AppHome,
+            meta: {requiresAuth: true},
+            name: 'home',
+            path: '/'
+        },
+        {
+            component: AppLogin,
+            meta: {requiresAuth: false},
+            name: 'login',
+            path: '/login'
+        },
         ...hr,
         ...logistics,
         ...management,
         ...production,
         ...project,
         ...purchase,
-        ...quality,
-        ...selling,
-        {component: AppLogin, meta: {title: 'Connexion — T-Concept GPAO'}, name: 'login', path: '/login'},
-        {component: AppHome, meta: {title: 'T-Concept GPAO'}, name: 'home', path: '/'},
-        {meta: {title: 'T-Concept GPAO'}, name: 'all', path: '/:pathMatch(.*)*'}
+        ...quality
     ]
 })
 
 // eslint-disable-next-line consistent-return
 router.beforeEach(to => {
-    const user = useUser()
-    if (
-        to.matched.some(record => record.name === 'login') && user.isLogged
-        || to.matched.some(record => record.name === 'all')
-    )
+    const user = useUserStore()
+    if (to.matched.some(record => record.name === 'login') && user.isLogged)
         return {name: 'home'}
-    if (to.matched.some(record => record.name !== 'login') && !user.isLogged)
+    if (to.matched.some(record => record.meta.requiresAuth) && !user.isLogged)
         return {name: 'login'}
 })
 

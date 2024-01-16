@@ -9,7 +9,7 @@ trait FileTrait {
     #[Serializer\Groups(['write:file'])]
     private ?File $file = null;
 
-    public function getFile(): ?File {
+    final public function getFile(): ?File {
         return $this->file;
     }
 
@@ -17,7 +17,7 @@ trait FileTrait {
         return $this->file?->getPathname();
     }
 
-    public function setFile(?File $file): self {
+    final public function setFile(?File $file): self {
         $this->file = $file;
         return $this;
     }

@@ -20,9 +20,4 @@
 
 ###> OS files ###
 **/.DS_Store
-*.icloud
 ###< OS files ###
-node_modules
-.vscode
-/public/build
-/public/build/entrypoints.json

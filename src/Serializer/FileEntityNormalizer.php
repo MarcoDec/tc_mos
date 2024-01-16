@@ -41,9 +41,7 @@ final class FileEntityNormalizer implements ContextAwareNormalizerInterface, Nor
         if (!is_array($normalized)) {
             throw new LogicException(sprintf('Unexpected value. Require array, get %s.', gettype($normalized)));
         }
-        if (isset($normalized['filepath'])) {
-            $normalized['filepath'] = $this->fm->normalizePath($normalized['filepath']);
-        }
+        $normalized['filepath'] = $this->fm->normalizePath($normalized['filepath']);
         return $normalized;
     }
 

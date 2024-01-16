@@ -47,8 +47,7 @@ use Doctrine\ORM\Mapping as ORM;
             'groups' => ['read:engine-group', 'read:id'],
             'openapi_definition_name' => 'CounterPartGroup-read',
             'skip_null_values' => false
-        ],
-        paginationEnabled: false
+        ]
     ),
     ORM\Entity
 ]

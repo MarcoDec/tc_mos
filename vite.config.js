@@ -15,21 +15,20 @@ export default defineConfig({
             output: {
                 // eslint-disable-next-line consistent-return
                 manualChunks(id) {
-                    if (id.includes('fontawesome') || id.includes('fortawesome'))
-                        return 'fontawesome'
+                    if (id.includes('AppSuspenseWrapper') || id.includes('stores/options'))
+                        return 'vendor'
                 }
             }
         }
     },
-    optimizeDeps: {force: true},
     plugins: [
         symfonyPlugin(),
         vue(),
         checker({eslint: {lintCommand: 'eslint -c .eslintrc.js .eslintrc.js vite.config.js ./assets/**/*.{js,vue}'}})
     ],
-
     root: './',
     server: {
+        force: true,
         fs: {allow: ['..'], strict: false},
         host: '0.0.0.0',
         port: 8001,

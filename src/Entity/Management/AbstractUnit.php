@@ -3,29 +3,26 @@
 namespace App\Entity\Management;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
-use App\Collection;
 use App\Entity\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection as DoctrineCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Illuminate\Support\Collection as LaravelCollection;
 use JetBrains\PhpStorm\Pure;
-use LogicException;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
 abstract class AbstractUnit extends Entity {
-    final public const UNIT_CODE_MAX_LENGTH = 6;
-
-    /** @var DoctrineCollection<int, static> */
-    protected DoctrineCollection $children;
+    /** @var Collection<int, static> */
+    protected Collection $children;
 
     #[
         ApiProperty(description: 'Code ', required: true, example: 'g'),
-        Assert\Length(min: 1, max: self::UNIT_CODE_MAX_LENGTH),
+        Assert\Length(min: 1, max: 6),
         Assert\NotBlank,
-        ORM\Column(length: self::UNIT_CODE_MAX_LENGTH, options: ['collation' => 'utf8mb3_bin']),
-        Serializer\Groups(['read:currency', 'read:unit', 'read:unit:option', 'write:unit'])
+        ORM\Column(length: 6, options: ['collation' => 'utf8_bin']),
+        Serializer\Groups(['read:currency', 'read:unit', 'write:unit'])
     ]
     protected ?string $code = null;
 
@@ -39,12 +36,7 @@ abstract class AbstractUnit extends Entity {
     protected ?string $name = null;
 
     /** @var null|static */
-   #[
-        ApiProperty(description: "unité parente", example: '/api/units/1'),
-        ORM\ManyToOne(targetEntity: Unit::class, fetch: 'EAGER', inversedBy: 'children'),
-        Serializer\Groups(['read:unit'])
-   ]
-    protected ?AbstractUnit $parent;
+    protected $parent;
 
     #[
         ApiProperty(description: 'Base', required: true, example: 1),
@@ -71,26 +63,14 @@ abstract class AbstractUnit extends Entity {
         return $this;
     }
 
-    /**
-     * @param null|static $unit
-     */
-    final public function assertSameAs(?self $unit): void {
-        if ($unit === null || $unit->code === null) {
-            throw new LogicException('No code defined.');
-        }
-        if (!$this->has($unit)) {
-            throw new LogicException("Units {$this->code} and {$unit->code} aren't on the same family.");
-        }
-    }
-
     final public function getBase(): float {
         return $this->base;
     }
 
     /**
-     * @return DoctrineCollection<int, static>
+     * @return Collection<int, static>
      */
-    final public function getChildren(): DoctrineCollection {
+    final public function getChildren(): Collection {
         return $this->children;
     }
 
@@ -105,13 +85,6 @@ abstract class AbstractUnit extends Entity {
     final public function getConvertorDistance(self $unit): float {
         $distance = $this->getDistance($unit);
         return $this->isLessThan($unit) ? 1 / $distance : $distance;
-    }
-
-    /**
-     * @param static $unit
-     */
-    final public function getLess(self $unit): self {
-        return $this->base < $unit->base ? $this : $unit;
     }
 
     public function getName(): ?string {
@@ -142,9 +115,7 @@ abstract class AbstractUnit extends Entity {
      * @param null|static $unit
      */
     final public function has(?self $unit): bool {
-       $unitFamily = $this->getFamily();
-       $test = $unit !== null && ($unit->getCode() == $this->getCode()||$unitFamily->contains(static fn (self $member): bool => $member->getId() === $unit->getId()));
-       return $test;
+        return $unit !== null && $this->getFamily()->contains(static fn (self $member): bool => $member->getId() === $unit->getId());
     }
 
     /**
@@ -192,18 +163,15 @@ abstract class AbstractUnit extends Entity {
     }
 
     /**
-     * @return Collection<int, static>
+     * @return LaravelCollection<int, static>
      */
-    private function getDepthChildren(): Collection {
-        /**
-         * @param static $child
-         *
-         * @return Collection<int, static>
-         */
-        $mapper = static fn (self $child): Collection => $child->getDepthChildren()->push($child);
-        /** @var Collection<int, static> $children */
-        $children = Collection::collect($this->getChildren()->getValues())->map($mapper)->flatten();
-        return $children->unique(static fn (self $child): ?int => $child->getId());
+    private function getDepthChildren(): LaravelCollection {
+        /** @var LaravelCollection<int, static> $children */
+        $children = collect($this->children->getValues())
+            ->map(static fn (self $child): array => $child->getDepthChildren()->push($child)->values()->all())
+            ->flatten()
+            ->unique->getId();
+        return $children->values();
     }
 
     /**
@@ -219,18 +187,23 @@ abstract class AbstractUnit extends Entity {
     }
 
     /**
-     * @return Collection<int, static>
+     * @return LaravelCollection<int, static>
      */
-    private function getFamily(): Collection {
-        return ($root = $this->getRoot())
-            ->getDepthChildren()
-            ->push($root)
-            ->unique(static fn (self $child): ?int => $child->getId());
+    private function getFamily(): LaravelCollection {
+        /** @var static $root */
+        $root = $this->getRoot();
+        /** @var LaravelCollection<int, static> $children */
+        $children = $root->getDepthChildren()->push($root)->unique->getId();
+        return $children->values();
     }
 
     /**
-     * @return static
+     * @param static $unit
      */
+    private function getLess(self $unit): self {
+        return $this->base < $unit->base ? $this : $unit;
+    }
+
     private function getRoot(): self {
         $root = $this;
         while ($root->parent !== null) {

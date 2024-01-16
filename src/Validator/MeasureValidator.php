@@ -11,17 +11,9 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\InvalidArgumentException;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
-use Psr\Log\LoggerInterface;
 
 final class MeasureValidator extends ConstraintValidator {
-    
-    public function __construct(
-        private LoggerInterface $logger
-    ) {
-    }
     public function validate(mixed $value, Constraint $constraint): void {
-        
-        #$this->logger->debug('MeasureValidator:validate',[$value, $constraint]);
         if (!($constraint instanceof MeasureAttribute)) {
             throw new UnexpectedTypeException($constraint, MeasureAttribute::class);
         }
@@ -33,16 +25,11 @@ final class MeasureValidator extends ConstraintValidator {
         if (!($value instanceof Measure)) {
             throw new UnexpectedValueException($value, Measure::class);
         }
-        $unit = $this->getUnit();
-        $unitValue = $value->getUnit();
-        #$this->logger->debug('MeasureValidator:units',[$unit->getCode(), $unitValue->getCode()]);
-        if (!$unitValue->has($unit)) {
+
+        if (!$this->getUnit()->has($value->getUnit())) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ unit }}', (string) $this->getUnit()->getName())
                 ->addViolation();
-        }
-        if ($constraint->positive && $value->getValue() < 0) {
-            $this->context->buildViolation($constraint->positiveMessage)->addViolation();
         }
     }
 
@@ -54,9 +41,7 @@ final class MeasureValidator extends ConstraintValidator {
     }
 
     private function getUnit(): Unit {
-       $myObject=$this->getObject();
-       #dump(["MeasureValidator::getUnit myObject" => $myObject, "getUnit"=> $myObject->getUnit()]);
-        if (!empty($unit = $myObject->getUnit())) {
+        if (!empty($unit = $this->getObject()->getUnit())) {
             return $unit;
         }
         throw new InvalidArgumentException();

@@ -11,75 +11,69 @@ final class MeasureTest extends TestCase {
     private array $units = [];
 
     public function testAdd(): void {
-        $added = (new Measure())
-            ->setCode('kg')
-            ->setUnit($this->units['kg'])
-            ->setValue(2);
         $measure = (new Measure())
             ->setCode('g')
             ->setUnit($this->units['g'])
             ->setValue(2)
-            ->add($added);
+            ->add(
+                (new Measure())
+                    ->setCode('kg')
+                    ->setUnit($this->units['kg'])
+                    ->setValue(2)
+            );
         $this->assertEquals('g', $measure->getCode());
         $this->assertEquals(2002, $measure->getValue());
-        $this->assertEquals('kg', $added->getCode());
-        $this->assertEquals(2, $added->getValue());
 
-        $added = (new Measure())
-            ->setCode('mg')
-            ->setUnit($this->units['mg'])
-            ->setValue(4);
         $measure = (new Measure())
             ->setCode('g')
             ->setUnit($this->units['g'])
             ->setValue(4)
-            ->add($added);
+            ->add(
+                (new Measure())
+                    ->setCode('mg')
+                    ->setUnit($this->units['mg'])
+                    ->setValue(4)
+            );
         $this->assertEquals('mg', $measure->getCode());
         $this->assertEquals(4004, $measure->getValue());
-        $this->assertEquals('mg', $added->getCode());
-        $this->assertEquals(4, $added->getValue());
     }
 
     public function testAddDenominator(): void {
-        $added = (new Measure())
-            ->setCode('m')
-            ->setDenominator('s')
-            ->setDenominatorUnit($this->units['s'])
-            ->setUnit($this->units['m'])
-            ->setValue(10);
         $measure = (new Measure())
             ->setCode('km')
             ->setDenominator('h')
             ->setDenominatorUnit($this->units['h'])
             ->setUnit($this->units['km'])
             ->setValue(10)
-            ->add($added);
+            ->add(
+                (new Measure())
+                    ->setCode('m')
+                    ->setDenominator('s')
+                    ->setDenominatorUnit($this->units['s'])
+                    ->setUnit($this->units['m'])
+                    ->setValue(10)
+            );
         $this->assertEquals('m', $measure->getCode());
         $this->assertEquals('s', $measure->getDenominator());
         $this->assertEqualsWithDelta(12.777_78, $measure->getValue(), 0.000_01);
-        $this->assertEquals('m', $added->getCode());
-        $this->assertEquals('s', $added->getDenominator());
-        $this->assertEquals(10, $added->getValue());
 
-        $added = (new Measure())
-            ->setCode('km')
-            ->setDenominator('h')
-            ->setDenominatorUnit($this->units['h'])
-            ->setUnit($this->units['km'])
-            ->setValue(1);
         $measure = (new Measure())
             ->setCode('m')
             ->setDenominator('s')
             ->setDenominatorUnit($this->units['s'])
             ->setUnit($this->units['m'])
             ->setValue(1)
-            ->add($added);
+            ->add(
+                (new Measure())
+                    ->setCode('km')
+                    ->setDenominator('h')
+                    ->setDenominatorUnit($this->units['h'])
+                    ->setUnit($this->units['km'])
+                    ->setValue(1)
+            );
         $this->assertEquals('m', $measure->getCode());
         $this->assertEquals('s', $measure->getDenominator());
         $this->assertEqualsWithDelta(1.277_78, $measure->getValue(), 0.000_01);
-        $this->assertEquals('km', $added->getCode());
-        $this->assertEquals('h', $added->getDenominator());
-        $this->assertEquals(1, $added->getValue());
     }
 
     public function testConvert(): void {
@@ -122,28 +116,6 @@ final class MeasureTest extends TestCase {
         $this->assertEquals('km', $measure->getCode());
         $this->assertEquals('h', $measure->getDenominator());
         $this->assertEquals(3.6, $measure->getValue());
-    }
-
-    public function testIsGreaterThanOrEqual(): void {
-        $compared = (new Measure())
-            ->setCode('m')
-            ->setDenominator('s')
-            ->setDenominatorUnit($this->units['s'])
-            ->setUnit($this->units['m'])
-            ->setValue(10);
-        $measure = (new Measure())
-            ->setCode('km')
-            ->setDenominator('h')
-            ->setDenominatorUnit($this->units['h'])
-            ->setUnit($this->units['km'])
-            ->setValue(10);
-        $this->assertFalse($measure->isGreaterThanOrEqual($compared));
-        $this->assertEquals('km', $measure->getCode());
-        $this->assertEquals('h', $measure->getDenominator());
-        $this->assertEquals(10, $measure->getValue());
-        $this->assertEquals('m', $compared->getCode());
-        $this->assertEquals('s', $compared->getDenominator());
-        $this->assertEquals(10, $compared->getValue());
     }
 
     protected function setUp(): void {

@@ -14,36 +14,36 @@ class Copper {
     #[
         ApiProperty(description: 'Indice du cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
-        Serializer\Groups(['read:copper', 'write:copper', 'write:customer', 'write:customer:accounting', 'write:measure'])
+        Serializer\Groups(['read:copper', 'write:copper'])
     ]
     private Measure $index;
 
     #[
         ApiProperty(description: 'Date du dernier indice'),
         ORM\Column(type: 'datetime_immutable', nullable: true),
-        Serializer\Groups(['read:copper', 'write:copper', 'write:customer', 'write:customer:accounting'])
+        Serializer\Groups(['read:copper', 'write:copper'])
     ]
     private ?DateTimeImmutable $last = null;
 
     #[
         ApiProperty(description: 'Activer le suivi du cuivre'),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:copper', 'write:copper', 'write:customer', 'write:customer:accounting'])
+        Serializer\Groups(['read:copper', 'write:copper'])
     ]
     private bool $managed = false;
 
     #[
         ApiProperty(description: 'Date du prochain indice'),
         ORM\Column(type: 'datetime_immutable', nullable: true),
-        Serializer\Groups(['read:copper', 'write:copper', 'write:customer', 'write:customer:accounting'])
+        Serializer\Groups(['read:copper', 'write:copper'])
     ]
     private ?DateTimeImmutable $next = null;
 
     #[
         ApiProperty(description: 'Type de suivi', example: CopperType::TYPE_MONTHLY, openapiContext: ['enum' => CopperType::TYPES]),
         Assert\Choice(choices: CopperType::TYPES),
-        ORM\Column(type: 'copper', options: ['default' => CopperType::TYPE_MONTHLY]),
-        Serializer\Groups(['read:copper', 'write:copper', 'write:customer', 'write:customer:accounting'])
+        ORM\Column(type: 'copper_type', options: ['default' => CopperType::TYPE_MONTHLY]),
+        Serializer\Groups(['read:copper', 'write:copper'])
     ]
     private string $type = CopperType::TYPE_MONTHLY;
 

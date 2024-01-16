@@ -82,7 +82,7 @@ class OutTrainer extends Entity {
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
         ORM\Column(length: 30),
-        Serializer\Groups(['read:out-trainer', 'write:out-trainer', 'read:skill'])
+        Serializer\Groups(['read:out-trainer', 'write:out-trainer'])
     ]
     private ?string $name = null;
 
@@ -91,7 +91,7 @@ class OutTrainer extends Entity {
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
         ORM\Column(length: 30),
-        Serializer\Groups(['read:out-trainer', 'write:out-trainer', 'read:skill'])
+        Serializer\Groups(['read:out-trainer', 'write:out-trainer'])
     ]
     private ?string $surname = null;
 

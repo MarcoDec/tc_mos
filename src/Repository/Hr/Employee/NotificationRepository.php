@@ -2,12 +2,13 @@
 
 namespace App\Repository\Hr\Employee;
 
+use App\Entity\Hr\Employee\Employee;
 use App\Entity\Hr\Employee\Notification;
-use App\Security\SecurityTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Security;
+use UnexpectedValueException;
 
 /**
  * @extends ServiceEntityRepository<Notification>
@@ -18,13 +19,8 @@ use Symfony\Component\Security\Core\Security;
  * @method Notification[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 final class NotificationRepository extends ServiceEntityRepository {
-    use SecurityTrait {
-        __construct as private constructSecurity;
-    }
-
-    public function __construct(ManagerRegistry $registry, Security $security) {
+    public function __construct(ManagerRegistry $registry, private readonly Security $security) {
         parent::__construct($registry, Notification::class);
-        $this->constructSecurity($security);
     }
 
     public function delete(string $category): void {
@@ -36,7 +32,7 @@ final class NotificationRepository extends ServiceEntityRepository {
      */
     public function read(string $category): array {
         $this->createReadQueryBuilder($category)->getQuery()->execute();
-        return $this->findBy(['user' => $this->getUserId()]);
+        return $this->findBy(['user' => $this->getUser()]);
     }
 
     private function createReadQueryBuilder(string $category): QueryBuilder {
@@ -45,6 +41,18 @@ final class NotificationRepository extends ServiceEntityRepository {
             ->set('n.read', true)
             ->where('n.user = :user')
             ->andWhere('n.category = :category')
-            ->setParameters(['category' => $category, 'user' => $this->getUserId()]);
+            ->setParameters(['category' => $category, 'user' => $this->getUser()]);
+    }
+
+    private function getUser(): int {
+        $user = $this->security->getUser();
+        if (!($user instanceof Employee)) {
+            throw new UnexpectedValueException(sprintf('Expected argument of type "%s", "%s" given.', Employee::class, get_debug_type($user)));
+        }
+        $id = $user->getId();
+        if (empty($id)) {
+            throw new UnexpectedValueException(sprintf('Expected argument of type int, "%s" given.', get_debug_type($user)));
+        }
+        return $id;
     }
 }

@@ -4,25 +4,22 @@ namespace App\Entity\Interfaces;
 
 interface BarCodeInterface {
     /** @var string Préfixe du code barre des composants */
-    final public const COMPONENT_BAR_CODE_TABLE_NUMBER = '01';
+    public const COMPONENT_BAR_CODE_TABLE_NUMBER = '01';
 
     /** @var string Préfixe du code barre des employés */
-    final public const EMPLOYEE_BAR_CODE_TABLE_NUMBER = '03';
+    public const EMPLOYEE_BAR_CODE_TABLE_NUMBER = '03';
 
     /** @var string Préfixe du code barre des machines */
-    final public const ENGINE_BAR_CODE_TABLE_NUMBER = '04';
+    public const ENGINE_BAR_CODE_TABLE_NUMBER = '04';
 
     /** @var string Préfix du code barre des OF */
-    final public const MANUFACTURING_ORDER_BAR_CODE_PREFIX = '06';
+    public const MANUFACTURING_ORDER_BAR_CODE_PREFIX = '06';
 
     /** @var string Préfixe du code barre des produits */
-    final public const PRODUCT_BAR_CODE_TABLE_NUMBER = '02';
+    public const PRODUCT_BAR_CODE_TABLE_NUMBER = '02';
 
     /** @var string Préfix du code barre des stocks */
-    final public const STOCK_BAR_CODE_PREFIX = '05';
-
-    /** @var string Préfixe du code barre des équivalents */
-    final public const EQUIVALENT_BAR_CODE_TABLE_NUMBER = '07';
+    public const STOCK_BAR_CODE_PREFIX = '05';
 
     /**
      * Retourne le numéro de la table à mettre en préfixe du code barre.

@@ -1,6 +1,0 @@
-[submodule "gpao-mobile"]
-	path = gpao-mobile
-	url = https://github.com/MarcoDec/gpao-mobile.git
-[submodule "TConcept-Clock"]
-	path = TConcept-Clock
-	url = https://github.com/MarcoDec/TConcept-Clock.git

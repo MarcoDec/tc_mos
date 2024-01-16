@@ -2,7 +2,6 @@
 
 namespace App\Doctrine\DBAL\Types;
 
-use App\Collection;
 use Doctrine\DBAL\Exception\InvalidArgumentException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
@@ -14,31 +13,23 @@ abstract class EnumType extends Type {
      */
     public const TYPES = [];
 
-    protected static function getStrTypes(): string {
-        return Collection::collect(static::TYPES)
+    private static function getStrTypes(): string {
+        return collect(static::TYPES)
             ->map(static fn (string $type): string => "'$type'")
             ->implode(', ');
     }
 
     /**
-     * @param string|string[] $value
+     * @param string $value
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed {
-        if (
-            !empty($value)
-            && is_string($value)
-            && !in_array($value, static::TYPES, true)
-        ) {
+    final public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed {
+        if (!empty($value) && !in_array($value, static::TYPES, true)) {
             throw new InvalidArgumentException(sprintf("Invalid value. Get \"$value\", but valid values are [%s].", self::getStrTypes()));
         }
         return parent::convertToDatabaseValue($value, $platform);
     }
 
-    public function getEnumType(): string {
-        return 'ENUM';
-    }
-
-    final public function getSQLDeclaration(array $column, AbstractPlatform $platform): string {
-        return sprintf("{$this->getEnumType()}(%s)", self::getStrTypes());
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string {
+        return sprintf('ENUM(%s)', self::getStrTypes());
     }
 }

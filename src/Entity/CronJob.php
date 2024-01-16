@@ -15,7 +15,7 @@ class CronJob extends Entity {
     #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $next;
 
-    public function __construct(
+    final public function __construct(
         #[ORM\Column(type: 'char', length: 20)] private string $command,
         #[ORM\Column(type: 'char', length: 6)] private string $period
     ) {

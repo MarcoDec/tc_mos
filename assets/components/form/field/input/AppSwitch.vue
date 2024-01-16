@@ -1,10 +1,11 @@
 <script setup>
     import {ref, watch} from 'vue'
+    import {generateField} from '../../../props'
 
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
         disabled: {type: Boolean},
-        field: {required: true, type: Object},
+        field: generateField(),
         form: {required: true, type: String},
         id: {required: true, type: String},
         modelValue: {type: Boolean}
@@ -21,8 +22,8 @@
 </script>
 
 <template>
-    <div :id="id" class="form-check form-switch">
-        <input :checked="checked" :disabled="disabled" class="form-check-input" type="checkbox" @input="input"/>
+    <div class="form-check form-switch">
+        <input :id="id" :checked="checked" :disabled="disabled" class="form-check-input" type="checkbox" @input="input"/>
         <input :disabled="disabled" :form="form" :name="field.name" :value="checked" type="hidden"/>
     </div>
 </template>

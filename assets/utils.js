@@ -12,14 +12,3 @@ export function set(obj, prop, value) {
     } else
         obj[prop] = value
 }
-export function getOptions(dataColl, textProperty, valueProperty = '@id') {
-    return {
-        label: value => {
-            const filteredColl = dataColl.find(item => item[valueProperty] === value)
-            if (typeof filteredColl === 'undefined') return '<null>'
-            if (typeof filteredColl[textProperty] === 'undefined') return `Property ${textProperty} not found`
-            return filteredColl[textProperty]
-        },
-        options: dataColl.map(item => ({text: item[textProperty] ?? '', value: item['@id']}))
-    }
-}
