@@ -1,17 +1,15 @@
 <script setup>
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
-    import {computed, onBeforeUnmount, ref} from 'vue'
+    import {onBeforeUnmount, ref} from 'vue'
     import AppBtn from '../../../AppBtn.vue'
+    import AppImg from '../../../AppImg.vue'
     import AppComponentFormShow from './AppComponentFormShow.vue'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
     import {useComponentListStore} from '../../../../stores/purchase/component/components'
     import useOptions from '../../../../stores/option/options'
     import {useRoute} from 'vue-router'
-    import {BImg} from 'bootstrap-vue-next'
     import AppComponentShowInlist from './AppComponentShowInlist.vue'
     import AppShowComponentTabGeneral from './tabs/AppShowComponentTabGeneral.vue'
-
-    import {useCookies} from '@vueuse/integrations/useCookies'
 
     //region définition des constantes
     const route = useRoute()
@@ -20,15 +18,6 @@
     const useFetchComponentStore = useComponentListStore()
     const modeDetail = ref(true)
     const isFullScreen = ref(false)
-    const fileInput = ref(null)
-    const token = useCookies(['token']).get('token')
-    const imageUrlNoImage = '/upload/img/no-image.png'
-    const imageUrlToShow = computed(() => {
-        if (typeof useFetchComponentStore.component.filePath == 'undefined' || useFetchComponentStore.component.filePath == '') {
-            return imageUrlNoImage
-        }
-        return useFetchComponentStore.component.filePath
-    })
     //endregion
     //region Chargement des données
     fetchUnits.fetchOp()
@@ -48,41 +37,6 @@
         isFullScreen.value = false
     }
     const imageUpdateUrl = '/api/components/' + idComponent + '/image'
-
-    const handleFileChange = async () => {
-        const file = fileInput.value.files[0]
-        if (file) {
-            const formData = new FormData()
-            formData.append('file', file)
-
-            try {
-                console.log(imageUpdateUrl, `Bearer ${token}`)
-                const response = await fetch(imageUpdateUrl, { // Utilisez l'URL réelle ici
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                    // N'ajoutez pas d'en-tête 'Content-Type'. Laissez le navigateur le définir automatiquement.
-                })
-
-                if (response.ok) {
-                    const result = await response.json()
-                    useFetchComponentStore.fetchOne(idComponent)
-                    // Traitez le résultat ici, par exemple, mettre à jour l'image affichée
-                } else {
-                    // Gérer les réponses non réussies
-                    console.error('Échec de l\'envoi du fichier')
-                }
-            } catch (error) {
-                // Gérer les erreurs de réseau ou de connexion
-                console.error('Erreur lors de l’envoi de la requête:', error)
-            }
-        }
-    }
-    const openFilePicker = () => {
-        fileInput.value.click()
-    }
     //endregion
     //region déchargement des données
     onBeforeUnmount(() => {
@@ -90,6 +44,9 @@
         fetchUnits.resetItems()
     })
     //endregion
+    const onImageUpdate = () => {
+        useFetchComponentStore.fetchOne(idComponent)
+    }
 </script>
 
 <template>
@@ -105,21 +62,19 @@
                     </span>
                 </div>
                 <div class="d-flex flex-row">
-                    <div class="image-container m-1 width30">
-                        <BImg v-if="imageUrlToShow != imageUrlNoImage" thumbnail fluid :src="useFetchComponentStore.component.filePath" alt="Image 1"></BImg>
-                        <BImg v-else thumbnail fluid src="/img/no-image.png" alt="No image"></BImg>
-                        <FontAwesomeIcon icon="fa-solid fa-pencil-alt" class="image-edit-icon bg-primary text-white" @click="openFilePicker"/>
-                        <input type="file" ref="fileInput" @change="handleFileChange" style="display: none;" accept="image/png, image/gif, image/jpeg"/>
-                    </div>
+                    <AppImg
+                        :file-path="useFetchComponentStore.component.filePath"
+                        :image-update-url="imageUpdateUrl"
+                        class="width30"
+                    @update:file-path="onImageUpdate"/>
                     <AppSuspense><AppShowComponentTabGeneral class="width70"/></AppSuspense>
                 </div>
-
             </template>
             <template #gui-bottom>
-                <div :class="{ 'full-screen': isFullScreen }" class="full-visible-width font-small">
+                <div :class="{'full-screen': isFullScreen}" class="full-visible-width font-small">
                     <div class="btn-container">
-                        <FontAwesomeIcon v-if="isFullScreen" @click="deactivateFullScreen" icon="fa-solid fa-magnifying-glass-minus" />
-                        <FontAwesomeIcon v-else @click="activateFullScreen" icon="fa-solid fa-magnifying-glass-plus" />
+                        <FontAwesomeIcon v-if="isFullScreen" icon="fa-solid fa-magnifying-glass-minus" @click="deactivateFullScreen"/>
+                        <FontAwesomeIcon v-else icon="fa-solid fa-magnifying-glass-plus" @click="activateFullScreen"/>
                     </div>
                     <AppSuspense><AppComponentFormShow v-if="useFetchComponentStore.isLoaded && fetchUnits.isLoaded && modeDetail"/></AppSuspense>
                     <AppSuspense><AppComponentShowInlist v-if="!modeDetail"/></AppSuspense>
@@ -159,17 +114,5 @@
         top: 0;
         right: 0;
         z-index: 10010; /* Assurez qu'il reste au-dessus du contenu */
-    }
-    .image-edit-icon {
-        position: absolute;
-        top:calc(0% + 10px);
-        left: 10px;
-        transform: translate(-50%, -50%);
-        cursor: pointer;
-        z-index: 100; /* Assurez qu'il reste au-dessus du contenu */
-    }
-    .image-container {
-        position: relative;
-        display: inline-block; /* ou autre selon le besoin */
     }
 </style>

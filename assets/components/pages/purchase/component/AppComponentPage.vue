@@ -74,7 +74,7 @@
             trie: false,
             type: 'img',
             width: 100,
-            search: false
+            filter: false
         },
         {
             label: 'Réf',
