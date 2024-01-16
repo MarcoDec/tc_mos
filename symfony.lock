@@ -397,6 +397,18 @@
     "symfony/intl": {
         "version": "v6.0.5"
     },
+    "symfony/mailer": {
+        "version": "6.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "4.3",
+            "ref": "bedeb3d54aa5404e29811c44346a1151f846f741"
+        },
+        "files": [
+            "config/packages/mailer.yaml"
+        ]
+    },
     "symfony/maker-bundle": {
         "version": "1.48",
         "recipe": {
