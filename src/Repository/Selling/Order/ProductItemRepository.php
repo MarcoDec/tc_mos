@@ -6,8 +6,9 @@ use App\Entity\Selling\Order\ProductItem;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query\Expr\Join;
+use App\Entity\Selling\Order\ComponentItem;
 use ApiPlatform\Core\Annotation\ApiFilter;
-
 use App\Filter\RelationFilter;
 
 /**

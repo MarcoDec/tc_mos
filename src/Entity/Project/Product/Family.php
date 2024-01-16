@@ -87,7 +87,7 @@ class Family extends AbstractFamily {
         ORM\Column(type: 'string'),
         Serializer\Groups(['read:file', 'read:product-family'])
     ]
-    protected ?string $filePath = null;
+    public ?string $filePath = null;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Faisceaux'),
@@ -96,7 +96,7 @@ class Family extends AbstractFamily {
         ORM\Column(length: 50),
         Serializer\Groups(['read:product-family', 'write:family'])
     ]
-    protected ?string $name = null;
+    public ?string $name = null;
 
     #[
         ApiProperty(description: 'Famille parente', readableLink: false, example: '/api/product-families/1'),

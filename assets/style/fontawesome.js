@@ -64,6 +64,7 @@ import {
     faPuzzlePiece,
     faReceipt,
     faRightToBracket,
+    faRoute,
     faRulerHorizontal,
     faRulerVertical,
     faScrewdriverWrench,
@@ -181,6 +182,7 @@ library.add(faCalendar)
 library.add(faCalendarWeek)
 library.add(faWarehouse)
 library.add(faCubesStacked)
+library.add(faRoute)
 library.add(faRulerVertical)
 library.add(faStar)
 library.add(faGaugeHigh)

@@ -8,6 +8,7 @@ use App\Entity\Logistics\Stock\Stock;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Doctrine\DBAL\Types\ItemType;
 
 /**
  * @template T of Stock
@@ -57,4 +58,6 @@ class StockRepository extends ServiceEntityRepository {
         }
         return $stock;
     }
+
+
 }

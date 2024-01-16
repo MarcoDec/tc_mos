@@ -41,12 +41,14 @@
                 id="gui-start-prod"
                 active
                 icon="route"
+                tabs="gui-start"
                 title="Products Needs Synthesis">
                 <AppProductNeeds/>
             </AppTab>
             <AppTab
                 id="gui-start-comp"
                 icon="route"
+                tabs="gui-start"
                 title="Components Needs Synthesis">
                 <AppComponentNeeds/>
             </AppTab>
@@ -87,4 +89,8 @@
     min-height: v-bind("heightpx");
   }
 }
+div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
+    .gui-start-content {
+        font-size: 14px;
+    }
 </style>

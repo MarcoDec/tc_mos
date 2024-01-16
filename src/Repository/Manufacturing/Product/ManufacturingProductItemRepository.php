@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Repository\Selling\Order;
+namespace App\Repository\Manufacturing\Product;
 
-use App\Entity\Selling\Order\ComponentItem;
-use App\Entity\Selling\Order\Item;
-use App\Entity\Selling\Order\ProductItem;
+use App\Entity\Production\Manufacturing\Order;
+use App\Entity\Purchase\Order\ProductItem;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;;
+use App\Repository\Purchase\Order\ItemRepository;
 
 /**
  * @template I of Item
@@ -19,19 +21,12 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method I[]    findAll()
  * @method I[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ItemRepository extends ServiceEntityRepository {
-    public function __construct(ManagerRegistry $registry, string $entityClass = Item::class) {
+final class ManufacturingProductItemRepository  extends ServiceEntityRepository {
+
+    public function __construct(ManagerRegistry $registry, string $entityClass = Order::class) {
         parent::__construct($registry, $entityClass);
     }
 
-    public function createPatchQueryBuilder(int $id): QueryBuilder {
-        return $this->createQueryBuilder('i')->where('i.id = :id')->setParameter('id', $id);
-    }
-
-    public function findOneByPatch(int $id): ComponentItem|null|ProductItem {
-        return $this->_em->getRepository(ProductItem::class)->findOneByPatch($id)
-            ?? $this->_em->getRepository(ComponentItem::class)->findOneByPatch($id);
-    }
     public function findByEmbBlockerAndEmbState(): array
     {
         return $this->createQueryBuilder('i')
@@ -44,5 +39,4 @@ class ItemRepository extends ServiceEntityRepository {
             ->getQuery()
             ->getResult();
     }
-
 }

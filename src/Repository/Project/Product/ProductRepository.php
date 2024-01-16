@@ -29,4 +29,16 @@ final class ProductRepository extends ServiceEntityRepository {
             ->getQuery()
             ->execute();
     }
+    public function findByEmbBlockerAndEmbState(): array
+    {
+        return $this->createQueryBuilder('i')
+            ->where('i.embBlocker.state = :enabled')
+            ->andWhere('i.embState.state IN (:states)')
+            ->setParameters([
+                'enabled' => 'enabled',
+                'states' => ['agreed', 'to_validate'],
+            ])
+            ->getQuery()
+            ->getResult();
+    }
 }
