@@ -221,67 +221,22 @@
 </script>
 
 <template>
-    <div class="gui-bottom">
-        <!-- <AppCol class="d-flex justify-content-between mb-2">
-            <AppBtn variant="success" label="Ajout" @click="ajoute">
-                <Fa icon="plus"/>
-                Ajouter
-            </AppBtn>
-        </AppCol> -->
-        <AppRow>
-            <AppCol>
-                <AppCardableTable
-                    :current-page="storeComponentListStock.currentPage"
-                    :fields="tabFields"
-                    :first-page="storeComponentListStock.firstPage"
-                    :items="itemsTable"
-                    :last-page="storeComponentListStock.lastPage"
-                    :min="AddForm"
-                    :next-page="storeComponentListStock.nextPage"
-                    :pag="storeComponentListStock.pagination"
-                    :previous-page="storeComponentListStock.previousPage"
-                    :user="roleuser"
-                    :should-delete="false"
-                    form="formComponentStockCardableTable"
-                    @update="update"
-                    @get-page="getPage"
-                    @trier-alphabet="trierAlphabet"
-                    @search="search"
-                    @cancel-search="cancelSearch"/>
-            </AppCol>
-            <!-- <AppCol v-if="AddForm && !updated" class="col-7">
-                <AppCard class="bg-blue col" title="">
-                    <AppRow>
-                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
-                            <Fa icon="angle-double-left"/>
-                        </button>
-                        <h4 class="col">
-                            <Fa icon="plus"/> Ajout
-                        </h4>
-                    </AppRow>
-                    <br/>
-                    <AppFormCardable id="addComponentStock" :fields="fieldsForm" :model-value="formData" label-cols/>
-                    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-                        <div v-for="violation in violations" :key="violation">
-                            <li>{{ violation.message }}</li>
-                        </div>
-                    </div>
-                    <AppCol class="btnright">
-                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutComponentStock">
-                            <Fa icon="plus"/> Ajouter
-                        </AppBtn>
-                    </AppCol>
-                </AppCard>
-            </AppCol> -->
-        </AppRow>
-    </div>
+    <AppCardableTable
+        :current-page="storeComponentListStock.currentPage"
+        :fields="tabFields"
+        :first-page="storeComponentListStock.firstPage"
+        :items="itemsTable"
+        :last-page="storeComponentListStock.lastPage"
+        :min="AddForm"
+        :next-page="storeComponentListStock.nextPage"
+        :pag="storeComponentListStock.pagination"
+        :previous-page="storeComponentListStock.previousPage"
+        :user="roleuser"
+        :should-delete="false"
+        form="formComponentStockCardableTable"
+        @update="update"
+        @get-page="getPage"
+        @trier-alphabet="trierAlphabet"
+        @search="search"
+        @cancel-search="cancelSearch"/>
 </template>
-
-<style scoped>
-    .btn-float-right{
-        float: right;
-    }
-    .gui-bottom {
-        overflow: hidden;
-    }
-</style>

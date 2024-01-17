@@ -229,72 +229,27 @@
     }
     async function cancelSearch() {
         filter.value = true
-        storeComponentListOF.fetch()
+        await storeComponentListOF.fetch()
     }
 </script>
 
 <template>
-    <div class="gui-bottom">
-        <!-- <AppCol class="d-flex justify-content-between mb-2">
-            <AppBtn variant="success" label="Ajout" @click="ajoute">
-                <Fa icon="plus"/>
-                Ajouter
-            </AppBtn>
-        </AppCol> -->
-        <AppRow>
-            <AppCol>
-                <AppCardableTable
-                    :current-page="storeComponentListOF.currentPage"
-                    :fields="tabFields"
-                    :first-page="storeComponentListOF.firstPage"
-                    :items="itemsTable"
-                    :last-page="storeComponentListOF.lastPage"
-                    :min="AddForm"
-                    :next-page="storeComponentListOF.nextPage"
-                    :pag="storeComponentListOF.pagination"
-                    :previous-page="storeComponentListOF.previousPage"
-                    :user="roleuser"
-                    form="formComponentOFCardableTable"
-                    @update="update"
-                    @deleted="deleted"
-                    @get-page="getPage"
-                    @trier-alphabet="trierAlphabet"
-                    @search="search"
-                    @cancel-search="cancelSearch"/>
-            </AppCol>
-            <!-- <AppCol v-if="AddForm && !updated" class="col-7">
-                <AppCard class="bg-blue col" title="">
-                    <AppRow>
-                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
-                            <Fa icon="angle-double-left"/>
-                        </button>
-                        <h4 class="col">
-                            <Fa icon="plus"/> Ajout
-                        </h4>
-                    </AppRow>
-                    <br/>
-                    <AppFormCardable id="addComponentOF" :fields="fieldsForm" :model-value="formData" label-cols/>
-                    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-                        <div v-for="violation in violations" :key="violation">
-                            <li>{{ violation.message }}</li>
-                        </div>
-                    </div>
-                    <AppCol class="btnright">
-                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutComponentOF">
-                            <Fa icon="plus"/> Ajouter
-                        </AppBtn>
-                    </AppCol>
-                </AppCard>
-            </AppCol> -->
-        </AppRow>
-    </div>
+    <AppCardableTable
+        :current-page="storeComponentListOF.currentPage"
+        :fields="tabFields"
+        :first-page="storeComponentListOF.firstPage"
+        :items="itemsTable"
+        :last-page="storeComponentListOF.lastPage"
+        :min="AddForm"
+        :next-page="storeComponentListOF.nextPage"
+        :pag="storeComponentListOF.pagination"
+        :previous-page="storeComponentListOF.previousPage"
+        :user="roleuser"
+        form="formComponentOFCardableTable"
+        @update="update"
+        @deleted="deleted"
+        @get-page="getPage"
+        @trier-alphabet="trierAlphabet"
+        @search="search"
+        @cancel-search="cancelSearch"/>
 </template>
-
-<style scoped>
-    .btn-float-right{
-        float: right;
-    }
-    .gui-bottom {
-        overflow: hidden;
-    }
-</style>

@@ -126,6 +126,29 @@ $dropdown-success: #57ec57 !default;
 }
 .width70 {
   width: 70%;
+  max-width: 70% !important;
+}
+.width100 {
+  width: 100%;
+  max-width: 100% !important;
+}
+
+
+.full-visible-width {
+  min-width:calc(100vw - 50px);
+  max-width:calc(100vw - 50px);
+  width:calc(100vw - 50px);
+  padding: 1px;
+  display: inline-block;
+}
+.full-screen {
+  position: fixed;
+  top: 10px;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000; /* Assurez-vous que c'est au-dessus des autres éléments */
+  background-color: white; /* ou toute autre couleur de fond souhaitée */
 }
 
 @media print {

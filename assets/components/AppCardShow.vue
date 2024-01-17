@@ -1,6 +1,6 @@
 <script setup>
     import AppBtnJS from './AppBtnJS'
-    import AppFormJS from './form/AppFormJS'
+    import {default as AppForm} from './form/AppFormJS'
     import {onBeforeMount, ref} from 'vue'
 
     const props = defineProps({
@@ -49,10 +49,10 @@
             </div>
         </div>
         <ul v-if="disable" class="card-body p-1">
-            <AppFormJS :id="id" :fields="fields" :model-value="localData" disabled/>
+            <AppForm :id="id" :fields="fields" :model-value="localData" disabled/>
         </ul>
         <ul v-else class="border-1 card-body">
-            <AppFormJS :id="id" :fields="fields" :model-value="localData" @update:model-value="input"/>
+            <AppForm :id="id" :fields="fields" :model-value="localData" @update:model-value="input"/>
         </ul>
     </div>
 </template>

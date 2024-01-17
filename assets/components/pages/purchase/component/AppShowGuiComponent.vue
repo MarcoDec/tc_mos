@@ -53,7 +53,7 @@
     <AppSuspense>
         <AppShowGuiGen>
             <template #gui-left>
-                <div class="bg-white border-1 border-dark p-1">
+                <div class="bg-white border-1 p-1">
                     <FontAwesomeIcon icon="puzzle-piece"/>
                     <b>{{ useFetchComponentStore.component.code }}</b>: {{ useFetchComponentStore.component.name }}
                     <span class="btn-float-right">
@@ -71,13 +71,15 @@
                 </div>
             </template>
             <template #gui-bottom>
-                <div :class="{'full-screen': isFullScreen}" class="full-visible-width font-small">
-                    <div class="btn-container">
+                <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small">
+                    <div class="full-visible-width">
+                        <AppSuspense><AppComponentFormShow v-if="useFetchComponentStore.isLoaded && fetchUnits.isLoaded && modeDetail" class="width100"/></AppSuspense>
+                        <AppSuspense><AppComponentShowInlist v-if="!modeDetail" class="width100"/></AppSuspense>
+                    </div>
+                    <span>
                         <FontAwesomeIcon v-if="isFullScreen" icon="fa-solid fa-magnifying-glass-minus" @click="deactivateFullScreen"/>
                         <FontAwesomeIcon v-else icon="fa-solid fa-magnifying-glass-plus" @click="activateFullScreen"/>
-                    </div>
-                    <AppSuspense><AppComponentFormShow v-if="useFetchComponentStore.isLoaded && fetchUnits.isLoaded && modeDetail"/></AppSuspense>
-                    <AppSuspense><AppComponentShowInlist v-if="!modeDetail"/></AppSuspense>
+                    </span>
                 </div>
             </template>
             <template #gui-right/>
@@ -90,29 +92,5 @@
         background-color: #46e046 !important;
         color: white !important;
         border: 1px solid #46e046;
-    }
-    .border-dark {
-        border-bottom: 1px solid grey;
-    }
-    .full-visible-width {
-        min-width:calc(100vw - 35px);
-        padding: 2px;
-    }
-    .full-screen {
-        position: fixed;
-        top: 10px;
-        left: 0;
-        width: 95vw;
-        height: 100vh;
-        z-index: 10000; /* Assurez-vous que c'est au-dessus des autres éléments */
-        background-color: white; /* ou toute autre couleur de fond souhaitée */
-    }
-    .btn-container {
-        position: relative;
-        float: right;
-        background-color: white;
-        top: 0;
-        right: 0;
-        z-index: 10010; /* Assurez qu'il reste au-dessus du contenu */
     }
 </style>
