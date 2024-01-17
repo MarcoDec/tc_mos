@@ -15,7 +15,7 @@
             label: value => componentFamilyOptions.options.find(option => option['@id'] === value)?.text ?? null,
             options: componentFamilyOptions.options
         }},
-        {label: 'Indice', name: 'index', type: 'number'},
+        {label: 'Indice', name: 'index', type: 'text'},
         {label: 'Désignation', name: 'name', type: 'text'},
         {label: 'Notes', name: 'notes', type: 'textarea'}
     ]

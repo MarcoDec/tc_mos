@@ -63,7 +63,7 @@
 
 <template>
     <div class="image-container m-1 width30">
-        <BImg thumbnail fluid :src="imageUrlToShow" alt="Image 1" @click="toggleImageSize"/>
+        <BImg class="img-base" thumbnail fluid :src="imageUrlToShow" alt="Image 1" @click="toggleImageSize"/>
         <BImg v-if="isImageEnlarged" class="image-enlarged" thumbnail fluid :src="imageUrlToShow" alt="Image 1" @click="toggleImageSize"/>
         <FontAwesomeIcon icon="fa-solid fa-pencil-alt" class="image-edit-icon bg-primary text-white" @click="openFilePicker"/>
         <input ref="fileInput" class="d-none" accept="image/png, image/gif, image/jpeg" type="file" @change="handleFileChange"/>
@@ -83,6 +83,9 @@
         position: relative;
         display: inline-block; /* ou autre selon le besoin */
     }
+    .img-base {
+        cursor: zoom-in;
+    }
     .image-enlarged {
         position: fixed;
         top: 50%;
@@ -93,5 +96,9 @@
         height: auto;
         max-width: none;
         background-color: #6c757d;
+        cursor: zoom-out;
+    }
+    BImg:hover {
+        cursor: zoom-in;
     }
 </style>
