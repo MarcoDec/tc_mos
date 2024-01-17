@@ -1,7 +1,7 @@
 <script setup>
     import {BImg} from 'bootstrap-vue-next'
     import AppSwitch from '../../../form-cardable/fieldCardable/input/AppSwitch.vue'
-    import {computed} from 'vue'
+    import {computed, ref} from 'vue'
 
     const props = defineProps({
         fields: {required: true, type: Array},
@@ -11,6 +11,7 @@
     })
     const id = computed(() => Number(props.item['@id'].match(/\d+/)[0]))
     const emit = defineEmits(['deleted', 'update'])
+    const isImageEnlarged = ref(false)
     function update(){
         emit('update', props.item)
     }
@@ -22,6 +23,9 @@
             return false
         }
         return typeof val === 'function' || typeof val === 'object'
+    }
+    const toggleImageSize = () => {
+        isImageEnlarged.value = !isImageEnlarged.value
     }
 </script>
 
@@ -66,7 +70,10 @@
                 <a v-if="item[field.name] !== null && item[field.name] !== ''" :href="item[field.name]" target="_blank">Download file</a>
             </div>
             <div v-else-if="field.type === 'img'" class="text-center">
-                <BImg v-if="item[field.name].length > 0" thumbnail fluid :src="item[field.name]" alt="Image 1"/>
+                <div v-if="item[field.name].length > 0">
+                    <BImg class="img-base" thumbnail fluid :src="item[field.name]" alt="Image 1" @click="toggleImageSize"/>
+                    <BImg v-if="isImageEnlarged" class="image-enlarged" thumbnail fluid :src="item[field.name]" alt="Image 1" @click="toggleImageSize"/>
+                </div>
                 <span v-else class="font-xsmall text-secondary">Image non disponible</span>
             </div>
             <div v-else>
@@ -76,3 +83,21 @@
         </template>
     </td>
 </template>
+
+<style scoped>
+    .img-base {
+        cursor: zoom-in;
+    }
+    .image-enlarged {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000; /* Assurez-vous qu'elle est au-dessus des autres éléments */
+        width: 80vw; /* ou toute autre taille souhaitée */
+        height: auto;
+        max-width: none;
+        background-color: #6c757d;
+        cursor: zoom-out;
+    }
+</style>
