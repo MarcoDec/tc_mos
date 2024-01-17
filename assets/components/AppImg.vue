@@ -17,6 +17,7 @@
     const fileInput = ref(null)
     const token = useCookies(['token']).get('token')
     const imageUrlNoImage = '/img/no-image.png'
+    const isImageEnlarged = ref(false)
     const imageUrlToShow = computed(() => {
         if (typeof props.filePath === 'undefined' || props.filePath === '') {
             return imageUrlNoImage
@@ -55,11 +56,15 @@
     const openFilePicker = () => {
         fileInput.value.click()
     }
+    const toggleImageSize = () => {
+        isImageEnlarged.value = !isImageEnlarged.value
+    }
 </script>
 
 <template>
     <div class="image-container m-1 width30">
-        <BImg thumbnail fluid :src="imageUrlToShow" alt="Image 1"/>
+        <BImg thumbnail fluid :src="imageUrlToShow" alt="Image 1" @click="toggleImageSize"/>
+        <BImg v-if="isImageEnlarged" class="image-enlarged" thumbnail fluid :src="imageUrlToShow" alt="Image 1" @click="toggleImageSize"/>
         <FontAwesomeIcon icon="fa-solid fa-pencil-alt" class="image-edit-icon bg-primary text-white" @click="openFilePicker"/>
         <input ref="fileInput" class="d-none" accept="image/png, image/gif, image/jpeg" type="file" @change="handleFileChange"/>
     </div>
@@ -77,5 +82,16 @@
     .image-container {
         position: relative;
         display: inline-block; /* ou autre selon le besoin */
+    }
+    .image-enlarged {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000; /* Assurez-vous qu'elle est au-dessus des autres éléments */
+        width: 80vw; /* ou toute autre taille souhaitée */
+        height: auto;
+        max-width: none;
+        background-color: #6c757d;
     }
 </style>
