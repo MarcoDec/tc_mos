@@ -118,7 +118,7 @@ ZPL;
     $zpl = str_replace('<REFERENCE PRODUIT>', $carton->getProductReference().'/'.$carton->getProductIndice(), $zpl);
     $zpl = str_replace('<QUANTITE>', $carton->getQuantity(), $zpl);
     $zpl = str_replace('<CODEBARRE>', $carton->getProductReference().'/'.$carton->getProductIndice().'/'.$carton->getBatchnumber(), $zpl);
-        return zpl;
+        return $zpl;
     }
 
     public function removeLabel(Carton $carton) : void {
