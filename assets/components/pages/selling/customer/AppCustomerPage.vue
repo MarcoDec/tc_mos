@@ -44,6 +44,9 @@
 
     const fields = computed(() => [
         {label: 'Raison sociale', name: 'name', trie: true, type: 'text'},
+        {label: 'CP', name: 'address.zipCode', trie: true, type: 'text', filter: false, width: 80},
+        {label: 'Ville', name: 'address.city', trie: true, type: 'text', filter: false},
+        {label: 'Indice Cu', name: 'copper.index.value', trie: true, type: 'number', filter: false, width: 80},
         {
             label: 'Etat',
             name: 'state',
@@ -53,11 +56,9 @@
                 options: optionsEtat
             },
             trie: false,
-            type: 'select'
-        },
-        {label: 'CP', name: 'address.zipCode', trie: true, type: 'text', filter: false},
-        {label: 'Ville', name: 'address.city', trie: true, type: 'text', filter: false},
-        {label: 'Indice Cu', name: 'copper.index.value', trie: true, type: 'number', filter: false}
+            type: 'select',
+            width: 80
+        }
     ])
 
     async function deleted(id){

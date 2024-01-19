@@ -16,11 +16,13 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Selling\Customer\State;
 use App\Entity\Embeddable\Selling\Customer\WebPortal;
 use App\Entity\Entity;
+use App\Entity\Interfaces\FileEntity;
 use App\Entity\Management\Currency;
 use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
 use App\Entity\Selling\Customer\Attachment\CustomerAttachment;
+use App\Entity\Traits\FileTrait;
 use App\Filter\SetFilter;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -72,6 +74,24 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Récupère un client',
                     'summary' => 'Récupère un client',
                 ]
+            ],
+            'patch image' => [
+                'openapi_context' => [
+                    'description' => 'Modifie le logo d\'un client',
+                    'summary' => 'Modifie le logo d\'un client'
+                ],
+                'denormalization_context' => [
+                    'groups' => ['write:customer:image'],
+                    'openapi_definition_name' => 'Customer-image'
+                ],
+                'normalization_context' => [
+                    'groups' => ['read:customer:image'],
+                    'openapi_definition_name' => 'Customer-image'
+                ],
+                'path' => '/customers/{id}/image',
+                'controller' => PlaceholderAction::class,
+                'method' => 'POST',
+                'input_formats' => ['multipart'],
             ],
             'patch' => [
                 'openapi_context' => [
@@ -130,11 +150,13 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:address', 'read:copper', 'read:customer', 'read:id', 'read:measure', 'read:state'],
             'openapi_definition_name' => 'Customer-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\Entity
 ]
-class Customer extends Entity {
+class Customer extends Entity implements FileEntity {
+    use FileTrait;
     #[
         ApiProperty(description: 'Portail de gestion'),
         ORM\Embedded,
@@ -205,6 +227,12 @@ class Customer extends Entity {
     ]
     private bool $equivalentEnabled = false;
 
+    #[
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:customer:collection'])
+    ]
+    protected ?string $filePath = null;
     #[
         ApiProperty(description: 'Factures par email', example: false),
         ORM\Column(options: ['default' => false]),
@@ -554,5 +582,16 @@ class Customer extends Entity {
         $this->logisticPortal = $logisticPortal;
 
         return $this;
+    }
+    #[
+        ApiProperty(description: 'Icône', example: '/uploads/customer/1.jpg'),
+        Serializer\Groups(['read:file'])
+    ]
+    final public function getFilepath(): ?string {
+        return $this->filePath;
+    }
+    public function setFilePath(?string $filePath): void
+    {
+        $this->filePath = $filePath;
     }
 }
