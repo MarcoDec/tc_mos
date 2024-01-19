@@ -2,8 +2,10 @@
 
 namespace App\Repository\Selling\Order;
 
+use App\Entity\Selling\Order\ComponentItem;
 use App\Entity\Selling\Order\ProductItem;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use ApiPlatform\Core\Annotation\ApiFilter;
@@ -16,7 +18,6 @@ use App\Filter\RelationFilter;
  * @method null|ProductItem find($id, $lockMode = null, $lockVersion = null)
  * @method null|ProductItem findOneBy(array $criteria, ?array $orderBy = null)
  * @method ProductItem[]    findAll()
- * @method ProductItem[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 final class ProductItemRepository extends ItemRepository {
     public function __construct(ManagerRegistry $registry) {
