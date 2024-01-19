@@ -207,8 +207,9 @@
             weight: fInput.value.weight
         }
         await StoreComponents.addComponent(componentInput)
-        const newComponent = await StoreComponents.component
+        const newComponent = StoreComponents.component
         tabInput = []
+        console.log('inputAttributes', inputAttributes.value)
         for (const key in inputAttributes.value.formInput) {
             if (typeof inputAttributes.value.formInput[key] === 'object') {
                 const attribute = attributesFiltered.value.find(item => item.name === key)

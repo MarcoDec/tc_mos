@@ -274,7 +274,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         ORM\Column(type: 'string'),
         Serializer\Groups(['read:file', 'read:component:collection', 'read:product-family'])
     ]
-    protected ?string $filePath = null;
+    protected ?string $filePath = '';
 
     #[
         ApiProperty(description: 'Poids cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
