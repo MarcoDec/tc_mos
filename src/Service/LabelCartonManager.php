@@ -30,6 +30,9 @@ class LabelCartonManager
     }
 
     public function generateTConceptZPLstr(Carton $carton) {
+        $description = $carton->getProductDescription();
+        $maxLength = 28; // Exemple de longueur maximale
+        $truncatedDescription = $this->truncateStringByWord($description, $maxLength);
         $zpl = <<<ZPL
 \${^XA
 
@@ -63,7 +66,7 @@ class LabelCartonManager
 ZPL;
     $zpl = str_replace('<DESTINATAIRE>', $carton->getCustomerAddressName(), $zpl);
     $zpl = str_replace('<EXPEDITEUR>', $carton->getManufacturer(), $zpl);
-    $zpl = str_replace('<DESIGNATION>', $carton->getProductDescription(), $zpl);
+    $zpl = str_replace('<DESIGNATION>', $truncatedDescription, $zpl);
     $zpl = str_replace('<Ref Client>', $carton->getProductReference(), $zpl);
     $zpl = str_replace('<Indice>', $carton->getProductIndice(), $zpl);
     $zpl = str_replace('<LOT>', $carton->getBatchnumber(), $zpl);
@@ -125,5 +128,18 @@ ZPL;
         $carton->setDeleted(true);
         $this->em->persist($carton);
         $this->em->flush();
+    }
+    function truncateStringByWord($string, $maxLength) {
+        $words = explode(' ', $string);
+        $truncated = '';
+
+        foreach ($words as $word) {
+            if (strlen($truncated) + strlen($word) + 1 > $maxLength) {
+                break;
+            }
+            $truncated .= ($truncated === '' ? '' : ' ') . $word;
+        }
+
+        return $truncated;
     }
 }
