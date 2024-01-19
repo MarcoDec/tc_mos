@@ -31,8 +31,9 @@ class LabelCartonManager
 
     public function generateTConceptZPLstr(Carton $carton) {
         $description = $carton->getProductDescription();
-        $maxLength = 28; // Exemple de longueur maximale
-        $truncatedDescription = $this->truncateStringByWord($description, $maxLength);
+        //$maxLength = 50; // Exemple de longueur maximale
+        //$truncatedDescription = $this->truncateStringByWord($description, $maxLength);
+        $truncatedDescription = $description;
         $zpl = <<<ZPL
 \${^XA
 
@@ -47,7 +48,7 @@ class LabelCartonManager
 ^FO710,850^A0R,40,50^FDEXPEDITEUR:^FS
 ^FO580,870^A0R,60,60^FD<EXPEDITEUR>^FS
 ^FO480,50^A0R,40,50^FDDESIGNATION:^FS
-^FO400,50^A0R,35,50^FD<DESIGNATION>^FS
+^FO400,50^A0R,32,32^FD<DESIGNATION>^FS
 ^FO350,50^A0R,35,50^FDRef Client:^FS
 ^FO350,280^A0R,35,50^FD<Ref Client>^FS
 ^FO300,50^A0R,35,50^FDIndice:^FS
