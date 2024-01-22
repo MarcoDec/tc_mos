@@ -1,10 +1,10 @@
 <script setup>
     import {computed, onUnmounted, ref} from 'vue'
     //import generateComponentAttribute from '../../../../stores/component/componentAttribute'
-    import useAttributes from '../../../../../stores/attribute/attributes'
-    import {useColorsStore} from '../../../../../stores/management/colors/colors'
-    import {useComponentAttributesStore} from '../../../../../stores/purchase/component/componentAttributesList'
-    import useOptions from '../../../../../stores/option/options'
+    import useAttributes from '../../../../../../stores/attribute/attributes'
+    import {useColorsStore} from '../../../../../../stores/management/colors/colors'
+    import {useComponentAttributesStore} from '../../../../../../stores/purchase/component/componentAttributesList'
+    import useOptions from '../../../../../../stores/option/options'
     import {useRoute} from 'vue-router'
 
     //region définition des constantes

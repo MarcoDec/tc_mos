@@ -1,10 +1,10 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import AppCardShow from '../../../../AppCardShow.vue'
-    import MyTree from '../../../../MyTree.vue'
-    import {useComponentAttachmentStore} from '../../../../../stores/purchase/component/componentAttachment'
-    import {useComponentListStore} from '../../../../../stores/purchase/component/components'
-    import {useParametersStore} from '../../../../../stores/parameters/parameters'
+    import AppCardShow from '../../../../../AppCardShow.vue'
+    import MyTree from '../../../../../MyTree.vue'
+    import {useComponentAttachmentStore} from '../../../../../../stores/purchase/component/componentAttachment'
+    import {useComponentListStore} from '../../../../../../stores/purchase/component/components'
+    import {useParametersStore} from '../../../../../../stores/parameters/parameters'
     import {useRoute} from 'vue-router'
 
     const route = useRoute()

@@ -1,5 +1,5 @@
 import AppShowGui from '../components/pages/AppShowGui.vue'
-import AppShowGuiComponent from '../components/pages/purchase/component/AppShowGuiComponent.vue'
+import AppShowGuiComponent from '../components/pages/purchase/component/show/AppShowGuiComponent.vue'
 import AppShowGuiSupplier from '../components/pages/purchase/supplier/AppShowGuiSupplier.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTreePageAttribute from '../components/pages/tree/AppTreePageAttribute.vue'
@@ -126,7 +126,7 @@ export default [
         }
     },
     {
-        component: () => import('../components/pages/purchase/component/AppComponentPage.vue'),
+        component: () => import('../components/pages/purchase/component/list/AppComponentPage.vue'),
         meta: {requiresAuth: true},
         name: 'component-list',
         path: '/component-list'

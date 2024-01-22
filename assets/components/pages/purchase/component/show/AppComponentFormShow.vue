@@ -1,10 +1,10 @@
 <script setup>
-    import AppShowComponentTabAttributes from './tabs/AppShowComponentTabAttributes.vue'
-    import AppShowComponentTabFichiers from './tabs/AppShowComponentTabFichiers.vue'
-    import AppShowComponentTabLogistic from './tabs/AppShowComponentTabLogistic.vue'
-    import AppShowComponentTabPurchase from './tabs/AppShowComponentTabPurchase.vue'
-    import AppShowComponentTabQuality from './tabs/AppShowComponentTabQuality.vue'
-    import AppShowComponentTabSpecification from './tabs/AppShowComponentTabSpecification.vue'
+    import AppShowComponentTabAttributes from './bottom/AppShowComponentTabAttributes.vue'
+    import AppShowComponentTabFichiers from './bottom/AppShowComponentTabFichiers.vue'
+    import AppShowComponentTabLogistic from './bottom/AppShowComponentTabLogistic.vue'
+    import AppShowComponentTabPurchase from './bottom/AppShowComponentTabPurchase.vue'
+    import AppShowComponentTabQuality from './bottom/AppShowComponentTabQuality.vue'
+    import AppShowComponentTabSpecification from './bottom/AppShowComponentTabSpecification.vue'
 </script>
 
 <template>

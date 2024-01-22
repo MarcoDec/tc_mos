@@ -6,6 +6,7 @@ const types = [
     'datetime-local',
     'file',
     'grpbutton',
+    'int',
     'link',
     'measure',
     'measureSelect',
@@ -36,7 +37,7 @@ export function fieldValidator(field) {
             return false
         }
         if (!types.includes(field.type)) {
-            console.error(`field.type must be on of [${types.join(', ')}]`, field.type)
+            console.error(`field.type must be on of [${types.join(', ')}]`, field)
             return false
         }
         if (field.type === 'select') {

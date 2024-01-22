@@ -1,7 +1,7 @@
 <script setup>
     import {onUnmounted} from 'vue'
-    import useOptions from '../../../../../stores/option/options'
-    import {useComponentListStore} from '../../../../../stores/purchase/component/components'
+    import useOptions from '../../../../../../stores/option/options'
+    import {useComponentListStore} from '../../../../../../stores/purchase/component/components'
     import {useRoute} from 'vue-router'
 
     const route = useRoute()

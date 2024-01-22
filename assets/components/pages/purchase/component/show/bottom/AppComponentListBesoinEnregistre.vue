@@ -1,8 +1,8 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useComponentListBesoinEnregistreStore} from '../../../../../stores/purchase/component/componentListBesoinEnregistre'
+    import {useComponentListBesoinEnregistreStore} from '../../../../../../stores/purchase/component/componentListBesoinEnregistre'
     import {useRoute} from 'vue-router'
-    import useField from '../../../../../stores/field/field'
+    import useField from '../../../../../../stores/field/field'
 
     const roleuser = ref('reader')
     // let violations = []

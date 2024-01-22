@@ -1,6 +1,6 @@
 <script setup>
-    import AppCardShow from '../../../../AppCardShow.vue'
-    import {useComponentListStore} from '../../../../../stores/purchase/component/components'
+    import AppCardShow from '../../../../../AppCardShow.vue'
+    import {useComponentListStore} from '../../../../../../stores/purchase/component/components'
     import {useRoute} from 'vue-router'
 
     const route = useRoute()

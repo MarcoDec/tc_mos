@@ -23,7 +23,7 @@
         switch (props.field.type) {
             case 'boolean':
                 return AppSwitch
-            case 'number':
+            case 'number' || 'int':
                 return AppInputNumber
             case 'measure':
                 return AppInputMeasure

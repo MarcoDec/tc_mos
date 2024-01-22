@@ -1,8 +1,8 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useComponentListOFStore} from '../../../../../stores/purchase/component/componentListOF'
+    import {useComponentListStockStore} from '../../../../../../stores/purchase/component/componentListStock'
     import {useRoute} from 'vue-router'
-    import useField from '../../../../../stores/field/field'
+    import useField from '../../../../../../stores/field/field'
 
     const roleuser = ref('reader')
     // let violations = []
@@ -17,20 +17,20 @@
     const maRoute = useRoute()
     const componentId = maRoute.params.id_component
 
-    const storeComponentListOF = useComponentListOFStore()
-    storeComponentListOF.setIdComponent(componentId)
-    await storeComponentListOF.fetch()
-    const itemsTable = ref(storeComponentListOF.itemsComponentOF)
+    const storeComponentListStock = useComponentListStockStore()
+    storeComponentListStock.setIdComponent(componentId)
+    await storeComponentListStock.fetch()
+    const itemsTable = ref(storeComponentListStock.itemsComponentStock)
     const formData = ref({
-        of: null, produit: null, quantiteComposant: null, date: null
+        name: null, etat: null, quantiteDispo: null
     })
 
     const fieldsForm = [
         {
             create: false,
             filter: true,
-            label: 'OF',
-            name: 'of',
+            label: 'Nom de l\'entrepot',
+            name: 'name',
             sort: true,
             type: 'text',
             update: true
@@ -38,26 +38,17 @@
         {
             create: false,
             filter: true,
-            label: 'Produit',
-            name: 'produit',
+            label: 'Prison',
+            name: 'etat',
             sort: true,
-            type: 'text',
+            type: 'boolean',
             update: true
         },
         {
             create: false,
             filter: true,
-            label: 'Date de livraison',
-            name: 'date',
-            sort: true,
-            type: 'date',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Quantité de composant',
-            name: 'quantiteComposant',
+            label: 'Stock Disponible',
+            name: 'quantiteDispo',
             sort: true,
             measure: {
                 value: null,
@@ -68,22 +59,20 @@
         }
     ]
 
-    const parentQtyComponent = {
-        //$id: `${warehouseId}Stock`
-        $id: 'componentOFQtyComponent'
+    const parentQtyDispo = {
+        $id: 'componentStockDispo'
     }
-    const storeUnitOFQtyComponent = useField(fieldsForm[3], parentQtyComponent)
-    await storeUnitOFQtyComponent.fetch()
-
-    fieldsForm[3].measure.code = storeUnitOFQtyComponent.measure.code
-    fieldsForm[3].measure.value = storeUnitOFQtyComponent.measure.value
+    const storeUnitStockDispo = useField(fieldsForm[2], parentQtyDispo)
+    await storeUnitStockDispo.fetch()
+    fieldsForm[2].measure.code = storeUnitStockDispo.measure.code
+    fieldsForm[2].measure.value = storeUnitStockDispo.measure.value
 
     const tabFields = [
         {
             create: false,
             filter: true,
-            label: 'OF',
-            name: 'of',
+            label: 'Nom de l\'entrepot',
+            name: 'name',
             sort: true,
             type: 'text',
             update: true
@@ -91,30 +80,21 @@
         {
             create: false,
             filter: true,
-            label: 'Produit',
-            name: 'produit',
+            label: 'Prison',
+            name: 'etat',
             sort: true,
-            type: 'text',
+            type: 'boolean',
             update: true
         },
         {
             create: false,
             filter: true,
-            label: 'Date de livraison',
-            name: 'date',
-            sort: true,
-            type: 'date',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Quantité de composant',
-            name: 'quantiteComposant',
+            label: 'Stock Disponible',
+            name: 'quantiteDispo',
             sort: true,
             measure: {
-                value: storeUnitOFQtyComponent.measure.value,
-                code: storeUnitOFQtyComponent.measure.code
+                value: storeUnitStockDispo.measure.value,
+                code: storeUnitStockDispo.measure.code
             },
             type: 'measure',
             update: true
@@ -136,8 +116,8 @@
     //     formData.value = itemsNull
     // }
 
-    // async function ajoutComponentOF(){
-    //     // const form = document.getElementById('addComponentOF')
+    // async function ajoutComponentStock(){
+    //     // const form = document.getElementById('addComponentStock')
     //     // const formData1 = new FormData(form)
 
     //     // if (typeof formData.value.families !== 'undefined') {
@@ -154,7 +134,7 @@
     //         dateLivraison: formData.value.dateLivraison,
     //         dateLivraisonSouhaitee: formData.value.dateLivraisonSouhaitee
     //     }
-    //     violations = await storeComponentListOF.addComponentOF(itemsAddData)
+    //     violations = await storeComponentListStock.addComponentStock(itemsAddData)
 
     //     if (violations.length > 0){
     //         isPopupVisible.value = true
@@ -162,7 +142,7 @@
     //         AddForm.value = false
     //         updated.value = false
     //         isPopupVisible.value = false
-    //         itemsTable.value = [...storeComponentListOF.itemsComponentOF]
+    //         itemsTable.value = [...storeComponentListStock.itemsComponentStock]
     //     }
     // }
     // function annule(){
@@ -185,69 +165,76 @@
         updated.value = true
         AddForm.value = true
         const itemsData = {
-            of: item.of,
-            produit: item.produit,
-            date: item.date,
-            quantiteComposant: item.quantiteComposant
+            name: item.name,
+            etat: item.etat,
+            quantiteDispo: item.quantiteDispo
         }
         formData.value = itemsData
     }
 
-    async function deleted(id){
-        await storeComponentListOF.deleted(id)
-        itemsTable.value = [...storeComponentListOF.itemsComponentOF]
-    }
+    // async function deleted(id){
+    //     await storeComponentListStock.deleted(id)
+    //     itemsTable.value = [...storeComponentListStock.itemsComponentStock]
+    // }
     async function getPage(nPage){
-        await storeComponentListOF.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
-        itemsTable.value = [...storeComponentListOF.itemsComponentOF]
+        await storeComponentListStock.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
+        itemsTable.value = [...storeComponentListStock.itemsComponentStock]
     }
     async function trierAlphabet(payload) {
-        await storeComponentListOF.sortableItems(payload, filterBy, filter)
+        await storeComponentListStock.sortableItems(payload, filterBy, filter)
         sortable.value = true
         trierAlpha = computed(() => payload)
     }
-
     async function search(inputValues) {
+        // let comp = ''
+        // if (typeof inputValues.composant !== 'undefined'){
+        //     comp = inputValues.composant
+        // }
+
+        // let prod = ''
+        // if (typeof inputValues.produit !== 'undefined'){
+        //     prod = inputValues.produit
+        // }
+
         const payload = {
-            of: inputValues.of ?? '',
-            produit: inputValues.produit ?? '',
-            date: inputValues.date ?? '',
-            quantiteComposant: inputValues.quantiteComposant ?? ''
+            name: inputValues.name ?? '',
+            etat: inputValues.etat ?? '',
+            quantiteDispo: inputValues.quantiteDispo ?? ''
         }
 
-        if (typeof payload.quantiteComposant.value === 'undefined' && payload.quantiteComposant !== '') {
-            payload.quantiteComposant.value = ''
+        if (typeof payload.quantiteDispo.value === 'undefined' && payload.quantiteDispo !== '') {
+            payload.quantiteDispo.value = ''
         }
-        if (typeof payload.quantiteComposant.code === 'undefined' && payload.quantiteComposant !== '') {
-            payload.quantiteComposant.code = ''
+        if (typeof payload.quantiteDispo.code === 'undefined' && payload.quantiteDispo !== '') {
+            payload.quantiteDispo.code = ''
         }
 
-        await storeComponentListOF.filterBy(payload)
-        itemsTable.value = [...storeComponentListOF.itemsComponentOF]
+        await storeComponentListStock.filterBy(payload)
+        itemsTable.value = [...storeComponentListStock.itemsComponentStock]
         filter.value = true
         filterBy = computed(() => payload)
     }
     async function cancelSearch() {
         filter.value = true
-        await storeComponentListOF.fetch()
+        storeComponentListStock.fetch()
     }
 </script>
 
 <template>
     <AppCardableTable
-        :current-page="storeComponentListOF.currentPage"
+        :current-page="storeComponentListStock.currentPage"
         :fields="tabFields"
-        :first-page="storeComponentListOF.firstPage"
+        :first-page="storeComponentListStock.firstPage"
         :items="itemsTable"
-        :last-page="storeComponentListOF.lastPage"
+        :last-page="storeComponentListStock.lastPage"
         :min="AddForm"
-        :next-page="storeComponentListOF.nextPage"
-        :pag="storeComponentListOF.pagination"
-        :previous-page="storeComponentListOF.previousPage"
+        :next-page="storeComponentListStock.nextPage"
+        :pag="storeComponentListStock.pagination"
+        :previous-page="storeComponentListStock.previousPage"
         :user="roleuser"
-        form="formComponentOFCardableTable"
+        :should-delete="false"
+        form="formComponentStockCardableTable"
         @update="update"
-        @deleted="deleted"
         @get-page="getPage"
         @trier-alphabet="trierAlphabet"
         @search="search"

@@ -15,7 +15,7 @@ function getType(field) {
     switch (field.type) {
     case 'boolean':
         return AppSwitch
-    case 'number':
+    case 'number' || 'int':
         return AppInputNumber
     case 'file':
         return AppInputFile

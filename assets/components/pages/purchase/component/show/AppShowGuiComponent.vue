@@ -1,15 +1,15 @@
 <script setup>
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
     import {onBeforeUnmount, ref} from 'vue'
-    import AppBtn from '../../../AppBtn.vue'
-    import AppImg from '../../../AppImg.vue'
+    import AppBtn from '../../../../AppBtn.vue'
+    import AppImg from '../../../../AppImg.vue'
     import AppComponentFormShow from './AppComponentFormShow.vue'
-    import AppShowGuiGen from '../../AppShowGuiGen.vue'
-    import {useComponentListStore} from '../../../../stores/purchase/component/components'
-    import useOptions from '../../../../stores/option/options'
+    import AppShowGuiGen from '../../../AppShowGuiGen.vue'
+    import {useComponentListStore} from '../../../../../stores/purchase/component/components'
+    import useOptions from '../../../../../stores/option/options'
     import {useRoute} from 'vue-router'
     import AppComponentShowInlist from './AppComponentShowInlist.vue'
-    import AppShowComponentTabGeneral from './tabs/AppShowComponentTabGeneral.vue'
+    import AppShowComponentTabGeneral from './left/AppShowComponentTabGeneral.vue'
 
     //region définition des constantes
     const route = useRoute()

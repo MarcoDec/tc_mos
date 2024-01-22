@@ -1,8 +1,8 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useComponentListReceiptStore} from '../../../../../stores/purchase/component/componentListReceipt'
+    import {useComponentListOFStore} from '../../../../../../stores/purchase/component/componentListOF'
     import {useRoute} from 'vue-router'
-    // import useField from '../../../../../stores/field/field'
+    import useField from '../../../../../../stores/field/field'
 
     const roleuser = ref('reader')
     // let violations = []
@@ -17,82 +17,37 @@
     const maRoute = useRoute()
     const componentId = maRoute.params.id_component
 
-    const storeComponentListReceipt = useComponentListReceiptStore()
-    storeComponentListReceipt.setIdComponent(componentId)
-    await storeComponentListReceipt.fetch()
-    const itemsTable = ref(storeComponentListReceipt.itemsComponentReceipt)
+    const storeComponentListOF = useComponentListOFStore()
+    storeComponentListOF.setIdComponent(componentId)
+    await storeComponentListOF.fetch()
+    const itemsTable = ref(storeComponentListOF.itemsComponentOF)
     const formData = ref({
-        date: null, libelle: null, type: null, nbPieceControle: null, valeurAttendue: null
+        of: null, produit: null, quantiteComposant: null, date: null
     })
 
-    // const fieldsForm = [
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Date création',
-    //         name: 'date',
-    //         sort: true,
-    //         type: 'date',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Libellé',
-    //         name: 'libelle',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Type ',
-    //         name: 'type',
-    //         sort: true,
-    //         // options: {label: 'a'},//regardeez AppsupplierListCommande pour select
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Nombre de pièce à controler',
-    //         name: 'nbPieceControle',
-    //         sort: true,
-    //         measure: {
-    //             code: null,
-    //             value: null
-    //         },
-    //         type: 'measure',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Valeur attendue',
-    //         name: 'valeurAttendue',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     }
-    // ]
-
-    // const parentQtyComponent = {
-    //     //$id: `${warehouseId}Stock`
-    //     $id: 'componentReceiptQtyComponent'
-    // }
-    // const storeUnitReceiptQtyComponent = useField(fieldsForm[3], parentQtyComponent)
-    // await storeUnitReceiptQtyComponent.fetch()
-
-    // fieldsForm[3].measure.code = storeUnitReceiptQtyComponent.measure.code
-    // fieldsForm[3].measure.value = storeUnitReceiptQtyComponent.measure.value
-
-    const tabFields = [
+    const fieldsForm = [
         {
             create: false,
             filter: true,
-            label: 'Date création',
+            label: 'OF',
+            name: 'of',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Produit',
+            name: 'produit',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Date de livraison',
             name: 'date',
             sort: true,
             type: 'date',
@@ -101,8 +56,34 @@
         {
             create: false,
             filter: true,
-            label: 'Libellé',
-            name: 'libelle',
+            label: 'Quantité de composant',
+            name: 'quantiteComposant',
+            sort: true,
+            measure: {
+                value: null,
+                code: null
+            },
+            type: 'measure',
+            update: true
+        }
+    ]
+
+    const parentQtyComponent = {
+        //$id: `${warehouseId}Stock`
+        $id: 'componentOFQtyComponent'
+    }
+    const storeUnitOFQtyComponent = useField(fieldsForm[3], parentQtyComponent)
+    await storeUnitOFQtyComponent.fetch()
+
+    fieldsForm[3].measure.code = storeUnitOFQtyComponent.measure.code
+    fieldsForm[3].measure.value = storeUnitOFQtyComponent.measure.value
+
+    const tabFields = [
+        {
+            create: false,
+            filter: true,
+            label: 'OF',
+            name: 'of',
             sort: true,
             type: 'text',
             update: true
@@ -110,8 +91,8 @@
         {
             create: false,
             filter: true,
-            label: 'Type',
-            name: 'type',
+            label: 'Produit',
+            name: 'produit',
             sort: true,
             type: 'text',
             update: true
@@ -119,23 +100,23 @@
         {
             create: false,
             filter: true,
-            label: 'Nombre de pièce à controler',
-            name: 'nbPieceControle',
+            label: 'Date de livraison',
+            name: 'date',
             sort: true,
-            // measure: {
-            //     code: null,
-            //     value: null
-            // },
-            type: 'text',
+            type: 'date',
             update: true
         },
         {
             create: false,
             filter: true,
-            label: 'Valeur attendue',
-            name: 'valeurAttendue',
+            label: 'Quantité de composant',
+            name: 'quantiteComposant',
             sort: true,
-            type: 'text',
+            measure: {
+                value: storeUnitOFQtyComponent.measure.value,
+                code: storeUnitOFQtyComponent.measure.code
+            },
+            type: 'measure',
             update: true
         }
     ]
@@ -155,8 +136,8 @@
     //     formData.value = itemsNull
     // }
 
-    // async function ajoutComponentReceipt(){
-    //     // const form = document.getElementById('addComponentReceipt')
+    // async function ajoutComponentOF(){
+    //     // const form = document.getElementById('addComponentOF')
     //     // const formData1 = new FormData(form)
 
     //     // if (typeof formData.value.families !== 'undefined') {
@@ -173,7 +154,7 @@
     //         dateLivraison: formData.value.dateLivraison,
     //         dateLivraisonSouhaitee: formData.value.dateLivraisonSouhaitee
     //     }
-    //     violations = await storeComponentListReceipt.addComponentReceipt(itemsAddData)
+    //     violations = await storeComponentListOF.addComponentOF(itemsAddData)
 
     //     if (violations.length > 0){
     //         isPopupVisible.value = true
@@ -181,7 +162,7 @@
     //         AddForm.value = false
     //         updated.value = false
     //         isPopupVisible.value = false
-    //         itemsTable.value = [...storeComponentListReceipt.itemsComponentReceipt]
+    //         itemsTable.value = [...storeComponentListOF.itemsComponentOF]
     //     }
     // }
     // function annule(){
@@ -213,15 +194,15 @@
     }
 
     async function deleted(id){
-        await storeComponentListReceipt.deleted(id)
-        itemsTable.value = [...storeComponentListReceipt.itemsComponentReceipt]
+        await storeComponentListOF.deleted(id)
+        itemsTable.value = [...storeComponentListOF.itemsComponentOF]
     }
     async function getPage(nPage){
-        await storeComponentListReceipt.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
-        itemsTable.value = [...storeComponentListReceipt.itemsComponentReceipt]
+        await storeComponentListOF.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
+        itemsTable.value = [...storeComponentListOF.itemsComponentOF]
     }
     async function trierAlphabet(payload) {
-        await storeComponentListReceipt.sortableItems(payload, filterBy, filter)
+        await storeComponentListOF.sortableItems(payload, filterBy, filter)
         sortable.value = true
         trierAlpha = computed(() => payload)
     }
@@ -241,30 +222,30 @@
             payload.quantiteComposant.code = ''
         }
 
-        await storeComponentListReceipt.filterBy(payload)
-        itemsTable.value = [...storeComponentListReceipt.itemsComponentReceipt]
+        await storeComponentListOF.filterBy(payload)
+        itemsTable.value = [...storeComponentListOF.itemsComponentOF]
         filter.value = true
         filterBy = computed(() => payload)
     }
     async function cancelSearch() {
         filter.value = true
-        storeComponentListReceipt.fetch()
+        await storeComponentListOF.fetch()
     }
 </script>
 
 <template>
     <AppCardableTable
-        :current-page="storeComponentListReceipt.currentPage"
+        :current-page="storeComponentListOF.currentPage"
         :fields="tabFields"
-        :first-page="storeComponentListReceipt.firstPage"
+        :first-page="storeComponentListOF.firstPage"
         :items="itemsTable"
-        :last-page="storeComponentListReceipt.lastPage"
+        :last-page="storeComponentListOF.lastPage"
         :min="AddForm"
-        :next-page="storeComponentListReceipt.nextPage"
-        :pag="storeComponentListReceipt.pagination"
-        :previous-page="storeComponentListReceipt.previousPage"
+        :next-page="storeComponentListOF.nextPage"
+        :pag="storeComponentListOF.pagination"
+        :previous-page="storeComponentListOF.previousPage"
         :user="roleuser"
-        form="formComponentReceiptCardableTable"
+        form="formComponentOFCardableTable"
         @update="update"
         @deleted="deleted"
         @get-page="getPage"
