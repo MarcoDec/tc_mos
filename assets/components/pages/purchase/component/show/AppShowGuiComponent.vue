@@ -1,6 +1,6 @@
 <script setup>
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
-    import {onBeforeUnmount, ref} from 'vue'
+    import {onBeforeUnmount, onMounted, onBeforeMount, ref} from 'vue'
     import AppBtn from '../../../../AppBtn.vue'
     import AppImg from '../../../../AppImg.vue'
     import AppComponentFormShow from './AppComponentFormShow.vue'
@@ -18,10 +18,19 @@
     const useFetchComponentStore = useComponentListStore()
     const modeDetail = ref(true)
     const isFullScreen = ref(false)
+    const keyTabs = ref(0)
+    const beforeMountDataLoaded = ref(false)
     //endregion
     //region Chargement des données
-    fetchUnits.fetchOp()
-    useFetchComponentStore.fetchOne(idComponent)
+    onBeforeMount(() => {
+        const promises = []
+        console.log('onBeforeMount')
+        promises.push(fetchUnits.fetchOp())
+        promises.push(useFetchComponentStore.fetchOne(idComponent))
+        Promise.all(promises).then(() => {
+            beforeMountDataLoaded.value = true
+        })
+    })
     //endregion
     //region définition des méthodes
     const requestDetails = () => {
@@ -45,13 +54,19 @@
     })
     //endregion
     const onImageUpdate = () => {
+        console.log('onImageUpdate')
         useFetchComponentStore.fetchOne(idComponent)
+    }
+    const onUpdated = () => {
+        console.log('onUpdated')
+        useFetchComponentStore.fetchOne(idComponent)
+        fetchUnits.fetchOp()
     }
 </script>
 
 <template>
     <AppSuspense>
-        <AppShowGuiGen>
+        <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div class="bg-white border-1 p-1">
                     <FontAwesomeIcon icon="puzzle-piece"/>
@@ -67,14 +82,16 @@
                         :file-path="useFetchComponentStore.component.filePath"
                         :image-update-url="imageUpdateUrl"
                         @update:file-path="onImageUpdate"/>
-                    <AppSuspense><AppShowComponentTabGeneral class="width70"/></AppSuspense>
+                    <AppSuspense><AppShowComponentTabGeneral :key="`form-${keyTabs}`" class="width70" @updated="onUpdated"/></AppSuspense>
                 </div>
             </template>
             <template #gui-bottom>
                 <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small">
                     <div class="full-visible-width">
-                        <AppSuspense><AppComponentFormShow v-if="useFetchComponentStore.isLoaded && fetchUnits.isLoaded && modeDetail" class="width100"/></AppSuspense>
-                        <AppSuspense><AppComponentShowInlist v-if="!modeDetail" class="width100"/></AppSuspense>
+                        <AppSuspense>
+                            <AppComponentFormShow :key="`formtab-${keyTabs}`" v-if="modeDetail" class="width100"/>
+                            <AppComponentShowInlist :key="`formlist-${keyTabs}`" v-else class="width100"/>
+                        </AppSuspense>
                     </div>
                     <span>
                         <FontAwesomeIcon v-if="isFullScreen" icon="fa-solid fa-magnifying-glass-minus" @click="deactivateFullScreen"/>

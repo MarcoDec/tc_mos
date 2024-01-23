@@ -17,10 +17,12 @@ export default function useOptions(base, valueProp = '@id') {
                     if (typeof option.dispose === 'function')
                         option.$dispose()
                 this.$dispose()
+                this.isLoaded = false
             },
             async fetch() {
                 if (!this.fetchable || this.isLoaded)
                     return
+                this.isLoaded = false
                 const response = await api(this.url)
                 this.resetItems()
                 for (const option of response['hydra:member']) {
@@ -47,6 +49,7 @@ export default function useOptions(base, valueProp = '@id') {
                 const options = [...this.options]
                 this.options = []
                 this.items = []
+                this.isLoaded = false
                 for (const option of options)
                     option.$dispose()
             }

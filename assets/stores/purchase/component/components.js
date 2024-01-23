@@ -4,12 +4,16 @@ import {defineStore} from 'pinia'
 export const useComponentListStore = defineStore('component', {
     actions: {
         async fetchOne(id = 1) {
+            if (this.isLoaded) return
+            console.log('component fetchOne', this)
+            this.isLoaded = false
             this.isLoading = true
             this.component = await api(`/api/components/${id}`, 'GET')
             this.isLoading = false
             this.isLoaded = true
         },
         async fetchAll(filter = '') {
+            this.isLoaded = false
             this.isLoading = true
             this.components = (await api(`/api/components${filter}`, 'GET'))['hydra:member']
             this.isLoading = false

@@ -29,12 +29,6 @@
     const roleUser = ref(isPurchaseWriterOrAdmin ? 'writer' : 'reader')
     //endregion
     //region chargement des données
-    fetchOptionsComponentFamilies.fetchOp().then(() => {
-        tableKey.value += 1
-    })
-    StoreComponents.fetch().then(() => {
-        tableKey.value += 1
-    })
     //endregion
     //region déclaration des variables calculées
     const optionsComponentFamilies = computed(() =>
@@ -163,7 +157,15 @@
     //endregion
 
     onMounted(() => {
-        //console.log('onMounted')
+        // console.log('onMounted', fetchOptionsComponentFamilies)
+        fetchOptionsComponentFamilies.fetchOp().then(() => {
+            // console.log('Component Families loaded', optionsComponentFamilies.value)
+            tableKey.value += 1
+        })
+        StoreComponents.fetch().then(() => {
+            // console.log('Components loaded')
+            tableKey.value += 1
+        })
     })
     onUnmounted(() => {
         StoreComponents.reset()

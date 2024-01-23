@@ -235,7 +235,12 @@ class Family extends AbstractFamily {
         }
         return $this->code;
     }
-
+    public function getCustomsCode(): ?string {
+        if ($this->customsCode === null && $this->parent !== null) {
+            return $this->parent->getCustomsCode();
+        }
+        return $this->customsCode;
+    }
     /**
      * @return DoctrineCollection<int, Component>
      */

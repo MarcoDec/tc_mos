@@ -151,7 +151,7 @@ use App\Filter\SetFilter;
                 ],
                 'path' => '/components/{id}/{process}',
                 'read' => false,
-                'write' =>true,
+                'write' => true,
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'//,
                 //'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ],
@@ -236,7 +236,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
         Assert\Length(min: 4, max: 16, groups: ['Component-logistics']),
         ORM\Column(length: 16, nullable: true),
-        Serializer\Groups(['read:component', 'write:component', 'write:component:logistics'])
+        Serializer\Groups(['read:component', 'write:component', 'write:component:logistics', 'write:component:admin'])
     ]
     private ?string $customsCode = null;
 

@@ -32,7 +32,7 @@ abstract class Family extends Entity implements FileEntity {
         ORM\Column(length: 10, nullable: true),
         Serializer\Groups(['read:family', 'write:family', 'read:product-family', 'read:component-family'])
     ]
-    private ?string $customsCode = null;
+    protected ?string $customsCode = null;
 
     #[Pure]
     public function __construct() {
@@ -57,7 +57,7 @@ abstract class Family extends Entity implements FileEntity {
         return $this->children;
     }
 
-    final public function getCustomsCode(): ?string {
+    public function getCustomsCode(): ?string {
         return $this->customsCode;
     }
 
