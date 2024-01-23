@@ -8,6 +8,7 @@
     import useUser from '../../../../../stores/security'
     import AppComponentCreateModal from './create/AppComponentCreateModal.vue'
     import Fa from '../../../../Fa'
+    import {Modal} from 'bootstrap'
 
     //region déclaration des constantes
     const router = useRouter()
@@ -16,6 +17,8 @@
     const fetchOptionsComponentFamilies = useOptions('component-families')
     const componentListCriteria = useFetchCriteria('component-list-criteria')
     const tableKey = ref(0)
+    const createModalRef = ref(null)
+    const creationSuccess = ref(false)
     const optionsEtat = [
         {text: 'agreed', value: 'agreed'},
         {text: 'draft', value: 'draft'},
@@ -145,6 +148,18 @@
         componentListCriteria.addSort(payload.name, payload.direction)
         await StoreComponents.fetch(componentListCriteria.getFetchCriteria)
     }
+    async function onCreated() {
+        await refreshTable()
+        if (createModalRef.value) {
+            const modalElement = createModalRef.value.$el
+            const bootstrapModal = Modal.getInstance(modalElement)
+            bootstrapModal.hide()
+            creationSuccess.value = true
+            setTimeout(() => {
+                creationSuccess.value = false
+            }, 3000)
+        }
+    }
     //endregion
 
     onMounted(() => {
@@ -177,8 +192,14 @@
                 </h1>
             </div>
         </div>
+        <div v-if="creationSuccess" class="row d-flex">
+            <div class="bg-success text-white text-center">
+                Composant bien créé
+            </div>
+        </div>
         <AppComponentCreateModal
-            :store-component="StoreComponents"/>
+            ref="createModalRef"
+            :store-component="StoreComponents" @created="onCreated"/>
         <div class="col">
             <Suspense>
                 <AppCardableTable

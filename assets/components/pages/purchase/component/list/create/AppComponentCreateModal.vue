@@ -11,6 +11,7 @@
     const props = defineProps({
         storeComponent: {required: true, type: Object}
     })
+    const emits= defineEmits(['created'])
     const storeAttributes = useAttributesStore()
     const storeUnits = useUnitsStore()
     const storeColors = useColorsStore()
@@ -88,7 +89,7 @@
     function inputAttribute(data) {
         inputAttributes.value = data
     }
-    async function Componentcreate() {
+    async function componentCreate() {
         const componentInput = {
             family: fInput.value.family,
             manufacturer: fInput.value.manufacturer,
@@ -98,7 +99,6 @@
             weight: fInput.value.weight
         }
         await props.storeComponent.addComponent(componentInput)
-        //const newComponent = props.storeComponent.component
         tabInput = []
         for (const attribute in attributesFiltered.value) {
             const keys = Object.keys(inputAttributes.value.formInput)
@@ -145,16 +145,18 @@
                 }
             }
         }
+        const promises = []
         for (const key in tabInput){
-            StoreComponentAttributes.addComponentAttributes(tabInput[key])
+            promises.push(StoreComponentAttributes.addComponentAttributes(tabInput[key]))
         }
+        Promise.all(promises).then(() => emits('created'))
     }
 
     onUnmounted(() => {
-        storeAttributes.reset()
-        storeUnits.reset()
-        storeColors.reset()
-        StoreComponentAttributes.reset()
+        // storeAttributes.reset()
+        // storeUnits.reset()
+        // storeColors.reset()
+        // StoreComponentAttributes.reset()
     })
 </script>
 
@@ -169,7 +171,7 @@
                 label="Créer"
                 data-bs-toggle="modal"
                 :data-bs-target="target"
-                @click="Componentcreate">
+                @click="componentCreate">
                 Créer
             </AppBtn>
         </template>
