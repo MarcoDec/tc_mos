@@ -11,7 +11,6 @@
         modelValue: {default: null, type: Object},
         newField: {default: null, required: false, type: Object}
     })
-
     const componentType = computed(() => {
         switch (props.field.mode) {
             case 'tab':

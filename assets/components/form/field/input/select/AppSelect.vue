@@ -11,6 +11,10 @@
         id: {required: true, type: String},
         modelValue: {default: null, type: String}
     })
+    const localmodelValue = ref(props.modelValue)
+    if (typeof props.modelValue === 'object') {
+        localmodelValue.value = props.modelValue['@id']
+    }
     const optionsTransfered = ref({})
     const fieldTransfered = ref({})
     const formFieldKey = ref(0)
@@ -38,6 +42,7 @@
     const emit = defineEmits(['update:modelValue'])
 
     function update(v) {
+        localmodelValue.value = v
         emit('update:modelValue', v)
     }
 
@@ -56,7 +61,7 @@
         :form="form"
         :options="field.options && field.options.options "
         :value-prop="field.options && field.options.valueProp "
-        :model-value="modelValue"
+        :model-value="localmodelValue"
         mode="single"
         @update:model-value="update"/>
     <select
@@ -66,7 +71,7 @@
         :disabled="disabled"
         :form="form"
         :name="field.name"
-        :value="modelValue"
+        :value="localmodelValue"
         class="form-select form-select-sm"
         @input="input"
         @update:model-value="update">
