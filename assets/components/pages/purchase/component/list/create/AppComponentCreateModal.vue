@@ -11,7 +11,7 @@
     const props = defineProps({
         storeComponent: {required: true, type: Object}
     })
-    const emits= defineEmits(['created'])
+    const emits = defineEmits(['created'])
     const storeAttributes = useAttributesStore()
     const storeUnits = useUnitsStore()
     const storeColors = useColorsStore()
@@ -103,46 +103,44 @@
         for (const attribute in attributesFiltered.value) {
             const keys = Object.keys(inputAttributes.value.formInput)
             if (keys.includes(attributesFiltered.value[attribute].name)) {
-                const inputAttribute = inputAttributes.value.formInput[attributesFiltered.value[attribute].name]
+                const inputAttribute2 = inputAttributes.value.formInput[attributesFiltered.value[attribute].name]
                 if (attributesFiltered.value[attribute].type === 'color') {
                     tabInput.push({
                         attribute: attributesFiltered.value[attribute]['@id'],
-                        color: inputAttribute,
+                        color: inputAttribute2,
                         component: props.storeComponent.component['@id']
                     })
                 } else if (attributesFiltered.value[attribute].type === 'measureSelect') {
                     tabInput.push({
                         attribute: attributesFiltered.value[attribute]['@id'],
-                        measure: inputAttribute,
+                        measure: inputAttribute2,
                         component: props.storeComponent.component['@id']
                     })
                 } else {
                     tabInput.push({
                         attribute: attributesFiltered.value[attribute]['@id'],
-                        value: inputAttribute,
+                        value: inputAttribute2,
                         component: props.storeComponent.component['@id']
                     })
                 }
+            } else if (attributesFiltered.value[attribute].type === 'color') {
+                tabInput.push({
+                    attribute: attributesFiltered.value[attribute]['@id'],
+                    color: '',
+                    component: props.storeComponent.component['@id']
+                })
+            } else if (attributesFiltered.value[attribute].type === 'measureSelect') {
+                tabInput.push({
+                    attribute: attributesFiltered.value[attribute]['@id'],
+                    measure: {},
+                    component: props.storeComponent.component['@id']
+                })
             } else {
-                if (attributesFiltered.value[attribute].type === 'color') {
-                    tabInput.push({
-                        attribute: attributesFiltered.value[attribute]['@id'],
-                        color: '',
-                        component: props.storeComponent.component['@id']
-                    })
-                } else if (attributesFiltered.value[attribute].type === 'measureSelect') {
-                    tabInput.push({
-                        attribute: attributesFiltered.value[attribute]['@id'],
-                        measure: {},
-                        component: props.storeComponent.component['@id']
-                    })
-                } else {
-                    tabInput.push({
-                        attribute: attributesFiltered.value[attribute]['@id'],
-                        value: '',
-                        component: props.storeComponent.component['@id']
-                    })
-                }
+                tabInput.push({
+                    attribute: attributesFiltered.value[attribute]['@id'],
+                    value: '',
+                    component: props.storeComponent.component['@id']
+                })
             }
         }
         const promises = []
