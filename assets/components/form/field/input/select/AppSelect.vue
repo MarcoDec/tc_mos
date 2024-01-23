@@ -13,7 +13,7 @@
     })
     const localmodelValue = ref(props.modelValue)
     if (typeof props.modelValue === 'object') {
-        localmodelValue.value = props.modelValue['@id']
+        localmodelValue.value = props.modelValue === null ? null : props.modelValue['@id']
     }
     const optionsTransfered = ref({})
     const fieldTransfered = ref({})

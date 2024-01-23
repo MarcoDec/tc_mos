@@ -59,7 +59,7 @@
             localData.value[`${aComponentAttribute['@id']}`] = aComponentAttribute.color
             field.type = 'select' //On force le select ici afin de ne référencer qu'une couleur officielle
         }
-        if (field.type === 'text') {
+        if (['text', 'int', 'number'].includes(field.type)) {
             localData.value[`${aComponentAttribute['@id']}`] = aComponentAttribute.value
         }
         attributsFields.push(field)
@@ -70,11 +70,14 @@
     async function save() {
         Object.entries(localData.value).forEach(item => {
             const currAttr = attributsFields.filter(attr => attr.name === item[0])[0]
-            if (currAttr.type === 'text') {
+            if (['text', 'int', 'number'].includes(currAttr.type)) {
                 componentAttributesStore.updateComponentAttributeValue(item[0], item[1])
             } else if (currAttr.type === 'measureSelect') {
                 componentAttributesStore.updateComponentAttributeMeasure(item[0], item[1])
             } else {
+                if (typeof item[1] === 'object') {
+                    item[1] = item[1]['@id']
+                }
                 componentAttributesStore.updateComponentAttributeColor(item[0], item[1])
             }
         })
