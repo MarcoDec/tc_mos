@@ -86,6 +86,8 @@
         supplierListCriteria.addFilter('company', currentCompany)
         if (inputValues.name) supplierListCriteria.addFilter('name', inputValues.name)
         if (inputValues.state) supplierListCriteria.addFilter('embState.state[]', inputValues.state)
+        if (inputValues.zipCode) supplierListCriteria.addFilter('address.zipCode[]', inputValues.zipCode)
+        if (inputValues.city) supplierListCriteria.addFilter('address.city[]', inputValues.city)
         await storeSuppliersList.fetch(supplierListCriteria.getFetchCriteria)
     }
     async function cancelSearch() {
@@ -95,6 +97,8 @@
     }
 
     async function trierAlphabet(payload) {
+        if (payload.name === 'zipCode') payload.name = 'address.zipCode'
+        if (payload.name === 'city') payload.name = 'address.city'
         supplierListCriteria.addSort(payload.name, payload.direction)
         await storeSuppliersList.fetch(supplierListCriteria.getFetchCriteria)
     }

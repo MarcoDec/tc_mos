@@ -39,8 +39,8 @@ use App\Controller\Purchase\Supplier\SupplierPatchController;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial']),
-    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state', 'address.zipCode', 'address.city']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'address.zipCode', 'address.city']),
     ApiResource(
         description: 'Fournisseur',
         collectionOperations: [
