@@ -4,14 +4,11 @@
     import AppSupplierShowInlist from './bottom/AppSupplierShowInlist.vue'
     import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome"
     import AppImg from "../../../../AppImg.vue"
-    import AppShowCustomerTabGeneral from "../../../selling/customer/tabs/AppShowCustomerTabGeneral.vue"
     import AppBtn from "../../../../AppBtn.vue"
     import AppSuspense from "../../../../AppSuspense.vue"
     import {onBeforeMount, ref} from "vue"
     import {useSuppliersStore} from "../../../../../stores/purchase/supplier/suppliers"
     import {useRoute} from "vue-router"
-    import AppCustomerFormShow from "../../../selling/customer/AppCustomerFormShow.vue";
-    import AppCustomerShowInlist from "../../../selling/customer/bottom/AppCustomerShowInlist.vue";
     import AppSupplierShowTabGeneral from "./tabs/AppSupplierShowTabGeneral.vue";
     const isFullScreen = ref(false)
 
@@ -33,8 +30,8 @@
         keyTitle.value++
     }
     const onImageUpdate = () => {
-        console.log('onImageUpdate')
         fetchSupplierStore.fetchOne(idSupplier).then(() => {
+            keyTitle.value++
             keyTabs.value++
         })
     }
@@ -50,8 +47,6 @@
     const deactivateFullScreen = () => {
         isFullScreen.value = false
     }
-    //
-    // const route = useRoute()
 </script>
 
 <template>
