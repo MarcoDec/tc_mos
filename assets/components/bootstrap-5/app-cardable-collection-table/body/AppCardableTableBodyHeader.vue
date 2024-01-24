@@ -33,10 +33,10 @@
 
 <template>
     <tr class="header">
-        <th scope="row" class="">
+        <th scope="row" class="px50">
             <Fa icon="filter"/>
         </th>
-        <td>
+        <td class="px100">
             <button class="btngris" @click="search">
                 <Fa icon="search"/>
             </button>
@@ -57,6 +57,12 @@
 </template>
 
 <style scoped>
+    .px50{
+        width: 50px;
+    }
+    .px100{
+        width: 100px;
+    }
     .header{
         background-color: #c5c5c5 ;
     }
