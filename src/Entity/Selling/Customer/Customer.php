@@ -232,7 +232,7 @@ class Customer extends Entity implements FileEntity {
         ORM\Column(type: 'string'),
         Serializer\Groups(['read:file', 'read:customer:collection'])
     ]
-    protected ?string $filePath = null;
+    protected ?string $filePath = '';
     #[
         ApiProperty(description: 'Factures par email', example: false),
         ORM\Column(options: ['default' => false]),
