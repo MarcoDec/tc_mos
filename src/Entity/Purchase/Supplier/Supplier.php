@@ -99,6 +99,24 @@ use App\Controller\Purchase\Supplier\SupplierPatchController;
                     'summary' => 'Récupère un fournisseur',
                 ]
             ],
+            'patch image' => [
+                'openapi_context' => [
+                    'description' => 'Modifie le logo d\'un fournisseur',
+                    'summary' => 'Modifie le logo d\'un fournisseur'
+                ],
+                'denormalization_context' => [
+                    'groups' => ['write:supplier:image'],
+                    'openapi_definition_name' => 'Supplier-image'
+                ],
+                'normalization_context' => [
+                    'groups' => ['read:supplier:image'],
+                    'openapi_definition_name' => 'Supplier-image'
+                ],
+                'path' => '/suppliers/{id}/image',
+                'controller' => PlaceholderAction::class,
+                'method' => 'POST',
+                'input_formats' => ['multipart'],
+            ],
             'patch' => [
                 'controller' => SupplierPatchController::class,
                 'method' => 'PATCH',
