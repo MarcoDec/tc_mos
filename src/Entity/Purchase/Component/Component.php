@@ -134,7 +134,8 @@ use App\Filter\SetFilter;
                 'input_formats' => ['multipart'],
             ],
             'patch' => [
-                'controller' => ComponentController::class,
+//                'controller' => ComponentController::class,
+                'controller' => PlaceholderAction::class,
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Modifie un composant',
@@ -150,10 +151,10 @@ use App\Filter\SetFilter;
                     'summary' => 'Modifie un composant'
                 ],
                 'path' => '/components/{id}/{process}',
-                'read' => false,
+                'read' => true,
                 'write' => true,
-                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'//,
-                //'validation_groups' => AppAssert\ProcessGroupsGenerator::class
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
+                'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ],
             'promote' => [
                 'controller' => PlaceholderAction::class,

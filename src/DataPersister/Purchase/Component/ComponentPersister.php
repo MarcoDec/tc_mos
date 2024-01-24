@@ -15,7 +15,6 @@ class ComponentPersister implements ContextAwareDataPersisterInterface
 
     public function supports($data, array $context = []): bool
     {
-        dump(['data' => $data, 'context' => $context, 'request' => $this->requestStack->getCurrentRequest()]);
         return $data instanceof Component
             && (
             (isset($context['collection_operation_name'])
@@ -28,17 +27,13 @@ class ComponentPersister implements ContextAwareDataPersisterInterface
     {
         /** @var Component $data */
         if ($data->getFamily() !== null && str_contains($this->requestStack->getCurrentRequest()->getPathInfo(), 'admin') === true) {
-            dump('original data', $data);
             $family = $this->em->getRepository(Family::class)->find($data->getFamily()->getId());
             $data->setCode($family->getCode() . '-' . $data->getId());
             $data->setCustomsCode($family->getCustomsCode());
-            dump('data before persist & flush', $data);
-            $this->em->persist($data);
-            $this->em->flush();
-            $this->em->refresh($data);
-        } else {
-            dump('data', $data);
         }
+        $this->em->persist($data);
+        $this->em->flush();
+        $this->em->refresh($data);
     }
 
     public function remove($data, array $context = [])
