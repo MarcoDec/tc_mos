@@ -6,8 +6,9 @@
     import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
     import useUser from '../../../../../stores/security'
     import Fa from '../../../../Fa'
-    import {onBeforeMount, onBeforeUpdate} from "vue";
-    import {Modal} from "bootstrap";
+    import {onBeforeMount, onBeforeUpdate} from "vue"
+    import {Modal} from "bootstrap"
+    import {useRouter} from 'vue-router'
 
     defineProps({
         icon: {required: true, type: String},
@@ -18,6 +19,7 @@
 
     const fetchUser = useUser()
     const currentCompany = fetchUser.company
+    const router = useRouter()
     const isPurchaseWriterOrAdmin = fetchUser.isPurchaseWriter || fetchUser.isPurchaseAdmin
     const roleuser = ref(isPurchaseWriterOrAdmin ? 'writer' : 'reader')
     const tableKey = ref(0)
@@ -118,6 +120,10 @@
             }, 3000)
         }
     }
+    function onSupplierDetailsOpenRequest(supplier) {
+        /* eslint-disable camelcase */
+        router.push({name: 'supplier', params: {id_supplier: supplier.id}})
+    }
 </script>
 
 <template>
@@ -163,6 +169,7 @@
                     @deleted="deleted"
                     @get-page="getPage"
                     @trier-alphabet="trierAlphabet"
+                    @update="onSupplierDetailsOpenRequest"
                     @search="search"
                     @cancel-search="cancelSearch"/>
             </AppSuspense>

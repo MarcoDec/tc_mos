@@ -103,6 +103,7 @@ export const useSuppliersStore = defineStore('suppliers', {
                 filePath: item.filePath,
                 zipCode: item.address.zipCode,
                 city: item.address.city,
+                id: item.id
             }
             return newObject
         })
