@@ -31,7 +31,6 @@
         await storeCustomersList.fetch(customerListCriteria.getFetchCriteria)
     }
     async function updateData() {
-        await storeCustomersList.fetch()
         await refreshTable()
     }
     onBeforeMount(() => {
@@ -111,7 +110,7 @@
         }
     }
     function onCustomerDetailsOpenRequest(customer) {
-        console.log('onCustomerDetailsOpenRequest', customer)
+        //console.log('onCustomerDetailsOpenRequest', customer)
         /* eslint-disable camelcase */
         router.push({name: 'customer', params: {id_customer: customer.id}})
     }

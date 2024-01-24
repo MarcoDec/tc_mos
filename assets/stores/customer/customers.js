@@ -2,7 +2,7 @@ import {actionsItems, gettersItems} from '../tables/items'
 import {defineStore} from 'pinia'
 import api from '../../api'
 
-export const useCustomersStore = defineStore('customers', {
+export const useCustomersStore = defineStore('customers-list', {
     actions: {
         ...actionsItems,
         async fetch(criteria = '') {

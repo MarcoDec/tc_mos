@@ -30,8 +30,10 @@
         keyTitle.value++
     }
     const onImageUpdate = () => {
-        // console.log('onImageUpdate')
-        fetchCustomerStore.fetchOne(idCustomer)
+        console.log('onImageUpdate')
+        fetchCustomerStore.fetchOne(idCustomer).then(() => {
+            keyTabs.value++
+        })
     }
     const requestDetails = () => {
         modeDetail.value = true
@@ -61,6 +63,7 @@
                 </div>
                 <div class="d-flex flex-row">
                     <AppImg
+                        :key="`img-${keyTabs}`"
                         class="width30"
                         :file-path="fetchCustomerStore.customer.filePath"
                         :image-update-url="imageUpdateUrl"
