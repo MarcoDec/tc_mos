@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, defineEmits, defineProps, ref} from 'vue'
+import {computed, defineEmits, defineProps, onBeforeMount, ref} from 'vue'
     import AppFormJS from '../../../form/AppFormJS.js'
     import AppTab from '../../../tab/AppTab.vue'
     import AppTabs from '../../../tab/AppTabs.vue'
@@ -14,50 +14,49 @@
         modalId: {required: true, type: String}
     })
     const emits = defineEmits(['created'])
+
+    const user = useUser()
     const storeCustomersList = useCustomersStore()
+    const storeinvoiceTimeDuesList = useInvoiceTimeDuesStore()
+    const fetchCurrencyOptions = useOptions('currencies')
+    const fetchCountryOptions = useOptions('countries')
+
     const violations = ref([])
     let success = []
     const isPopupVisible = ref(false)
     const isCreatedPopupVisible = ref(false)
-    const user = useUser()
+    const optionsInvoiceTimeDue = ref([])
+    const optionsCurrency = ref([])
+    const optionsCountry = ref([])
     const currentCompany = user.company
+    const generalData = ref({})
+    const comptabilityData = ref({})
 
-    // const fecthOptionsSociety = useOptions('societies')
-    // await fecthOptionsSociety.fetchOp()
-    // const optionsSociety = computed(() =>
-    //     fecthOptionsSociety.options.map(op => {
-    //         const text = op.text
-    //         const value = op.value
-    //         return {text, value}
-    //     }))
-
-    const storeinvoiceTimeDuesList = useInvoiceTimeDuesStore()
-    await storeinvoiceTimeDuesList.invoiceTimeDuesOption()
-    const optionsInvoiceTimeDue = storeinvoiceTimeDuesList.invoiceTimeDuesOptions
-    // const fecthOptionsInvoiceTimeDue = useOptions('invoice-time-dues')
-    // await fecthOptionsInvoiceTimeDue.fetchOp()
-    // const optionsInvoiceTimeDue = computed(() =>
-    //     fecthOptionsInvoiceTimeDue.options.map(op => {
-    //         const text = op.text
-    //         const value = op.value
-    //         return {text, value}
-    //     }))
-
-    const fetchCurrencyOptions = useOptions('currencies')
-    await fetchCurrencyOptions.fetchOp()
-    const optionsCurrency = fetchCurrencyOptions.options.map(op => {
-        const text = op.text
-        const value = op.value
-        return {text, value}
+    onBeforeMount(async () => {
+        const promises = []
+        //promises.push(storeCustomersList.fetch())
+        promises.push(fetchCurrencyOptions.fetchOp())
+        promises.push(storeinvoiceTimeDuesList.invoiceTimeDuesOption())
+        promises.push(fetchCountryOptions.fetchOp())
+        Promise.all(promises).then(() => {
+            optionsInvoiceTimeDue.value = storeinvoiceTimeDuesList.invoiceTimeDuesOptions
+            optionsCurrency.value = fetchCurrencyOptions.options.map(op => {
+                const text = op.text
+                const value = op.value
+                return {text, value}
+            })
+            optionsCountry.value = fetchCountryOptions.options.map(op => {
+                const text = op.text
+                const value = op.text
+                return {text, value}
+            })
+            //console.log('optionsCountry', optionsCountry.value)
+        })
     })
 
     // const fetchCountryOptions = useOptions('countries')
     // await fetchCountryOptions.fetchOp()
-    // const optionsCountry = fetchCountryOptions.options.map(op => {
-    //     const text = op.text
-    //     const value = op.value
-    //     return {text, value}
-    // })
+
 
     const fields = computed(() => [
         {label: 'Nom*', name: 'name', type: 'text'},
@@ -70,28 +69,19 @@
             min: true,
             max: 1
         },
-        // {
-        //     label: 'Société mère / Groupe *',
-        //     name: 'society',
-        //     options: {
-        //         label: value => optionsSociety.value.find(option => option.type === value)?.text ?? null,
-        //         options: optionsSociety.value
-        //     },
-        //     type: 'select'
-        // },
         {label: 'Adresse', name: 'address', type: 'text'},
         {label: 'complément d\'adresse', name: 'address2', type: 'text'},
         {label: 'ville', name: 'city', type: 'text'},
         {label: 'Code postal', name: 'zipCode', type: 'text'},
-        // {label: 'Pays*', name: 'country',options: {label: value =>optionsCountry.value.find(option => option.type === value)?.text ?? null, options: optionsCountry.value}, type: 'select'},
-        {label: 'Pays', name: 'country', type: 'text'},
+        {label: 'Pays*', name: 'country',options: {label: value =>optionsCountry.value.find(option => option.type === value)?.text ?? null, options: optionsCountry.value}, type: 'select'},
+        //{label: 'Pays', name: 'country', type: 'text'},
         {label: 'Téléphone', name: 'phoneNumber', type: 'text'},
         {label: 'Email', name: 'email', type: 'text'}
     ])
 
     const fieldsComp = computed(() => [
-        {label: 'Devise (chiffrage et facturation)*', name: 'currency', options: {label: value => optionsCurrency.find(option => option.type === value)?.text ?? null, options: optionsCurrency}, type: 'select'},
-        {label: 'modalités de paiement', name: 'paymentTerms', options: {label: value => optionsInvoiceTimeDue.find(option => option.type === value)?.text ?? null, options: optionsInvoiceTimeDue}, type: 'select'}
+        {label: 'Devise (chiffrage et facturation)*', name: 'currency', options: {label: value => optionsCurrency.value.find(option => option.type === value)?.text ?? null, options: optionsCurrency.value}, type: 'select'},
+        {label: 'modalités de paiement', name: 'paymentTerms', options: {label: value => optionsInvoiceTimeDue.value.find(option => option.type === value)?.text ?? null, options: optionsInvoiceTimeDue.value}, type: 'select'}
     ])
     const baseFieldsCuivre = [{
         label: 'Gest. cuivre',
@@ -139,8 +129,6 @@
         }
         return baseFieldsCuivre
     })
-    const generalData = ref({})
-    const comptabilityData = ref({})
 
     function generalForm(value) {
         const key = Object.keys(value)[0]

@@ -1,5 +1,5 @@
 <script setup>
-    import {onBeforeMount, ref} from 'vue'
+import {onBeforeMount, onBeforeUpdate, ref} from 'vue'
     import useOptions from '../../../../../stores/option/options'
     import AppOptionGroups from './AppOptionGroups.vue'
     import AppOptions from './AppOptions.vue'
@@ -18,15 +18,19 @@
     const optionsTransfered = ref({})
     const fieldTransfered = ref({})
     const formFieldKey = ref(0)
-    onBeforeMount(() => {
+    function updateOptionsTransfered() {
         if (typeof props.field.options.base === 'undefined') {
+            console.log('options.base is undefined', props.field.name)
             if (typeof props.field.optionsList === 'undefined') {
+                console.log('optionsList is undefined', props.field.name)
                 optionsTransfered.value = props.field.options.options
             } else {
+                console.log('optionsList is defined', props.field.name)
                 optionsTransfered.value = props.field.optionsList
                 fieldTransfered.value = props.field
             }
-        } else if (props.field.optionsList === 'undefined') {
+        } else if (typeof props.field.optionsList === 'undefined') {
+            console.log('optionsList is undefined but options.base is defined', props.field.name)
             const options = useOptions(props.field.options.base)
             // eslint-disable-next-line no-return-assign
             options.fetchOp().then(() => {
@@ -35,9 +39,17 @@
                 formFieldKey.value++
             })
         } else {
+            console.log('optionsList is defined', props.field.name)
             optionsTransfered.value = props.field.optionsList
             fieldTransfered.value = props.field
         }
+        console.log('final optionsTransfered', optionsTransfered.value, props.field.name)
+    }
+    onBeforeMount(() => {
+        updateOptionsTransfered()
+    })
+    onBeforeUpdate(() => {
+        updateOptionsTransfered()
     })
     const emit = defineEmits(['update:modelValue'])
 
