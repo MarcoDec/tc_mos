@@ -31,22 +31,14 @@
         const dataMain = {
             notes: formData.get('notes')
         }
-        //const promises = []
-        // promises.push(useFetchComponentStore.updateAdmin(dataAdmin, idComponent))
-        // promises.push(useFetchComponentStore.updateMain(dataMain, idComponent))
-        // Promise.all(promises).then(() => {
-        //     console.log('updateGeneral')
-        //     useFetchComponentStore.fetchOne(idComponent)
-        //     emits('updated')
-        // })
-      useFetchComponentStore.updateAdmin(dataAdmin, idComponent).then(() => {
-          console.log('update Admin')
-          useFetchComponentStore.updateMain(dataMain, idComponent).then(() => {
-              console.log('update Main')
-              useFetchComponentStore.fetchOne(idComponent)
-              emits('updated')
-          })
-      })
+        useFetchComponentStore.updateAdmin(dataAdmin, idComponent).then(() => {
+            console.log('update Admin')
+            useFetchComponentStore.updateMain(dataMain, idComponent).then(() => {
+                console.log('update Main')
+                useFetchComponentStore.fetchOne(idComponent)
+                emits('updated')
+            })
+        })
     }
     onMounted(async () => {
         await componentFamilyOptions.fetchOp()
