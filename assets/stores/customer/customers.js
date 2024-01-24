@@ -56,7 +56,8 @@ export const useCustomersStore = defineStore('customers', {
                 'address.zipCode': item.address.zipCode,
                 'address.city': item.address.city,
                 'copper.index.value': item.copper.index.value,
-                id: item.id
+                id: item.id,
+                filePath: item.filePath
             }
             return newObject
         }),

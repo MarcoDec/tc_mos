@@ -43,6 +43,14 @@
     ]
 
     const fields = computed(() => [
+        {
+            label: 'Img',
+            name: 'filePath',
+            trie: false,
+            type: 'img',
+            width: 100,
+            filter: false
+        },
         {label: 'Raison sociale', name: 'name', trie: true, type: 'text'},
         {label: 'CP', name: 'address.zipCode', trie: true, type: 'text', filter: false, width: 80},
         {label: 'Ville', name: 'address.city', trie: true, type: 'text', filter: false},
