@@ -147,7 +147,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Customer-write'
         ],
         normalizationContext: [
-            'groups' => ['read:address', 'read:copper', 'read:customer', 'read:id', 'read:measure', 'read:state'],
+            'groups' => ['read:address', 'read:copper', 'read:customer', 'read:id', 'read:measure', 'read:state', 'read:file'],
             'openapi_definition_name' => 'Customer-read',
             'skip_null_values' => false
         ],

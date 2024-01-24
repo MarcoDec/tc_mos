@@ -76,7 +76,7 @@ export const useCustomersStore = defineStore('customers', {
 
     state: () => ({
         items: [],
-        customers: {},
+        customers: [],
         customer: {}
     })
 })

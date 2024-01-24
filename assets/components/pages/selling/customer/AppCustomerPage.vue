@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, ref} from 'vue'
+    import {computed, onBeforeMount, onBeforeUpdate, ref} from 'vue'
     import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
     import AppCustomerCreate from './AppCustomerCreate.vue'
     import AppSuspense from '../../../AppSuspense.vue'
@@ -18,22 +18,28 @@
     const customerCreateModal = ref(null)
 
     const fetchUser = useUser()
+    const router = useRouter()
+    const storeCustomersList = useCustomersStore()
+    const customerListCriteria = useFetchCriteria('customer-list-criteria')
     const currentCompany = fetchUser.company
+    customerListCriteria.addFilter('company', currentCompany)
+
     const isPurchaseWriterOrAdmin = fetchUser.isPurchaseWriter || fetchUser.isPurchaseAdmin
     const roleuser = ref(isPurchaseWriterOrAdmin ? 'writer' : 'reader')
 
-    const router = useRouter()
-
-    const storeCustomersList = useCustomersStore()
-    await storeCustomersList.fetch()
-
-    const customerListCriteria = useFetchCriteria('customer-list-criteria')
-    customerListCriteria.addFilter('company', currentCompany)
     async function refreshTable() {
         await storeCustomersList.fetch(customerListCriteria.getFetchCriteria)
     }
-    await refreshTable()
-
+    async function updateData() {
+        await storeCustomersList.fetch()
+        await refreshTable()
+    }
+    onBeforeMount(() => {
+        updateData()
+    })
+    onBeforeUpdate(() => {
+        updateData()
+    })
     const itemsTable = computed(() => storeCustomersList.itemsCustomers)
     const optionsEtat = [
         {text: 'agreed', value: 'agreed'},
@@ -41,7 +47,6 @@
         {text: 'to_validate', value: 'to_validate'},
         {text: 'warning', value: 'warning'}
     ]
-
     const fields = computed(() => [
         {
             label: 'Img',
