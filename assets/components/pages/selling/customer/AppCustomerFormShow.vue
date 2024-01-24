@@ -2,7 +2,6 @@
     import AppShowCustomerTabAccounting from './tabs/AppShowCustomerTabAccounting.vue'
     import AppShowCustomerTabAddress from './tabs/AppShowCustomerTabAddress.vue'
     import AppShowCustomerTabContact from './tabs/AppShowCustomerTabContact.vue'
-    import AppShowCustomerTabGeneral from './tabs/AppShowCustomerTabGeneral.vue'
     import AppShowCustomerTabLogistic from './tabs/AppShowCustomerTabLogistic.vue'
     import AppShowCustomerTabQuality from './tabs/AppShowCustomerTabQuality.vue'
     import AppSuspense from '../../../AppSuspense.vue'

@@ -5,14 +5,11 @@
     import {useCustomerStore} from '../../../../stores/selling/customers/customers'
     import AppCustomerShowInlist from './bottom/AppCustomerShowInlist.vue'
     import {useRoute} from 'vue-router'
-    import {onBeforeMount, ref} from "vue";
-    import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-    import AppBtn from "../../../AppBtn.vue";
-    import AppImg from "../../../AppImg.vue";
-    import AppComponentFormShow from "../../purchase/component/show/AppComponentFormShow.vue";
-    import AppComponentShowInlist from "../../purchase/component/show/AppComponentShowInlist.vue";
-    import AppShowCustomerTabGeneral from "./tabs/AppShowCustomerTabGeneral.vue";
-    import AppShowComponentTabGeneral from "../../purchase/component/show/left/AppShowComponentTabGeneral.vue";
+    import {onBeforeMount, ref} from 'vue'
+    import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+    import AppBtn from '../../../AppBtn.vue'
+    import AppImg from '../../../AppImg.vue'
+    import AppShowCustomerTabGeneral from './tabs/AppShowCustomerTabGeneral.vue'
 
     const route = useRoute()
     const idCustomer = Number(route.params.id_customer)
@@ -55,8 +52,8 @@
         <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <FontAwesomeIcon icon="puzzle-piece"/>
-                    <b>{{ fetchCustomerStore.customer.id }}</b>: {{fetchCustomerStore.customer.name }}
+                    <FontAwesomeIcon icon="user-tie"/>
+                    <b>{{ fetchCustomerStore.customer.id }}</b>: {{ fetchCustomerStore.customer.name }}
                     <span class="btn-float-right">
                         <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
                         <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>

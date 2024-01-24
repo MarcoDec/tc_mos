@@ -1,5 +1,5 @@
 <script setup>
-import {computed, defineEmits, defineProps, onBeforeMount, ref} from 'vue'
+    import {computed, defineEmits, defineProps, onBeforeMount, ref} from 'vue'
     import AppFormJS from '../../../form/AppFormJS.js'
     import AppTab from '../../../tab/AppTab.vue'
     import AppTabs from '../../../tab/AppTabs.vue'
@@ -50,13 +50,8 @@ import {computed, defineEmits, defineProps, onBeforeMount, ref} from 'vue'
                 const value = op.text
                 return {text, value}
             })
-            //console.log('optionsCountry', optionsCountry.value)
         })
     })
-
-    // const fetchCountryOptions = useOptions('countries')
-    // await fetchCountryOptions.fetchOp()
-
 
     const fields = computed(() => [
         {label: 'Nom*', name: 'name', type: 'text'},
@@ -73,7 +68,7 @@ import {computed, defineEmits, defineProps, onBeforeMount, ref} from 'vue'
         {label: 'complément d\'adresse', name: 'address2', type: 'text'},
         {label: 'ville', name: 'city', type: 'text'},
         {label: 'Code postal', name: 'zipCode', type: 'text'},
-        {label: 'Pays*', name: 'country',options: {label: value =>optionsCountry.value.find(option => option.type === value)?.text ?? null, options: optionsCountry.value}, type: 'select'},
+        {label: 'Pays*', name: 'country', options: {label: value => optionsCountry.value.find(option => option.type === value)?.text ?? null, options: optionsCountry.value}, type: 'select'},
         //{label: 'Pays', name: 'country', type: 'text'},
         {label: 'Téléphone', name: 'phoneNumber', type: 'text'},
         {label: 'Email', name: 'email', type: 'text'}
