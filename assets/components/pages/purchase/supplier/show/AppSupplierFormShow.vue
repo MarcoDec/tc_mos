@@ -68,7 +68,6 @@
 </script>
 
 <template>
-    <div>
         <div v-if="isError2" class="alert alert-danger" role="alert">
             <div v-for="violation in violations2" :key="violation">
                 <li>{{ violation.propertyPath }} {{ violation.message }}</li>
@@ -76,19 +75,8 @@
         </div>
         <AppTabs id="gui-start" class="gui-start-content">
             <AppTab
-                id="gui-start-main"
-                active
-                title="Généralités"
-                icon="pencil"
-                tabs="gui-start">
-                <div class="app-tab-content">
-                    <AppSuspense>
-                        <AppSupplierShowTabGeneral/>
-                    </AppSuspense>
-                </div>
-            </AppTab>
-            <AppTab
                 id="gui-start-files"
+                active
                 title="Fichiers"
                 icon="laptop"
                 tabs="gui-start">
@@ -130,7 +118,6 @@
                 <AppSuspense><AppSupplierShowTabContacts :options-countries="optionsCountries" @error="manageErrors"/></AppSuspense>
             </AppTab>
         </AppTabs>
-    </div>
 </template>
 
 <style scoped>

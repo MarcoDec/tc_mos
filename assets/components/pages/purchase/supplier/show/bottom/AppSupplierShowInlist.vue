@@ -5,7 +5,7 @@
 </script>
 
 <template>
-    <AppTabs id="gui-start-bottom" class="gui-start-content-bottom" format-nav="block">
+    <AppTabs id="gui-start-bottom" class="gui-start-content-bottom">
         <AppTab id="gui-start-fournitures" active title="Fournitures" icon="puzzle-piece" tabs="gui-start-bottom">
             <AppSuspense>
                 <AppSupplierListFourniture/>
