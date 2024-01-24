@@ -11,7 +11,7 @@
     const useFetchComponentStore = useComponentListStore()
     const componentFamilyOptions = useOptions('component-families')
     //await useFetchComponentStore.fetchOne(idComponent)
-    const generalfields = computed(()=> [
+    const generalFields = computed(() => [
         {label: 'Famille', name: 'family', type: 'select', options: {
             label: value => componentFamilyOptions.options.find(option => option['@id'] === value)?.text ?? null,
             options: componentFamilyOptions.options
@@ -58,11 +58,10 @@
             v-if="componentFamilyOptions.items.length > 0"
             id="addGeneralites"
             class="font-small mx-2 mt-1 width70"
-            :fields="generalfields"
+            :fields="generalFields"
             :component-attribute="useFetchComponentStore.component"
             title="Informations générales"
             @update="updateGeneral"/>
     </AppSuspense>
-
 </template>
 

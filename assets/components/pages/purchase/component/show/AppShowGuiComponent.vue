@@ -1,6 +1,6 @@
 <script setup>
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
-    import {onBeforeUnmount, onMounted, onBeforeMount, ref} from 'vue'
+    import {onBeforeUnmount, onBeforeMount, ref} from 'vue'
     import AppBtn from '../../../../AppBtn.vue'
     import AppImg from '../../../../AppImg.vue'
     import AppComponentFormShow from './AppComponentFormShow.vue'
@@ -89,8 +89,8 @@
                 <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small">
                     <div class="full-visible-width">
                         <AppSuspense>
-                            <AppComponentFormShow :key="`formtab-${keyTabs}`" v-if="modeDetail" class="width100"/>
-                            <AppComponentShowInlist :key="`formlist-${keyTabs}`" v-else class="width100"/>
+                            <AppComponentFormShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100"/>
+                            <AppComponentShowInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>
                         </AppSuspense>
                     </div>
                     <span>
