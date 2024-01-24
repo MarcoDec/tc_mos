@@ -144,7 +144,7 @@ export default [
         path: '/supplier-list',
         props: {
             icon: 'user-tag',
-            title: 'Créer un Fournisseur'
+            title: 'Liste des Fournisseurs'
         }
     }
 ]

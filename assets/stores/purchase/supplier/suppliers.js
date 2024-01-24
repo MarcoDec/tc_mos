@@ -77,6 +77,7 @@ export const useSuppliersStore = defineStore('suppliers', {
             confidenceCriteria: state.supplier.confidenceCriteria,
             copper: state.supplier.copper,
             currency: state.supplier.currency,
+            filePath: state.supplier.filePath,
             forceVat: state.supplier.forceVat,
             id: state.supplier.id,
             incoterms: state.supplier.incoterms,
@@ -91,13 +92,17 @@ export const useSuppliersStore = defineStore('suppliers', {
             orderMin: state.supplier.orderMin,
             society: state.supplier.society,
             vat: state.supplier.vat,
-            vatMessage: state.supplier.vatMessage
+            vatMessage: state.supplier.vatMessage,
+            zipCode: state.supplier.address.zipCode,
         }),
         itemsSuppliers: state => state.suppliers.map(item => {
             const newObject = {
                 '@id': item['@id'],
                 name: item.name,
-                state: item.embState.state
+                state: item.embState.state,
+                filePath: item.filePath,
+                zipCode: item.address.zipCode,
+                city: item.address.city,
             }
             return newObject
         })
@@ -110,7 +115,7 @@ export const useSuppliersStore = defineStore('suppliers', {
         pagination: true,
         previousPage: '',
         supplier: {},
-        suppliers: {},
+        suppliers: [],
         vatMessage: []
     })
 })

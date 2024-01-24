@@ -6,6 +6,7 @@
     import {useSuppliersStore} from '../../../../stores/purchase/supplier/suppliers'
     import useUser from '../../../../stores/security'
     import Fa from '../../../Fa'
+    import {onBeforeMount, onBeforeUpdate} from "vue";
     defineProps({
         icon: {required: true, type: String},
         title: {required: true, type: String}
@@ -17,18 +18,27 @@
     const currentCompany = fetchUser.company
     const isPurchaseWriterOrAdmin = fetchUser.isPurchaseWriter || fetchUser.isPurchaseAdmin
     const roleuser = ref(isPurchaseWriterOrAdmin ? 'writer' : 'reader')
-
+    const tableKey = ref(0)
+    const isLoaded = ref(false)
     const storeSuppliersList = useSuppliersStore()
-    await storeSuppliersList.fetch()
-
     const supplierListCriteria = useFetchCriteria('supplier-list-criteria')
     supplierListCriteria.addFilter('company', currentCompany)
-    async function refreshTable() {
-        await storeSuppliersList.fetch(supplierListCriteria.getFetchCriteria)
-    }
-    await refreshTable()
 
     const itemsTable = computed(() => storeSuppliersList.itemsSuppliers)
+    async function refreshTable() {
+        await storeSuppliersList.fetch(supplierListCriteria.getFetchCriteria).then(() => {
+            console.log(itemsTable.value)
+            tableKey.value += 1
+        })
+    }
+    onBeforeMount(async () => {
+        await refreshTable()
+        isLoaded.value = true
+    })
+    onBeforeUpdate(async () => {
+        await refreshTable()
+    })
+
     const optionsEtat = [
         {text: 'agreed', value: 'agreed'},
         {text: 'draft', value: 'draft'},
@@ -37,7 +47,17 @@
     ]
 
     const fields = computed(() => [
+        {
+            label: 'Img',
+            name: 'filePath',
+            trie: false,
+            type: 'img',
+            width: 100,
+            filter: false
+        },
         {label: 'Nom', name: 'name', trie: true, type: 'text'},
+        {label: 'CP', name: 'zipCode', trie: true, type: 'text'},
+        {label: 'Ville', name: 'city', trie: true, type: 'text'},
         {
             label: 'Etat',
             name: 'state',
@@ -104,6 +124,7 @@
         <div class="col">
             <AppSuspense>
                 <AppCardableTable
+                    v-if="isLoaded"
                     :current-page="storeSuppliersList.currentPage"
                     :fields="fields"
                     :first-page="storeSuppliersList.firstPage"
