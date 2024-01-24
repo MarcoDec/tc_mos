@@ -109,11 +109,3 @@
         </AppShowGuiGen>
     </AppSuspense>
 </template>
-
-<style>
-    .selected-detail {
-        background-color: #46e046 !important;
-        color: white !important;
-        border: 1px solid #46e046;
-    }
-</style>
