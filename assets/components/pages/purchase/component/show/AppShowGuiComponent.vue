@@ -19,6 +19,7 @@
     const modeDetail = ref(true)
     const isFullScreen = ref(false)
     const keyTabs = ref(0)
+    const keyTitle = ref(0)
     const beforeMountDataLoaded = ref(false)
     //endregion
     //region Chargement des données
@@ -54,13 +55,18 @@
     })
     //endregion
     const onImageUpdate = () => {
-        console.log('onImageUpdate')
+        // console.log('onImageUpdate')
         useFetchComponentStore.fetchOne(idComponent)
     }
     const onUpdated = () => {
-        console.log('onUpdated')
-        useFetchComponentStore.fetchOne(idComponent)
-        fetchUnits.fetchOp()
+        // console.log('onUpdated')
+        const promises = []
+        useFetchComponentStore.isLoaded = false
+        promises.push(useFetchComponentStore.fetchOne(idComponent))
+        promises.push(fetchUnits.fetchOp())
+        Promise.all(promises).then(() => {
+            keyTitle.value++
+        })
     }
 </script>
 
@@ -68,7 +74,7 @@
     <AppSuspense>
         <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
-                <div class="bg-white border-1 p-1">
+                <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
                     <FontAwesomeIcon icon="puzzle-piece"/>
                     <b>{{ useFetchComponentStore.component.code }}</b>: {{ useFetchComponentStore.component.name }}
                     <span class="btn-float-right">
