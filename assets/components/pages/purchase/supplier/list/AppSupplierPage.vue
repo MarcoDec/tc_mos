@@ -59,8 +59,8 @@
             filter: false
         },
         {label: 'Nom', name: 'name', trie: true, type: 'text'},
-        {label: 'CP', name: 'zipCode', trie: true, type: 'text'},
-        {label: 'Ville', name: 'city', trie: true, type: 'text'},
+        {label: 'CP', name: 'zipCode', trie: true, type: 'text', width: 80},
+        {label: 'Ville', name: 'city', trie: true, type: 'text', width: 200},
         {
             label: 'Etat',
             name: 'state',
@@ -70,7 +70,8 @@
                 options: optionsEtat
             },
             trie: false,
-            type: 'select'
+            type: 'select',
+            width: 80
         }
     ])
 
