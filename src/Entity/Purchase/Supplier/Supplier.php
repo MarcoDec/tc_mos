@@ -15,6 +15,7 @@ use App\Entity\Embeddable\Copper;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Purchase\Supplier\State;
 use App\Entity\Entity;
+use App\Entity\Interfaces\FileEntity;
 use App\Entity\Management\Currency;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
@@ -25,6 +26,7 @@ use App\Entity\Purchase\Supplier\Attachment\SupplierAttachment;
 use App\Entity\Purchase\Supplier\Company\SupplierCompany;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Purchase\SupplierReference;
+use App\Entity\Traits\FileTrait;
 use App\Filter\SetFilter;
 use App\Repository\Purchase\Supplier\SupplierRepository;
 use App\Validator as AppAssert;
@@ -155,7 +157,7 @@ use App\Controller\Purchase\Supplier\SupplierPatchController;
             'openapi_definition_name' => 'Supplier-write'
         ],
         normalizationContext: [
-            'groups' => ['read:address', 'read:copper', 'read:id', 'read:measure', 'read:state', 'read:supplier'],
+            'groups' => ['read:address', 'read:copper', 'read:id', 'read:measure', 'read:state', 'read:supplier', 'read:file'],
             'openapi_definition_name' => 'Supplier-read',
             'skip_null_values' => false
         ],
@@ -163,7 +165,8 @@ use App\Controller\Purchase\Supplier\SupplierPatchController;
     ),
     ORM\Entity(repositoryClass: SupplierRepository::class)
 ]
-class Supplier extends Entity {
+class Supplier extends Entity implements FileEntity {
+    use FileTrait;
     #[
         ApiProperty(description: 'Adresse'),
         ORM\Embedded,
@@ -226,7 +229,12 @@ class Supplier extends Entity {
         Serializer\Groups(['read:supplier', 'read:supplier:collection'])
     ]
     private State $embState;
-
+    #[
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:supplier:collection'])
+    ]
+    protected ?string $filePath = '';
     #[
         ApiProperty(description: 'Langue', example: 'Français'),
         ORM\Column(nullable: true),
@@ -560,5 +568,15 @@ class Supplier extends Entity {
         $this->supplierCompanies = $supplierCompanies;
         return $this;
     }
-
+    #[
+        ApiProperty(description: 'Icône', example: '/uploads/suppliers/1.jpg'),
+        Serializer\Groups(['read:file'])
+    ]
+    final public function getFilepath(): ?string {
+        return $this->filePath;
+    }
+    public function setFilePath(?string $filePath): void
+    {
+        $this->filePath = $filePath;
+    }
 }
