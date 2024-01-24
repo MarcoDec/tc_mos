@@ -29,7 +29,9 @@
     <div :id="id" class="collapse navbar-collapse">
         <ul class="me-auto navbar-nav pt-0">
             <AppNavbarItem v-if="user.isPurchaseReader !== null" id="purchase" icon="shopping-bag" title="Achats">
-                <!--TODO                <p>Fournisseur</p>-->
+                <AppNavbarLink icon="user-tie" to="supplier-list" :variant="variantPurchase">
+                    Liste des fournisseurs
+                </AppNavbarLink>
                 <AppNavbarLink icon="layer-group" to="component-list" :variant="variantPurchase">
                     Liste des composants
                 </AppNavbarLink>

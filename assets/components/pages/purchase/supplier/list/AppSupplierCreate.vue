@@ -1,20 +1,22 @@
 <script setup>
     import {computed, ref} from 'vue-demi'
-    import AppFormJS from '../../../../components/form/AppFormJS.js'
-    import AppTab from '../../../../components/tab/AppTab.vue'
-    import AppTabs from '../../../../components/tab/AppTabs.vue'
-    import useOptions from '../../../../stores/option/options'
-    import {useSuppliersStore} from '../../../../stores/purchase/supplier/suppliers'
+    import AppFormJS from '../../../../form/AppFormJS.js'
+    import AppTab from '../../../../tab/AppTab.vue'
+    import AppTabs from '../../../../tab/AppTabs.vue'
+    import useOptions from '../../../../../stores/option/options'
+    import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
+    import {onBeforeMount} from "vue";
 
     defineProps({
         title: {required: true, type: String},
         target: {required: true, type: String},
         modalId: {required: true, type: String}
     })
-
+    const emits = defineEmits(['created'])
     const storeSuppliersList = useSuppliersStore()
     let violations = []
     let success = []
+    const optionsCountry = ref([])
     const isPopupVisible = ref(false)
     const isCreatedPopupVisible = ref(false)
 
@@ -37,13 +39,35 @@
         }))
 
     const fetchCurrencyOptions = useOptions('currencies')
+    const fetchCountryOptions = useOptions('countries')
     await fetchCurrencyOptions.fetchOp()
     const optionsCurrency = fetchCurrencyOptions.options.map(op => {
         const text = op.text
         const value = op.value
         return {text, value}
     })
-
+    const optionsCopperType = [
+        {text: 'à la livraison', value: 'à la livraison'},
+        {text: 'mensuel', value: 'mensuel'},
+        {text: 'semestriel', value: 'semestriel'}
+    ]
+    onBeforeMount(async () => {
+        const promises = []
+        promises.push(fetchCurrencyOptions.fetchOp())
+        promises.push(fetchCountryOptions.fetchOp())
+        Promise.all(promises).then(() => {
+            optionsCurrency.value = fetchCurrencyOptions.options.map(op => {
+                const text = op.text
+                const value = op.value
+                return {text, value}
+            })
+            optionsCountry.value = fetchCountryOptions.options.map(op => {
+                const text = op.text
+                const value = op.text
+                return {text, value}
+            })
+        })
+    })
     // const fetchCountryOptions = useOptions('countries')
     // await fetchCountryOptions.fetchOp()
     // const optionsCountry = fetchCountryOptions.options.map(op => {
@@ -54,14 +78,22 @@
     // console.log('optionsCountry', optionsCountry);
 
     const fields = computed(() => [
-        {label: 'Société', name: 'society', options: {label: value => optionsSociety.value.find(option => option.type === value)?.text ?? null, options: optionsSociety.value}, type: 'select'},
+        {
+            label: 'Société mère / Groupe *',
+            name: 'society',
+            type: 'multiselect-fetch',
+            api: '/api/societies',
+            filteredProperty: 'name',
+            min: true,
+            max: 1
+        },
         {label: 'Nom', name: 'name', type: 'text'},
         {label: 'Adresse', name: 'address', type: 'text'},
         {label: 'complément d\'adresse', name: 'address2', type: 'text'},
         {label: 'ville', name: 'city', type: 'text'},
         {label: 'Code postal', name: 'zipCode', type: 'text'},
         // {label: 'Pays*', name: 'country',options: {label: value =>optionsCountry.value.find(option => option.type === value)?.text ?? null, options: optionsCountry.value}, type: 'select'},
-        {label: 'Pays*', name: 'country', type: 'text'},
+        {label: 'Pays*', name: 'country', options: {label: value => optionsCountry.value.find(option => option.type === value)?.text ?? null, options: optionsCountry.value}, type: 'select'},
         {label: 'Téléphone', name: 'phoneNumber', type: 'text'},
         {label: 'Email', name: 'email', type: 'text'},
         {label: 'sociétés gérant', name: 'administeredBy', options: {label: value => optionsCompany.value.find(option => option.type === value)?.text ?? null, options: optionsCompany.value}, type: 'multiselect'}
@@ -78,7 +110,7 @@
     ])
     const fieldsCuivre = computed(() => [
         {label: 'CopperIndex', name: 'copperIndex ', type: 'number'},
-        {label: 'CopperType', name: 'copperType', type: 'text'},
+        {label: 'CopperType', name: 'copperType', options: {label: value => optionsCopperType.find(option => option.type === value)?.text ?? null, options: optionsCopperType}, type: 'select'},
         {label: 'Gest. cuivre', name: 'managed', type: 'boolean'},
         {label: 'Date du prochain indice', name: 'next', type: 'date'},
         {label: 'Date du dernier indice', name: 'last', type: 'date'},
@@ -189,17 +221,19 @@
                     last: cuivreData?.last || null,
                     managed: cuivreData?.managed || false,
                     next: cuivreData?.next || null,
-                    type: cuivreData?.type || ''
+                    type: cuivreData?.copperType || ''
                 },
                 currency: comptabilityData?.currency || '#',
                 managedProduction: qualityData?.managedProduction || false,
                 managedQuality: qualityData?.managedQuality || false,
                 name: generalData?.name || '#',
                 openOrdersEnabled: comptabilityData?.openOrdersEnabled || false,
-                society: generalData?.society || '#'
+                society: generalData?.society[0] || '#'
             }
             // console.log('supplier', supplier)
-            await storeSuppliersList.addSupplier(supplier)
+            await storeSuppliersList.addSupplier(supplier).then(() => {
+                emits('created')
+            })
             isPopupVisible.value = false
             isCreatedPopupVisible.value = true
             success = 'Fournisseur crée'
@@ -213,7 +247,7 @@
 </script>
 
 <template>
-    <AppModal :id="modalId" class="four" :title="title">
+    <AppModal :id="modalId" class="four" title="Création nouveau fournisseur">
         <AppTabs id="gui-start" class="gui-start-content">
             <AppTab id="gui-start-general" active icon="sitemap" tabs="gui-start" title="Général">
                 <AppFormJS

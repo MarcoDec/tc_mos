@@ -1,9 +1,9 @@
 <script setup>
-    import generateSupplier from '../../../../stores/supplier/supplier'
+    import generateSupplier from '../../../../../../stores/purchase/supplier/supplier'
     import {ref} from 'vue'
-    import useOptions from '../../../../stores/option/options'
-    import {useSocietyStore} from '../../../../stores/societies/societies'
-    import {useSuppliersStore} from '../../../../stores/supplier/suppliers'
+    import useOptions from '../../../../../../stores/option/options'
+    import {useSocietyStore} from '../../../../../../stores/management/societies/societies'
+    import {useSuppliersStore} from '../../../../../../stores/purchase/supplier/suppliers'
 
     //Définition des propriétés
     //Définition des évènements
@@ -35,7 +35,7 @@
     const Comptabilitéfields = [
         {
             label: 'Montant minimum de facture',
-            measure: {code: 'Devise', value: 'valeur'},
+            measure: {code: {label: 'Unité', name: 'unit', options: {options: [{text: 'EUR', value: 'EUR'}]}, sortName: 'unit.code', type: 'select'}, value: 'valeur'},
             name: 'invoiceMin',
             type: 'measure'
         },
@@ -90,7 +90,6 @@
     async function updateModelValue(value) {
         localData.value = value
         emit('update:modelValue', value)
-        console.log(localData.value)
     }
     async function updateComptabilite() {
         const societyId = fetchSocietyStore.society.id
@@ -107,7 +106,7 @@
         const data = {
             currency: localData.value.currency
         }
-        const item = generateSupplier(localData.value)
+        const item = generateSupplier(fetchSuppliersStore.supplier)
         await item.updateAccounting(data)
         await fetchSocietyStore.update(dataSociety, societyId)
         await fetchSocietyStore.fetchById(societyId)
@@ -115,16 +114,10 @@
 </script>
 
 <template>
-    <AppTab
-        id="gui-start-accounting"
-        title="Comptabilité"
-        icon="industry"
-        tabs="gui-start">
-        <AppCardShow
-            id="addComptabilite"
-            :fields="Comptabilitéfields"
-            :component-attribute="localData"
-            @update="updateComptabilite"
-            @update:model-value="updateModelValue"/>
-    </AppTab>
+    <AppCardShow
+        id="addComptabilite"
+        :fields="Comptabilitéfields"
+        :component-attribute="localData"
+        @update="updateComptabilite"
+        @update:model-value="updateModelValue"/>
 </template>

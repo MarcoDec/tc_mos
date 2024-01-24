@@ -7,14 +7,14 @@
     import AppSupplierShowTabGeneral from './tabs/AppSupplierShowTabGeneral.vue'
     import AppSupplierShowTabPurchase from './tabs/AppSupplierShowTabPurchase.vue'
     import AppSupplierShowTabQuality from './tabs/AppSupplierShowTabQuality.vue'
-    import AppSuspense from '../../../AppSuspense.vue'
-    import AppTab from '../../../tab/AppTab.vue'
-    import api from '../../../../api'
-    import {useIncotermStore} from '../../../../stores/logistic/incoterm/incoterm'
-    import useOptions from '../../../../stores/option/options'
+    import AppSuspense from '../../../../AppSuspense.vue'
+    import AppTab from '../../../../tab/AppTab.vue'
+    import api from '../../../../../api'
+    import {useIncotermStore} from '../../../../../stores/logistic/incoterm/incoterm'
+    import useOptions from '../../../../../stores/option/options'
     import {useRoute} from 'vue-router'
-    import {useSocietyStore} from '../../../../stores/management/societies/societies'
-    import {useSuppliersStore} from '../../../../stores/purchase/supplier/suppliers'
+    import {useSocietyStore} from '../../../../../stores/management/societies/societies'
+    import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
 
     const route = useRoute()
     const idSupplier = route.params.id_supplier

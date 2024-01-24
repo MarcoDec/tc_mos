@@ -1,12 +1,14 @@
 <script setup>
     import {computed, ref} from 'vue-demi'
-    import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
+    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import AppSupplierCreate from './AppSupplierCreate.vue'
-    import AppSuspense from '../../../AppSuspense.vue'
-    import {useSuppliersStore} from '../../../../stores/purchase/supplier/suppliers'
-    import useUser from '../../../../stores/security'
-    import Fa from '../../../Fa'
+    import AppSuspense from '../../../../AppSuspense.vue'
+    import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
+    import useUser from '../../../../../stores/security'
+    import Fa from '../../../../Fa'
     import {onBeforeMount, onBeforeUpdate} from "vue";
+    import {Modal} from "bootstrap";
+
     defineProps({
         icon: {required: true, type: String},
         title: {required: true, type: String}
@@ -20,6 +22,8 @@
     const roleuser = ref(isPurchaseWriterOrAdmin ? 'writer' : 'reader')
     const tableKey = ref(0)
     const isLoaded = ref(false)
+    const createModalRef = ref(null)
+    const creationSuccess = ref(false)
     const storeSuppliersList = useSuppliersStore()
     const supplierListCriteria = useFetchCriteria('supplier-list-criteria')
     supplierListCriteria.addFilter('company', currentCompany)
@@ -27,7 +31,6 @@
     const itemsTable = computed(() => storeSuppliersList.itemsSuppliers)
     async function refreshTable() {
         await storeSuppliersList.fetch(supplierListCriteria.getFetchCriteria).then(() => {
-            console.log(itemsTable.value)
             tableKey.value += 1
         })
     }
@@ -102,6 +105,18 @@
         supplierListCriteria.addSort(payload.name, payload.direction)
         await storeSuppliersList.fetch(supplierListCriteria.getFetchCriteria)
     }
+    async function onCreated() {
+        await refreshTable()
+        if (createModalRef.value) {
+            const modalElement = createModalRef.value.$el
+            const bootstrapModal = Modal.getInstance(modalElement)
+            bootstrapModal.hide()
+            creationSuccess.value = true
+            setTimeout(() => {
+                creationSuccess.value = false
+            }, 3000)
+        }
+    }
 </script>
 
 <template>
@@ -123,8 +138,13 @@
             </h1>
         </div>
     </div>
+    <div v-if="creationSuccess" class="row d-flex">
+        <div class="bg-success text-white text-center">
+            Composant bien créé
+        </div>
+    </div>
     <div class="row">
-        <AppSupplierCreate :modal-id="modalId" :title="title" :target="target"/>
+        <AppSupplierCreate ref="createModalRef" :modal-id="modalId" :title="title" :target="target" @created="onCreated"/>
         <div class="col">
             <AppSuspense>
                 <AppCardableTable

@@ -1,8 +1,8 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useSupplierListFournitureStore} from '../../../../../stores/purchase/supplier/supplierListFourniture'
+    import {useSupplierListFournitureStore} from '../../../../../../stores/purchase/supplier/supplierListFourniture'
     import {useRoute} from 'vue-router'
-    import useField from '../../../../../stores/field/field'
+    import useField from '../../../../../../stores/field/field'
 
     const roleuser = ref('reader')
     // let violations = []

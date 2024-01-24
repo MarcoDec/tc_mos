@@ -1,6 +1,6 @@
 import AppShowGui from '../components/pages/AppShowGui.vue'
 import AppShowGuiComponent from '../components/pages/purchase/component/show/AppShowGuiComponent.vue'
-import AppShowGuiSupplier from '../components/pages/purchase/supplier/AppShowGuiSupplier.vue'
+import AppShowGuiSupplier from '../components/pages/purchase/supplier/show/AppShowGuiSupplier.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTreePageAttribute from '../components/pages/tree/AppTreePageAttribute.vue'
 import AppTreePageSuspense from '../components/pages/tree/AppTreePageSuspense.vue'
@@ -138,7 +138,7 @@ export default [
     //     path: '/supplier-list'
     // },
     {
-        component: () => import('../components/pages/purchase/supplier/AppSupplierListPage.vue'),
+        component: () => import('../components/pages/purchase/supplier/list/AppSupplierListPage.vue'),
         meta: {requiresAuth: true},
         name: 'supplier-list',
         path: '/supplier-list',
