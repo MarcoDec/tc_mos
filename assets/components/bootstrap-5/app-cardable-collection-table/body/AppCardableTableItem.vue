@@ -88,16 +88,4 @@
     .img-base {
         cursor: zoom-in;
     }
-    .image-enlarged {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1000; /* Assurez-vous qu'elle est au-dessus des autres éléments */
-        width: 80vw; /* ou toute autre taille souhaitée */
-        height: auto;
-        max-width: none;
-        background-color: #6c757d;
-        cursor: zoom-out;
-    }
 </style>
