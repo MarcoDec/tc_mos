@@ -5,6 +5,8 @@
     import {useEmployeesStore} from '../../../../stores/employee/employees'
     import useUser from '../../../../stores/security'
     import {useRouter} from 'vue-router'
+    import AppComponentCreateModal from "../../purchase/component/list/create/AppComponentCreateModal.vue";
+    import {onMounted, onUnmounted} from "vue";
 
     defineProps({
         icon: {required: true, type: String},
@@ -14,6 +16,7 @@
     const router = useRouter()
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
+    const tableKey = ref(0)
 
     const fetchUser = useUser()
     const currentCompany = fetchUser.company
@@ -39,12 +42,20 @@
     ]
 
     const fields = computed(() => [
-        {label: 'Matricule', name: 'timeCard', trie: true, type: 'text'},
+        {
+            label: 'Img',
+            name: 'filePath',
+            trie: false,
+            type: 'img',
+            width: 100,
+            filter: false
+        },
+        {label: 'Matricule', name: 'timeCard', trie: true, type: 'text', width: 80},
         {label: 'Nom', name: 'surname', trie: true, type: 'text'},
         {label: 'prenom', name: 'name', trie: true, type: 'text'},
-        {label: 'Initiales', name: 'initials', trie: true, type: 'text'},
-        {label: 'Identifiant', name: 'username', trie: true, type: 'text'},
-        {label: 'Compte utilisateur', name: 'userEnabled', trie: false, type: 'boolean'},
+        {label: 'Initiales', name: 'initials', trie: true, type: 'text', width: 80},
+        {label: 'Identifiant', name: 'username', trie: true, type: 'text', width: 80},
+        {label: 'Compte utilisateur', name: 'userEnabled', trie: false, type: 'boolean', width: 80},
         {
             label: 'Etat',
             name: 'state',
@@ -54,7 +65,8 @@
                 options: optionsEtat
             },
             trie: false,
-            type: 'select'
+            type: 'select',
+            width: 80
         }
     ])
 
@@ -99,6 +111,16 @@
         /* eslint-disable camelcase */
         router.push({name: 'employee', params: {id_employee: item.id}})
     }
+
+    onMounted(() => {
+        storeEmployeesList.fetch(employeeListCriteria.getFetchCriteria).then(() => {
+            tableKey.value += 1
+        })
+    })
+    onUnmounted(() => {
+        storeEmployeesList.reset()
+        employeeListCriteria.reset()
+    })
 </script>
 
 <template>
@@ -121,10 +143,15 @@
         </div>
     </div>
     <div class="row">
-        <AppEmployeeCreate :current-company="currentCompany" :modal-id="modalId" :title="title" :target="target" @created="onEmployeeCreated"/>
+        <AppEmployeeCreate
+            ref="createModalRef"
+            :current-company="currentCompany"
+            :modal-id="modalId" title="Ajouter un nouvel employé"
+            :target="target" @created="onEmployeeCreated"/>
         <div class="col">
             <AppSuspense>
                 <AppCardableTable
+                    :key="tableKey"
                     :current-page="storeEmployeesList.currentPage"
                     :fields="fields"
                     :first-page="storeEmployeesList.firstPage"

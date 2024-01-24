@@ -45,15 +45,16 @@ export const useEmployeesStore = defineStore('employees', {
         itemsEmployees: state => state.employees.map(item => {
             const newObject = {
                 '@id': item['@id'],
-                timeCard: item.timeCard,
-                surname: item.surname,
-                name: item.name,
-                initials: item.initials,
-                username: item.username,
-                userEnabled: item.userEnabled,
-                state: item.embState.state,
                 company: item.company,
-                id: item.id
+                filePath: typeof item.filePath === 'undefined' ? '' : item.filePath,
+                id: item.id,
+                initials: item.initials,
+                name: item.name,
+                state: item.embState.state,
+                surname: item.surname,
+                timeCard: item.timeCard,
+                userEnabled: item.userEnabled,
+                username: item.username
             }
             return newObject
         }),
@@ -62,7 +63,6 @@ export const useEmployeesStore = defineStore('employees', {
                 .map(employee => employee.option)
                 .sort((a, b) => a.text.localeCompare(b.text))
     },
-
     state: () => ({
         items: [],
         employees: []
