@@ -3,7 +3,7 @@
     import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
     import AppCustomerCreate from './AppCustomerCreate.vue'
     import AppSuspense from '../../../AppSuspense.vue'
-    import {useCustomersStore} from '../../../../stores/customer/customers'
+    import {useCustomersStore} from '../../../../stores/selling/customers/customersList'
     import useUser from '../../../../stores/security'
     import {Modal} from 'bootstrap'
     import {useRouter} from 'vue-router'

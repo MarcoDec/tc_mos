@@ -13,18 +13,21 @@
     import useOptions from '../../../../stores/option/options'
     import {useRoute} from 'vue-router'
     import {useSocietyStore} from '../../../../stores/management/societies/societies'
+    import {useInvoiceTimeDuesStore} from '../../../../stores/management/invoiceTimeDues'
 
     const route = useRoute()
     const idCustomer = route.params.id_customer
     const fecthOptions = useOptions('countries')
     await fecthOptions.fetchOp()
     const fetchCustomerStore = useCustomerStore()
+    const fetchInvoiceTime = useInvoiceTimeDuesStore()
     const fetchSocietyStore = useSocietyStore()
     const fetchCustomerAttachmentStore = useCustomerAttachmentStore()
     const fecthCustomerContactsStore = useCustomerContactsStore()
     await fetchCustomerStore.fetchOne(idCustomer)
-    await fetchCustomerStore.fetchInvoiceTime()
-    await fetchSocietyStore.fetch()
+    await fetchInvoiceTime.fetchInvoiceTime()
+    const invoiceData = fetchInvoiceTime.invoicesData
+    fetchCustomerStore.invoicesData = invoiceData
     const societyId = Number(fetchCustomerStore.customer.society.match(/\d+/))
     const customerId = Number(fetchCustomerStore.customer.id)
     await fetchSocietyStore.fetchById(societyId)

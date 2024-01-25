@@ -1,6 +1,6 @@
-import {actionsItems, gettersItems} from '../tables/items'
+import {actionsItems, gettersItems} from '../../tables/items'
 import {defineStore} from 'pinia'
-import api from '../../api'
+import api from '../../../api'
 
 export const useCustomersStore = defineStore('customers-list', {
     actions: {

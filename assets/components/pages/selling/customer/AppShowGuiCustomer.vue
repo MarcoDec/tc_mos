@@ -30,10 +30,7 @@
         keyTitle.value++
     }
     const onImageUpdate = () => {
-        console.log('onImageUpdate')
-        fetchCustomerStore.fetchOne(idCustomer).then(() => {
-            keyTabs.value++
-        })
+        window.location.reload()
     }
     const requestDetails = () => {
         modeDetail.value = true

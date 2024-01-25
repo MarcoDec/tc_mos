@@ -4,7 +4,7 @@
     import AppTab from '../../../tab/AppTab.vue'
     import AppTabs from '../../../tab/AppTabs.vue'
     import useOptions from '../../../../stores/option/options'
-    import {useCustomersStore} from '../../../../stores/customer/customers'
+    import {useCustomersStore} from '../../../../stores/selling/customers/customersList'
     import {useInvoiceTimeDuesStore} from '../../../../stores/management/invoiceTimeDues'
     import useUser from '../../../../stores/security'
 

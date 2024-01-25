@@ -1,8 +1,8 @@
 <script setup>
     import {computed, ref} from 'vue'
     import AppFormJS from '../../../form/AppFormJS.js'
-    import {useCustomerProductStore} from '../../../../stores/customer/customerProduct'
-    import {useCustomersStore} from '../../../../stores/customer/customers'
+    import {useCustomerProductStore} from '../../../../stores/project/product/customerProduct'
+    import {useCustomersStore} from '../../../../stores/selling/customers/customersList'
     import {useProductStore} from '../../../../stores/project/product/products'
     import AppTab from '../../../tab/AppTab.vue'
     import AppTabs from '../../../tab/AppTabs.vue'
