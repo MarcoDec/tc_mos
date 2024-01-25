@@ -5,7 +5,7 @@
     import AppTabs from '../../../../tab/AppTabs.vue'
     import useOptions from '../../../../../stores/option/options'
     import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
-    import {onBeforeMount} from "vue";
+    import {onBeforeMount} from 'vue'
 
     defineProps({
         title: {required: true, type: String},
@@ -24,15 +24,6 @@
     await fecthOptionsCompanies.fetchOp()
     const optionsCompany = computed(() =>
         fecthOptionsCompanies.options.map(op => {
-            const text = op.text
-            const value = op.value
-            return {text, value}
-        }))
-
-    const fecthOptionsSociety = useOptions('societies')
-    await fecthOptionsSociety.fetchOp()
-    const optionsSociety = computed(() =>
-        fecthOptionsSociety.options.map(op => {
             const text = op.text
             const value = op.value
             return {text, value}
@@ -247,7 +238,7 @@
 </script>
 
 <template>
-    <AppModal :id="modalId" class="four" title="Création nouveau fournisseur">
+    <AppModal :id="modalId" class="four" :title="title">
         <AppTabs id="gui-start" class="gui-start-content">
             <AppTab id="gui-start-general" active icon="sitemap" tabs="gui-start" title="Général">
                 <AppFormJS

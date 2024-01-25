@@ -5,13 +5,11 @@
     import AppEmployeeShowInlist from './bottom/AppEmployeeShowInlist.vue'
     import {useEmployeeStore} from '../../../../stores/hr/employee/employees'
     import {useRoute} from 'vue-router'
-    import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-    import AppImg from "../../../AppImg.vue";
-    import AppBtn from "../../../AppBtn.vue";
-    import AppShowComponentTabGeneral from "../../purchase/component/show/left/AppShowComponentTabGeneral.vue";
-    import {onBeforeMount, ref} from "vue";
-    import AppComponentFormShow from "../../purchase/component/show/AppComponentFormShow.vue";
-    import AppComponentShowInlist from "../../purchase/component/show/AppComponentShowInlist.vue";
+    import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+    import AppImg from '../../../AppImg.vue'
+    import AppBtn from '../../../AppBtn.vue'
+    import AppShowComponentTabGeneral from '../../purchase/component/show/left/AppShowComponentTabGeneral.vue'
+    import {onBeforeMount, ref} from 'vue'
 
     const route = useRoute()
     const idEmployee = Number(route.params.id_employee)

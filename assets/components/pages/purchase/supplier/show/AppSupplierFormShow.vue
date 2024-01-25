@@ -4,7 +4,6 @@
     import AppSupplierShowTabAddresses from './tabs/AppSupplierShowTabAddresses.vue'
     import AppSupplierShowTabContacts from './tabs/AppSupplierShowTabContacts.vue'
     import AppSupplierShowTabFichiers from './tabs/AppSupplierShowTabFichiers.vue'
-    import AppSupplierShowTabGeneral from './tabs/AppSupplierShowTabGeneral.vue'
     import AppSupplierShowTabPurchase from './tabs/AppSupplierShowTabPurchase.vue'
     import AppSupplierShowTabQuality from './tabs/AppSupplierShowTabQuality.vue'
     import AppSuspense from '../../../../AppSuspense.vue'
@@ -68,56 +67,56 @@
 </script>
 
 <template>
-        <div v-if="isError2" class="alert alert-danger" role="alert">
-            <div v-for="violation in violations2" :key="violation">
-                <li>{{ violation.propertyPath }} {{ violation.message }}</li>
-            </div>
+    <div v-if="isError2" class="alert alert-danger" role="alert">
+        <div v-for="violation in violations2" :key="violation">
+            <li>{{ violation.propertyPath }} {{ violation.message }}</li>
         </div>
-        <AppTabs id="gui-start" class="gui-start-content">
-            <AppTab
-                id="gui-start-files"
-                active
-                title="Fichiers"
-                icon="laptop"
-                tabs="gui-start">
-                <AppSuspense><AppSupplierShowTabFichiers/></AppSuspense>
-            </AppTab>
-            <AppTab
-                id="gui-start-quality"
-                title="Qualité"
-                icon="certificate"
-                tabs="gui-start">
-                <AppSuspense><AppSupplierShowTabQuality :component-attribute="listSuppliers"/></AppSuspense>
-            </AppTab>
-            <AppTab
-                id="gui-start-purchase-logistics"
-                title="Achat/Logistique"
-                icon="bag-shopping"
-                tabs="gui-start">
-                <AppSuspense><AppSupplierShowTabPurchase/></AppSuspense>
-            </AppTab>
-            <AppTab
-                id="gui-start-accounting"
-                title="Comptabilité"
-                icon="industry"
-                tabs="gui-start">
-                <AppSuspense><AppSupplierShowTabAccounting :component-attribute="listSuppliers"/></AppSuspense>
-            </AppTab>
-            <AppTab
-                id="gui-start-addresses"
-                title="Adresse"
-                icon="location-dot"
-                tabs="gui-start">
-                <AppSuspense><AppSupplierShowTabAddresses :options-countries="optionsCountries"/></AppSuspense>
-            </AppTab>
-            <AppTab
-                id="gui-start-contacts"
-                title="Contacts"
-                icon="file-contract"
-                tabs="gui-start">
-                <AppSuspense><AppSupplierShowTabContacts :options-countries="optionsCountries" @error="manageErrors"/></AppSuspense>
-            </AppTab>
-        </AppTabs>
+    </div>
+    <AppTabs id="gui-start" class="gui-start-content">
+        <AppTab
+            id="gui-start-files"
+            active
+            title="Fichiers"
+            icon="laptop"
+            tabs="gui-start">
+            <AppSuspense><AppSupplierShowTabFichiers/></AppSuspense>
+        </AppTab>
+        <AppTab
+            id="gui-start-quality"
+            title="Qualité"
+            icon="certificate"
+            tabs="gui-start">
+            <AppSuspense><AppSupplierShowTabQuality :component-attribute="listSuppliers"/></AppSuspense>
+        </AppTab>
+        <AppTab
+            id="gui-start-purchase-logistics"
+            title="Achat/Logistique"
+            icon="bag-shopping"
+            tabs="gui-start">
+            <AppSuspense><AppSupplierShowTabPurchase/></AppSuspense>
+        </AppTab>
+        <AppTab
+            id="gui-start-accounting"
+            title="Comptabilité"
+            icon="industry"
+            tabs="gui-start">
+            <AppSuspense><AppSupplierShowTabAccounting :component-attribute="listSuppliers"/></AppSuspense>
+        </AppTab>
+        <AppTab
+            id="gui-start-addresses"
+            title="Adresse"
+            icon="location-dot"
+            tabs="gui-start">
+            <AppSuspense><AppSupplierShowTabAddresses :options-countries="optionsCountries"/></AppSuspense>
+        </AppTab>
+        <AppTab
+            id="gui-start-contacts"
+            title="Contacts"
+            icon="file-contract"
+            tabs="gui-start">
+            <AppSuspense><AppSupplierShowTabContacts :options-countries="optionsCountries" @error="manageErrors"/></AppSuspense>
+        </AppTab>
+    </AppTabs>
 </template>
 
 <style scoped>

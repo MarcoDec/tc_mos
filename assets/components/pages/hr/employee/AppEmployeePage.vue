@@ -5,8 +5,7 @@
     import {useEmployeesStore} from '../../../../stores/employee/employees'
     import useUser from '../../../../stores/security'
     import {useRouter} from 'vue-router'
-    import AppComponentCreateModal from "../../purchase/component/list/create/AppComponentCreateModal.vue";
-    import {onMounted, onUnmounted} from "vue";
+    import {onMounted, onUnmounted} from 'vue'
 
     defineProps({
         icon: {required: true, type: String},

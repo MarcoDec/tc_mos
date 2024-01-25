@@ -93,7 +93,7 @@ export const useSuppliersStore = defineStore('suppliers', {
             society: state.supplier.society,
             vat: state.supplier.vat,
             vatMessage: state.supplier.vatMessage,
-            zipCode: state.supplier.address.zipCode,
+            zipCode: state.supplier.address.zipCode
         }),
         itemsSuppliers: state => state.suppliers.map(item => {
             const newObject = {

@@ -6,8 +6,8 @@
     import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
     import useUser from '../../../../../stores/security'
     import Fa from '../../../../Fa'
-    import {onBeforeMount, onBeforeUpdate} from "vue"
-    import {Modal} from "bootstrap"
+    import {onBeforeMount, onBeforeUpdate} from 'vue'
+    import {Modal} from 'bootstrap'
     import {useRouter} from 'vue-router'
 
     defineProps({

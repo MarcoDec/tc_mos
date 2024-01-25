@@ -2,14 +2,15 @@
     import AppShowGuiGen from '../../../AppShowGuiGen.vue'
     import AppSupplierFormShow from './AppSupplierFormShow.vue'
     import AppSupplierShowInlist from './bottom/AppSupplierShowInlist.vue'
-    import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome"
-    import AppImg from "../../../../AppImg.vue"
-    import AppBtn from "../../../../AppBtn.vue"
-    import AppSuspense from "../../../../AppSuspense.vue"
-    import {onBeforeMount, ref} from "vue"
-    import {useSuppliersStore} from "../../../../../stores/purchase/supplier/suppliers"
-    import {useRoute} from "vue-router"
-    import AppSupplierShowTabGeneral from "./tabs/AppSupplierShowTabGeneral.vue";
+    import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+    import AppImg from '../../../../AppImg.vue'
+    import AppBtn from '../../../../AppBtn.vue'
+    import AppSuspense from '../../../../AppSuspense.vue'
+    import {onBeforeMount, ref} from 'vue'
+    import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
+    import {useRoute} from 'vue-router'
+    import AppSupplierShowTabGeneral from './tabs/AppSupplierShowTabGeneral.vue'
+
     const isFullScreen = ref(false)
 
     const beforeMountDataLoaded = ref(false)
@@ -57,9 +58,9 @@
                     <FontAwesomeIcon icon="user-tie"/>
                     <b>{{ fetchSupplierStore.supplier.id }}</b>: {{ fetchSupplierStore.supplier.name }}
                     <span class="btn-float-right">
-                            <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
-                            <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
-                        </span>
+                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
+                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
+                    </span>
                 </div>
                 <div class="d-flex flex-row">
                     <AppImg
