@@ -54,9 +54,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
                 'validate' => false
             ]
         ],
-        attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
-        ],
+//        attributes: [
+//            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+//        ],
         denormalizationContext: [
             'groups' => ['write:currency'],
             'openapi_definition_name' => 'Currency-write'
