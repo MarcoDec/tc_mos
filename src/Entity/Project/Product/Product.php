@@ -17,6 +17,7 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Project\Product\Product\State;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
+use App\Entity\Interfaces\FileEntity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
@@ -24,6 +25,7 @@ use App\Entity\Project\Product\Attachment\ProductAttachment;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Selling\ProductReference;
 use App\Entity\Traits\BarCodeTrait;
+use App\Entity\Traits\FileTrait;
 use App\Filter\RelationFilter;
 use App\Filter\SetFilter;
 use App\Repository\Project\Product\ProductRepository;
@@ -100,6 +102,24 @@ use App\Entity\Selling\Customer\Product as ProductCustomer;
                     'description' => 'Récupère un produit',
                     'summary' => 'Récupère un produit'
                 ]
+            ],
+            'patch image' => [
+                'openapi_context' => [
+                    'description' => 'Modifie l\'image d\'un produit',
+                    'summary' => 'Modifie l\'image d\'un produit'
+                ],
+                'denormalization_context' => [
+                    'groups' => ['write:product:image'],
+                    'openapi_definition_name' => 'Product-image'
+                ],
+                'normalization_context' => [
+                    'groups' => ['read:product:image'],
+                    'openapi_definition_name' => 'Product-image'
+                ],
+                'path' => '/products/{id}/image',
+                'controller' => PlaceholderAction::class,
+                'method' => 'POST',
+                'input_formats' => ['multipart'],
             ],
             'patch' => [
                 'openapi_context' => [
@@ -179,8 +199,8 @@ use App\Entity\Selling\Customer\Product as ProductCustomer;
     ORM\Entity(repositoryClass: ProductRepository::class),
     UniqueEntity(fields: ['code', 'index'], groups: ['Product-admin', 'Product-clone', 'Product-create'])
 ]
-class Product extends Entity implements BarCodeInterface, MeasuredInterface {
-    use BarCodeTrait;
+class Product extends Entity implements BarCodeInterface, MeasuredInterface, FileEntity {
+    use BarCodeTrait, FileTrait;
 
    /** @var DoctrineCollection<int, ProductAttachment> */
     #[ORM\OneToMany(mappedBy: 'product',targetEntity: ProductAttachment::class)]
@@ -260,6 +280,13 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:main'])
     ]
     private ?Family $family = null;
+
+    #[
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:product:collection'])
+    ]
+    protected ?string $filePath = '';
 
     #[
         ApiProperty(description: 'Volume prévisionnel année en cours', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
@@ -963,5 +990,24 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
             $companies = array_merge($companies, $productCustomer->getAdministeredBy()->toArray());
         }
         return new ArrayCollection($companies);
+    }
+
+    #[
+        ApiProperty(description: 'Icône', example: '/uploads/project-product-product/1.jpg'),
+        Serializer\Groups(['read:file'])
+    ]
+    public function getFilePath(): ?string
+    {
+        return $this->filePath;
+    }
+
+    /**
+     * @param string|null $filePath
+     * @return Product
+     */
+    public function setFilePath(?string $filePath): Product
+    {
+        $this->filePath = $filePath;
+        return $this;
     }
 }
