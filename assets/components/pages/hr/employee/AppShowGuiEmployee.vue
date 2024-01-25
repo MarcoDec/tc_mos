@@ -8,8 +8,8 @@
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
     import AppImg from '../../../AppImg.vue'
     import AppBtn from '../../../AppBtn.vue'
-    import AppShowComponentTabGeneral from '../../purchase/component/show/left/AppShowComponentTabGeneral.vue'
     import {onBeforeMount, ref} from 'vue'
+    import AppShowEmployeeTabGeneral from './tabs/AppShowEmployeeTabGeneral.vue'
 
     const route = useRoute()
     const idEmployee = Number(route.params.id_employee)
@@ -31,7 +31,7 @@
 
     onBeforeMount(() => {
         const promises = []
-        console.log('onBeforeMount')
+        // console.log('onBeforeMount')
         promises.push(fetchEmployeeStore.fetchOne(idEmployee))
         promises.push(fetchEmployeeStore.fetchAll())
         promises.push(fetchEmployeeStore.fetchTeams())
@@ -79,7 +79,7 @@
                         :file-path="fetchEmployeeStore.employee.filePath"
                         :image-update-url="imageUpdateUrl"
                         @update:file-path="onImageUpdate"/>
-                    <AppSuspense><AppShowComponentTabGeneral :key="`form-${keyTabs}`" class="width70" @updated="onUpdated"/></AppSuspense>
+                    <AppSuspense><AppShowEmployeeTabGeneral :key="`form-${keyTabs}`" class="width70" @updated="onUpdated"/></AppSuspense>
                 </div>
             </template>
             <template #gui-bottom>

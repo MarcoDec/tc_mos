@@ -3,6 +3,7 @@
 namespace App\Entity\Hr\Employee;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use App\Validator as AppAssert;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -99,7 +100,7 @@ use App\Entity\Production\Manufacturing\OperationEmployee;
                 ]
             ],
             'patch' => [
-                'controller' => EmployeePatchController::class,
+                'controller' => PlaceholderAction::class, //EmployeePatchController::class,
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Modifier un employé',
@@ -115,9 +116,10 @@ use App\Entity\Production\Manufacturing\OperationEmployee;
                     'summary' => 'Modifier un employé'
                 ],
                 'path' => '/employees/{id}/{process}',
-                'read' => false,
+                'read' => true,
                 'write' => true,
                 'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')',
+                'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ],
             'promote' => [
                 'controller' => PlaceholderAction::class,

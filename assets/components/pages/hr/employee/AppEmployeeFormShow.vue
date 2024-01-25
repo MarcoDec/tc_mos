@@ -19,15 +19,8 @@
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab
-            id="gui-start-main"
-            active
-            title="Généralités"
-            icon="pencil"
-            tabs="gui-start">
-            <AppSuspense><AppShowEmployeeTabGeneral/></AppSuspense>
-        </AppTab>
-        <AppTab
             id="gui-start-Informations"
+            active
             title="Informations personelles"
             icon="circle-info"
             tabs="gui-start">

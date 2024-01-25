@@ -7,7 +7,7 @@
         shouldDelete: {required: false, default: true},
         shouldSee: {required: false, default: true}
     })
-    console.log('AppCardableTableBody', props.fields, props.item)
+    //console.log('AppCardableTableBody', props.fields, props.item)
     const emit = defineEmits(['deleted', 'update'])
     function update(item){
         emit('update', item)

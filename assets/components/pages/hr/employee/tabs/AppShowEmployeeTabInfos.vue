@@ -28,7 +28,7 @@
         {label: 'Nom', name: 'name', type: 'text'},
         {label: 'Prenom', name: 'surname', type: 'text'},
         {label: 'Email', name: 'getEmail', type: 'text'},
-        {label: 'Complément d\'adresse', name: 'getAddress', type: 'text'},
+        {label: 'Adresse', name: 'getAddress', type: 'text'},
         {label: 'Code postal', name: 'getPostal', type: 'text'},
         {label: 'Ville', name: 'getCity', type: 'text'},
         {
@@ -42,7 +42,7 @@
             },
             type: 'select'
         },
-        {label: 'Fax', name: 'getPhone', type: 'text'},
+        {label: 'Téléphone', name: 'getPhone', type: 'text'},
         {label: 'Naissance', name: 'getBrith', type: 'date'},
         {label: 'Initiales', name: 'initials', type: 'text'},
         {
