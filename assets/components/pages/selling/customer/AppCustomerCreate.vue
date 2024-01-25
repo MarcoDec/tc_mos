@@ -107,14 +107,6 @@
         },
         type: 'select'
     }]
-    // const fieldsCuivre = computed(() => [
-    //     {label: 'Gest. cuivre', name: 'managed', type: 'boolean'},
-    //     {label: 'CopperIndex', name: 'copperIndex ', type: 'number'},
-    //     {label: 'CopperType', name: 'copperType', type: 'text'},
-    //     {label: 'Date du prochain indice', name: 'next', type: 'date'},
-    //     {label: 'Date du dernier indice', name: 'last', type: 'date'},
-    //     {label: 'type', name: 'type', type: 'text'}
-    // ])
     const cuivreData = ref({
         managed: false
     })

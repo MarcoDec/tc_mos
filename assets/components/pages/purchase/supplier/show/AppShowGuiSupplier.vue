@@ -6,7 +6,7 @@
     import AppImg from '../../../../AppImg.vue'
     import AppBtn from '../../../../AppBtn.vue'
     import AppSuspense from '../../../../AppSuspense.vue'
-    import {onBeforeMount, ref} from 'vue'
+    import {computed, onBeforeMount, ref} from 'vue'
     import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
     import {useRoute} from 'vue-router'
     import AppSupplierShowTabGeneral from './tabs/AppSupplierShowTabGeneral.vue'
@@ -21,6 +21,7 @@
     const keyTabs = ref(0)
     const modeDetail = ref(true)
     const imageUpdateUrl = `/api/suppliers/${idSupplier}/image`
+    const filePath = computed(() => `${fetchSupplierStore.supplier.filePath}?${Date.now()}`)
 
     onBeforeMount(() => {
         fetchSupplierStore.fetchOne(idSupplier).then(() => {
@@ -31,10 +32,7 @@
         keyTitle.value++
     }
     const onImageUpdate = () => {
-        fetchSupplierStore.fetchOne(idSupplier).then(() => {
-            keyTitle.value++
-            keyTabs.value++
-        })
+        window.location.reload()
     }
     const requestDetails = () => {
         modeDetail.value = true
@@ -66,7 +64,7 @@
                     <AppImg
                         :key="`img-${keyTabs}`"
                         class="width30"
-                        :file-path="fetchSupplierStore.supplier.filePath"
+                        :file-path="filePath"
                         :image-update-url="imageUpdateUrl"
                         @update:file-path="onImageUpdate"/>
                     <AppSuspense>

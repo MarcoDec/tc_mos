@@ -6,6 +6,7 @@
     import useOptions from '../../../../../stores/option/options'
     import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
     import {onBeforeMount} from 'vue'
+    import useUser from '../../../../../stores/security'
 
     defineProps({
         title: {required: true, type: String},
@@ -13,21 +14,15 @@
         modalId: {required: true, type: String}
     })
     const emits = defineEmits(['created'])
+
+    const user = useUser()
+    const currentCompany = user.company
     const storeSuppliersList = useSuppliersStore()
-    let violations = []
+    const violations = ref([])
     let success = []
     const optionsCountry = ref([])
     const isPopupVisible = ref(false)
     const isCreatedPopupVisible = ref(false)
-
-    const fecthOptionsCompanies = useOptions('companies')
-    await fecthOptionsCompanies.fetchOp()
-    const optionsCompany = computed(() =>
-        fecthOptionsCompanies.options.map(op => {
-            const text = op.text
-            const value = op.value
-            return {text, value}
-        }))
 
     const fetchCurrencyOptions = useOptions('currencies')
     const fetchCountryOptions = useOptions('countries')
@@ -37,11 +32,6 @@
         const value = op.value
         return {text, value}
     })
-    const optionsCopperType = [
-        {text: 'à la livraison', value: 'à la livraison'},
-        {text: 'mensuel', value: 'mensuel'},
-        {text: 'semestriel', value: 'semestriel'}
-    ]
     onBeforeMount(async () => {
         const promises = []
         promises.push(fetchCurrencyOptions.fetchOp())
@@ -59,16 +49,9 @@
             })
         })
     })
-    // const fetchCountryOptions = useOptions('countries')
-    // await fetchCountryOptions.fetchOp()
-    // const optionsCountry = fetchCountryOptions.options.map(op => {
-    //     const text = op.text
-    //     const value = op.value
-    //     return {text, value}
-    // })
-    // console.log('optionsCountry', optionsCountry);
 
     const fields = computed(() => [
+        {label: 'Nom', name: 'name', type: 'text'},
         {
             label: 'Société mère / Groupe *',
             name: 'society',
@@ -78,7 +61,6 @@
             min: true,
             max: 1
         },
-        {label: 'Nom', name: 'name', type: 'text'},
         {label: 'Adresse', name: 'address', type: 'text'},
         {label: 'complément d\'adresse', name: 'address2', type: 'text'},
         {label: 'ville', name: 'city', type: 'text'},
@@ -86,8 +68,7 @@
         // {label: 'Pays*', name: 'country',options: {label: value =>optionsCountry.value.find(option => option.type === value)?.text ?? null, options: optionsCountry.value}, type: 'select'},
         {label: 'Pays*', name: 'country', options: {label: value => optionsCountry.value.find(option => option.type === value)?.text ?? null, options: optionsCountry.value}, type: 'select'},
         {label: 'Téléphone', name: 'phoneNumber', type: 'text'},
-        {label: 'Email', name: 'email', type: 'text'},
-        {label: 'sociétés gérant', name: 'administeredBy', options: {label: value => optionsCompany.value.find(option => option.type === value)?.text ?? null, options: optionsCompany.value}, type: 'multiselect'}
+        {label: 'Email', name: 'email', type: 'text'}
     ])
 
     const fieldsQuality = computed(() => [
@@ -99,140 +80,228 @@
         {label: 'Devise', name: 'currency', options: {label: value => optionsCurrency.find(option => option.type === value)?.text ?? null, options: optionsCurrency}, type: 'select'},
         {label: 'Open orders enabled*', name: 'openOrdersEnabled', type: 'boolean'}
     ])
-    const fieldsCuivre = computed(() => [
-        {label: 'CopperIndex', name: 'copperIndex ', type: 'number'},
-        {label: 'CopperType', name: 'copperType', options: {label: value => optionsCopperType.find(option => option.type === value)?.text ?? null, options: optionsCopperType}, type: 'select'},
-        {label: 'Gest. cuivre', name: 'managed', type: 'boolean'},
-        {label: 'Date du prochain indice', name: 'next', type: 'date'},
-        {label: 'Date du dernier indice', name: 'last', type: 'date'},
-        {label: 'type', name: 'type', type: 'text'}
-    ])
-    const generalData = {}
-    const qualityData = {}
-    const comptabilityData = {}
-    const cuivreData = {}
+    const baseFieldsCuivre = [{
+        label: 'Gest. cuivre',
+        name: 'managed',
+        type: 'boolean'
+    }]
+    const typeOptions = [
+        {text: 'à la livraison', value: 'à la livraison'},
+        {text: 'mensuel', value: 'mensuel'},
+        {text: 'semestriel', value: 'semestriel'}
+    ]
+    const conditionnedFieldsCuivre = [{
+        label: 'Indice du cuivre',
+        name: 'copperIndex ',
+        type: 'number'
+    }, {
+        label: 'Date de l\'indice',
+        name: 'last',
+        type: 'date'
+    }, {
+        label: 'Périodicité',
+        name: 'type',
+        options: {
+            label: value =>
+                typeOptions.find(option => option.type === value)?.text ?? null,
+            options: typeOptions
+        },
+        type: 'select'
+    }]
+    const fieldsCuivre = computed(() => {
+        if (cuivreData.value.managed) {
+            return baseFieldsCuivre.concat(conditionnedFieldsCuivre)
+        }
+        return baseFieldsCuivre
+    })
+    const generalData = ref({})
+    const qualityData = ref({})
+    const comptabilityData = ref({})
+    const cuivreData = ref({})
 
     function generalForm(value) {
         const key = Object.keys(value)[0]
-        if (Object.prototype.hasOwnProperty.call(generalData, key)) {
+        if (Object.prototype.hasOwnProperty.call(generalData.value, key)) {
             if (typeof value[key] === 'object') {
                 if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
-                    generalData[key] = {...generalData[key], value: inputValue}
+                    generalData.value[key] = {...generalData.value[key], value: inputValue}
                 }
                 if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
-                    generalData[key] = {...generalData[key], code: inputCode}
+                    generalData.value[key] = {...generalData.value[key], code: inputCode}
                 }
             } else {
-                generalData[key] = value[key]
+                generalData.value[key] = value[key]
             }
         } else {
-            generalData[key] = value[key]
+            generalData.value[key] = value[key]
         }
     }
     function qualityForm(value) {
         const key = Object.keys(value)[0]
-        if (Object.prototype.hasOwnProperty.call(qualityData, key)) {
+        if (Object.prototype.hasOwnProperty.call(qualityData.value, key)) {
             if (typeof value[key] === 'object') {
                 if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
-                    qualityData[key] = {...qualityData[key], value: inputValue}
+                    qualityData.value[key] = {...qualityData.value[key], value: inputValue}
                 }
                 if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
-                    qualityData[key] = {...qualityData[key], code: inputCode}
+                    qualityData.value[key] = {...qualityData.value[key], code: inputCode}
                 }
             } else {
-                qualityData[key] = value[key]
+                qualityData.value[key] = value[key]
             }
         } else {
-            qualityData[key] = value[key]
+            qualityData.value[key] = value[key]
         }
     }
     function comptabilityForm(value) {
         const key = Object.keys(value)[0]
-        if (Object.prototype.hasOwnProperty.call(comptabilityData, key)) {
+        if (Object.prototype.hasOwnProperty.call(comptabilityData.value, key)) {
             if (typeof value[key] === 'object') {
                 if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
-                    comptabilityData[key] = {...comptabilityData[key], value: inputValue}
+                    comptabilityData.value[key] = {...comptabilityData.value[key], value: inputValue}
                 }
                 if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
-                    comptabilityData[key] = {...comptabilityData[key], code: inputCode}
+                    comptabilityData.value[key] = {...comptabilityData.value[key], code: inputCode}
                 }
             } else {
-                comptabilityData[key] = value[key]
+                comptabilityData.value[key] = value[key]
             }
         } else {
-            comptabilityData[key] = value[key]
+            comptabilityData.value[key] = value[key]
         }
     }
     function cuivreForm(value) {
         const key = Object.keys(value)[0]
-        if (Object.prototype.hasOwnProperty.call(cuivreData, key)) {
-            // if (cuivreData.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(cuivreData.value, key)) {
+            // if (cuivreData.value.hasOwnProperty(key)) {
             if (typeof value[key] === 'object') {
                 if (typeof value[key].value !== 'undefined') {
                     const inputValue = parseFloat(value[key].value)
-                    cuivreData[key] = {...cuivreData[key], value: inputValue}
+                    cuivreData.value[key] = {...cuivreData.value[key], value: inputValue}
                 }
                 if (typeof value[key].code !== 'undefined') {
                     const inputCode = value[key].code
-                    cuivreData[key] = {...cuivreData[key], code: inputCode}
+                    cuivreData.value[key] = {...cuivreData.value[key], code: inputCode}
                 }
             } else {
-                cuivreData[key] = value[key]
+                cuivreData.value[key] = value[key]
             }
         } else {
-            cuivreData[key] = value[key]
+            cuivreData.value[key] = value[key]
         }
     }
+    const supplierData = ref({
+        administeredBy: [currentCompany],
+        address: null,
+        copper: {
+            index: {
+                code: '',
+                value: 0
+            },
+            managed: false
+        },
+        currency: null,
+        managedProduction: false,
+        managedQuality: false,
+        confidenceCriteria: 0,
+        name: '',
+        society: null
+    })
     async function supplierFormCreate(){
-        try {
-            const supplier = {
-                address: {
-                    address: generalData?.address || '',
-                    address2: generalData?.address2 || '',
-                    city: generalData?.city || '',
-                    country: 'FR',
-                    // "country":  generalForm?.value?.value?.country || '',
-                    email: generalData?.email || '',
-                    phoneNumber: generalData?.phoneNumber || '',
-                    zipCode: generalData?.zipCode || ''
-                },
-                administeredBy: generalData?.administeredBy || [],
-                confidenceCriteria: qualityData?.confidenceCriteria || 0,
-                copper: {
-                    index: {
-                        code: cuivreData?.copperType || '',
-                        value: cuivreData?.copperIndex || 0
-                    },
-                    last: cuivreData?.last || null,
-                    managed: cuivreData?.managed || false,
-                    next: cuivreData?.next || null,
-                    type: cuivreData?.copperType || ''
-                },
-                currency: comptabilityData?.currency || '#',
-                managedProduction: qualityData?.managedProduction || false,
-                managedQuality: qualityData?.managedQuality || false,
-                name: generalData?.name || '#',
-                openOrdersEnabled: comptabilityData?.openOrdersEnabled || false,
-                society: generalData?.society[0] || '#'
+        if (typeof generalData.value.address !== 'undefined') {
+            supplierData.value.address = {
+                address: generalData.value.address,
+                address2: generalData.value.address2,
+                city: generalData.value.city,
+                country: generalData.value.country,
+                email: generalData.value.email,
+                phoneNumber: generalData.value.phoneNumber,
+                zipCode: generalData.value.zipCode
             }
-            // console.log('supplier', supplier)
-            await storeSuppliersList.addSupplier(supplier).then(() => {
-                emits('created')
-            })
+        }
+        if (typeof generalData.value.society !== 'undefined') {
+            supplierData.value.society = generalData.value.society[0]
+        }
+        if (typeof comptabilityData.value.currency !== 'undefined') {
+            supplierData.value.currency = comptabilityData.value.currency
+        }
+        if (typeof generalData.value.name !== 'undefined') {
+            supplierData.value.name = generalData.value.name
+        }
+        if (typeof comptabilityData.value.openOrdersEnabled !== 'undefined') {
+            supplierData.value.openOrdersEnabled = comptabilityData.value.openOrdersEnabled
+        }
+        if (typeof cuivreData.value !== 'undefined') {
+            if (typeof cuivreData.value.managed !== 'undefined') {
+                supplierData.value.copper.managed = cuivreData.value.managed
+            }
+            if (typeof cuivreData.value.copperIndex !== 'undefined') {
+                supplierData.value.copper.index.value = cuivreData.value.copperIndex
+            }
+            if (typeof cuivreData.value.copperType !== 'undefined') {
+                supplierData.value.copper.index.code = cuivreData.value.copperType
+            }
+            if (typeof cuivreData.value.next !== 'undefined') {
+                supplierData.value.copper.next = cuivreData.value.next
+            }
+            if (typeof cuivreData.value.last !== 'undefined') {
+                supplierData.value.copper.last = cuivreData.value.last
+            }
+        }
+        if (typeof qualityData.value.managedProduction !== 'undefined') {
+            supplierData.value.managedProduction = qualityData.value.managedProduction
+        }
+        if (typeof qualityData.value.managedQuality !== 'undefined') {
+            supplierData.value.managedQuality = qualityData.value.managedQuality
+        }
+        if (typeof qualityData.value.confidenceCriteria !== 'undefined') {
+            supplierData.value.confidenceCriteria = qualityData.value.confidenceCriteria
+        }
+        try {
+            await storeSuppliersList.addSupplier(supplierData.value)
             isPopupVisible.value = false
             isCreatedPopupVisible.value = true
             success = 'Fournisseur crée'
+            emits('created')
+            // Remise à zéro des données
+            /* eslint-disable require-atomic-updates */
+            supplierData.value = {
+                administeredBy: [currentCompany],
+                address: null,
+                copper: {
+                    index: {
+                        code: '',
+                        value: 0
+                    },
+                    managed: false
+                },
+                currency: null,
+                managedProduction: false,
+                managedQuality: false,
+                confidenceCriteria: 0,
+                name: '',
+                society: null
+            }
+            /* eslint-disable require-atomic-updates */
+            generalData.value = {}
+            /* eslint-disable require-atomic-updates */
+            comptabilityData.value = {}
+            /* eslint-disable require-atomic-updates */
+            cuivreData.value = {
+                managed: false
+            }
+            violations.value = []
         } catch (error) {
-            violations = error
+            violations.value = error
             isPopupVisible.value = true
             isCreatedPopupVisible.value = false
-            console.log('violations', violations)
+            console.log('violations', violations.value)
         }
     }
 </script>
