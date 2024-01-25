@@ -37,6 +37,7 @@
 
     async function logout() {
         send('logout')
+        user.clear()
         await user.logout()
         await router.push({name: 'login'})
     }
