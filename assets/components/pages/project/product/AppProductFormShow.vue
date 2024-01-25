@@ -25,15 +25,8 @@
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab
-            id="gui-start-main"
-            active
-            title="Généralités"
-            icon="pencil"
-            tabs="gui-start">
-            <AppSuspense><AppShowProductTabGeneral/></AppSuspense>
-        </AppTab>
-        <AppTab
             id="gui-start-files"
+            active
             title="Fichiers"
             icon="laptop"
             tabs="gui-start">
