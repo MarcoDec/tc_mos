@@ -1,15 +1,16 @@
 <script setup>
-    import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
-    import {onBeforeMount, onBeforeUnmount, ref} from 'vue'
     import AppBtn from '../../../AppBtn.vue'
     import AppImg from '../../../AppImg.vue'
     import AppProductFormShow from './AppProductFormShow.vue'
+    import AppProductShowInlist from './AppProductShowInlist.vue'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
+    import AppShowProductTabGeneral from './tabs/AppShowProductTabGeneral.vue'
     import useOptions from '../../../../stores/option/options'
+    import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+    import {onBeforeMount, onBeforeUnmount, ref} from 'vue'
     import {useProductStore} from '../../../../stores/project/product/products'
     import {useRoute} from 'vue-router'
-    import AppProductShowInlist from './AppProductShowInlist.vue'
-    import AppShowProductTabGeneral from './tabs/AppShowProductTabGeneral.vue'
+
     const route = useRoute()
     const idProduct = Number(route.params.id_product)
     const fetchUnits = useOptions('units')
@@ -38,8 +39,7 @@
         modeDetail.value = false
     }
     const onImageUpdate = () => {
-        // console.log('onImageUpdate')
-        useFetchProductStore.fetchOne(idProduct)
+        window.location.reload()
     }
     const onUpdated = () => {
         // console.log('onUpdated')

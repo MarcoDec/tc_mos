@@ -284,7 +284,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
     #[
         ApiProperty(description: 'Lien image'),
         ORM\Column(type: 'string'),
-        Serializer\Groups(['read:file', 'read:product:collection'])
+        Serializer\Groups(['read:file', 'read:product', 'read:product:collection'])
     ]
     protected ?string $filePath = '';
 

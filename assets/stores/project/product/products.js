@@ -75,6 +75,7 @@ export const useProductStore = defineStore('products', {
                 state: item.embState.state,
                 endOfLife: item.endOfLife,
                 family: item.family,
+                filePath: item.filePath,
                 id: item.id,
                 kind: item.kind,
                 name: item.name,
