@@ -64,11 +64,11 @@
 
     const fields = computed(() => [
         {label: 'Référence', name: 'code', trie: true, type: 'text'},
-        {label: 'Indice', name: 'index', trie: true, type: 'text'},
+        {label: 'Indice', name: 'index', trie: true, type: 'text', width: 80},
         {label: 'Désignation', name: 'name', trie: true, type: 'text'},
         // {
         //     label: 'Compagnies',
-        //     name: 'companies',
+        //     name: 'companies',:
         //     type: 'multiselect-fetch',
         //     api: '/api/companies',
         //     filteredProperty: 'name',
@@ -92,7 +92,8 @@
                     typeProductOptions.find(option => option.value === value)?.text ?? null,
                 options: typeProductOptions
             },
-            type: 'select'
+            type: 'select',
+            width: 150
         },
         // {label: 'Date d\'expiration', name: 'endOfLife', trie: false, type: 'date'},
         {
@@ -104,7 +105,8 @@
                 options: optionsEtat
             },
             trie: false,
-            type: 'select'
+            type: 'select',
+            width: 80
         },
         {
             label: 'Etat de de blocage',
@@ -115,7 +117,8 @@
                 options: stateBlockerOptions
             },
             trie: false,
-            type: 'select'
+            type: 'select',
+            width:80
         }
     ])
     async function deleted(id){
