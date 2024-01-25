@@ -159,7 +159,7 @@
     <div class="row">
         <div class="col">
             <h1>
-                <FontAwesomeIcon :icon="icon"/>
+                <FontAwesomeIcon icon="fa-brands fa-product-hunt" />
                 <!--    fa-brands fa-product-hunt-->
                 {{ title }}
                 <span v-if="isProjectWriterOrAdmin" class="btn-float-right">
