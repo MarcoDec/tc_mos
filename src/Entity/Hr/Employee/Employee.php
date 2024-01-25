@@ -3,6 +3,8 @@
 namespace App\Entity\Hr\Employee;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use App\Entity\Interfaces\FileEntity;
+use App\Entity\Traits\FileTrait;
 use App\Validator as AppAssert;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
@@ -99,6 +101,24 @@ use App\Entity\Production\Manufacturing\OperationEmployee;
                     'summary' => 'Récupère un employé'
                 ]
             ],
+            'patch image' => [
+                'openapi_context' => [
+                    'description' => 'Modifie la photo d\'un employee',
+                    'summary' => 'Modifie la photo d\'un employee'
+                ],
+                'denormalization_context' => [
+                    'groups' => ['write:employee:image'],
+                    'openapi_definition_name' => 'Employee-image'
+                ],
+                'normalization_context' => [
+                    'groups' => ['read:employee:image'],
+                    'openapi_definition_name' => 'Employee-image'
+                ],
+                'path' => '/employees/{id}/image',
+                'controller' => PlaceholderAction::class,
+                'method' => 'POST',
+                'input_formats' => ['multipart'],
+            ],
             'patch' => [
                 'controller' => PlaceholderAction::class, //EmployeePatchController::class,
                 'method' => 'PATCH',
@@ -176,8 +196,8 @@ use App\Entity\Production\Manufacturing\OperationEmployee;
     ),
     ORM\Entity(repositoryClass: EmployeeRepository::class)
 ]
-class Employee extends Entity implements BarCodeInterface, PasswordAuthenticatedUserInterface, UserInterface {
-    use BarCodeTrait;
+class Employee extends Entity implements BarCodeInterface, PasswordAuthenticatedUserInterface, UserInterface, FileEntity {
+    use BarCodeTrait, FileTrait;
 
     #[
         Assert\Valid,
@@ -247,6 +267,13 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     ]
 
     private ?DateTimeImmutable $entryDate = null;
+
+    #[
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:employee:collection', 'read:employee'])
+    ]
+    protected ?string $filePath = '';
 
     #[
         ApiProperty(description: 'Sexe', example: GenderType::TYPE_MALE, openapiContext: ['enum' => GenderType::TYPES]),
@@ -731,4 +758,23 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         $this->username = $username;
         return $this;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getFilePath(): ?string
+    {
+        return $this->filePath;
+    }
+
+    /**
+     * @param string|null $filePath
+     * @return Employee
+     */
+    public function setFilePath(?string $filePath): Employee
+    {
+        $this->filePath = $filePath;
+        return $this;
+    }
+
 }
