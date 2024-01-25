@@ -1,7 +1,7 @@
 <script setup>
     import AppCardableTableItem from './AppCardableTableItem.vue'
 
-    const props = defineProps({
+    /*const props = */defineProps({
         fields: {required: true, type: Array},
         item: {required: true, type: Object},
         shouldDelete: {required: false, default: true},

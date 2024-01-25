@@ -9,7 +9,7 @@
     import {useRouter} from 'vue-router'
 
     defineProps({
-        icon: {required: true, type: String},
+        // icon: {required: true, type: String},
         title: {required: true, type: String}
     })
     const router = useRouter()
@@ -118,7 +118,7 @@
             },
             trie: false,
             type: 'select',
-            width:80
+            width: 80
         }
     ])
     async function deleted(id){
@@ -162,7 +162,7 @@
     <div class="row">
         <div class="col">
             <h1>
-                <FontAwesomeIcon icon="fa-brands fa-product-hunt" />
+                <FontAwesomeIcon icon="fa-brands fa-product-hunt"/>
                 <!--    fa-brands fa-product-hunt-->
                 {{ title }}
                 <span v-if="isProjectWriterOrAdmin" class="btn-float-right">

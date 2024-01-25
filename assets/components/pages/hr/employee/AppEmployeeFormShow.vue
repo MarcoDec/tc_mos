@@ -2,7 +2,6 @@
     import AppShowEmployeeContact from './tabs/AppShowEmployeeTabContact.vue'
     import AppShowEmployeeTabAccess from './tabs/AppShowEmployeeTabAccess.vue'
     import AppShowEmployeeTabDroits from './tabs/AppShowEmployeeTabDroits.vue'
-    import AppShowEmployeeTabGeneral from './tabs/AppShowEmployeeTabGeneral.vue'
     import AppShowEmployeeTabInfos from './tabs/AppShowEmployeeTabInfos.vue'
     import AppShowEmployeeTabProduction from './tabs/AppShowEmployeeTabProduction.vue'
     import AppSuspense from '../../../AppSuspense.vue'

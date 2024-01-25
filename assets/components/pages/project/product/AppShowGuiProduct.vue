@@ -3,8 +3,6 @@
     import {onBeforeMount, onBeforeUnmount, ref} from 'vue'
     import AppBtn from '../../../AppBtn.vue'
     import AppImg from '../../../AppImg.vue'
-    import AppComponentFormShow from '../../purchase/component/show/AppComponentFormShow.vue'
-    import AppComponentShowInlist from '../../purchase/component/show/AppComponentShowInlist.vue'
     import AppProductFormShow from './AppProductFormShow.vue'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
     import useOptions from '../../../../stores/option/options'
@@ -20,6 +18,8 @@
     const modeDetail = ref(true)
     const imageUpdateUrl = `/api/products/${idProduct}/image`
     const isFullScreen = ref(false)
+    const keyTabs = ref(0)
+    const keyTitle = ref(0)
     onBeforeMount(() => {
         const promises = []
         promises.push(fetchUnits.fetchOp())
@@ -63,12 +63,12 @@
     <AppShowGuiGen v-if="beforeMountDataLoaded">
         <template #gui-left>
             <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                <FontAwesomeIcon icon="fa-brands fa-product-hunt" />
+                <FontAwesomeIcon icon="fa-brands fa-product-hunt"/>
                 <b>{{ useFetchProductStore.product.code }}</b>: {{ useFetchProductStore.product.name }}
                 <span class="btn-float-right">
-                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
-                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
-                    </span>
+                    <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
+                    <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
+                </span>
             </div>
             <div class="d-flex flex-row">
                 <AppImg

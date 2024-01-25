@@ -6,6 +6,7 @@
     import useUser from '../../../../stores/security'
     import {useRouter} from 'vue-router'
     import {onMounted, onUnmounted} from 'vue'
+    import {Modal} from 'bootstrap'
 
     defineProps({
         icon: {required: true, type: String},
@@ -16,6 +17,8 @@
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
     const tableKey = ref(0)
+    const createModalRef = ref(null)
+    const creationSuccess = ref(false)
 
     const fetchUser = useUser()
     const currentCompany = fetchUser.company
@@ -104,6 +107,15 @@
     }
     async function onEmployeeCreated() {
         await refreshTable()
+        if (createModalRef.value) {
+            const modalElement = createModalRef.value.$el
+            const bootstrapModal = Modal.getInstance(modalElement)
+            bootstrapModal.hide()
+            creationSuccess.value = true
+            setTimeout(() => {
+                creationSuccess.value = false
+            }, 3000)
+        }
     }
     function onEmployeeShow(item) {
         console.log('onEmployeeShow', item)
@@ -139,6 +151,11 @@
                     </AppBtn>
                 </span>
             </h1>
+        </div>
+    </div>
+    <div v-if="creationSuccess" class="row d-flex">
+        <div class="bg-success text-white text-center">
+            Employé bien créé
         </div>
     </div>
     <div class="row">
