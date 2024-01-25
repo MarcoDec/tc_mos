@@ -20,7 +20,7 @@
     const keyTabs = ref(0)
     const isFullScreen = ref(false)
 
-    const imageUpdateUrl = `/api/suppliers/${idEmployee}/image`
+    const imageUpdateUrl = `/api/employees/${idEmployee}/image`
 
     const requestDetails = () => {
         modeDetail.value = true
@@ -50,8 +50,7 @@
         })
     }
     const onImageUpdate = () => {
-        // console.log('onImageUpdate')
-        fetchEmployeeStore.fetchOne(idEmployee)
+        window.location.reload()
     }
     const activateFullScreen = () => {
         isFullScreen.value = true
