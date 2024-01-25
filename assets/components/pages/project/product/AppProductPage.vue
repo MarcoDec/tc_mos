@@ -7,6 +7,8 @@
     import useOptions from '../../../../stores/option/options'
     import FontAwesomeIcon from '@fortawesome/vue-fontawesome/src/components/FontAwesomeIcon'
     import {useRouter} from 'vue-router'
+    import {Modal} from "bootstrap";
+    import AppComponentCreateModal from "../../purchase/component/list/create/AppComponentCreateModal.vue";
 
     defineProps({
         // icon: {required: true, type: String},
@@ -16,6 +18,8 @@
 
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
+    const creationSuccess = ref(false)
+    const createModalRef = ref(null)
 
     const fetchUser = useUser()
     const currentCompany = fetchUser.company
@@ -63,6 +67,14 @@
         }))
 
     const fields = computed(() => [
+        {
+            label: 'Img',
+            name: 'filePath',
+            trie: false,
+            type: 'img',
+            width: 100,
+            filter: false
+        },
         {label: 'Référence', name: 'code', trie: true, type: 'text'},
         {label: 'Indice', name: 'index', trie: true, type: 'text', width: 80},
         {label: 'Désignation', name: 'name', trie: true, type: 'text'},
@@ -156,6 +168,18 @@
         /* eslint-disable camelcase */
         router.push({name: 'product', params: {id_product: item.id}})
     }
+    async function onCreated() {
+        await refreshTable()
+        if (createModalRef.value) {
+            const modalElement = createModalRef.value.$el
+            const bootstrapModal = Modal.getInstance(modalElement)
+            bootstrapModal.hide()
+            creationSuccess.value = true
+            setTimeout(() => {
+                creationSuccess.value = false
+            }, 3000)
+        }
+    }
 </script>
 
 <template>
@@ -178,9 +202,19 @@
             </h1>
         </div>
     </div>
+    <div v-if="creationSuccess" class="row d-flex">
+        <div class="bg-success text-white text-center">
+            Produit bien créé
+        </div>
+    </div>
     <div class="row">
         <AppSuspense>
-            <AppProductCreate :modal-id="modalId" title="Création d'un nouveau Produit" :options-product-families="optionsProductFamilies" :target="target"/>
+            <AppProductCreate
+                ref="createModalRef"
+                :modal-id="modalId"
+                title="Création d'un nouveau Produit"
+                :options-product-families="optionsProductFamilies"
+                :target="target" @created="onCreated"/>
         </AppSuspense>
         <div class="col">
             <AppSuspense>

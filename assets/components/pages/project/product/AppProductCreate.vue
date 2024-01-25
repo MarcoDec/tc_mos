@@ -14,6 +14,7 @@
         modalId: {required: true, type: String},
         optionsProductFamilies: {required: true, type: Array}
     })
+    const emits = defineEmits(['created'])
     const storeProductsList = useProductStore()
     const storeCustomerProductList = useCustomerProductStore()
     const storeCustomerList = useCustomersStore()
@@ -408,7 +409,7 @@
                 product: storeProductsList.currentProduct
             }
             await storeCustomerProductList.addCustomerProduct(customerProduct)
-            window.location.reload()
+            emits('created')
         } catch (error) {
             violations = error
             isPopupVisible.value = true
