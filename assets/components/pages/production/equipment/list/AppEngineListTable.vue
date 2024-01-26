@@ -31,6 +31,7 @@
     const fetchEngineGroups = useEngineGroups()
     await fetchEngineGroups.fetchAllEngineGroups()
     const optionsEngineGroups = fetchEngineGroups.engineGroups.map(item => ({id: item['@id'], text: `${item.code}-${item.name}`, value: item['@id']}))
+
     function filterEngineGroups(type) {
         return {
             label: value => optionsEngineGroups.find(item => item.value === value)?.text
