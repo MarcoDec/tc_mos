@@ -7,8 +7,7 @@
     import useOptions from '../../../../stores/option/options'
     import FontAwesomeIcon from '@fortawesome/vue-fontawesome/src/components/FontAwesomeIcon'
     import {useRouter} from 'vue-router'
-    import {Modal} from "bootstrap";
-    import AppComponentCreateModal from "../../purchase/component/list/create/AppComponentCreateModal.vue";
+    import {Modal} from 'bootstrap'
 
     defineProps({
         // icon: {required: true, type: String},
