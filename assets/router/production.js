@@ -103,6 +103,13 @@ export default [
         }
     },
     {
+        component: () => import('../components/pages/production/manufacturingOrder/AppManufacturingOrderPage.vue'),
+        meta: {requiresAuth: true},
+        name: 'of-list',
+        path: '/of-list',
+        title: 'Ordres de fabrication'
+    },
+    {
         component: AppManufacturerEngine,
         meta: {title: 'Références Equipement — T-Concept GPAO'},
         name: 'manufacturer-engines',

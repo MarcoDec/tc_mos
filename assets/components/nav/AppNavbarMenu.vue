@@ -137,6 +137,9 @@
                 <AppNavbarLink v-if="user.isProductionWriter" to="label-template-list" icon="tags" :variant="variantProduction">
                     Modèles d'étiquette
                 </AppNavbarLink>
+                <AppNavbarLink v-if="user.isProductionReader" icon="bullhorn" to="of-list" :variant="variantProduction">
+                    Ordres de fabrication
+                </AppNavbarLink>
                 <AppNavbarLink v-if="user.isProductionWriter" icon="wrench" to="engine-groups" :variant="variantProduction">
                     Groupes d'équipements
                 </AppNavbarLink>

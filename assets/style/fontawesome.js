@@ -12,6 +12,7 @@ import {
     faBriefcase,
     faBuilding,
     faBullseye,
+    faBullhorn,
     faBusinessTime,
     faCalendar,
     faCalendarDay,
@@ -126,6 +127,7 @@ library.add(faBoxes)
 library.add(faBriefcase)
 library.add(faBuilding)
 library.add(faBullseye)
+library.add(faBullhorn)
 library.add(faBusinessTime)
 library.add(faCalendar)
 library.add(faCalendarDay)
