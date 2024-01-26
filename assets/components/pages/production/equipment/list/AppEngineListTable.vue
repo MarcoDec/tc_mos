@@ -140,9 +140,25 @@
             },
             searchDisabled: true,
             trie: false,
-            type: 'select'
+            type: 'select',
+            width: 80
         },
+        {label: 'Code', min: true, name: 'code', trie: true, type: 'text', width: 80},
+        {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
+        {label: 'Numero de série', min: true, name: 'serialNumber', trie: true, type: 'text', width: 150},
         {label: 'Marque', min: false, name: 'brand', trie: true, type: 'text'},
+        {
+            label: 'Machine de référence (modèle)',
+            min: true,
+            name: 'manufacturerEngine',
+            options: {
+                label: labelManufacturerEngine,
+                options: optionsManufacturerEngines
+            },
+            trie: true,
+            type: 'select',
+            width: 150
+        },
         {
             label: 'Groupe',
             min: false,
@@ -167,21 +183,7 @@
             trie: false,
             type: 'select'
         },
-        {label: 'Code', min: true, name: 'code', trie: true, type: 'text'},
-        {label: 'Date entrée', min: false, name: 'entryDate', trie: true, type: 'date'},
-        {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
-        {label: 'Numero de série', min: true, name: 'serialNumber', trie: true, type: 'text'},
-        {
-            label: 'Machine de référence (modèle)',
-            min: true,
-            name: 'manufacturerEngine',
-            options: {
-                label: labelManufacturerEngine,
-                options: optionsManufacturerEngines
-            },
-            trie: true,
-            type: 'select'
-        }
+        {label: 'Date entrée', min: false, name: 'entryDate', trie: true, type: 'date'}
     ]
     //endregion
     //endregion
