@@ -3,7 +3,7 @@
     import useCompagnies from '../../../../stores/compagnie/compagnies'
     import useProducts from '../../../../stores/product/products'
 
-    const emit = defineEmits(['update:modelValue'])
+    const emit = defineEmits(['update:modelValue', 'created'])
     const products = useProducts()
     const compagnies = useCompagnies()
     onMounted(async () => {
