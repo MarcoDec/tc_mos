@@ -41,8 +41,7 @@
         modeDetail.value = false
     }
     const onImageUpdate = () => {
-        // console.log('onImageUpdate')
-        useFetchWorkstationsStore.fetchOne(idEngine)
+        window.location.reload()
     }
     const activateFullScreen = () => {
         isFullScreen.value = true

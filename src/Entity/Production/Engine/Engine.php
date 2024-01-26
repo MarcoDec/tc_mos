@@ -15,6 +15,7 @@ use App\Entity\Embeddable\EmployeeEngineState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
+use App\Entity\Interfaces\FileEntity;
 use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\Attachment\EngineAttachment;
 use App\Entity\Production\Engine\CounterPart\CounterPart;
@@ -22,6 +23,7 @@ use App\Entity\Production\Engine\Manufacturer\Engine as ManufacturerEngine;
 use App\Entity\Production\Engine\Tool\Tool;
 use App\Entity\Production\Engine\Workstation\Workstation;
 use App\Entity\Traits\BarCodeTrait;
+use App\Entity\Traits\FileTrait;
 use App\Filter\RelationFilter;
 //use App\Filter\SetFilter;
 use DateTimeImmutable;
@@ -58,6 +60,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère un équipement',
                     'summary' => 'Récupère un équipement',
                 ]
+            ],
+            'patch image' => [
+                'openapi_context' => [
+                    'description' => 'Modifie l\'image d\'une machine',
+                    'summary' => 'Modifie l\'image d\'une machine'
+                ],
+                'denormalization_context' => [
+                    'groups' => ['write:engine:image'],
+                    'openapi_definition_name' => 'Engine-image'
+                ],
+                'normalization_context' => [
+                    'groups' => ['read:engine:image'],
+                    'openapi_definition_name' => 'Engine-image'
+                ],
+                'path' => '/engines/{id}/image',
+                'controller' => PlaceholderAction::class,
+                'method' => 'POST',
+                'input_formats' => ['multipart'],
             ],
             'patch' => [
                 'openapi_context' => [
@@ -102,7 +122,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         normalizationContext: [
             'enable_max_depth' => true,
-            'groups' => ['read:engine', 'read:id', 'read:state'],
+            'groups' => ['read:engine', 'read:id', 'read:state', 'read:file'],
             'openapi_definition_name' => 'Engine-read',
             'skip_null_values' => false
         ]
@@ -112,8 +132,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE')
 ]
-abstract class Engine extends Entity implements BarCodeInterface {
-    use BarCodeTrait;
+abstract class Engine extends Entity implements BarCodeInterface, FileEntity {
+    use BarCodeTrait, FileTrait;
 
     final public const TYPES = [
         EngineType::TYPE_COUNTER_PART => CounterPart::class,
@@ -144,7 +164,12 @@ abstract class Engine extends Entity implements BarCodeInterface {
         Serializer\Groups(['read:engine', 'write:engine'])
     ]
     protected ?DateTimeImmutable $entryDate = null;
-
+    #[
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:engine:collection', 'read:engine', 'write:engine'])
+    ]
+    protected ?string $filePath = '';
     /**
      * @var Group|null
      */
@@ -364,5 +389,15 @@ abstract class Engine extends Entity implements BarCodeInterface {
       $this->attachments = $attachments;
    }
 
-
+    #[
+        ApiProperty(description: 'Icône', example: '/uploads/engine/1.jpg'),
+        Serializer\Groups(['read:file'])
+    ]
+    final public function getFilepath(): ?string {
+        return $this->filePath;
+    }
+    public function setFilePath(?string $filePath): void
+    {
+        $this->filePath = $filePath;
+    }
 }
