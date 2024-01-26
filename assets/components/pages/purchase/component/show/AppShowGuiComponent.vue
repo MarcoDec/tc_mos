@@ -55,8 +55,7 @@
     })
     //endregion
     const onImageUpdate = () => {
-        // console.log('onImageUpdate')
-        useFetchComponentStore.fetchOne(idComponent)
+        window.location.reload()
     }
     const onUpdated = () => {
         // console.log('onUpdated')
