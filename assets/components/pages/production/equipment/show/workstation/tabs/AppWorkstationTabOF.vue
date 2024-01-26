@@ -3,7 +3,6 @@ import {AppCardableTable} from '../../../../../../bootstrap-5/app-cardable-colle
 import {useRoute} from 'vue-router'
 const route = useRoute()
 const workstationId = route.params.id_engine
-console.log('workstationId', workstationId)
 const fields = [
     {
         create: false,
