@@ -127,7 +127,7 @@ class ComponentEquivalent extends Entity implements BarCodeInterface, MeasuredIn
 {
     use BarCodeTrait;
     #[
-        ApiProperty(description: 'Famille du Groupe d\'équivalence', readableLink: false, required: true, example: '/api/component-families/1'),
+        ApiProperty(description: 'Famille du Groupe d\'équivalence', readableLink: false, required: true, example: '/api/component-equivalents/1'),
         Assert\NotBlank(groups: ['ComponentEquivalent-admin', 'ComponentEquivalent-create']),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne(targetEntity: Family::class, fetch: 'EAGER', inversedBy: 'components'),
