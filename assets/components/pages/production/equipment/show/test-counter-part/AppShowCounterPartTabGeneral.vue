@@ -57,7 +57,7 @@
         //code: fetchEngineStore.engine.code,
         entryDate: fetchEngineStore.engine.entryDate.substring(0, 10),
         group: fetchEngineStore.engine.group,
-        manufacturerEngine: fetchEngineStore.engine.manufacturerEngine['@id'],
+        manufacturerEngine: fetchEngineStore.engine.manufacturerEngine === null ? null : fetchEngineStore.engine.manufacturerEngine['@id'],
         maxOperator: fetchEngineStore.engine.maxOperator,
         name: fetchEngineStore.engine.name,
         notes: fetchEngineStore.engine.notes,
