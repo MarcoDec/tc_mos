@@ -154,7 +154,7 @@ class Carton extends Entity // implements MeasuredInterface, FileEntity
         ORM\Column(type: 'string', nullable: true),
         Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
-    private ?string $customerAddressName; // Nom du site client à livrer
+    private ?string $customerAddressName=''; // Nom du site client à livrer
     #[
         ApiProperty(description: 'Nom du site de départ'),
         ORM\Column(type: 'string', nullable: true),

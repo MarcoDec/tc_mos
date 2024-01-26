@@ -30,6 +30,10 @@ class LabelCartonManager
     }
 
     public function generateTConceptZPLstr(Carton $carton) {
+        $description = $carton->getProductDescription();
+        //$maxLength = 50; // Exemple de longueur maximale
+        //$truncatedDescription = $this->truncateStringByWord($description, $maxLength);
+        $truncatedDescription = $description;
         $zpl = <<<ZPL
 \${^XA
 
@@ -44,7 +48,7 @@ class LabelCartonManager
 ^FO710,850^A0R,40,50^FDEXPEDITEUR:^FS
 ^FO580,870^A0R,60,60^FD<EXPEDITEUR>^FS
 ^FO480,50^A0R,40,50^FDDESIGNATION:^FS
-^FO400,50^A0R,35,50^FD<DESIGNATION>^FS
+^FO400,50^A0R,32,32^FD<DESIGNATION>^FS
 ^FO350,50^A0R,35,50^FDRef Client:^FS
 ^FO350,280^A0R,35,50^FD<Ref Client>^FS
 ^FO300,50^A0R,35,50^FDIndice:^FS
@@ -63,7 +67,7 @@ class LabelCartonManager
 ZPL;
     $zpl = str_replace('<DESTINATAIRE>', $carton->getCustomerAddressName(), $zpl);
     $zpl = str_replace('<EXPEDITEUR>', $carton->getManufacturer(), $zpl);
-    $zpl = str_replace('<DESIGNATION>', $carton->getProductDescription(), $zpl);
+    $zpl = str_replace('<DESIGNATION>', $truncatedDescription, $zpl);
     $zpl = str_replace('<Ref Client>', $carton->getProductReference(), $zpl);
     $zpl = str_replace('<Indice>', $carton->getProductIndice(), $zpl);
     $zpl = str_replace('<LOT>', $carton->getBatchnumber(), $zpl);
@@ -118,12 +122,25 @@ ZPL;
     $zpl = str_replace('<REFERENCE PRODUIT>', $carton->getProductReference().'/'.$carton->getProductIndice(), $zpl);
     $zpl = str_replace('<QUANTITE>', $carton->getQuantity(), $zpl);
     $zpl = str_replace('<CODEBARRE>', $carton->getProductReference().'/'.$carton->getProductIndice().'/'.$carton->getBatchnumber(), $zpl);
-        return zpl;
+        return $zpl;
     }
 
     public function removeLabel(Carton $carton) : void {
         $carton->setDeleted(true);
         $this->em->persist($carton);
         $this->em->flush();
+    }
+    function truncateStringByWord($string, $maxLength) {
+        $words = explode(' ', $string);
+        $truncated = '';
+
+        foreach ($words as $word) {
+            if (strlen($truncated) + strlen($word) + 1 > $maxLength) {
+                break;
+            }
+            $truncated .= ($truncated === '' ? '' : ' ') . $word;
+        }
+
+        return $truncated;
     }
 }
