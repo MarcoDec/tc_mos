@@ -5,6 +5,7 @@ import AppInputMeasureSelect from './AppInputMeasureSelect.vue'
 import AppInputNumber from './AppInputNumber.vue'
 import AppMultiselect from './select/AppMultiselect.vue'
 import AppRating from './AppRating.vue'
+import AppMultiselectFetch from './select/AppMultiselectFetch.vue'
 import AppSelect from './select/AppSelect.vue'
 import AppSwitch from './AppSwitch.vue'
 import AppTextArea from './AppTextArea'
@@ -14,7 +15,7 @@ function getType(field) {
     switch (field.type) {
     case 'boolean':
         return AppSwitch
-    case 'number':
+    case 'number' || 'int':
         return AppInputNumber
     case 'file':
         return AppInputFile
@@ -22,6 +23,8 @@ function getType(field) {
         return AppSelect
     case 'multiselect':
         return AppMultiselect
+    case 'multiselect-fetch':
+        return AppMultiselectFetch
     case 'measure':
         return AppInputMeasure
     case 'measureSelect':

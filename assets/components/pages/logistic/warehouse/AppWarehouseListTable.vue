@@ -29,7 +29,7 @@
     //endregion
     //region Chargement de la liste des entrepôts liés à la compagnie de l'utilisateur
     const storeWarehouseList = useWarehouseListStore()
-    const warehouseListCriteria = useFetchCriteria('warehouse-list-criteria')
+    const warehouseListCriteria = useFetchCriteria('warehouse-engine-list-criteria')
     warehouseListCriteria.addFilter('company', currentCompany)
     async function refreshTable() {
         await storeWarehouseList.fetch(warehouseListCriteria.getFetchCriteria)

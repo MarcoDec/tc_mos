@@ -47,7 +47,6 @@
         flex-direction: column;
         width: 100vw;
     }
-
     .nav-tabs-flex {
         display: flex;
         margin-top: 0px;

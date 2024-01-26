@@ -76,8 +76,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Attribute-read',
             'skip_null_values' => false
         ],
-        //order: ['name' => 'asc'],
-        paginationClientEnabled: true,
+        order: ['name' => 'asc'],
+        paginationClientEnabled: true
     ),
     ORM\Entity(repositoryClass: AttributeRepository::class)
 ]

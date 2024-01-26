@@ -1,25 +1,31 @@
 <script setup>
+    import {BImg} from 'bootstrap-vue-next'
     import AppSwitch from '../../../form-cardable/fieldCardable/input/AppSwitch.vue'
+    import {computed, ref} from 'vue'
+
     const props = defineProps({
         fields: {required: true, type: Array},
         item: {required: true, type: Object},
         shouldDelete: {required: false, default: true},
         shouldSee: {required: false, default: true}
     })
-    //console.log('AppCardableTableItem', props.item, props.fields)
-    const id = Number(props.item['@id'].match(/\d+/)[0])
+    const id = computed(() => Number(props.item['@id'].match(/\d+/)[0]))
     const emit = defineEmits(['deleted', 'update'])
+    const isImageEnlarged = ref(false)
     function update(){
         emit('update', props.item)
     }
     function deleted(){
-        emit('deleted', id)
+        emit('deleted', id.value)
     }
     function isObject(val) {
         if (val === null) {
             return false
         }
         return typeof val === 'function' || typeof val === 'object'
+    }
+    const toggleImageSize = () => {
+        isImageEnlarged.value = !isImageEnlarged.value
     }
 </script>
 
@@ -34,7 +40,7 @@
             </button>
         </template>
     </td>
-    <td v-for="field in fields" :key="field.name">
+    <td v-for="field in fields" :key="field.name" :style="{width: field.width ? `${field.width}px` : null}">
         <template v-if="item[field.name] !== null">
             <div v-if="field.type === 'select'">
                 <template v-if="isObject(item[field.name])">
@@ -63,6 +69,13 @@
             <div v-else-if="field.type === 'link'">
                 <a v-if="item[field.name] !== null && item[field.name] !== ''" :href="item[field.name]" target="_blank">Download file</a>
             </div>
+            <div v-else-if="field.type === 'img'" class="text-center">
+                <div v-if="item[field.name].length > 0">
+                    <BImg class="img-base" thumbnail fluid :src="item[field.name]" alt="Image 1" @click="toggleImageSize"/>
+                    <BImg v-if="isImageEnlarged" class="image-enlarged" thumbnail fluid :src="item[field.name]" alt="Image 1" @click="toggleImageSize"/>
+                </div>
+                <span v-else class="font-xsmall text-secondary">Image non disponible</span>
+            </div>
             <div v-else>
                 <span v-if="isObject(item[field.name])" class="bg-danger text-white">Object given for field '{{ field.name }}' - {{ item[field.name] }}</span>
                 <span v-else>{{ item[field.name] }}</span>
@@ -70,3 +83,9 @@
         </template>
     </td>
 </template>
+
+<style scoped>
+    .img-base {
+        cursor: zoom-in;
+    }
+</style>

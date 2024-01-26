@@ -102,9 +102,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                 'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ]
         ],
-        attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
-        ],
+//        attributes: [
+//            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
+//        ],
         denormalizationContext: [
             'groups' => ['write:address', 'write:company'],
             'openapi_definition_name' => 'Company-write'

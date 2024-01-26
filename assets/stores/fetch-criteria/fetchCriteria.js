@@ -67,6 +67,11 @@ export default function useFetchCriteria(id) {
                 filteredSorts.forEach(sortElement => {
                     this.sorts.remove(sortElement)
                 })
+            },
+            reset() {
+                this.filters = []
+                this.sorts = []
+                this.page = 1
             }
         },
         getters: {

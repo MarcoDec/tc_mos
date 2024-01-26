@@ -1,11 +1,12 @@
-import AppEngineList from '../components/pages/production/equipment/engine-list/AppEngineList.vue'
-import AppManufacturerEngine from '../components/pages/production/equipment/manufacturer-engine/AppManufacturerEngine.vue'
-import AppShowGuiTestCounterPart from '../components/pages/production/equipment/test-counter-part/AppShowGuiTestCounterPart.vue'
-import AppShowGuiTool from '../components/pages/production/equipment/tool/AppShowGuiTool.vue'
-import AppShowGuiWorkstation from '../components/pages/production/equipment/workstation/AppShowGuiWorkstation.vue'
+import AppEngineList from '../components/pages/production/equipment/list/AppEngineList.vue'
+import AppManufacturerEngine from '../components/pages/production/manufacturer/AppManufacturerEngine.vue'
+import AppShowGuiTestCounterPart from '../components/pages/production/equipment/show/test-counter-part/AppShowGuiTestCounterPart.vue'
+import AppShowGuiTool from '../components/pages/production/equipment/show/tool/AppShowGuiTool.vue'
+import AppShowGuiWorkstation from '../components/pages/production/equipment/show/workstation/AppShowGuiWorkstation.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTablePageType from '../components/pages/table/AppTablePageType.vue'
 import {readonly} from 'vue'
+
 const myOptions = [
     {iri: 'counter-part', text: 'Contrepartie de test', value: 'counter-part'},
     {iri: 'workstation', text: 'Poste de travail', value: 'workstation'},
@@ -102,13 +103,20 @@ export default [
         }
     },
     {
+        component: () => import('../components/pages/production/manufacturingOrder/AppManufacturingOrderPage.vue'),
+        meta: {requiresAuth: true},
+        name: 'of-list',
+        path: '/of-list',
+        title: 'Ordres de fabrication'
+    },
+    {
         component: AppManufacturerEngine,
         meta: {title: 'Références Equipement — T-Concept GPAO'},
         name: 'manufacturer-engines',
         path: '/manufacturer-engines',
         props: {
             icon: 'city',
-            title: 'Références Equipement'
+            title: 'Modèle d\'équipement'
         }
     },
     {
@@ -138,5 +146,11 @@ export default [
         meta: {container: false, title: 'Tool — T-Concept GPAO'},
         name: 'toolShow',
         path: '/tool/:id_engine'
-    }
+    }//,
+    // {
+    //     component: AppEquipementListEvent,
+    //     meta: {container: false, title: 'Evénements Equipements — T-Concept GPAO'},
+    //     name: 'engine-events',
+    //     path: '/engine-events'
+    // }
 ]

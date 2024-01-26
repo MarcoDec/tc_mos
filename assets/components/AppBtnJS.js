@@ -4,8 +4,8 @@ import {generateVariant} from './props'
 function AppBtnJS(props, context) {
     let css = `btn btn-${props.variant}`
     const children = []
-    if (typeof context.slots['default'] === 'function')
-        children.push(context.slots['default']())
+    if (typeof context.slots.default === 'function')
+        children.push(context.slots.default())
     if (props.icon) {
         css += ' btn-icon'
         children.push(h(resolveComponent('Fa'), {icon: props.icon}))

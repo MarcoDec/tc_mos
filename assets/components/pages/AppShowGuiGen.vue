@@ -1,5 +1,5 @@
 <script setup>
-    import {onBeforeUnmount, onMounted, ref} from 'vue'
+    import {computed, onBeforeUnmount, onMounted, ref} from 'vue'
 
     // Ratio de la zone top par rapport à la zone top+bottom
     const guiRatio = ref(0.5)
@@ -7,7 +7,7 @@
     // Dimensions de la fenêtre du navigateur
     const windowSize = ref({height: window.innerHeight, width: window.innerWidth})
     // Hauteur de la barre de menu
-    const appNavBarHeight = ref(0)
+    const appNavBarHeight = computed(() => document.getElementById('app-nav-bar').getBoundingClientRect().height)
     // Styles à appliquer au wrapper
     const guiWrapperStyle = ref({height: '50vh'})
     // Styles à appliquer à la ligne d'entête
@@ -53,7 +53,7 @@
     }
 
     function onWindowResize() {
-        appNavBarHeight.value = document.getElementById('app-nav-bar').getBoundingClientRect().height
+        // appNavBarHeight.value = document.getElementById('app-nav-bar').getBoundingClientRect().height
         windowSize.value = {
             height: window.innerHeight,
             width: window.innerWidth

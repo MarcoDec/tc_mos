@@ -42,13 +42,15 @@ export default function useTable(id) {
                 if (this.readFilterPrevious !== this.readFilter) {
                     this.page = 1
                 }
+                console.log(this.readFilter)
                 if (this.readFilter === '') this.readFilter = `?page=${this.page}`
                 else if (this.readFilter.includes('page=')) {
                     const previousPage = this.readFilter.match(/page=\d+/)[0]
                     this.readFilter = this.readFilter.replace(previousPage, `page=${this.page}`)
                 } else {
-                    this.readFilter = `&page=${this.page}`
+                    this.readFilter += `&page=${this.page}`
                 }
+                console.log(this.readFilter)
                 this.readFilterPrevious = this.readFilter
                 const response = await api(this.url + this.readFilter, 'GET', this.fetchBody)
                 this.resetItems()

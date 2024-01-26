@@ -43,11 +43,11 @@ class ApiRequest {
     set #formDataBody(body) {
         for (const [key, value] of Object.entries(Object.fromEntries(body))) {
             if (typeof value === 'undefined' || value === null)
-                body['delete'](key)
+                body.delete(key)
             else if (typeof value === 'string') {
                 body.set(key, value.trim())
                 if (body.get(key).length === 0)
-                    body['delete'](key)
+                    body.delete(key)
             }
         }
         this.#body = body

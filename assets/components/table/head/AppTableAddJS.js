@@ -29,8 +29,8 @@ function AppTableAddJS(props, context) {
             variant: 'success',
             violations: props.machine.state.value.context.violations
         },
-        typeof context.slots['default'] === 'function'
-            ? {submit: args => context.slots['default'](args)}
+        typeof context.slots.default === 'function'
+            ? {submit: args => context.slots.default(args)}
             : null
     )
 }

@@ -8,8 +8,8 @@ function AppPagination(props, context) {
         h(
             'ul',
             {class: 'pagination'},
-            typeof context.slots['default'] === 'function'
-                ? context.slots['default']({machine: props.machine, range, store: props.store})
+            typeof context.slots.default === 'function'
+                ? context.slots.default({machine: props.machine, range, store: props.store})
                 : range.map(index => h(
                     resolveComponent('AppPaginationItem'),
                     {
