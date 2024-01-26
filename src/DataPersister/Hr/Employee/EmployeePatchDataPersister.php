@@ -30,9 +30,9 @@ class EmployeePatchDataPersister implements ContextAwareDataPersisterInterface
             $hashedPassword = $this->passwordHasher->hashPassword($data, $data->getPlainPassword());
             dump($hashedPassword);
             $data->setPassword($hashedPassword);
-            $this->em->flush();
             $this->logger->info(`Changement du mot de passe de l'utilisateur `.$data->getId());
         }
+        $this->em->flush();
     }
 
     public function remove($data, array $context = [])
