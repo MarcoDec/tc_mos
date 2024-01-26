@@ -239,21 +239,14 @@
     function hideForm(){
         AddForm.value = false
     }
-    async function showUpdateForm(item) {
+    function showUpdateForm(item) {
         const idEngine = Number(item.id)
-        switch (item['@type']) {
-            case 'Tool':
-                // eslint-disable-next-line camelcase
-                await router.push({name: 'toolShow', params: {id_engine: idEngine}})
-                break
-            case 'Workstation':
-                // eslint-disable-next-line camelcase
-                await router.push({name: 'workstationShow', params: {id_engine: idEngine}})
-                break
-            case 'CounterPart':
-                // eslint-disable-next-line camelcase
-                await router.push({name: 'counterPartShow', params: {id_engine: idEngine}})
-                break
+        if (item['@type'] === 'Tool') {
+            router.push({name: 'toolShow', params: {id_engine: idEngine}})
+        } else if (item['@type'] === 'Workstation') {
+            router.push({name: 'workstationShow', params: {id_engine: idEngine}})
+        } else if (item['@type'] === 'CounterPart') {
+            router.push({name: 'counterPartShow', params: {id_engine: idEngine}})
         }
     }
     async function deleted(id){
