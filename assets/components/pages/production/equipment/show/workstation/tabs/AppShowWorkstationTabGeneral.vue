@@ -1,13 +1,13 @@
 <script setup>
     import {ref} from 'vue'
-    import useEngineGroups from '../../../../../../stores/production/engine/groups/engineGroups'
-    import useFetchCriteria from '../../../../../../stores/fetch-criteria/fetchCriteria'
+    import useEngineGroups from '../../../../../../../stores/production/engine/groups/engineGroups'
+    import useFetchCriteria from '../../../../../../../stores/fetch-criteria/fetchCriteria'
     import {
         useManufacturerEngineStore
-    } from '../../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
+    } from '../../../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
     //import useUser from '../../../../../../stores/security'
-    import {useWorkstationsStore} from '../../../../../../stores/production/engine/workstation/workstations'
-    import useZonesStore from '../../../../../../stores/production/company/zones'
+    import {useWorkstationsStore} from '../../../../../../../stores/production/engine/workstation/workstations'
+    import useZonesStore from '../../../../../../../stores/production/company/zones'
 
     //region récupération des stores déjà chargés
     const fetchEngineStore = useWorkstationsStore()

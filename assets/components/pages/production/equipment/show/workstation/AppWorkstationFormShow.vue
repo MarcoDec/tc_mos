@@ -1,5 +1,5 @@
 <script setup>
-    import AppShowWorkstationTabGeneral from './AppShowWorkstationTabGeneral.vue'
+    import AppShowWorkstationTabGeneral from './tabs/AppShowWorkstationTabGeneral.vue'
     import AppSuspense from '../../../../../AppSuspense.vue'
     import AppTabFichiers from '../../../../../tab/AppTabFichiers.vue'
     import {useEngineAttachmentStore} from '../../../../../../stores/production/engine/workstation/engineAttachment'
@@ -23,11 +23,9 @@
 
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
-        <AppTab id="gui-start-main" active title="Généralités" icon="pencil" tabs="gui-start">
-            <AppSuspense><AppShowWorkstationTabGeneral v-if="fetchEngineStore.isLoaded"/></AppSuspense>
-        </AppTab>
         <AppTab
             id="gui-start-files"
+            active
             title="Fichiers"
             icon="laptop"
             tabs="gui-start">

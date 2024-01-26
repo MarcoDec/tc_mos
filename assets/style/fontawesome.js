@@ -106,7 +106,15 @@ import {
     faForwardStep,
     faForwardFast,
     faSquare,
-    faNetworkWired, faRotateLeft, faSave, faAt, faMagnifyingGlassPlus, faMagnifyingGlassMinus
+    faNetworkWired,
+    faRotateLeft,
+    faSave,
+    faAt,
+    faMagnifyingGlassPlus,
+    faMagnifyingGlassMinus,
+    faPaintRoller,
+    faHistory,
+    faRetweet
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -167,6 +175,7 @@ library.add(faForwardStep)
 library.add(faGaugeHigh)
 library.add(faGear)
 library.add(faHandHoldingUsd)
+library.add(faHistory)
 library.add(faHourglass)
 library.add(faHourglassHalf)
 library.add(faIcons)
@@ -185,6 +194,7 @@ library.add(faMapMarkedAlt)
 library.add(faMoneyBill1)
 library.add(faNetworkWired)
 library.add(faOilWell)
+library.add(faPaintRoller)
 library.add(faPalette)
 library.add(faPallet)
 library.add(faPencil)
@@ -198,6 +208,7 @@ library.add(faProductHunt)
 library.add(faProjectDiagram)
 library.add(faPuzzlePiece)
 library.add(faReceipt)
+library.add(faRetweet)
 library.add(faRightToBracket)
 library.add(faRotateLeft)
 library.add(faRulerHorizontal)
