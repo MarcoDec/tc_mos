@@ -260,7 +260,7 @@
 
     //region ## fonctions Recherche, Tri et pagination
     async function getPage(nPage){
-        tableCriteria.gotoPage(nPage)
+        tableCriteria.gotoPage(Number(nPage))
         await refreshList()
     }
     async function trier(payload) {
@@ -311,13 +311,13 @@
                     <AppCardableTable
                         :current-page="storeEngines.currentPage"
                         :fields="tabFields"
-                        :first-page="storeEngines.view['hydra:first']"
+                        :first-page="storeEngines.firstPage"
                         :items="storeEngines.engines"
-                        :last-page="storeEngines.view['hydra:last']"
+                        :last-page="storeEngines.lastPage"
                         :min="AddForm"
-                        :next-page="storeEngines.view['hydra:next']"
+                        :next-page="storeEngines.nextPage"
                         :pag="storeEngines.pagination"
-                        :previous-page="storeEngines.view['hydra:previous']"
+                        :previous-page="storeEngines.previousPage"
                         :user="roleuser"
                         form="formEnginesCardableTable"
                         @cancel-search="cancelSearch"
