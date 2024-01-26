@@ -61,7 +61,7 @@
     const tableCriteriaME = useFetchCriteria('ManufacturerEngines')
     tableCriteriaME.addFilter('pagination', 'false')
     await fetchManufacturerEngines.fetchAll(tableCriteriaME.getFetchCriteria)
-    const optionsManufacturerEngines = fetchManufacturerEngines.engines.map(item => ({id: item['@id'], text: item.name, value: item['@id']}))
+    const optionsManufacturerEngines = fetchManufacturerEngines.engines.map(item => ({id: item['@id'], text: `${item.code} [${item.partNumber}]`, value: item['@id']}))
     function labelManufacturerEngine(value) {
         return optionsManufacturerEngines.find(item => item.id === value)?.text
             ?? null
