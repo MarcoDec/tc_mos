@@ -1,10 +1,10 @@
 <script setup>
-    import AppShowGuiGen from '../../../AppShowGuiGen.vue'
-    import AppSuspense from '../../../../AppSuspense.vue'
+    import AppShowGuiGen from '../../../../AppShowGuiGen.vue'
+    import AppSuspense from '../../../../../AppSuspense.vue'
     import AppToolFormShow from './AppToolFormShow.vue'
     //import useOptions from '../../../../../stores/option/options'
     import {useRoute} from 'vue-router'
-    import {useToolsStore} from '../../../../../stores/production/engine/tool/tools'
+    import {useToolsStore} from '../../../../../../stores/production/engine/tool/tools'
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)

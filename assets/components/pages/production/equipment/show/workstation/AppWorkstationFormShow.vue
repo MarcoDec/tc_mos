@@ -1,26 +1,30 @@
 <script setup>
-    import AppShowCounterPartTabGeneral from './tabs/AppShowCounterPartTabGeneral.vue'
-    import AppSuspense from '../../../../AppSuspense.vue'
-    import AppTabFichiers from '../../../../tab/AppTabFichiers.vue'
-    import {useCounterPartStore} from '../../../../../stores/production/engine/test-counter-part/testCounterPart'
-    import {useEngineAttachmentStore} from '../../../../../stores/production/engine/test-counter-part/engineAttachment'
+    import AppShowWorkstationTabGeneral from './AppShowWorkstationTabGeneral.vue'
+    import AppSuspense from '../../../../../AppSuspense.vue'
+    import AppTabFichiers from '../../../../../tab/AppTabFichiers.vue'
+    import {useEngineAttachmentStore} from '../../../../../../stores/production/engine/workstation/engineAttachment'
     import {useRoute} from 'vue-router'
-    import useUser from '../../../../../stores/security'
-    import useZonesStore from '../../../../../stores/production/company/zones'
+    import useUser from '../../../../../../stores/security'
+    import {useWorkstationsStore} from '../../../../../../stores/production/engine/workstation/workstations'
+    import useZonesStore from '../../../../../../stores/production/company/zones'
     const currentCompany = useUser().company
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
+    const fetchEngineStore = useWorkstationsStore()
+    //region récupération des pièces jointes
     const fetchEngineAttachmentStore = useEngineAttachmentStore()
     await fetchEngineAttachmentStore.fetchByElement(idEngine)
-    const fetchEngineStore = useCounterPartStore()
+    //endregion
+    //region récupération des zones liées à la compangnie
     const fetchZones = useZonesStore()
     await fetchZones.fetchAll(currentCompany)
+    //endregion
 </script>
 
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab id="gui-start-main" active title="Généralités" icon="pencil" tabs="gui-start">
-            <AppSuspense><AppShowCounterPartTabGeneral v-if="fetchEngineStore.isLoaded"/></AppSuspense>
+            <AppSuspense><AppShowWorkstationTabGeneral v-if="fetchEngineStore.isLoaded"/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-files"
@@ -29,12 +33,12 @@
             tabs="gui-start">
             <AppSuspense>
                 <AppTabFichiers
-                    attachment-element-label="counter-part"
-                    :element-api-url="`/api/counter-parts/${fetchEngineStore.engine.id}`"
+                    attachment-element-label="engine"
+                    :element-api-url="`/api/workstations/${fetchEngineStore.engine.id}`"
                     :element-attachment-store="fetchEngineAttachmentStore"
                     :element-id="fetchEngineStore.engine.id"
                     element-parameter-name="ENGINE_ATTACHMENT_CATEGORIES"
-                    :element-store="useCounterPartStore"/>
+                    :element-store="useWorkstationsStore"/>
             </AppSuspense>
         </AppTab>
         <!--        <AppTab id="gui-start-quality" title="Qualité" icon="certificate" tabs="gui-start">-->

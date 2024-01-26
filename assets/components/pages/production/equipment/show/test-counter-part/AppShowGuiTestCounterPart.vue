@@ -1,27 +1,28 @@
 <script setup>
-    import AppShowGuiGen from '../../../AppShowGuiGen.vue'
-    import AppWorkstationFormShow from './AppWorkstationFormShow.vue'
+    import AppShowGuiGen from '../../../../AppShowGuiGen.vue'
+    import AppTestCounterPartFormShow from './AppTestCounterPartFormShow.vue'
+    import {useCounterPartStore} from '../../../../../../stores/production/engine/test-counter-part/testCounterPart'
+    import useOptions from '../../../../../../stores/option/options'
     import {useRoute} from 'vue-router'
-    import {useWorkstationsStore} from '../../../../../stores/production/engine/workstation/workstations'
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
-    //region récupération information Workstations
-    const useFetchWorkstationsStore = useWorkstationsStore()
-    useFetchWorkstationsStore.fetchOne(idEngine)
-    //endregion
+    const fetchUnits = useOptions('units')
+    const useFetchCounterPartStore = useCounterPartStore()
+    fetchUnits.fetchOp()
+    useFetchCounterPartStore.fetchOne(idEngine)
 </script>
 
 <template>
     <AppSuspense>
         <AppShowGuiGen>
             <template #gui-header>
-                <div v-if="useFetchWorkstationsStore.isLoaded" class="bg-white border-1 border-dark">
-                    <b>{{ useFetchWorkstationsStore.engine.code }}</b>: {{ useFetchWorkstationsStore.engine.name }}
+                <div v-if="useFetchCounterPartStore.isLoaded" class="bg-white border-1 border-dark">
+                    <b>{{ useFetchCounterPartStore.engine.code }}</b>: {{ useFetchCounterPartStore.engine.name }}
                 </div>
             </template>
             <template #gui-left>
-                <AppSuspense><AppWorkstationFormShow v-if="useFetchWorkstationsStore.isLoaded"/></AppSuspense>
+                <AppSuspense><AppTestCounterPartFormShow v-if="useFetchCounterPartStore.isLoaded && fetchUnits.isLoaded"/></AppSuspense>
             </template>
             <template #gui-bottom>
                 <!--            <AppTabs id="gui-bottom">-->

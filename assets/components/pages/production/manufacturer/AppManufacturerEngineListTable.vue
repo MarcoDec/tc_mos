@@ -1,17 +1,17 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import AppFormCardable from '../../../../form-cardable/AppFormCardable'
-    import AppSuspense from '../../../../AppSuspense.vue'
-    import AppTabFichiers from '../../../../tab/AppTabFichiers.vue'
-    import {useEngineTypeStore} from '../../../../../stores/production/engine/type/engineTypes'
-    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
+    import AppFormCardable from '../../../form-cardable/AppFormCardable'
+    import AppSuspense from '../../../AppSuspense.vue'
+    import AppTabFichiers from '../../../tab/AppTabFichiers.vue'
+    import {useEngineTypeStore} from '../../../../stores/production/engine/type/engineTypes'
+    import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
     import {
         useManufacturerEngineAttachmentStore
-    } from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngineAttachements'
+    } from '../../../../stores/production/engine/manufacturer-engine/manufacturerEngineAttachements'
     import {
         useManufacturerEngineStore
-    } from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
-    import useOptions from '../../../../../stores/option/options'
+    } from '../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
+    import useOptions from '../../../../stores/option/options'
 
     defineProps({
         title: {required: true, type: String}
@@ -207,7 +207,7 @@
     <div class="container">
         <div class="row">
             <h1 class="col">
-                <img src="/public/img/production/icons8-usine-48.png"/>
+                <img src="/img/production/icons8-usine-48.png"/>
                 {{ title }}
             </h1>
             <span class="col">

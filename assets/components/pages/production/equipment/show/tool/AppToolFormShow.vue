@@ -1,12 +1,12 @@
 <script setup>
-    import AppShowToolTabGeneral from './tabs/AppShowToolTabGeneral.vue'
-    import AppSuspense from '../../../../AppSuspense.vue'
-    import AppTabFichiers from '../../../../tab/AppTabFichiers.vue'
-    import {useEngineAttachmentStore} from '../../../../../stores/production/engine/tool/engineAttachment'
+    import AppShowToolTabGeneral from './AppShowToolTabGeneral.vue'
+    import AppSuspense from '../../../../../AppSuspense.vue'
+    import AppTabFichiers from '../../../../../tab/AppTabFichiers.vue'
+    import {useEngineAttachmentStore} from '../../../../../../stores/production/engine/tool/engineAttachment'
     import {useRoute} from 'vue-router'
-    import {useToolsStore} from '../../../../../stores/production/engine/tool/tools'
-    import useUser from '../../../../../stores/security'
-    import useZonesStore from '../../../../../stores/production/company/zones'
+    import {useToolsStore} from '../../../../../../stores/production/engine/tool/tools'
+    import useUser from '../../../../../../stores/security'
+    import useZonesStore from '../../../../../../stores/production/company/zones'
     const currentCompany = useUser().company
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)

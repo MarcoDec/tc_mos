@@ -1,8 +1,8 @@
 <script setup>
     //inlist
-    import generateItems from '../../../../../stores/table/items'
+    import generateItems from '../../../../../../stores/table/items'
     import {useRoute} from 'vue-router'
-    import {useTableMachine} from '../../../../../machine'
+    import {useTableMachine} from '../../../../../../machine'
     const products = generateItems('products')
     const route = useRoute()
     const machine = useTableMachine(route.name)
