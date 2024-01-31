@@ -72,7 +72,7 @@ final class ItemEventEngineDeleteRepository extends ItemRepository {
         $rsm = new ResultSetMapping();
     
         $sql .= ' WHERE engine_event.id = '. $engineId;
-        dump($sql);
+//        dump($sql);
         $query = $this->_em->createNativeQuery($sql, $rsm);
         $results = $query->getResult();
         return $results;

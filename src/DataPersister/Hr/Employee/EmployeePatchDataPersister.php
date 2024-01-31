@@ -24,11 +24,11 @@ class EmployeePatchDataPersister implements ContextAwareDataPersisterInterface
 
     public function persist($data, array $context = [])
     {
-        dump("Persist Employee", $data);
+//        dump("Persist Employee", $data);
         /** @var Employee $data */
         if ($data->getPlainPassword() != "") {
             $hashedPassword = $this->passwordHasher->hashPassword($data, $data->getPlainPassword());
-            dump($hashedPassword);
+//            dump($hashedPassword);
             $data->setPassword($hashedPassword);
             $this->logger->info(`Changement du mot de passe de l'utilisateur `.$data->getId());
         }

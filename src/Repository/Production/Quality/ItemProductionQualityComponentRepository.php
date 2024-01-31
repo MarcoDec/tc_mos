@@ -228,7 +228,7 @@ final class ItemProductionQualityComponentRepository extends ItemRepository {
                 'current' => $results
             ];
         };
-        dump($list);
+//        dump($list);
         return $list;
     }
 }

@@ -78,7 +78,7 @@ final class FileManager {
     }
     public function uploadFileEntityImage(FileEntity $entity): void {
         $host = $this->requestStack->getCurrentRequest()->getSchemeAndHttpHost();
-        dump($_FILES);
+//        dump($_FILES);
         if (isset($_FILES['file']) && $_FILES['file']['error'] == UPLOAD_ERR_OK) {
             // Créer une instance de UploadedFile
             $file = new UploadedFile(
@@ -91,13 +91,13 @@ final class FileManager {
             $file = $entity->getFile();
         }
         $dashedName = $this->getSubFolderNameFromClassName($entity::class);
-        dump(['dashName' => $dashedName]);
+//        dump(['dashName' => $dashedName]);
         if (
             empty($file)
             || !($file instanceof UploadedFile)
             || empty($dashedName)
         ) {
-            dump('uploadFileEntityImage::empty');
+//            dump('uploadFileEntityImage::empty');
             return;
         }
         $dir = $this->scandir($dashedName);
@@ -114,21 +114,21 @@ final class FileManager {
     }
     private function getSubFolderNameFromClassName(string $className): string {
         // Étape 1: Supprimer le namespace de base
-        dump(['className' => $className]);
+//        dump(['className' => $className]);
         $chaineSansNamespace = str_replace('App\Entity\\', '', $className);
-        dump(['chaineSansNamespace' => $chaineSansNamespace]);
+//        dump(['chaineSansNamespace' => $chaineSansNamespace]);
         // Étape 2: Séparer les mots sur les majuscules
         $parties = preg_split('/(?=[A-Z])/', $chaineSansNamespace, -1, PREG_SPLIT_NO_EMPTY);
         $parties = array_map(function ($partie) {
             return str_replace('\\', '', $partie);
         }, $parties);
-        dump(['parties' => $parties]);
+//        dump(['parties' => $parties]);
         // Étape 3: Convertir en minuscules
         $partiesMinuscules = array_map('strtolower', $parties);
-        dump(['partiesMinuscules' => $partiesMinuscules]);
+//        dump(['partiesMinuscules' => $partiesMinuscules]);
         // Étape 4: Concaténer avec des traits d'union
         $resultat = implode('-', $partiesMinuscules);
-        dump(['resultat' => $resultat]);
+//        dump(['resultat' => $resultat]);
         return $resultat;
     }
 

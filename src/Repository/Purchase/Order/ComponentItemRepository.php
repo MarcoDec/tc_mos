@@ -289,7 +289,7 @@ final class ComponentItemRepository extends ItemRepository {
         }
         $query = $this->_em->createNativeQuery($sql, $rsm);
         $results = $query->getResult();
-        dump($results);
+//        dump($results);
 
         foreach( $results as &$element){
             $element['@context'] = '/api/contexts/PurchaseOrderItemComponent';

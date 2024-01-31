@@ -24,12 +24,12 @@ final class FileDataPersister implements DataPersisterInterface {
     public function persist($data): FileEntity {
         $this->em->persist($data);
         $this->em->flush();
-        dump('FileDataPersister::persist');
+//        dump('FileDataPersister::persist');
         if ($data instanceof Family) {
             $this->fm->uploadFamilyIcon($data);
             $this->em->flush();
         } else {
-            dump('FileDataPersister::persist::uploadFileEntityImage', $data);
+//            dump('FileDataPersister::persist::uploadFileEntityImage', $data);
             $this->fm->uploadFileEntityImage($data);
             $this->em->flush();
         }
