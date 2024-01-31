@@ -67,19 +67,19 @@
     <nav v-if="pag" aria-label="Page navigation example">
         <ul class="pagination">
             <li v-if="firstPage && firstPage < currentPage" class="page-item">
-                <a class="page-link" href="#" @click.prevent="getPage(firstPage)">Début</a>
+                <a class="page-link" href="#" @click.prevent="getPage(firstPage)">1</a>
             </li>
-            <li v-if="previousPage && previousPage < currentPage" class="page-item">
-                <a class="page-link" href="#" @click.prevent="getPage(previousPage)">Préc.</a>
+            <li v-if="previousPage && previousPage < currentPage && previousPage > 1" class="page-item">
+                <a class="page-link" href="#" @click.prevent="getPage(previousPage)">... {{ previousPage }}</a>
             </li>
             <li class="page-item">
-                <span class="bg-light page-link text-black">{{ currentPage }}</span>
+                <span class="bg-light page-link text-black"><b>Page {{ currentPage }}</b></span>
             </li>
-            <li v-if="nextPage && nextPage > currentPage" class="page-item">
-                <a class="page-link" href="#" @click.prevent="getPage(nextPage)">Suiv.</a>
+            <li v-if="nextPage && nextPage > currentPage && nextPage < lastPage" class="page-item">
+                <a class="page-link" href="#" @click.prevent="getPage(nextPage)">{{ nextPage }} ...</a>
             </li>
             <li v-if="lastPage && lastPage > currentPage" class="page-item">
-                <a class="page-link" href="#" @click.prevent="getPage(lastPage)">Fin</a>
+                <a class="page-link" href="#" @click.prevent="getPage(lastPage)">{{ lastPage }}</a>
             </li>
         </ul>
     </nav>
