@@ -6,6 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -21,6 +22,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @template-extends Item<Component>  ApiFilter(filterClass: SearchFilter::class, properties: ['confirmedDate' => 'partial', 'requestedDate' => 'partial', 'confirmedQuantity' => 'partial', 'requestedQuantity' => 'partial']),
  */
 #[
+    ApiFilter(filterClass: OrderFilter::class, properties: ['confirmedDate', 'confirmedQuantity.value', 'item.code', 'item.manufacturerCode','requestedQuantity.value', 'requestedDate', 'targetCompany']),
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -62,7 +64,7 @@ class ComponentItem extends Item {
     #[
         ApiProperty(description: 'Composant', example: '/api/components/1'),
         ORM\JoinColumn(name: 'component_id'),
-        ORM\ManyToOne(targetEntity: Component::class, fetch: 'EAGER'),
+        ORM\ManyToOne(targetEntity: Component::class),
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $item;

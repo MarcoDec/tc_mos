@@ -1,7 +1,7 @@
 <script setup>
-    import AppTable from '../../../../components/table/AppTable'
+    import AppTable from '../../table/AppTablePage.vue'
     import generateItems from '../../../../stores/table/items'
-    import {onMounted} from 'vue'
+    import {onMounted} from 'vue-demi'
     import {useTableMachine} from '../../../../machine'
 
     const machineSupp = useTableMachine('machine-supplier-items')
@@ -62,6 +62,21 @@
             update: false
         },
         {
+            label: 'N+1',
+            name: '',
+            sort: true,
+            update: false
+        },
+        {
+            label: 'BS',
+            name: '',
+            sort: true,
+            update: false
+        },
+
+        {
+            create: false,
+            filter: true,
             label: 'Composant',
             name: 'composant',
             options: {
@@ -74,6 +89,8 @@
             update: false
         },
         {
+            create: false,
+            filter: true,
             label: 'Produit',
             name: 'produit',
             options: {
@@ -81,55 +98,77 @@
                     optionsProduits.find(option => option.value === value)?.text ?? null,
                 options: optionsProduits
             },
-            sort: true,
+            sort: false,
             type: 'select',
-            update: false
+            update: true
         },
         {
+            create: true,
+            filter: true,
             label: 'Référence Fournisseur',
             name: 'ref',
             sort: true,
             update: false
         },
         {
+            create: true,
+            filter: true,
             label: 'Quantité Souhaitée',
             name: 'quantiteS',
             sort: true,
             update: false
         },
         {
+            label: 'Split',
+            name: 'split',
+            sort: true,
+            update: false
+        },
+        {
+            create: true,
+            filter: true,
             label: 'Date Souhaitée',
             name: 'date',
-            sort: true,
+            sort: false,
             type: 'date',
             update: false
         },
         {
-            label: 'Quantité',
+            create: true,
+            filter: true,
+            label: 'Quantité Confimrée',
             name: 'quantite',
             sort: true,
             update: false
         },
         {
+            create: true,
+            filter: true,
             label: 'Date de confirmation',
             name: 'date',
-            sort: true,
+            sort: false,
             type: 'date',
             update: false
         },
         {
+            create: true,
+            filter: true,
             label: 'Etat',
             name: 'etat',
             sort: true,
             update: false
         },
         {
+            create: true,
+            filter: true,
             label: 'Texte',
             name: 'texte',
             sort: true,
             update: false
         },
         {
+            create: false,
+            filter: true,
             label: 'Compagnie destinataire',
             name: 'compagnie',
             options: {
@@ -137,17 +176,21 @@
                     optionsCompagnie.find(option => option.value === value)?.text ?? null,
                 options: optionsCompagnie
             },
-            sort: true,
+            sort: false,
             type: 'select',
-            update: false
+            update: true
         }
     ]
 </script>
 
 <template>
     <AppTable
-        id="commande"
+        id="gestion"
         :fields="fields"
         :machine="machineSupp"
-        :store="suppliersItems"/>
+        :store="suppliersItems">
+        <template #cell(split)="{item}">
+            <td><AppBtnSplit :item="item"/></td>
+        </template>
+    </AppTable>
 </template>

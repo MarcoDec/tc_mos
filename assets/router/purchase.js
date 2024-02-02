@@ -124,5 +124,11 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Paramètres'
         }
+    },
+    {
+        component: () => import('../components/pages/purchase/order/AppSupplierOrder.vue'),
+        meta: {requiresAuth: true},
+        name: 'order-supplier-show',
+        path: '/ordersupplier/show/:id'
     }
 ]

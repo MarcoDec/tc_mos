@@ -1,5 +1,5 @@
 <script setup>
-    import AppTable from '../../../../components/table/AppTable'
+    import AppTable from '../../table/AppTablePage.vue'
     import generateItems from '../../../../stores/table/items'
     import {onMounted} from 'vue'
     import {useTableMachine} from '../../../../machine'

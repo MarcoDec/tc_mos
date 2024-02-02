@@ -23,6 +23,7 @@ use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Purchase\ComponentReference;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
+use App\Filter\SetFilter;
 use App\Repository\Purchase\Component\ComponentRepository;
 use App\Validator as AppAssert;
 use DateTimeImmutable;
@@ -36,6 +37,7 @@ use App\Entity\Purchase\Supplier\Component as SupplierComponent;
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['index' => 'partial', 'name' => 'partial', 'code' => 'partial']),
     ApiResource(
         description: 'Composant',
@@ -225,7 +227,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:component', 'read:component:collection'])
+        Serializer\Groups(['read:component', 'read:component:collection', 'read:state'])
     ]
     private ComponentManufacturingOperationState $embState;
 
@@ -241,7 +243,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Famille', readableLink: false, required: true, example: '/api/component-families/1'),
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(targetEntity: Family::class, fetch: 'EAGER', inversedBy: 'components'),
+        ORM\ManyToOne(targetEntity: Family::class, fetch: 'LAZY', inversedBy: 'components'),
         Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin'])
     ]
     private ?Family $family = null;
@@ -274,7 +276,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Fabricant', required: false, example: 'scapa'),
         Assert\NotBlank(groups: ['Component-create', 'Component-purchase']),
         ORM\Column(nullable: true),
-        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:purchase'])
+        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:purchase', 'read:item'])
     ]
     private ?string $manufacturer = null;
 
@@ -282,7 +284,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Référence fabricant', required: false, example: '103078'),
         Assert\NotBlank(groups: ['Component-create', 'Component-purchase']),
         ORM\Column(nullable: true),
-        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:purchase'])
+        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:purchase', 'read:item'])
     ]
     private ?string $manufacturerCode = null;
 

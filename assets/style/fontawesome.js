@@ -20,6 +20,7 @@ import {
     faCaretUp,
     faCertificate,
     faCheck,
+    faChartLine,
     faCheckCircle,
     faChevronDown,
     faChevronUp,
@@ -83,6 +84,7 @@ import {
     faTruck,
     faToolbox,
     faTrash,
+    faTruckMoving,
     faTruckField,
     faUserCircle,
     faUserGraduate,
@@ -100,7 +102,7 @@ import {
     faForwardStep,
     faForwardFast,
     faSquare,
-    faNetworkWired, faRotateLeft, faSave
+    faNetworkWired, faRotateLeft, faSave, faFilePdf
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -124,6 +126,7 @@ library.add(faCaretDown)
 library.add(faCaretUp)
 library.add(faCartShopping)
 library.add(faCertificate)
+library.add(faChartLine)
 library.add(faCheck)
 library.add(faCheckCircle)
 library.add(faChevronDown)
@@ -140,6 +143,7 @@ library.add(faEye)
 library.add(faFileContract)
 library.add(faFileInvoice)
 library.add(faFileInvoiceDollar)
+library.add(faFilePdf)
 library.add(faFilter)
 library.add(faFolder)
 library.add(faForwardStep)
@@ -211,4 +215,5 @@ library.add(faGaugeHigh)
 library.add(faMoneyBill1)
 library.add(faRightToBracket)
 library.add(faTruck)
+library.add(faTruckMoving)
 library.add(faBusinessTime)

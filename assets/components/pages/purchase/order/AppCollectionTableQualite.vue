@@ -1,38 +1,38 @@
 <script setup>
-    import AppTable from '../../../../components/table/AppTable'
+    import AppTable from '../../table/AppTablePage.vue'
     import generateItems from '../../../../stores/table/items'
     import {onMounted} from 'vue'
     import {useTableMachine} from '../../../../machine'
 
     const machineSupp = useTableMachine('machine-supplier-items')
-    const suppliersItems = generateItems('supplier-items-reception')
+    const suppliersItems = generateItems('supplier-items-qualite')
 
     onMounted(async () => {
         suppliersItems.items = [
             {
                 commentaire: 'comm',
                 composant: 'composant1',
+                controle: '',
                 create: false,
                 date: '2022-03-11',
                 id: 1,
-                qteConfirme: 11,
-                qteRecue: 14,
-                sort: false,
+                sort: true,
                 status: 'texte',
-                update: true
+                update: true,
+                valeur: '12'
             },
             {
                 commentaire: 'comm',
-                composant: 'composant2',
+                composant: 'composant1',
                 create: false,
                 date: '2022-03-11',
                 id: 2,
                 qteConfirme: 11,
                 qteRecue: 14,
-                sort: false,
+                sort: true,
                 status: 'texte',
-                update: true
-
+                update: true,
+                valeur: '12'
             }
         ]
     })
@@ -45,24 +45,11 @@
             update: false
         },
         {
-            label: 'Quantité Confirmée',
-            name: 'qteConfirme',
-            sort: true,
-            update: false
-        },
-        {
-            label: 'Quantité Reçue',
-            name: 'qteRecue',
-            sort: true,
-            update: false
-        },
-        {
             label: 'Date Récéption',
             name: 'date',
             sort: true,
             update: false
         },
-
         {
             create: true,
             label: 'Status',
@@ -78,13 +65,25 @@
             name: 'commentaire',
             sort: true,
             update: false
+        },
+        {
+            label: 'Controle',
+            name: 'controle',
+            sort: true,
+            update: false
+        },
+        {
+            label: 'Valeur',
+            name: 'valeur',
+            sort: true,
+            update: false
         }
     ]
 </script>
 
 <template>
     <AppTable
-        id="gestion"
+        id="qualite"
         :fields="fields"
         :machine="machineSupp"
         :store="suppliersItems"/>
