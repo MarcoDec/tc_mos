@@ -5,7 +5,7 @@ ARG API_HOST
 WORKDIR /app
 COPY package.json ./
 COPY yarn.lock ./
-
+RUN yarn install --network-timeout 1000000
 WORKDIR /app
 RUN ls -l
 COPY package.json ./

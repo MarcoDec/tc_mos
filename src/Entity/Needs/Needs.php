@@ -9,7 +9,11 @@ use ApiPlatform\Core\Annotation\ApiProperty;
  *     collectionOperations={
  *         "get"={
  *             "method"="GET",
- *             "path"="/api/needs"
+ *             "path"="/api/needs",
+ *         },
+ *         "get_components"={
+ *             "method"="GET",
+ *             "path"="/api/needs/components",
  *         }
  *     },
  *     itemOperations={

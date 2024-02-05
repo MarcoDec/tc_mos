@@ -1,25 +1,31 @@
 <?php
-
 namespace App\Controller\Needs;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\Selling\Order\ProductItemRepository;
-use App\Repository\Manufacturing\Product\ManufacturingProductItemRepository;
-use App\Repository\Logistics\Stock\ProductStockRepository;
-use App\Repository\Project\Product\ProductRepository;
-use App\Repository\Purchase\Order\ItemRepository as PurchaseItemRepository;
-use Psr\Log\LoggerInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Needs\Needs;
-use App\Repository\Project\Product\NomenclatureRepository;
-use App\Repository\Selling\Customer\ProductRepository as ProductCustomerRepository;
 use DateTime;
 use DateInterval;
+use App\Entity\Needs\Needs;
+use Psr\Log\LoggerInterface;
+use App\Service\MeasureManager;
+use App\Service\MeasureHydrator;
+use App\Entity\Embeddable\Measure;
+use App\Entity\Project\Product\Product;
+use Doctrine\ORM\EntityManagerInterface;
+use ApiPlatform\Core\Annotation\ApiResource;
+use App\Repository\Management\UnitRepository;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Repository\Project\Product\ProductRepository;
+use App\Repository\Selling\Order\ProductItemRepository;
+use App\Repository\Logistics\Stock\ProductStockRepository;
+use App\Repository\Project\Product\NomenclatureRepository;
+use App\Repository\Purchase\Component\ComponentRepository;
+use App\Repository\Logistics\Stock\ComponentStockRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Repository\Purchase\Order\ItemRepository as PurchaseItemRepository;
+use App\Repository\Manufacturing\Product\ManufacturingProductItemRepository;
+use App\Repository\Selling\Customer\ProductRepository as ProductCustomerRepository;
 
-
+ini_set('memory_limit', '4096M');
 /**
  * @ApiResource(
  *     collectionOperations={
@@ -42,8 +48,14 @@ class NeedsController extends AbstractController
     private ProductStockRepository $productStockRepository;
     private ProductRepository $productRepository;
     private ProductCustomerRepository $productCustomerRepository;
+    private PurchaseItemRepository $purchaseItemRepository;
     private ManufacturingProductItemRepository $manufacturingProductItemRepository;
     private NomenclatureRepository $nomenclatureRepository;
+    private ComponentRepository $componentRepository;
+    private ComponentStockRepository $componentStockRepository;
+    private UnitRepository $unitRepository;
+    private MeasureManager $measureManager;
+    private MeasureHydrator $measureHydrator;
 
     public function __construct(
         private readonly EntityManagerInterface $em,
@@ -51,65 +63,314 @@ class NeedsController extends AbstractController
         ProductStockRepository $productStockRepository,
         ProductRepository $productRepository,
         ProductCustomerRepository $productCustomerRepository,
+        PurchaseItemRepository $purchaseItemRepository,
         ManufacturingProductItemRepository $manufacturingProductItemRepository,
         NomenclatureRepository $nomenclatureRepository,
+        ComponentRepository $componentRepository,
+        ComponentStockRepository $componentStockRepository,
+        UnitRepository $unitRepository,
+        MeasureManager $measureManager,
+        MeasureHydrator $measureHydrator,
+
         private LoggerInterface $logger
     ) {
         $this->productItemRepository = $productItemRepository;
         $this->productStockRepository = $productStockRepository;
         $this->productRepository = $productRepository;
         $this->productCustomerRepository = $productCustomerRepository;
+        $this->purchaseItemRepository = $purchaseItemRepository;
         $this->manufacturingProductItemRepository = $manufacturingProductItemRepository;
         $this->nomenclatureRepository = $nomenclatureRepository;
+        $this->componentRepository = $componentRepository;
+        $this->componentStockRepository = $componentStockRepository;
+        $this->unitRepository = $unitRepository;
+        $this->measureManager = $measureManager;
+        $this->measureHydrator = $measureHydrator;
     }
+
 
     /**
      * @Route("/api/needs", name="needs", methods={"GET"})
      */
     public function index(): JsonResponse
-{
+    {
+        $products = $this->productRepository->findByEmbBlockerAndEmbState();
+        $productcustomers = $this->productCustomerRepository->findAll();
         $sellingItems = $this->productItemRepository->findByEmbBlockerAndEmbState();
         $manufacturingOrders = $this->manufacturingProductItemRepository->findByEmbBlockerAndEmbState();
         $stocks = $this->productStockRepository->findAll();
-        $products = $this->productRepository->findByEmbBlockerAndEmbState();
-        $productcustomers = $this->productCustomerRepository->findAll();
-        $productsData = [];
-        $customers = [];
+        $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks);
+        $productFamilies = $this->getProductFamilies($products);
+        $customersData = $this->generateCustomersData($productcustomers);
 
+        foreach ($products as $prod) {
+            $productId = $prod->getId();
+            $minStock = $this->generateMinStock($prod);
+            $this->updateStockMinimumForProduct($productChartsData, $productId, $minStock);
+            $productsData[$productId] = $this->generateProductData($prod, $productChartsData, $stocks);
+        }
+
+        $productChartsData = $this->finalizeProductChartsData($productChartsData);
+        return new JsonResponse([
+            'productChartsData' => $productChartsData,
+            'productFamilies' => $productFamilies,
+            'products' => $productsData,
+            'customers' => $customersData,
+        ]);
+    }
+
+    /**
+     * @Route("/api/needs/components", name="needs_components", methods={"GET"})
+     */
+    public function getComponents(): JsonResponse
+    {
+        $products = $this->productRepository->findByEmbBlockerAndEmbState();
+        $filteredStocks = $this->componentStockRepository->findStocksByCriteria();
+        $purchaseItems = $this->purchaseItemRepository->findByEmbBlockerAndEmbState();
+        $manufacturingOrders = $this->manufacturingProductItemRepository->findByEmbBlockerAndEmbState();
+        $stocks = $this->productStockRepository->findAll();
+        $sellingItems = $this->productItemRepository->findByEmbBlockerAndEmbState();
+        $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks);
+        
+        foreach($filteredStocks as $filteredStock){
+        $componentId = $filteredStock->getItem()->getId(); 
+        $quantity = $filteredStock->getQuantity()->getValue();
+        if (isset($componentQuantities[$componentId])) {
+            $componentQuantities[$componentId] += $quantity;
+        } else {
+            $componentQuantities[$componentId] = $quantity;
+        }
+        }
+
+    // Recherche de la date correspondante pour ce composant
+    /* if (isset($datesForComponents[$componentId])) {
+        foreach ($datesForComponents[$componentId] as &$dateEntry) {
+            if ($dateEntry['date'] === $confirmedDate) {
+                $dateEntry['stockValue'] += $confirmedQuantity;
+                break;
+            }
+        }
+    }*/
+   /* foreach ($purchaseItems as $purchaseItem){
+        $confirmedQuantity = $purchaseItem->getConfirmedQuantity()->getValue();
+        dump($purchaseItem);
+        $purchaseItemId = $purchaseItem->getItem()->getId();
+        $confirmedDate = $purchaseItem->getConfirmedDate()->format('d/m/Y');
+    }*/
+
+   // $invertedMatrix = [];
+   /* foreach ($products as $prod) {
+        $productId = $prod->getId();
+        $maxQuantity = $this->generateMaxQuantityData($prod, $productChartsData);
+        $productsData[$productId] = $this->generateProductData($prod, $productChartsData, $stocks);
+        $newOFNeedsData = $this->generateNewOFNeedsData($prod, $productChartsData);
+        $nomenclatures = $this->nomenclatureRepository->findByProductId($productId);
+    if (!empty($maxQuantity)) {
+        foreach ($newOFNeedsData as $newOFNeed) {
+            $date = $newOFNeed['date'];
+            $product_quantity = $newOFNeed['quantity'];
+            foreach ($nomenclatures as $nomenclature) {
+                $component = $nomenclature->getComponent();
+                $productt = $nomenclature->getProduct();
+                //nomenclature
+                $uniteNomenclature =  $nomenclature->getQuantity()->getUnit();
+                $nomenclature_quantity = $nomenclature->getQuantity()->getValue();
+                $unitNomenclature_code = $uniteNomenclature->getCode();
+
+                $needs = $product_quantity * $nomenclature_quantity;
+                $components = $this->componentRepository->findById($component->getId());
+                //component
+                $unitComponent = $components->getUnit();
+                $unitComponent_code = $components->getUnit()->getCode();
+
+
+                if ($productt && $productt->getId() === $productId) {
+                    // Créer une clé composite pour chaque composant
+                    $compositeKey = $components->getId();
+                    //dump($stockComponents);
+                    $stockMinimum = $components->getMinStock()->getValue();
+                    $sumQuantities = 0;*/
+
+                //$compositeId = $stockComponent->getId();
+                // Ajouter la date au tableau correspondant au composant
+               /* if (!isset($datesForComponents[$compositeKey])) {
+                  $datesForComponents[$compositeKey] = [];
+                }
+
+                $datesForComponents[$compositeKey][] = [
+                    'date' => $date,
+                    'stockMinimum' => $stockMinimum,
+                    'stockValue' =>''
+                ];*/
+                
+            
+                
+                   /* if (!isset($invertedMatrix[$compositeKey]['Needs'])) {
+                        $invertedMatrix[$compositeKey]['Needs'] = [];
+
+                    }*/
+                    // Indicateur pour vérifier si la date existe déjà
+                  //  $dateExists = false;
+
+                   /* foreach ($invertedMatrix[$compositeKey]['Needs'] as &$orderNeed) {
+                        if ($orderNeed['date'] === $date) {
+                            // Si Unite et unitComponent sont égales, ajouter $needs
+                            if ($unitNomenclature_code === $unitComponent_code) {
+
+                                $orderNeed['unite'] = $unitComponent_code;
+                                $orderNeed['quantity_nomenclature'] .= $nomenclature_quantity . ' __ ';
+                                $orderNeed['quantity_produit'] .=  $product_quantity . ' __ ';
+                                $orderNeed['needs'] += $needs;
+                            } else {
+                                $convertedMeasure = $this->measureManager->ConvertAfterMul($uniteNomenclature, $nomenclature_quantity, $unitComponent, $product_quantity);
+
+                                $orderNeed['unite'] = $convertedMeasure["convertedMeasure1"]->getCode();
+                                $orderNeed['quantity_nomenclature'] .= $convertedMeasure["convertedMeasure1"]->getValue() . ' / ';
+                                $orderNeed['quantity_produit'] .=  $convertedMeasure["convertedMeasure2"]->getValue() . ' / ';
+                                $orderNeed['needs'] += $convertedMeasure["totalMeasure"]->getValue();
+                            }
+                            // Définir l'indicateur à true
+                            $dateExists = true;
+                            break;
+                        }
+                    }*/
+                    // Si la date n'existe pas, ajouter une nouvelle entrée
+                /* if (!$dateExists) {
+                        if ($unitNomenclature_code === $unitComponent_code) {
+                            $invertedMatrix[$compositeKey]['Needs'][] = [
+                                'date' => $date,
+                                'quantity_nomenclature' => $nomenclature_quantity . ' __ ',
+                                'quantity_produit' => $product_quantity . ' __ ',
+                                'needs' => $needs,
+                                'unite' => $unitComponent_code,
+                            ];
+                        } else {
+
+                            $convertedMeasure = $this->measureManager->ConvertAfterMul($uniteNomenclature, $nomenclature_quantity, $unitComponent, $product_quantity);
+
+                            $invertedMatrix[$compositeKey]['Needs'][] = [
+                                'date' => $date,
+                                'quantity_nomenclature' => $convertedMeasure["convertedMeasure1"]->getValue() . ' / ',
+                                'quantity_produit' => $convertedMeasure["convertedMeasure2"]->getValue() . ' / ',
+                                'needs' => $convertedMeasure['totalMeasure']->getValue(),
+                                'unite' => $convertedMeasure["convertedMeasure1"]->getCode(),
+                            ];
+                        }
+                }*/
+              //  }
+           // }
+           
+       // }
+   // }
+  //  }
+           //$componentChartData = $this->processDatesAndStockMinimumForComponents($datesForComponents);
+
+        return new JsonResponse([
+
+            'components' => '',
+            // 'components' => $invertedMatrix,
+            // 'componentChartData' => $componentChartData,
+
+        ]);
+}
+
+    private function processDatesAndStockMinimumForComponents(array &$datesForComponents): array
+    {
+        $result = [];
+    
+        foreach ($datesForComponents as $compositeKey => $dates) {
+            $labels = [];
+            $stockMinimum = [];
+            $stockValue = [];
+    
+            foreach ($dates as $dateInfo) {
+                $labels[] = $dateInfo['date'];
+                $stockMinimum[] = $dateInfo['stockMinimum'];
+                $stockValue[] = $dateInfo['stockValue'];
+
+            }
+            $labels = array_values(array_unique($labels));
+            // Trier les dates en ordre croissant
+            usort($labels, function ($a, $b) {
+                $dateA = DateTime::createFromFormat('d/m/Y', $a);
+                $dateB = DateTime::createFromFormat('d/m/Y', $b);
+
+                return $dateA <=> $dateB;
+            });
+
+            $result[$compositeKey] = [
+                'labels' => $labels,
+                'stockMinimum' => $stockMinimum,
+                'stockValue' => $stockValue
+            ];
+        }
+    
+        return $result;
+    }
+    
+    
+    private function generateProductChartsData(array $sellingItems, array $manufacturingOrders, array $stocks): array
+    {
         $productChartsData = [];
+
         // Traitement des ventes
+        $this->processSellingItems($sellingItems, $productChartsData);
+
+        // Traitement des items de manufacturing
+        $this->processManufacturingOrders($manufacturingOrders, $productChartsData);
+
+        // Traitement des stocks
+        $this->processStocks($stocks, $productChartsData);
+
+        // Ordonner les labels
+        $this->sortLabels($productChartsData);
+
+        return $productChartsData;
+    }
+
+    private function processSellingItems(array $sellingItems, array &$productChartsData): void
+    {
         foreach ($sellingItems as $sellingItem) {
             $productId = $sellingItem->getItem()->getId();
             $confirmedDate = $sellingItem->getConfirmedDate()->format('d/m/Y');
             $confirmedQuantityValue = $sellingItem->getConfirmedQuantity()->getValue();
-            // Initialisation de productChartsData pour le produit s'il n'existe pas
-            $productChartsData[$productId] ??= [
-                'labels' => [],
-                'stockMinimum' => [],
-                'stockProgress' => [],
-            ];
-            // Ajout de la date et de la quantité
-            $productChartsData[$productId]['labels'][] = $confirmedDate;
-            $productChartsData[$productId]['confirmed_quantity_value'][$confirmedDate] = $confirmedQuantityValue;
+            $productChartsData = $this->updateProductChartsData($productChartsData, $productId, $confirmedDate, $confirmedQuantityValue);
         }
-       // Traitement des items de manufacturing
+    }
+
+    private function processManufacturingOrders(array $manufacturingOrders, array &$productChartsData): void
+    {
         foreach ($manufacturingOrders as $manufacturingOrder) {
             $productId = $manufacturingOrder->getProduct()->getId();
             $manufacturingDate = $manufacturingOrder->getManufacturingDate()->format('d/m/Y');
             $quantityRequestedValue = $manufacturingOrder->getQuantityRequested()->getValue();
+            $productChartsData = $this->updateProductChartsData($productChartsData, $productId, $manufacturingDate, $quantityRequestedValue);
+        }
+    }
 
-            // Initialisation de productChartsData pour le produit s'il n'existe pas
-            $productChartsData[$productId] ??= [
-                'labels' => [],
-                'stockMinimum' => [],
-                'stockProgress' => [],
-            ];
+    private function processStocks(array $stocks, array &$productChartsData): void
+    {
+        foreach ($stocks as $stock) {
+            $productId = $stock->getItem()->getId();
+            if (array_key_exists($productId, $productChartsData)) {
+                $quantityValue = $stock->getQuantity()->getValue();
+                $this->updateStockProgress($productChartsData, $productId, $quantityValue);
+            }
+        }
+    }
 
-            // Ajout de la date et de la quantité
-            $productChartsData[$productId]['labels'][] = $manufacturingDate;
-            $productChartsData[$productId]['quantity_requested_value'][$manufacturingDate] = $quantityRequestedValue;
-        } 
-        // Fusionner les dates, éliminer les doublons et trier les dates
+    private function updateStockProgress(array &$productChartsData, int $productId, float $quantityValue): void
+    {
+        foreach ($productChartsData[$productId]['labels'] as $date) {
+            if (!isset($productChartsData[$productId]['stockProgress'][$date])) {
+                $productChartsData[$productId]['stockProgress'][$date] = 0;
+            }
+            $productChartsData[$productId]['stockProgress'][$date] += $quantityValue;
+        }
+    }
+
+    private function sortLabels(array &$productChartsData): void
+    {
         foreach ($productChartsData as &$product) {
             $product['labels'] = array_values(array_unique($product['labels']));
             sort($product['labels']);
@@ -118,87 +379,54 @@ class NeedsController extends AbstractController
             foreach ($product['labels'] as $date) {
                 $product['stockProgress'][$date] = 0;
 
-                // Ajouter la soustraction (stockProgress - confirmed_quantity_value) à stockProgress si la clé existe
                 $confirmedQuantity = $product['confirmed_quantity_value'][$date] ?? 0;
                 $product['stockProgress'][$date] -= $confirmedQuantity;
 
-                // Ajouter quantity_requested_value à stockProgress si la clé existe
                 $quantityRequested = $product['quantity_requested_value'][$date] ?? 0;
                 $product['stockProgress'][$date] += $quantityRequested;
             }
-                // Ordonner les labels
-                usort($product['labels'], function($a, $b) {
-                    $dateA = \DateTime::createFromFormat('d/m/Y', $a);
-                    $dateB = \DateTime::createFromFormat('d/m/Y', $b);
 
-                    return $dateA <=> $dateB;
-                });
+            // Ordonner les labels
+            usort($product['labels'], function ($a, $b) {
+                $dateA = \DateTime::createFromFormat('d/m/Y', $a);
+                $dateB = \DateTime::createFromFormat('d/m/Y', $b);
+
+                return $dateA <=> $dateB;
+            });
         }
+    }
 
-        foreach ($stocks as $stock) {
-            $productId = $stock->getItem()->getId();
-            if (array_key_exists($productId, $productChartsData)) {
-                $quantityValue = $stock->getQuantity()->getValue();
-                // Ajouter la quantité au total de la date correspondante
-                foreach ($productChartsData[$productId]['labels'] as $date) {
-                    if (!isset($productChartsData[$productId]['stockProgress'][$date])) {
-                        $productChartsData[$productId]['stockProgress'][$date] = 0;
-                    }
-                    $productChartsData[$productId]['stockProgress'][$date] += $quantityValue;
-                }
-            }
-        }
+    /**
+     * Mise à jour de $productChartsData pour un produit donné avec la date et la quantité spécifiées.
+     */
+    private function updateProductChartsData(array $productChartsData, int $productId, string $date, float $quantity): array
+    {
+        $productChartsData[$productId] ??= [
+            'labels' => [],
+            'stockMinimum' => [],
+            'stockProgress' => [],
+        ];
 
+        $productChartsData[$productId]['labels'][] = $date;
+
+        $productChartsData[$productId]['confirmed_quantity_value'][$date] = $quantity;
+
+        return $productChartsData;
+    }
+
+    /**
+     * Get product families from the given products.
+     *
+     * @param Product[] $products
+     * @return array
+     */
+    private function getProductFamilies(array $products): array
+    {
         $productFamilies = [];
-        // Ajout du traitement pour l'attribut stockMinimum
+
         foreach ($products as $prod) {
-            $productId = $prod->getId();
-            $productName = $prod->getName();
-            $productCode = $prod->getCode();
-            $nomenclatures = $this->nomenclatureRepository->findByProductId($productId);
-            $components = [];
-            $allStock = 0;
-            $indexStockDefault = 0;
-            $indexNewOFNeeds = 0;
-
-            if (array_key_exists($productId, $productChartsData)) {
-                $minStock = $prod->getMinStock()->getValue();
-                // Ajouter la valeur stockMinimum pour chaque date
-                $stockDefault = [];
-                $newOFNeeds = [];
-                $maxQuantity = NULL; // Initialisez maxQuantity à 0
-
-                foreach ($productChartsData[$productId]['labels']  as $date) {
-                    $productChartsData[$productId]['stockMinimum'][$date] = $minStock;
-                
-                    $stockProgress = $productChartsData[$productId]['stockProgress'][$date];
-                    $stockMinimum = $productChartsData[$productId]['stockMinimum'][$date];
-
-                    // Si stockProgress est inférieur à stockMinimum, ajoutez la date à stockDefault
-                    if ($stockProgress < $stockMinimum) {
-                        $indexStockDefault++; // Incrémentez l'index pour stockDefault
-                        $stockDefault[$indexStockDefault] = ['date' => $date];
-                        $dateTime = DateTime::createFromFormat('d/m/Y', $date);
-                        if ($dateTime) {
-                        $dateTime->sub(new DateInterval('P1W')); // Soustraire une semaine
-                        $quantity = $stockMinimum - $stockProgress ;
-                        // Mettre à jour la valeur maximale de la quantité
-                        if (!isset($maxQuantity) || $quantity > $maxQuantity) {
-                            $maxQuantity = $quantity;
-                        }
-                        $indexNewOFNeeds++; // Incrémentez l'index pour newOFNeeds
-
-                        $newOFNeeds[$indexNewOFNeeds] = [
-                            'date' => $dateTime->format('d/m/Y'),
-                            'quantity' => $quantity,
-                        ];
-                        }
-
-
-                    }
-                }
-            }
             $family = $prod->getFamily();
+
             // Vérifier si le produit a une famille associée
             if ($family !== null) {
                 $familyId = $family->getId();
@@ -209,50 +437,21 @@ class NeedsController extends AbstractController
                     'pathName' => $family->getFullName(),
                 ];
             }
-            // Itérer sur chaque nomenclature pour récupérer les composants
-            foreach ($nomenclatures as $nomenclature) {
-                $component = $nomenclature->getComponent();
-                // Vérifier si le composant existe et s'il n'a pas déjà été ajouté
-                if ($component && !in_array($component->getId(), $components)) {
-                    $components[] = $component->getId();
-                }
-            }
-            // Itérer sur chaque stock pour ce produit et mettre à jour la somme des stocks
-            foreach ($stocks as $stock) {
-                if ($stock->getItem()->getId() === $productId) {
-                    $quantityValue = $stock->getQuantity()->getValue();
-                    $allStock += $quantityValue;
-                }
-            }
-
-            $productsData[$productId] = [
-                'component' => $components,
-                'family' => $familyId,
-                'minStock' => $minStock,
-                'newOFNeeds' => $newOFNeeds,
-                'productDesg' => $productName, // nom du produit
-                'productRef' => $productCode,
-                'productStock' =>  $allStock, // somme de Stock d'un produit donnée depuis la table stock
-                'productToManufactring' => $maxQuantity,
-                'stockDefault' => $stockDefault,  
-            ];
-
         }
 
-        foreach ($productChartsData as &$product) {
-            $product['stockProgress'] = array_values($product['stockProgress']);
-            $product['stockMinimum'] = array_values($product['stockMinimum']);
-            // Supprimer les clés quantity_requested_value et confirmed_quantity_value
-            unset($product['quantity_requested_value']);
-            unset($product['confirmed_quantity_value']);
-        }
+        return $productFamilies;
+    }
 
-        // Initialisation des tableaux
-        $customerProducts = [];
-        $societiesByCustomer = [];
+    /**
+     * Générer les données pour les clients.
+     */
+    private function generateCustomersData(array $productCustomers): array
+    {
         $customers = [];
-        // Traitement des relations entre clients et produits
-        foreach ($productcustomers as $productcustomer) {
+        $societiesByCustomer = [];
+        $customerProducts = [];
+
+        foreach ($productCustomers as $productcustomer) {
             $customerId = $productcustomer->getCustomer()->getId();
             $productId = $productcustomer->getProduct()->getId();
 
@@ -267,7 +466,7 @@ class NeedsController extends AbstractController
 
                 // Stockez l'ID de la société associée au client
                 $societiesByCustomer[$customerId] = $societyId;
-            } 
+            }
         }
 
         // Créez l'array $customers en utilisant les ID de la société stockés
@@ -275,17 +474,218 @@ class NeedsController extends AbstractController
             $customers[] = [
                 'id' => $customerId,
                 'products' => $products,
-                'society' =>  $societyId ?? null,
+                'society' => $societyId ?? null,
             ];
         }
 
-        return new JsonResponse([
-            'productChartsData' => $productChartsData,
-            'productFamilies' => $productFamilies,
-            'products' => $productsData,
-            'customers' => $customers
-        ]);
-}
+        return $customers;
+    }
+
+    /**
+     * Generate components data for a given product.
+     *
+     * @param Product $prod
+     * @return array
+     */
+    private function generateComponentsData(Product $prod): array
+    {
+        $components = [];
+        $nomenclatures = $this->nomenclatureRepository->findByProductId($prod->getId());
+
+        foreach ($nomenclatures as $nomenclature) {
+            $component = $nomenclature->getComponent();
+
+            if ($component && !in_array($component->getId(), $components)) {
+                $components[] = $component->getId();
+            }
+        }
+
+        return $components;
+    }
+
+    /**
+     * Generate product stock data for a given product.
+     *
+     * @param Product $prod
+     * @param array $stocks
+     * @return float
+     */
+    private function generateProductStockData(Product $prod, array $stocks): float
+    {
+        $allStock = 0;
+
+        foreach ($stocks as $stock) {
+            if ($stock->getItem()->getId() === $prod->getId()) {
+                $quantityValue = $stock->getQuantity()->getValue();
+                $allStock += $quantityValue;
+            }
+        }
+
+        return $allStock;
+    }
+
+    /**
+     * Generate new OF needs data for a given product.
+     *
+     * @param Product $prod
+     * @param array $productChartsData
+     * @return array
+     */
+    private function generateNewOFNeedsData(Product $prod, array $productChartsData): array
+    {
+        $newOFNeeds = [];
+        $indexStockDefault = 0; // Initialize $indexStockDefault here
+        $indexNewOFNeeds = 0;
+
+        if (array_key_exists($prod->getId(), $productChartsData)) {
+            $stockDefault = [];
+            $maxQuantity = null;
+
+            foreach ($productChartsData[$prod->getId()]['labels'] as $date) {
+
+                $stockProgress = $productChartsData[$prod->getId()]['stockProgress'][$date];
+                $stockMinimum = $productChartsData[$prod->getId()]['stockMinimum'][$date];
+
+                if ($stockProgress < $stockMinimum) {
+                    $indexStockDefault++;
+                    $stockDefault[$indexStockDefault] = ['date' => $date];
+                    $dateTime = DateTime::createFromFormat('d/m/Y', $date);
+                    if ($dateTime) {
+                        $dateTime->sub(new DateInterval('P1W'));
+                        $quantity = $stockMinimum - $stockProgress;
+
+                        if (!isset($maxQuantity) || $quantity > $maxQuantity) {
+                            $maxQuantity = $quantity;
+                        }
+
+                        $indexNewOFNeeds++;
+                        $newOFNeeds[$indexNewOFNeeds] = [
+                            'date' => $dateTime->format('d/m/Y'),
+                            'quantity' => $quantity,
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $newOFNeeds;
+    }
+
+    /**
+     * Generate the maximum quantity data for a given product.
+     *
+     * @param Product $prod
+     * @param array $productChartsData
+     * @return float|null
+     */
+    private function generateMaxQuantityData(Product $prod, array $productChartsData): ?float
+    {
+        $maxQuantity = null;
+
+        if (array_key_exists($prod->getId(), $productChartsData)) {
+
+            foreach ($productChartsData[$prod->getId()]['labels'] as $date) {
+
+                $stockProgress = $productChartsData[$prod->getId()]['stockProgress'][$date];
+                $stockMinimum = $productChartsData[$prod->getId()]['stockMinimum'][$date];
+
+                $quantity = $stockMinimum - $stockProgress;
+
+                if (!isset($maxQuantity) || $quantity > $maxQuantity) {
+                    $maxQuantity = $quantity;
+                }
+            }
+        }
+
+        return $maxQuantity;
+    }
+
+    /**
+     * Generate $minStock for a given product.
+     *
+     * @param Product $prod
+     * @return float
+     */
+    private function generateMinStock(Product $prod): float
+    {
+        // Your logic to calculate $minStock
+        return $prod->getMinStock()->getValue();
+    }
+    /**
+     * Generate $stockDefault for a given product and productChartsData.
+     *
+     * @param Product $prod
+     * @param array $productChartsData
+     * @return array
+     */
+    private function generateStockDefault(Product $prod, array $productChartsData): array
+    {
+        $productId = $prod->getId();
+        $stockDefault = [];
+
+        if (array_key_exists($productId, $productChartsData)) {
+            foreach ($productChartsData[$productId]['labels'] as $date) {
+                $stockProgress = $productChartsData[$productId]['stockProgress'][$date];
+                $stockMinimum = $productChartsData[$productId]['stockMinimum'][$date];
+
+                // Your logic to determine if stockProgress is less than stockMinimum
+                if ($stockProgress < $stockMinimum) {
+                    // Your logic to fill $stockDefault
+                    $stockDefault[] = ['date' => $date];
+                }
+            }
+        }
+
+        return $stockDefault;
+    }
+
+    private function generateProductData($prod, $productChartsData, $stocks): array
+    {
+        $components = $this->generateComponentsData($prod);
+
+        $family = $prod->getFamily();
+        $familyId = ($family !== null) ? $family->getId() : null;
+
+        $minStock = $this->generateMinStock($prod);
+        $newOFNeeds = $this->generateNewOFNeedsData($prod, $productChartsData);
+        $allStock = $this->generateProductStockData($prod, $stocks);
+        $maxQuantity = $this->generateMaxQuantityData($prod, $productChartsData);
+        $stockDefault = $this->generateStockDefault($prod, $productChartsData);
+
+        return [
+            'component' => $components,
+            'family' => $familyId,
+            'minStock' => $minStock,
+            'newOFNeeds' => $newOFNeeds,
+            'productDesg' => $prod->getName(),
+            'productRef' => $prod->getCode(),
+            'productStock' => $allStock,
+            'productToManufacturing' => $maxQuantity,
+            'stockDefault' => $stockDefault,
+        ];
+    }
+    // Additional function to finalize productChartsData
+    private function finalizeProductChartsData(array $productChartsData): array
+    {
+        foreach ($productChartsData as &$product) {
+            $product['stockProgress'] = array_values($product['stockProgress']);
+            $product['stockMinimum'] = array_values($product['stockMinimum']);
+            // Supprimer les clés quantity_requested_value et confirmed_quantity_value
+            unset($product['quantity_requested_value']);
+            unset($product['confirmed_quantity_value']);
+        }
+
+        return $productChartsData;
+    }
+
+    private function updateStockMinimumForProduct(array &$productChartsData, $productId, $minStock): void
+    {
+        if (array_key_exists($productId, $productChartsData)) {
+            foreach ($productChartsData[$productId]['labels'] as $date) {
+                $productChartsData[$productId]['stockMinimum'][$date] = $minStock;
+            }
+        }
+    }
 
     /*  $needs = new Needs();
         $needs->setId(1); // Set an arbitrary value for the ID

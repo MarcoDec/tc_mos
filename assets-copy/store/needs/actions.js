@@ -1,6 +1,6 @@
 export const actions = {
   async load({ commit }) {
-    const needs = {
+    const  = {
       productChartsData: {
         1: {
           labels: [0.2, 0.3, 0.1, 0.4],
@@ -92,7 +92,7 @@ export const actions = {
             2: { date: "2022-02-08" },
             3: { date: "2022-03-08" },
           },
-          newOFNeeds: {
+          newOF: {
             1: { date: "2022-05-12", quantity: "200" },
             2: { date: "2022-02-08", quantity: "100" },
           },
@@ -109,7 +109,7 @@ export const actions = {
             1: { date: "2020-05-12" },
             2: { date: "2022-02-08" },
           },
-          newOFNeeds: {
+          newOF: {
             1: { date: "2020-05-12", quantity: "200" },
             2: { date: "2022-02-08", quantity: "500" },
           },
@@ -126,7 +126,7 @@ export const actions = {
             1: { date: "2020-05-12" },
             2: { date: "2022-02-08" },
           },
-          newOFNeeds: {
+          newOF: {
             1: { date: "2022-05-12", quantity: "200" },
             2: { date: "2022-02-08", quantity: "100" },
           },
@@ -143,7 +143,7 @@ export const actions = {
             1: { date: "2019-01-12" },
             2: { date: "2022-02-08" },
           },
-          newOFNeeds: {
+          newOF: {
             1: { date: "2022-05-12", quantity: 200 },
             2: { date: "2022-02-08", quantity: 100 },
           },
@@ -160,7 +160,7 @@ export const actions = {
             1: { date: "2022-07-12" },
             2: { date: "2022-02-08" },
           },
-          newOFNeeds: {
+          newOF: {
             1: { date: "2022-05-12", quantity: 200 },
             2: { date: "2022-02-08", quantity: 100 },
           },
@@ -177,7 +177,7 @@ export const actions = {
             1: { date: "2010-05-12" },
             2: { date: "2011-02-08" },
           },
-          newOFNeeds: {
+          newOF: {
             1: { date: "2022-05-12", quantity: 200 },
             2: { date: "2022-02-08", quantity: 100 },
           },
@@ -198,7 +198,7 @@ export const actions = {
             1: { date: "2022-07-12" },
             2: { date: "2022-02-08" },
           },
-          newSupplierOrderNeeds: {
+          newSupplierOrder: {
             1: { date: "2022-05-12", quantity: 200 },
             2: { date: "2022-02-08", quantity: 100 },
           },
@@ -210,20 +210,20 @@ export const actions = {
             1: { date: "2022-07-12" },
             2: { date: "2022-02-08" },
           },
-          newSupplierOrderNeeds: {
+          newSupplierOrder: {
             1: { date: "2022-05-12", quantity: 200 },
             2: { date: "2022-02-08", quantity: 100 },
           },
         },
       },
     };
-    commit("needs", needs);
+    commit("", );
 
   },
   async show({ commit, getters }, infinite) {
     commit("show");
     //commit("showCom");
-    if (getters.hasNeeds) {
+    if (getters.has) {
       infinite.loaded();
     } else {
       infinite.complete();
@@ -231,7 +231,7 @@ export const actions = {
   },
   async showCom({ commit, getters }, infinite) {
     commit("showCom");
-    if (getters.hasNeedsCom) {
+    if (getters.hasCom) {
       infinite.loaded();
     } else {
       infinite.complete();

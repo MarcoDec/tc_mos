@@ -1,24 +1,24 @@
 import type {Actions, StoreActionContext} from './actions'
 import type {GetterTree, Store, Module as VuexModule} from 'vuex'
 import type {Mutations} from './mutation'
-import type {State as Needs} from './needs'
+import type {State as } from './'
 import type {State as Security} from './security'
 import type {State} from './state'
 import type {ComputedGetters as VueComputedGetters} from '../types/vue'
 import {actions} from './actions'
 import {createStore} from 'vuex'
-import {generateNeeds} from './needs'
+import {generate} from './'
 import {generateSecurity} from './security'
 import {mutations} from './mutation'
 import {state} from './state'
 
 export type {Actions, Mutations, State, StoreActionContext}
 
-export function generateStore(needs: Needs, security: Security): Store<State> {
+export function generateStore(: , security: Security): Store<State> {
     return createStore<State>({
         actions,
         modules: {
-            needs: generateNeeds(needs),
+            : generate(),
             security: generateSecurity(security)
         },
         mutations,

@@ -30,7 +30,7 @@ export default defineStore('needs', {
             const needs = await this.items.products
             const len = await Object.keys(needs).length;
 
-            for (let i = 0; i < 5 && i < len; i++) {
+            for (let i = 0; i < 15 && i < len; i++) {
                 const [productId, need] = needs[i]
                 this.displayed[productId] = need
 

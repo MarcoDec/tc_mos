@@ -60,4 +60,29 @@ final class ComponentRepository extends ServiceEntityRepository {
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Find a Component by ID with related entities (Unit and Family).
+     *
+     * @param int $id
+     *
+     * @return Component|null
+     */
+    public function findById(int $id): ?Component
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->addSelect('u') // Add the related entities to the select
+            ->leftJoin('c.unit', 'u', Join::WITH, 'u.deleted = FALSE')
+            ->where('c.deleted = FALSE')
+            ->andWhere('c.id = :id')
+            ->setParameter('id', $id);
+    
+        try {
+            return $queryBuilder->getQuery()->getOneOrNullResult();
+        } catch (NonUniqueResultException) {
+            return null;
+        }
+    }
+
+
 }

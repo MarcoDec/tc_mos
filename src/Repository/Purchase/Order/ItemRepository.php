@@ -12,6 +12,7 @@ use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
+
 /**
  * @template I of Item
  *
@@ -107,16 +108,18 @@ class ItemRepository extends ServiceEntityRepository {
             ?? $this->_em->getRepository(ProductItem::class)->findOneByReceipt($id,$resourceClass);
     }
 
+    
     public function findByEmbBlockerAndEmbState(): array
     {
-        return $this->createQueryBuilder('i')
-            ->where('i.embBlocker.state = :enabled')
-            ->andWhere('i.embState.state IN (:states)')
-            ->setParameters([
-                'enabled' => 'enabled',
-                'states' => ['agreed', 'partially_dellivered'],
-            ])
-            ->getQuery()
-            ->getResult();
+        return $this->_em->createQuery('
+            SELECT i
+            FROM App\Entity\Purchase\Order\ComponentItem i
+            WHERE i.embState.state IN (:states)
+        ')
+        ->setParameters([
+            'states' => ['agreed', 'partially_dellivered'],
+        ])
+        ->getResult();
     }
+    
 }
