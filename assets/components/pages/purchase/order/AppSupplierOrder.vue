@@ -8,7 +8,7 @@
 </script>
 
 <template>
-    <AppCard class="cardOrderSupplier">
+    <AppCard title="" class="cardOrderSupplier">
         <AppTabs id="gui-start" class="gui-start-content">
             <AppTab
                 id="gui-start-detail"

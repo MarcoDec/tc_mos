@@ -5,7 +5,10 @@ all: rebuild
 
 # Définition de la tâche 'build' pour construire les services
 build:
-	docker compose build
+	@export GROUP_ID=$(shell id -g) ;\
+    export USER_ID=$(shell id -u) ;\
+    export USER_NAME=$$USER ;\
+	docker compose build --build-arg GROUP_ID=$$GROUP_ID --build-arg USER_ID=$$USER_ID --build-arg USER_NAME=$$USER_NAME
 
 # Définition de la tâche 'up' pour lancer les services en mode détaché
 up:
@@ -21,7 +24,7 @@ yarndev:
     '
 # Définition de la tâche 'down' pour arrêter et supprimer les conteneurs, réseaux, images et volumes
 down:
-	docker compose down
+	@GROUP_ID=$(id -g) USER_ID=$(id -u) USER_NAME=$USER docker compose down
 
 # Définition de la tâche 'rebuild' pour reconstruire les services
 rebuild: down build up
@@ -56,5 +59,6 @@ clean-logs:
 	docker exec tconcept_gpao_php zsh -c '\
 		rm -rf /var/www/html/TConcept-GPAO/var/log/* \
 	'
-
+php:
+	docker exec -ti tconcept_gpao_php zsh
 .PHONY: all build up down rebuild

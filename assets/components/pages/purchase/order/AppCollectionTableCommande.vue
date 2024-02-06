@@ -6,9 +6,6 @@
     import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
     import useOptions from '../../../../stores/option/options'
 
-
-
-
     const route = useRoute()
     const id = Number(route.params.id)
 
@@ -168,7 +165,6 @@
     purchaseOrderItemComponentCriteria.addFilter('order', `/api/purchase-orders/${id}`)
     await storePurchaseOrderItemComponentItems.fetch(purchaseOrderItemComponentCriteria.getFetchCriteria)
     const itemsPurchaseOrderItemComponents = computed(()=>storePurchaseOrderItemComponentItems.itemsPurchaseOrderItemComponents)
-    console.log('itemsPurchaseOrderItemComponents', itemsPurchaseOrderItemComponents);
 
     async function refreshPurchaseOrderItemComponent() {
         await storePurchaseOrderItemComponentItems.fetch(purchaseOrderItemComponentCriteria.getFetchCriteria)
@@ -201,6 +197,33 @@
             purchaseOrderItemComponentCriteria.addSort(payload.name, payload.direction)
             await storePurchaseOrderItemComponentItems.fetch(purchaseOrderItemComponentCriteria.getFetchCriteria)
         }
+    }
+     async function searchPurchaseOrderItemComponent(inputValues) {
+        console.log('inputValues', inputValues)
+        purchaseOrderItemComponentCriteria.resetAllFilter()
+        if (inputValues.component) purchaseOrderItemComponentCriteria.addFilter('item.code', inputValues.component)
+        if (inputValues.product) purchaseOrderItemComponentCriteria.addFilter('product', inputValues.product)
+        if (inputValues.ref) purchaseOrderItemComponentCriteria.addFilter('item.manufacturerCode', inputValues.ref)
+        if (inputValues.requestedQuantity) purchaseOrderItemComponentCriteria.addFilter('requestedQuantity.value', inputValues.requestedQuantity.value)
+        if (inputValues.requestedQuantity) {
+            const requestedUnit = units.find(unit => unit['@id'] === inputValues.requestedQuantity.code)
+            purchaseOrderItemComponentCriteria.addFilter('requestedQuantity.code', requestedUnit.code)
+        }
+        if (inputValues.requestedDate) purchaseOrderItemComponentCriteria.addFilter('requestedDate', inputValues.requestedDate)
+        if (inputValues.confirmedQuantity) purchaseOrderItemComponentCriteria.addFilter('confirmedQuantity.value', inputValues.confirmedQuantity.value)
+        if (inputValues.confirmedQuantity) {
+            const requestedUnit = units.find(unit => unit['@id'] === inputValues.confirmedQuantity.code)
+            purchaseOrderItemComponentCriteria.addFilter('confirmedQuantity.code', requestedUnit.code)
+        }
+        if (inputValues.confirmedDate) purchaseOrderItemComponentCriteria.addFilter('confirmedDate', inputValues.confirmedDate)
+        if (inputValues.state) purchaseOrderItemComponentCriteria.addFilter('embState.state[]', inputValues.state)
+        if (inputValues.notes) purchaseOrderItemComponentCriteria.addFilter('notes', inputValues.notes)
+        if (inputValues.targetCompany) purchaseOrderItemComponentCriteria.addFilter('targetCompany', inputValues.targetCompany)
+        await storePurchaseOrderItemComponentItems.fetch(purchaseOrderItemComponentCriteria.getFetchCriteria)
+    }
+    async function cancelPurchaseOrderItemComponent() {
+        purchaseOrderItemComponentCriteria.resetAllFilter()
+        await storePurchaseOrderItemComponentItems.fetch(purchaseOrderItemComponentCriteria.getFetchCriteria)
     }
 
 </script>

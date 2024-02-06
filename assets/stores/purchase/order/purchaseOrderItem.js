@@ -58,6 +58,12 @@ export const usePurchaseOrderItemComponentsStore = defineStore('purchaseOrderIte
     },
 
     state: () => ({
-        purchaseOrderitemComponents: []
+        purchaseOrderitemComponents: [],
+        pagination : false,
+        firstPage: "",
+        lastPage : "",
+        nextPage : "",
+        currentPage : "",
+        previousPage : ""
     })
 })
