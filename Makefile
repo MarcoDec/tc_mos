@@ -16,6 +16,8 @@ up:
 
 up-dev:
 	make up ENV=.env.dev.local
+up-preprod:
+	make up ENV=.env.preprod.local
 up-prod:
 	make up ENV=.env.prod.local
 yarndev:
