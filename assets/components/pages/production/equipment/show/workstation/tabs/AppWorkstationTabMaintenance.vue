@@ -1,8 +1,8 @@
 <script setup>
     import {AppCardableTable} from '../../../../../../bootstrap-5/app-cardable-collection-table'
-    import {useRoute} from 'vue-router'
-    const route = useRoute()
-    const workstationId = route.params.id_engine
+    // import {useRoute} from 'vue-router'
+    // const route = useRoute()
+    // const workstationId = route.params.id_engine
     const fields = [
         {
             create: false,
@@ -47,7 +47,3 @@
         :fields="fields"
         user=""/>
 </template>
-
-<style scoped>
-
-</style>

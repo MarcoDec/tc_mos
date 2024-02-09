@@ -242,10 +242,13 @@
     function showUpdateForm(item) {
         const idEngine = Number(item.id)
         if (item['@type'] === 'Tool') {
+            // eslint-disable-next-line camelcase
             router.push({name: 'toolShow', params: {id_engine: idEngine}})
         } else if (item['@type'] === 'Workstation') {
+            // eslint-disable-next-line camelcase
             router.push({name: 'workstationShow', params: {id_engine: idEngine}})
         } else if (item['@type'] === 'CounterPart') {
+            // eslint-disable-next-line camelcase
             router.push({name: 'counterPartShow', params: {id_engine: idEngine}})
         }
     }

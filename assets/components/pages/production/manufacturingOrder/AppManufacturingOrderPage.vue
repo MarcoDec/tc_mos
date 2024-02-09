@@ -2,7 +2,7 @@
     import AppManufacturingOrderCreate from './AppManufacturingOrderCreate.vue'
     import useManufacturingOrders from '../../../../stores/production/manufacturingOrder/manufacturingOrders'
     import {computed} from 'vue-demi'
-    import {useRouter} from 'vue-router'
+    // import {useRouter} from 'vue-router'
     import useUser from '../../../../stores/security'
     import {useTableMachine} from '../../../../machine'
     import {AppCardableTable} from '../../../bootstrap-5/app-cardable-collection-table'
@@ -13,7 +13,7 @@
 
     console.log('AppManufacturingOrderPage.vue')
 
-    const router = useRouter()
+    // const router = useRouter()
     const fetchUser = useUser()
     const isProductionWriterOrAdmin = fetchUser.isProductionWriter || fetchUser.isProductionAdmin
 
@@ -101,6 +101,7 @@
             update: true
         }
     ])
+    const createModalRef = ref(null)
     async function onCreated() {
         await refreshTable()
         if (createModalRef.value) {

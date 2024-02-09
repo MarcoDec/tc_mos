@@ -3,10 +3,7 @@
     import InlistAddForm from '../../../../form-cardable/inlist-add-form/InlistAddForm.vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import {computed, ref, onErrorCaptured} from 'vue'
-    import {getOptions} from '../../../../../utils'
-    import {useComponentListStore} from '../../../../../stores/purchase/component/components'
     import {useNomenclatureStore} from '../../../../../stores/project/product/nomenclatures'
-    import {useProductStore} from '../../../../../stores/project/product/products'
     import {useRoute} from 'vue-router'
     import useOptions from '../../../../../stores/option/options'
 
@@ -620,8 +617,7 @@
                             :fields="addEquivalentFormField"
                             :model-value="addEquivalentItem"
                             @cancel="cancelAddForm"
-                            @submitted="onAddSubmit">
-                        </InlistAddForm>
+                            @submitted="onAddSubmit"/>
                         <InlistAddForm
                             v-if="isLoaded && ProductUpdateForm"
                             id="updateProduct"

@@ -1,5 +1,5 @@
 <script setup>
-    import AppShowCounterPartTabGeneral from './AppShowCounterPartTabGeneral.vue'
+    // import AppShowCounterPartTabGeneral from './AppShowCounterPartTabGeneral.vue'
     import AppSuspense from '../../../../../AppSuspense.vue'
     import AppTabFichiers from '../../../../../tab/AppTabFichiers.vue'
     import {useCounterPartStore} from '../../../../../../stores/production/engine/test-counter-part/testCounterPart'

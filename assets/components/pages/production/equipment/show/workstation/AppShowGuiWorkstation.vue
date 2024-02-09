@@ -3,15 +3,15 @@
     import AppWorkstationFormShow from './AppWorkstationFormShow.vue'
     import {useRoute} from 'vue-router'
     import {useWorkstationsStore} from '../../../../../../stores/production/engine/workstation/workstations'
-    import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-    import AppBtn from "../../../../../AppBtn.vue";
-    import {ref} from "vue";
-    import AppImg from "../../../../../AppImg.vue";
-    import AppShowWorkstationTabGeneral from "./tabs/AppShowWorkstationTabGeneral.vue";
-    import AppShowComponentTabGeneral from "../../../../purchase/component/show/left/AppShowComponentTabGeneral.vue";
-    import AppComponentFormShow from "../../../../purchase/component/show/AppComponentFormShow.vue";
-    import AppComponentShowInlist from "../../../../purchase/component/show/AppComponentShowInlist.vue";
-    import AppWorkstationShowInlist from "./AppWorkstationShowInlist.vue";
+    import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+    import AppBtn from '../../../../../AppBtn.vue'
+    import {ref} from 'vue'
+    import AppImg from '../../../../../AppImg.vue'
+    import AppShowWorkstationTabGeneral from './tabs/AppShowWorkstationTabGeneral.vue'
+    // import AppShowComponentTabGeneral from '../../../../purchase/component/show/left/AppShowComponentTabGeneral.vue';
+    // import AppComponentFormShow from '../../../../purchase/component/show/AppComponentFormShow.vue';
+    // import AppComponentShowInlist from '../../../../purchase/component/show/AppComponentShowInlist.vue';
+    import AppWorkstationShowInlist from './AppWorkstationShowInlist.vue'
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
@@ -69,7 +69,7 @@
                         :file-path="useFetchWorkstationsStore.engine.filePath"
                         :image-update-url="imageUpdateUrl"
                         @update:file-path="onImageUpdate"/>
-                        <AppSuspense><AppShowWorkstationTabGeneral :key="`form-${keyTabs}`" class="width70" @updated="onUpdated"/></AppSuspense>
+                    <AppSuspense><AppShowWorkstationTabGeneral :key="`form-${keyTabs}`" class="width70" @updated="onUpdated"/></AppSuspense>
                 </div>
             </template>
             <template #gui-bottom>

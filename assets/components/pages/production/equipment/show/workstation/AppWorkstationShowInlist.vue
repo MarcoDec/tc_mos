@@ -1,16 +1,16 @@
 <script setup>
     //inlist
-    import generateItems from '../../../../../../stores/table/items'
-    import {useRoute} from 'vue-router'
-    import {useTableMachine} from '../../../../../../machine'
-    import AppSuspense from "../../../../../AppSuspense.vue";
-    import AppWorkstationTabMaintenance from "./tabs/AppWorkstationTabMaintenance.vue";
-    import AppWorkstationTabHistMaintenance from "./tabs/AppWorkstationTabHistMaintenance.vue";
-    import AppWorkstationTabRechange from "./tabs/AppWorkstationTabRechange.vue";
-    import AppWorkstationTabOF from "./tabs/AppWorkstationTabOF.vue";
-    const products = generateItems('products')
-    const route = useRoute()
-    const machine = useTableMachine(route.name)
+    // import generateItems from '../../../../../../stores/table/items'
+    // import {useRoute} from 'vue-router'
+    // import {useTableMachine} from '../../../../../../machine'
+    import AppSuspense from '../../../../../AppSuspense.vue'
+    import AppWorkstationTabMaintenance from './tabs/AppWorkstationTabMaintenance.vue'
+    import AppWorkstationTabHistMaintenance from './tabs/AppWorkstationTabHistMaintenance.vue'
+    import AppWorkstationTabRechange from './tabs/AppWorkstationTabRechange.vue'
+    import AppWorkstationTabOF from './tabs/AppWorkstationTabOF.vue'
+    // const products = generateItems('products')
+    // const route = useRoute()
+    // const machine = useTableMachine(route.name)
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script setup>
-    import AppShowToolTabGeneral from './AppShowToolTabGeneral.vue'
+    // import AppShowToolTabGeneral from './AppShowToolTabGeneral.vue'
     import AppSuspense from '../../../../../AppSuspense.vue'
     import AppTabFichiers from '../../../../../tab/AppTabFichiers.vue'
     import {useEngineAttachmentStore} from '../../../../../../stores/production/engine/tool/engineAttachment'

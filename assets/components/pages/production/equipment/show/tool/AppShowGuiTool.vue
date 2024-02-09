@@ -5,14 +5,14 @@
     //import useOptions from '../../../../../stores/option/options'
     import {useRoute} from 'vue-router'
     import {useToolsStore} from '../../../../../../stores/production/engine/tool/tools'
-    import {onBeforeMount, ref} from "vue";
-    import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-    import AppBtn from "../../../../../AppBtn.vue";
-    import AppImg from "../../../../../AppImg.vue";
-    import AppShowComponentTabGeneral from "../../../../purchase/component/show/left/AppShowComponentTabGeneral.vue";
-    import AppComponentShowInlist from "../../../../purchase/component/show/AppComponentShowInlist.vue";
-    import AppComponentFormShow from "../../../../purchase/component/show/AppComponentFormShow.vue";
-    import AppShowToolTabGeneral from "./AppShowToolTabGeneral.vue";
+    import {onBeforeMount, ref} from 'vue'
+    import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+    import AppBtn from '../../../../../AppBtn.vue'
+    import AppImg from '../../../../../AppImg.vue'
+    // import AppShowComponentTabGeneral from '../../../../purchase/component/show/left/AppShowComponentTabGeneral.vue';
+    // import AppComponentShowInlist from '../../../../purchase/component/show/AppComponentShowInlist.vue';
+    // import AppComponentFormShow from '../../../../purchase/component/show/AppComponentFormShow.vue';
+    import AppShowToolTabGeneral from './AppShowToolTabGeneral.vue'
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
@@ -84,7 +84,7 @@
                         :file-path="useFetchToolsStore.engine.filePath"
                         :image-update-url="imageUpdateUrl"
                         @update:file-path="onImageUpdate"/>
-                    <AppSuspense><AppShowToolTabGeneral  :key="`form-${keyTabs}`" class="width70" @updated="onUpdated"/></AppSuspense>
+                    <AppSuspense><AppShowToolTabGeneral :key="`form-${keyTabs}`" class="width70" @updated="onUpdated"/></AppSuspense>
                 </div>
             </template>
             <template #gui-bottom>

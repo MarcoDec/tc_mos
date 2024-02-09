@@ -4,15 +4,15 @@
     import {useCounterPartStore} from '../../../../../../stores/production/engine/test-counter-part/testCounterPart'
     import useOptions from '../../../../../../stores/option/options'
     import {useRoute} from 'vue-router'
-    import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-    import AppBtn from "../../../../../AppBtn.vue";
-    import {onBeforeMount, ref} from "vue";
-    import AppImg from "../../../../../AppImg.vue";
-    import AppShowComponentTabGeneral from "../../../../purchase/component/show/left/AppShowComponentTabGeneral.vue";
-    import AppSuspense from "../../../../../AppSuspense.vue";
-    import AppShowCounterPartTabGeneral from "./AppShowCounterPartTabGeneral.vue";
-    import AppComponentShowInlist from "../../../../purchase/component/show/AppComponentShowInlist.vue";
-    import AppComponentFormShow from "../../../../purchase/component/show/AppComponentFormShow.vue";
+    import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+    import AppBtn from '../../../../../AppBtn.vue'
+    import {onBeforeMount, ref} from 'vue'
+    import AppImg from '../../../../../AppImg.vue'
+    // import AppShowComponentTabGeneral from '../../../../purchase/component/show/left/AppShowComponentTabGeneral.vue';
+    import AppSuspense from '../../../../../AppSuspense.vue'
+    import AppShowCounterPartTabGeneral from './AppShowCounterPartTabGeneral.vue'
+    // import AppComponentShowInlist from '../../../../purchase/component/show/AppComponentShowInlist.vue';
+    // import AppComponentFormShow from '../../../../purchase/component/show/AppComponentFormShow.vue';
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
