@@ -55,6 +55,15 @@ function defineUserStore() {
             },
             cookies,
             async fetch() {
+                // Récupération du token figurant dans l'url
+                const url = new URL(window.location.href)
+                const token = url.searchParams.get('token')
+                if (token) {
+                    console.log('token trouvé dans l\'url', token)
+                    url.searchParams.delete('token')
+                    window.history.replaceState({}, '', url)
+                    cookies.set('token', token)
+                }
                 if (cookies.get('token')) {
                     try {
                         save(await api('/api/user'))
