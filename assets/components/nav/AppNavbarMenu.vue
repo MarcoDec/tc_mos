@@ -1,4 +1,5 @@
 <script setup>
+    import {useCookies} from '@vueuse/integrations/useCookies'
     import AppNavbarItem from './AppNavbarItem.vue'
     import AppNavbarLink from './link/AppNavbarLink.vue'
     import AppNavbarUser from './AppNavbarUser.vue'
@@ -8,6 +9,24 @@
     import useUser from '../../stores/security'
 
     defineProps({id: {required: true, type: String}})
+    const cookies = useCookies()
+    function getTableFromString(str) {
+        return JSON.parse(str.replace(/'/g, '"'))
+    }
+    // fonction d'ajout du token dans l'url
+    function addTokenToUrl(url) {
+        if (cookies.get('token')) {
+            return `${url}?token=${cookies.get('token')}`
+        }
+        return url
+    }
+
+    const localId = import.meta.env.VITE_BACKEND_LOCALID
+    const allIds = getTableFromString(import.meta.env.VITE_BACKEND_ALLIDS)
+    const allIdsUrl = getTableFromString(import.meta.env.VITE_BACKEND_ALLIDSURL)
+    //Récupération des Ids et Urls autre que le localId
+    const otherIds = allIds.filter(id => id !== localId)
+    const otherIdsUrl = allIdsUrl.filter((url, index) => allIds[index] !== localId)
 
     const location = useBrowserLocation()
     const databaseHostName = computed(() => location.value.hostname.replace('desktop.', 'phpmyadmin.'))
@@ -28,6 +47,9 @@
 <template>
     <div :id="id" class="collapse navbar-collapse">
         <ul class="me-auto navbar-nav pt-0">
+            <AppNavbarItem id="switch" title="oldGP" icon="repeat" class="d-flex flex-column justify-content-center bg-danger">
+                <a v-for="(name, index) in otherIds" class="btn btn-secondary d-block width70 m-2" target="_blank" :href="addTokenToUrl(otherIdsUrl[index])">{{ name }}</a>
+            </AppNavbarItem>
             <AppNavbarItem v-if="user.isPurchaseReader !== null" id="purchase" icon="shopping-bag" title="Achats">
                 <AppNavbarLink icon="user-tie" to="supplier-list" :variant="variantPurchase">
                     Liste des fournisseurs

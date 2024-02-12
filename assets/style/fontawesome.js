@@ -69,6 +69,7 @@ import {
     faProjectDiagram,
     faPuzzlePiece,
     faReceipt,
+    faRepeat,
     faRightToBracket,
     faRulerHorizontal,
     faRulerVertical,
@@ -208,6 +209,7 @@ library.add(faProductHunt)
 library.add(faProjectDiagram)
 library.add(faPuzzlePiece)
 library.add(faReceipt)
+library.add(faRepeat)
 library.add(faRetweet)
 library.add(faRightToBracket)
 library.add(faRotateLeft)
