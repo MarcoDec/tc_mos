@@ -48,7 +48,7 @@
     <div :id="id" class="collapse navbar-collapse">
         <ul class="me-auto navbar-nav pt-0">
             <AppNavbarItem id="switch" title="oldGP" icon="repeat" class="d-flex flex-column justify-content-center bg-danger">
-                <a v-for="(name, index) in otherIds" class="btn btn-secondary d-block width70 m-2" target="_blank" :href="addTokenToUrl(otherIdsUrl[index])">{{ name }}</a>
+                <a v-for="(name, index) in otherIds" :key="`switch_${index}`" class="btn btn-secondary d-block width70 m-2" :href="addTokenToUrl(otherIdsUrl[index])">{{ name }}</a>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isPurchaseReader !== null" id="purchase" icon="shopping-bag" title="Achats">
                 <AppNavbarLink icon="user-tie" to="supplier-list" :variant="variantPurchase">

@@ -63,14 +63,21 @@ function defineUserStore() {
                     url.searchParams.delete('token')
                     window.history.replaceState({}, '', url)
                     cookies.set('token', token)
+                    console.log('ajout token dans cookie')
+                } else {
+                    console.log('token pas trouvé dans l\'url')
                 }
                 if (cookies.get('token')) {
+                    console.log('token trouvé dans les cookies')
                     try {
                         save(await api('/api/user'))
+                        console.log('Utilisateur authentifié')
                         return
-                        // eslint-disable-next-line no-empty
                     } catch {
+                        console.log('erreur d\'authentification')
                     }
+                } else {
+                    console.log('Token pas trouvé dans les cookies')
                 }
                 clear()
             },
