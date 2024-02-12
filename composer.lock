@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "630c7b11a9ddd5db00aa1b2466980964",
+    "content-hash": "107238975d44d8f23fd01d603db62fd0",
     "packages": [
         {
             "name": "api-platform/core",
@@ -10456,8 +10456,8 @@
         "ext-iconv": "*",
         "ext-intl": "*",
         "ext-pdo_mysql": "*",
-        "ext-zip": "*",
-        "ext-ssh2": "*"
+        "ext-ssh2": "*",
+        "ext-zip": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"
