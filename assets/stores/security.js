@@ -2,6 +2,7 @@ import {computed, ref} from 'vue'
 import api from '../api'
 import {defineStore} from 'pinia'
 import {useCookies} from '@vueuse/integrations/useCookies'
+//import CryptoJS from 'crypto-js'
 
 function defineUserStore() {
     const store = defineStore('user', () => {
