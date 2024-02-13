@@ -175,3 +175,8 @@ services:
   App\DataPersister\Logistics\Label\CartonDataPersister:
     autoconfigure: false
     tags: [ 'api_platform.data_persister' ]
+
+  App\Filter\CustomGetterFilter:
+    autoconfigure: false
+    tags: [ 'api_platform.filter' ]
+    arguments: [ '@doctrine' ]

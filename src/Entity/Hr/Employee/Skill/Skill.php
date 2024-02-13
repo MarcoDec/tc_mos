@@ -20,7 +20,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['employee', 'inTrainer', 'type', 'family', 'engine', 'product', 'outTrainer']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['employee', 'inTrainer', 'kind', 'family', 'engine', 'product', 'outTrainer']),
     ApiFilter(filterClass: DateFilter::class, properties: ['startedDate', 'endedDate', 'remindedDate']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['level' => 'exact']),
 
@@ -163,7 +163,7 @@ class Skill extends Entity {
         ORM\ManyToOne,
         Serializer\Groups(['read:skill', 'write:skill'])
     ]
-    private ?Type $type = null;
+    private ?Type $kind = null;
 
     final public function getEmployee(): ?Employee {
         return $this->employee;
@@ -209,8 +209,8 @@ class Skill extends Entity {
         return $this->startedDate;
     }
 
-    final public function getType(): ?Type {
-        return $this->type;
+    final public function getKind(): ?Type {
+        return $this->kind;
     }
 
     final public function isRemindable(): bool {
@@ -277,8 +277,8 @@ class Skill extends Entity {
         return $this;
     }
 
-    final public function setType(?Type $type): self {
-        $this->type = $type;
+    final public function setKind(?Type $kind): self {
+        $this->kind = $kind;
         return $this;
     }
 }

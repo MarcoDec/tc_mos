@@ -310,7 +310,7 @@ SQL);
         $this->addQuery('ALTER TABLE `component_family` DROP `old_subfamily_id`');
         $this->addQuery('ALTER TABLE `customer_address` DROP `old_id`');
         $this->addQuery('ALTER TABLE `customer_contact` DROP `old_id`');
-        $this->addQuery('ALTER TABLE `employee` DROP `old_id`, DROP `matricule`, DROP `id_society`');
+        $this->addQuery('ALTER TABLE `employee` DROP `matricule`, DROP `id_society`');
         $this->addQuery('ALTER TABLE `engine` DROP `old_id`');
         $this->addQuery('ALTER TABLE `engine_group` DROP `old_id`');
         $this->addQuery('ALTER TABLE `expedition` DROP `old_id`');

@@ -21,17 +21,7 @@
             return {text, value}
         }))
     const productionFields = [
-        {
-            label: 'Equipe',
-            name: 'team',
-            options: {
-                label: value =>
-                    optionsTeams.value.find(option => option.type === value)?.text
-                    ?? null,
-                options: optionsTeams.value
-            },
-            type: 'select'
-        },
+
         {
             big: true,
             label: 'Manager *',
@@ -41,6 +31,17 @@
                     optionsEmployee.value.find(option => option.type === value)?.text
                     ?? null,
                 options: optionsEmployee.value
+            },
+            type: 'select'
+        },
+        {
+            label: 'Equipe',
+            name: 'team',
+            options: {
+                label: value =>
+                    optionsTeams.value.find(option => option.type === value)?.text
+                    ?? null,
+                options: optionsTeams.value
             },
             type: 'select'
         }

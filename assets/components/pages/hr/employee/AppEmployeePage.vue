@@ -52,7 +52,7 @@
             width: 100,
             filter: false
         },
-        {label: 'Matricule', name: 'timeCard', trie: true, type: 'text', width: 80},
+        {label: 'N° Badge', name: 'timeCard', trie: true, type: 'text', width: 80},
         {label: 'Nom', name: 'surname', trie: true, type: 'text'},
         {label: 'prenom', name: 'name', trie: true, type: 'text'},
         {label: 'Initiales', name: 'initials', trie: true, type: 'text', width: 80},
@@ -86,7 +86,7 @@
         // console.log('search', inputValues)
         employeeListCriteria.addFilter('company', currentCompany)
         if (inputValues.timeCard) employeeListCriteria.addFilter('timeCard', inputValues.timeCard)
-        if (inputValues.surName) employeeListCriteria.addFilter('surname', inputValues.surName)
+        if (inputValues.surname) employeeListCriteria.addFilter('surname', inputValues.surname)
         if (inputValues.name) employeeListCriteria.addFilter('name', inputValues.name)
         if (inputValues.initials) employeeListCriteria.addFilter('initials', inputValues.initials)
         if (inputValues.username) employeeListCriteria.addFilter('username', inputValues.username)

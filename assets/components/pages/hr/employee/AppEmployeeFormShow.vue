@@ -63,7 +63,7 @@
         </AppTab>
         <AppTab
             id="gui-start-production"
-            title="Production"
+            title="Organisation"
             icon="industry"
             tabs="gui-start">
             <AppSuspense><AppShowEmployeeTabProduction/></AppSuspense>

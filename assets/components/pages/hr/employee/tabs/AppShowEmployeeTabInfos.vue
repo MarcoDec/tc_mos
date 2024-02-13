@@ -9,25 +9,27 @@
     await fetchCountries.fetchOp()
     const violations3 = ref([])
     const isError3 = ref(false)
-    const options = [
-        {text: 'married', value: 'married'},
-        {text: 'single', value: 'single'},
-        {text: 'windowed', value: 'windowed'}
-    ]
+    // const options = [
+    //     {text: 'married', value: 'married'},
+    //     {text: 'single', value: 'single'},
+    //     {text: 'windowed', value: 'windowed'}
+    // ]
     const optionsCountries = computed(() =>
         fetchCountries.options.map(op => {
             const text = op.text
             const value = op.id
             return {text, value}
         }))
-    const optionsGenre = [
-        {text: 'female', value: 'female'},
-        {text: 'male', value: 'male'}
-    ]
+    // const optionsGenre = [
+    //     {text: 'female', value: 'female'},
+    //     {text: 'male', value: 'male'}
+    // ]
     const Informationsfields = [
-        {label: 'Nom', name: 'name', type: 'text'},
-        {label: 'Prenom', name: 'surname', type: 'text'},
-        {label: 'Email', name: 'getEmail', type: 'text'},
+        // {label: 'Nom', name: 'name', type: 'text'},
+        // {label: 'Prenom', name: 'surname', type: 'text'},
+        // {label: 'Email', name: 'getEmail', type: 'text'},
+        {label: 'Initiales', name: 'initials', type: 'text'},
+        {label: 'Niveau d\'Étude', name: 'levelOfStudy', type: 'text'},
         {label: 'Adresse', name: 'getAddress', type: 'text'},
         {label: 'Code postal', name: 'getPostal', type: 'text'},
         {label: 'Ville', name: 'getCity', type: 'text'},
@@ -44,30 +46,28 @@
         },
         {label: 'Téléphone', name: 'getPhone', type: 'text'},
         {label: 'Naissance', name: 'getBrith', type: 'date'},
-        {label: 'Initiales', name: 'initials', type: 'text'},
-        {
-            label: 'Genre',
-            name: 'gender',
-            options: {
-                label: value =>
-                    optionsGenre.find(option => option.type === value)?.text ?? null,
-                options: optionsGenre
-            },
-            type: 'select'
-        },
-        {label: 'Numéro social', name: 'socialSecurityNumber', type: 'text'},
-        {
-            label: 'Situation',
-            name: 'situation',
-            options: {
-                label: value =>
-                    options.find(option => option.type === value)?.text ?? null,
-                options
-            },
-            type: 'select'
-        },
-        {label: 'Étude', name: 'levelOfStudy', type: 'text'},
-        {label: 'Date arrivée', name: 'getEntryDate', type: 'date'}
+        // {
+        //     label: 'Genre',
+        //     name: 'gender',
+        //     options: {
+        //         label: value =>
+        //             optionsGenre.find(option => option.type === value)?.text ?? null,
+        //         options: optionsGenre
+        //     },
+        //     type: 'select'
+        // },
+        {label: 'Numéro social', name: 'socialSecurityNumber', type: 'text'}
+        // {
+        //     label: 'Situation',
+        //     name: 'situation',
+        //     options: {
+        //         label: value =>
+        //             options.find(option => option.type === value)?.text ?? null,
+        //         options
+        //     },
+        //     type: 'select'
+        // },
+        // {label: 'Date arrivée', name: 'getEntryDate', type: 'date'}
     ]
     async function update(value) {
         const form = document.getElementById('addInfo')

@@ -4,7 +4,7 @@
     import AppSuspense from '../../../AppSuspense.vue'
     import AppEmployeeShowInlist from './bottom/AppEmployeeShowInlist.vue'
     import {useEmployeeStore} from '../../../../stores/hr/employee/employees'
-    import {useRoute} from 'vue-router'
+    import {useRouter, useRoute} from 'vue-router'
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
     import AppImg from '../../../AppImg.vue'
     import AppBtn from '../../../AppBtn.vue'
@@ -58,6 +58,11 @@
     const deactivateFullScreen = () => {
         isFullScreen.value = false
     }
+
+    const router = useRouter()
+    function goBack() {
+        router.push({name: 'employee-list'})
+    }
 </script>
 
 <template>
@@ -65,7 +70,9 @@
         <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <FontAwesomeIcon icon="puzzle-piece"/>
+                    <button class="text-dark" @click="goBack">
+                        <FontAwesomeIcon icon="user-tag"/>
+                    </button>
                     <b>Employee ({{ fetchEmployeeStore.employee.id }})</b>: {{ fetchEmployeeStore.employee.name }}
                     <span class="btn-float-right">
                         <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>

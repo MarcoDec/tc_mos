@@ -1,7 +1,8 @@
 <script setup>
     import {BImg} from 'bootstrap-vue-next'
     import AppSwitch from '../../../form-cardable/fieldCardable/input/AppSwitch.vue'
-    import {computed, ref} from 'vue'
+    import {computed, onBeforeMount, onBeforeUpdate, ref} from 'vue'
+    import api from '../../../../api'
 
     const props = defineProps({
         fields: {required: true, type: Array},
@@ -27,6 +28,59 @@
     const toggleImageSize = () => {
         isImageEnlarged.value = !isImageEnlarged.value
     }
+    const multiSelectResults = ref([])
+    async function updateFields() {
+        // console.log('item', props.item)
+        props.fields.forEach(field => {
+            // console.log('field', field)
+            if (field.type === 'multiselect-fetch') {
+                // console.log('is multiselect', field.name)
+                if (field.isGetter && field.isGetter === true) {
+                    // console.log('isGetter => target =', field.target)
+                    if (props.item[field.target] !== null) {
+                        let url = ''
+                        if (isObject(props.item[field.target])) {
+                            // console.log('target is object')
+                            url = props.item[field.target]['@id']
+                        }
+                        else {
+                            // console.log('target is not object')
+                            url = props.item[field.target]
+                        }
+                        api(url, 'GET').then(
+                            response => {
+                                multiSelectResults.value[field.name] = response[field.filteredProperty]
+                            }
+                        )
+                    }
+                } else {
+                    // console.log('is Not Getter => name =', field.name)
+                    if (props.item[field.name] !== null) {
+                        let url = ''
+                        if (isObject(props.item[field.name])) {
+                            // console.log('name is object')
+                            url = props.item[field.name]['@id']
+                        }
+                        else {
+                            // console.log('name is not object')
+                            url = props.item[field.name]
+                        }
+                        api(url, 'GET').then(
+                            response => {
+                                multiSelectResults.value[field.name] = response[field.filteredProperty]
+                            }
+                        )
+                    }
+                }
+            }
+        })
+    }
+    onBeforeMount(() => {
+        updateFields()
+    })
+    onBeforeUpdate(() => {
+        updateFields()
+    })
 </script>
 
 <template>
@@ -64,7 +118,7 @@
                 <AppSwitch :id="`${field.name}_${id}`" :disabled="true" :field="field" form="" :model-value="item[field.name]"/>
             </div>
             <div v-else-if="field.type === 'multiselect-fetch'">
-                {{ item[field.name][field.filteredProperty] }}
+                {{ multiSelectResults[field.name] }}
             </div>
             <div v-else-if="field.type === 'link'">
                 <a v-if="item[field.name] !== null && item[field.name] !== ''" :href="item[field.name]" target="_blank">Download file</a>

@@ -118,12 +118,10 @@
             label: 'Machine de référence (modèle)',
             min: true,
             name: 'manufacturerEngine',
-            options: {
-                label: labelManufacturerEngine,
-                options: optionsManufacturerEngines
-            },
-            trie: false,
-            type: 'select'
+            api: '/api/manufacturer-engines',
+            filteredProperty: 'code',
+            type: 'multiselect-fetch',
+            max: 1
         }
     ])
     //endregion
@@ -151,13 +149,13 @@
         {
             label: 'Machine de référence (modèle)',
             min: true,
-            name: 'manufacturerEngine',
-            options: {
-                label: labelManufacturerEngine,
-                options: optionsManufacturerEngines
-            },
-            trie: true,
-            type: 'select',
+            name: 'getterFilter',
+            isGetter: true,
+            target: 'manufacturerEngine',
+            api: '/api/manufacturer-engines',
+            filteredProperty: 'getterFilter',
+            type: 'multiselect-fetch',
+            max: 1,
             width: 150
         },
         {
@@ -276,6 +274,10 @@
         const result = Object.keys(inputValues).map(cle => ({field: cle, value: inputValues[cle]}))
         result.forEach(filter => {
             if (filter.field === 'entryDate') tableCriteria.addFilter(filter.field, filter.value, 'dateExact')
+            else if (filter.field === 'getterFilter') {
+                console.log('manufacturerEngine', filter.value)
+                tableCriteria.addFilter('manufacturerEngine', filter.value[0])
+            }
             else tableCriteria.addFilter(filter.field, filter.value)
         })
         await refreshList()

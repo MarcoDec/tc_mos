@@ -2,7 +2,42 @@
     import generateEmployee from '../../../../../stores/hr/employee/employee'
     import {useEmployeeStore} from '../../../../../stores/hr/employee/employees'
     const fetchEmployeeStore = useEmployeeStore()
-    const generalFields = [{label: 'Note', name: 'notes', type: 'textarea'}]
+    const optionsGenre = [
+        {text: 'female', value: 'female'},
+        {text: 'male', value: 'male'}
+    ]
+    const options = [
+        {text: 'married', value: 'married'},
+        {text: 'single', value: 'single'},
+        {text: 'windowed', value: 'windowed'}
+    ]
+    const generalFields = [
+        {label: 'Nom', name: 'name', type: 'text'},
+        {label: 'Prenom', name: 'surname', type: 'text'},
+        {
+            label: 'Genre',
+            name: 'gender',
+            options: {
+                label: value =>
+                    optionsGenre.find(option => option.type === value)?.text ?? null,
+                options: optionsGenre
+            },
+            type: 'select'
+        },
+        {
+            label: 'Situation',
+            name: 'situation',
+            options: {
+                label: value =>
+                    options.find(option => option.type === value)?.text ?? null,
+                options
+            },
+            type: 'select'
+        },
+        {label: 'Email', name: 'getEmail', type: 'text'},
+        {label: 'Date arrivée', name: 'getEntryDate', type: 'date'},
+        {label: 'Note', name: 'notes', type: 'textarea'}
+    ]
     async function updateGeneral(value) {
         const form = document.getElementById('addGeneralites')
         const formData = new FormData(form)

@@ -40,10 +40,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\Hr\Employee\EmployeePatchController;
 use App\Entity\Production\Manufacturing\OperationEmployee;
+use App\Filter\CustomGetterFilter;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['userEnabled']),
     ApiFilter(filterClass: NumericFilter::class, properties: ['id']),
+    ApiFilter(filterClass: CustomGetterFilter::class, properties: ['getterFilter'=>['fields'=>['name', 'surname']]]),
     ApiFilter(
         filterClass: SearchFilter::class,
         properties: [
@@ -118,6 +120,7 @@ use App\Entity\Production\Manufacturing\OperationEmployee;
                 'controller' => PlaceholderAction::class,
                 'method' => 'POST',
                 'input_formats' => ['multipart'],
+                'validation_groups' => ['patchImage'],
             ],
             'patch' => [
                 'controller' => PlaceholderAction::class, //EmployeePatchController::class,
@@ -200,7 +203,12 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     use BarCodeTrait, FileTrait;
 
     #[
-        Assert\Valid,
+        ApiProperty(description: 'Ancien_Identifiant', example: 1),
+        ORM\Column(type: 'integer', nullable: true)
+    ]
+    private ?int $oldId = 0;
+    #[
+        Assert\Valid(groups: ['Default', 'creation', 'update']),
         ORM\Embedded(Address::class),
         Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
@@ -361,7 +369,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     private ?Team $team = null;
 
     #[
-        ApiProperty(description: 'Carte de pointage', example: '65465224'),
+        ApiProperty(description: 'Badge', example: '65465224'),
         ORM\Column(type: 'integer' , nullable: true),
         Serializer\Groups(['read:employee', 'read:employee:collection', 'write:employee', 'write:employee:it'])
     ]
@@ -383,7 +391,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[
         ApiProperty(description: 'Opération'),
-        ORM\OneToMany(targetEntity: OperationEmployee::class, mappedBy: 'employee'),
+        ORM\OneToMany(mappedBy: 'employee', targetEntity: OperationEmployee::class),
         Serializer\Groups(['read:manufacturing-operation', 'read:operation-employee', 'read:employee'])
     ]
     private ?Collection $operationEmployees = null;
@@ -515,6 +523,13 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     final public function getName(): ?string {
         return $this->name;
+    }
+    #[
+        ApiProperty(description: 'Nom complet', example: 'Roosevelt Super'),
+        Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection'])
+    ]
+    final public function getGetterFilter(): string {
+        return $this->name.' '.$this->surname;
     }
 
     final public function getNotes(): ?string {
@@ -776,5 +791,26 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         $this->filePath = $filePath;
         return $this;
     }
+
+    public function getOldId(): ?int
+    {
+        return $this->oldId;
+    }
+
+    public function setOldId(?int $oldId): void
+    {
+        $this->oldId = $oldId;
+    }
+
+    public function getClockings(): Collection
+    {
+        return $this->clockings;
+    }
+
+    public function setClockings(Collection $clockings): void
+    {
+        $this->clockings = $clockings;
+    }
+
 
 }
