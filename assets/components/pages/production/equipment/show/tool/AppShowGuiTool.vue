@@ -2,8 +2,7 @@
     import AppShowGuiGen from '../../../../AppShowGuiGen.vue'
     import AppSuspense from '../../../../../AppSuspense.vue'
     import AppToolFormShow from './AppToolFormShow.vue'
-    //import useOptions from '../../../../../stores/option/options'
-    import {useRoute} from 'vue-router'
+    import {useRoute, useRouter} from 'vue-router'
     import {useToolsStore} from '../../../../../../stores/production/engine/tool/tools'
     import {onBeforeMount, ref} from 'vue'
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
@@ -64,6 +63,10 @@
     // const fetchUnits = useOptions('units')
     // fetchUnits.fetchOp()
     // //endregion
+    const router = useRouter()
+    function goBack() {
+        router.push({name: 'engines'})
+    }
 </script>
 
 <template>
@@ -71,7 +74,9 @@
         <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <FontAwesomeIcon icon="puzzle-piece"/>
+                    <button class="text-dark" @click="goBack">
+                        <FontAwesomeIcon icon="oil-well"/>
+                    </button>
                     <b>{{ useFetchToolsStore.engine.code }}</b>: {{ useFetchToolsStore.engine.name }}
                     <span class="btn-float-right">
                         <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>

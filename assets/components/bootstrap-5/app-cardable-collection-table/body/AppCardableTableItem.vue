@@ -42,8 +42,7 @@
                         if (isObject(props.item[field.target])) {
                             // console.log('target is object')
                             url = props.item[field.target]['@id']
-                        }
-                        else {
+                        } else {
                             // console.log('target is not object')
                             url = props.item[field.target]
                         }
@@ -53,24 +52,20 @@
                             }
                         )
                     }
-                } else {
-                    // console.log('is Not Getter => name =', field.name)
-                    if (props.item[field.name] !== null) {
-                        let url = ''
-                        if (isObject(props.item[field.name])) {
-                            // console.log('name is object')
-                            url = props.item[field.name]['@id']
-                        }
-                        else {
-                            // console.log('name is not object')
-                            url = props.item[field.name]
-                        }
-                        api(url, 'GET').then(
-                            response => {
-                                multiSelectResults.value[field.name] = response[field.filteredProperty]
-                            }
-                        )
+                } else if (props.item[field.name] !== null) {
+                    let url = ''
+                    if (isObject(props.item[field.name])) {
+                        // console.log('name is object')
+                        url = props.item[field.name]['@id']
+                    } else {
+                        // console.log('name is not object')
+                        url = props.item[field.name]
                     }
+                    api(url, 'GET').then(
+                        response => {
+                            multiSelectResults.value[field.name] = response[field.filteredProperty]
+                        }
+                    )
                 }
             }
         })

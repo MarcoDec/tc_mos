@@ -60,7 +60,7 @@
     localData.value = {
         brand: fetchEngineStore.engine.brand,
         //code: fetchEngineStore.engine.code,
-        entryDate: fetchEngineStore.engine.entryDate.substring(0, 10),
+        entryDate: fetchEngineStore.engine.entryDate === null ? null : fetchEngineStore.engine.entryDate.substring(0, 10),
         group: fetchEngineStore.engine.group,
         manufacturerEngine: fetchEngineStore.engine.manufacturerEngine['@id'],
         maxOperator: fetchEngineStore.engine.maxOperator,

@@ -6,8 +6,8 @@
     import AppSuspense from '../../../../../AppSuspense.vue'
     import AppWorkstationTabMaintenance from './tabs/AppWorkstationTabMaintenance.vue'
     import AppWorkstationTabHistMaintenance from './tabs/AppWorkstationTabHistMaintenance.vue'
-    import AppWorkstationTabRechange from './tabs/AppWorkstationTabRechange.vue'
-    import AppWorkstationTabOF from './tabs/AppWorkstationTabOF.vue'
+    // import AppWorkstationTabRechange from './tabs/AppWorkstationTabRechange.vue'
+    // import AppWorkstationTabOF from './tabs/AppWorkstationTabOF.vue'
     // const products = generateItems('products')
     // const route = useRoute()
     // const machine = useTableMachine(route.name)
@@ -22,12 +22,12 @@
             <AppTab id="gui-start-history" icon="history" title="Historique des maintenances" tabs="tabs-ws-inlist">
                 <AppSuspense><AppWorkstationTabHistMaintenance/></AppSuspense>
             </AppTab>
-            <AppTab id="gui-start-Pieces" icon="retweet" title="Pièces de rechange" tabs="tabs-ws-inlist">
-                <AppSuspense><AppWorkstationTabRechange/></AppSuspense>
-            </AppTab>
-            <AppTab id="gui-start-of" icon="file-invoice" title="OF" tabs="tabs-ws-inlist">
-                <AppSuspense><AppWorkstationTabOF/></AppSuspense>
-            </AppTab>
+            <!--            <AppTab id="gui-start-Pieces" icon="retweet" title="Pièces de rechange" tabs="tabs-ws-inlist">-->
+            <!--                <AppSuspense><AppWorkstationTabRechange/></AppSuspense>-->
+            <!--            </AppTab>-->
+            <!--            <AppTab id="gui-start-of" icon="file-invoice" title="OF" tabs="tabs-ws-inlist">-->
+            <!--                <AppSuspense><AppWorkstationTabOF/></AppSuspense>-->
+            <!--            </AppTab>-->
         </AppTabs>
     </div>
 </template>

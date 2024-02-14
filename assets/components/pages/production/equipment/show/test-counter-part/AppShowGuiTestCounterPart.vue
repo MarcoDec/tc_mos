@@ -3,7 +3,7 @@
     import AppTestCounterPartFormShow from './AppTestCounterPartFormShow.vue'
     import {useCounterPartStore} from '../../../../../../stores/production/engine/test-counter-part/testCounterPart'
     import useOptions from '../../../../../../stores/option/options'
-    import {useRoute} from 'vue-router'
+    import {useRoute, useRouter} from 'vue-router'
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
     import AppBtn from '../../../../../AppBtn.vue'
     import {onBeforeMount, ref} from 'vue'
@@ -60,6 +60,11 @@
     const onImageUpdate = () => {
         window.location.reload()
     }
+
+    const router = useRouter()
+    function goBack() {
+        router.push({name: 'engines'})
+    }
 </script>
 
 <template>
@@ -67,7 +72,9 @@
         <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <FontAwesomeIcon icon="puzzle-piece"/>
+                    <button class="text-dark" @click="goBack">
+                        <FontAwesomeIcon icon="oil-well"/>
+                    </button>
                     <b>{{ useFetchCounterPartStore.engine.code }}</b>: {{ useFetchCounterPartStore.engine.name }}
                     <span class="btn-float-right">
                         <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>

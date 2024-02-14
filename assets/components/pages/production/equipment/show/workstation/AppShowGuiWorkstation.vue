@@ -1,7 +1,7 @@
 <script setup>
     import AppShowGuiGen from '../../../../AppShowGuiGen.vue'
     import AppWorkstationFormShow from './AppWorkstationFormShow.vue'
-    import {useRoute} from 'vue-router'
+    import {useRoute, useRouter} from 'vue-router'
     import {useWorkstationsStore} from '../../../../../../stores/production/engine/workstation/workstations'
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
     import AppBtn from '../../../../../AppBtn.vue'
@@ -49,6 +49,10 @@
     const deactivateFullScreen = () => {
         isFullScreen.value = false
     }
+    const router = useRouter()
+    function goBack() {
+        router.push({name: 'engines'})
+    }
 </script>
 
 <template>
@@ -56,7 +60,10 @@
         <AppShowGuiGen>
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <img src="/public/img/production/icons8-usine-48.png" alt="icône Workstation"/>
+                    <!--                    <img src="/public/img/production/icons8-usine-48.png" alt="icône Workstation"/>-->
+                    <button class="text-dark" @click="goBack">
+                        <FontAwesomeIcon icon="oil-well"/>
+                    </button>
                     <b>{{ useFetchWorkstationsStore.engine.code }}</b>: {{ useFetchWorkstationsStore.engine.name }}
                     <span class="btn-float-right">
                         <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>

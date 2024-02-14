@@ -226,7 +226,7 @@ abstract class Engine extends Entity implements BarCodeInterface, FileEntity {
     private EmployeeEngineState $embState;
 
     #[
-        ApiProperty(description: 'Modele de machine', readableLink: false, example: '/api/manufacturer-engines/15'),
+        ApiProperty(description: 'Modele de machine', readableLink: true, example: '/api/manufacturer-engines/15'),
         ORM\ManyToOne(targetEntity: ManufacturerEngine::class, cascade: ['persist']),
         ORM\JoinColumn(onDelete: 'SET NULL'),
         Serializer\Groups(['read:engine', 'write:engine', 'read:manufacturing-operation'])

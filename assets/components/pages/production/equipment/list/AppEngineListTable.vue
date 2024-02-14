@@ -12,11 +12,13 @@
     import {
         useManufacturerEngineStore
     } from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
+    import useUser from '../../../../../stores/security'
+    import useZonesStore from '../../../../../stores/production/company/zones'
+    import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+
     defineProps({
         title: {required: true, type: String}
     })
-    import useUser from '../../../../../stores/security'
-    import useZonesStore from '../../../../../stores/production/company/zones'
     const roleuser = ref('reader')
     const AddForm = ref(false)
     const formData = ref({})
@@ -62,11 +64,11 @@
     const tableCriteriaME = useFetchCriteria('ManufacturerEngines')
     tableCriteriaME.addFilter('pagination', 'false')
     await fetchManufacturerEngines.fetchAll(tableCriteriaME.getFetchCriteria)
-    const optionsManufacturerEngines = fetchManufacturerEngines.engines.map(item => ({id: item['@id'], text: `${item.code} [${item.partNumber}]`, value: item['@id']}))
-    function labelManufacturerEngine(value) {
-        return optionsManufacturerEngines.find(item => item.id === value)?.text
-            ?? null
-    }
+    // const optionsManufacturerEngines = fetchManufacturerEngines.engines.map(item => ({id: item['@id'], text: `${item.code} [${item.partNumber}]`, value: item['@id']}))
+    // function labelManufacturerEngine(value) {
+    //     return optionsManufacturerEngines.find(item => item.id === value)?.text
+    //         ?? null
+    // }
     //endregion
     //region récupération des Machines
     const tableCriteria = useFetchCriteria('Engines')
@@ -117,9 +119,11 @@
         {
             label: 'Machine de référence (modèle)',
             min: true,
-            name: 'manufacturerEngine',
+            name: 'getterFilter',
+            target: 'manufacturerEngine',
+            isGetter: true,
             api: '/api/manufacturer-engines',
-            filteredProperty: 'code',
+            filteredProperty: 'getterFilter',
             type: 'multiselect-fetch',
             max: 1
         }
@@ -215,7 +219,7 @@
             code: formData1.get('code'),
             entryDate: formData1.get('entryDate'),
             group: formData1.get('group'),
-            manufacturerEngine: formData1.get('manufacturerEngine'),
+            manufacturerEngine: formData.value.getterFilter[0],
             name: formData1.get('name'),
             serialNumber: formData1.get('serialNumber'),
             zone: formData1.get('zone')
@@ -277,8 +281,7 @@
             else if (filter.field === 'getterFilter') {
                 console.log('manufacturerEngine', filter.value)
                 tableCriteria.addFilter('manufacturerEngine', filter.value[0])
-            }
-            else tableCriteria.addFilter(filter.field, filter.value)
+            } else tableCriteria.addFilter(filter.field, filter.value)
         })
         await refreshList()
     }
@@ -300,7 +303,7 @@
     <div class="container">
         <div class="row">
             <h1 class="col">
-                <img src="/public/img/production/icons8-usine-48.png" alt="icône Machine type perceuse"/>
+                <FontAwesomeIcon icon="oil-well"/>
                 {{ title }}
             </h1>
             <span class="col">
