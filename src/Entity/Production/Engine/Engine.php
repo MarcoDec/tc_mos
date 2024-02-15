@@ -30,9 +30,11 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use App\Filter\DiscriminatorFilter;
+use App\Filter\CustomGetterFilter;
 #[
     ApiFilter(filterClass: DiscriminatorFilter::class),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['brand'=>'partial', 'code'=> 'partial', 'name' => 'partial', 'serialNumber' => 'partial', 'zone.company']),
+    ApiFilter(CustomGetterFilter::class, properties: ['getterFilter' => ['fields' => ['group']]]),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['brand'=>'partial', 'code'=> 'partial', 'name' => 'partial', 'serialNumber' => 'partial', 'zone.company', 'group' => 'partial']),
     ApiFilter(filterClass: DateFilter::class, properties: ['entryDate']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['group', 'zone', 'manufacturerEngine']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['brand', 'code', 'entryDate', 'manufacturerEngine.name', 'name', 'serialNumber']),
@@ -414,5 +416,11 @@ abstract class Engine extends Entity implements BarCodeInterface, FileEntity {
     {
         $this->oldId = $oldId;
     }
-
+    #[
+        ApiProperty(description: 'Récupère le code et le nom du Groupe de la machine', example: 'MA-Machine'),
+        Serializer\Groups(['read:engine', 'read:engine:collection'])
+    ]
+    public function getGetterFilter(): string {
+        return $this->getGroup() ? $this->getGroup()->getGetterFilter() : '';
+    }
 }

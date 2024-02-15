@@ -174,14 +174,14 @@
             label: 'Groupe',
             min: false,
             name: 'group',
-            options: {
-                label: value => optionsEngineGroups.find(item => item.value === value)?.text
-                    ?? null,
-                options: optionsEngineGroups
-            },
-            searchDisabled: true, //désactivation de la fonction filtre car Group est une classe abstraite...
+            isGetter: true,
+            target: 'group',
+            api: '/api/engine-groups',
+            filteredProperty: 'getterFilter',
+            type: 'multiselect-fetch',
             trie: false,
-            type: 'select'
+            max: 1,
+            width: 150
         },
         {
             label: 'Zone',
