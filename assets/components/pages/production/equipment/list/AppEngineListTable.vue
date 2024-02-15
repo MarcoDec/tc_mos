@@ -132,6 +132,14 @@
     //region Définition de la liste des champs pour l'affichage de la liste
     const tabFields = [
         {
+            label: 'Img',
+            name: 'filePath',
+            trie: false,
+            type: 'img',
+            width: 100,
+            filter: false
+        },
+        {
             label: 'Type',
             min: true,
             name: '@type',
