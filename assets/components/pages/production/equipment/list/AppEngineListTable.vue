@@ -149,7 +149,7 @@
                     ?? null,
                 options: optionsEngineTypes
             },
-            searchDisabled: true,
+            // searchDisabled: true,
             trie: false,
             type: 'select',
             width: 80
@@ -286,10 +286,13 @@
         const result = Object.keys(inputValues).map(cle => ({field: cle, value: inputValues[cle]}))
         result.forEach(filter => {
             if (filter.field === 'entryDate') tableCriteria.addFilter(filter.field, filter.value, 'dateExact')
-            else if (filter.field === 'getterFilter') {
-                console.log('manufacturerEngine', filter.value)
+            if (filter.field === 'getterFilter' && filter.field.name === 'manufacturerEngine') {
                 tableCriteria.addFilter('manufacturerEngine', filter.value[0])
-            } else tableCriteria.addFilter(filter.field, filter.value)
+            }
+            if (filter.field === '@type') {
+                tableCriteria.addFilter('type', filter.value)
+            }
+            tableCriteria.addFilter(filter.field, filter.value)
         })
         await refreshList()
     }

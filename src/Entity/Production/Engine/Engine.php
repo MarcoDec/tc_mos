@@ -25,13 +25,13 @@ use App\Entity\Production\Engine\Workstation\Workstation;
 use App\Entity\Traits\BarCodeTrait;
 use App\Entity\Traits\FileTrait;
 use App\Filter\RelationFilter;
-//use App\Filter\SetFilter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-
+use App\Filter\DiscriminatorFilter;
 #[
+    ApiFilter(filterClass: DiscriminatorFilter::class),
     ApiFilter(filterClass: SearchFilter::class, properties: ['brand'=>'partial', 'code'=> 'partial', 'name' => 'partial', 'serialNumber' => 'partial', 'zone.company']),
     ApiFilter(filterClass: DateFilter::class, properties: ['entryDate']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['group', 'zone', 'manufacturerEngine']),
