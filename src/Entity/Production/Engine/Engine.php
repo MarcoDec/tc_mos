@@ -182,6 +182,10 @@ abstract class Engine extends Entity implements BarCodeInterface, FileEntity {
     protected ?string $name = null;
 
     #[
+        ORM\Column(type: 'integer', nullable: true)
+    ]
+    protected int $oldId;
+    #[
         ApiProperty(description: 'Numéro de série', example: '10021'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
@@ -400,4 +404,15 @@ abstract class Engine extends Entity implements BarCodeInterface, FileEntity {
     {
         $this->filePath = $filePath;
     }
+
+    public function getOldId(): int
+    {
+        return $this->oldId;
+    }
+
+    public function setOldId(int $oldId): void
+    {
+        $this->oldId = $oldId;
+    }
+
 }
