@@ -3,15 +3,15 @@
     import AppFormCardable from '../../../../form-cardable/AppFormCardable'
     import AppSuspense from '../../../../AppSuspense.vue'
     import router from '../../../../../router'
-    import useEngineGroups from '../../../../../stores/production/engine/groups/engineGroups'
+    // import useEngineGroups from '../../../../../stores/production/engine/groups/engineGroups'
     import {
         useEngineStore
     } from '../../../../../stores/production/engine/engines'
     import {useEngineTypeStore} from '../../../../../stores/production/engine/type/engineTypes'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
-    import {
-        useManufacturerEngineStore
-    } from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
+    // import {
+    //     useManufacturerEngineStore
+    // } from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
     import useUser from '../../../../../stores/security'
     import useZonesStore from '../../../../../stores/production/company/zones'
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
@@ -30,25 +30,25 @@
     const optionsEngineTypes = fetchEngineTypes.engineTypes
     //endregion
     //region récupération des groupes de machines
-    const fetchEngineGroups = useEngineGroups()
-    await fetchEngineGroups.fetchAllEngineGroups()
-    const optionsEngineGroups = fetchEngineGroups.engineGroups.map(item => ({id: item['@id'], text: `${item.code}-${item.name}`, value: item['@id']}))
+    // const fetchEngineGroups = useEngineGroups()
+    // await fetchEngineGroups.fetchAllEngineGroups()
+    // const optionsEngineGroups = fetchEngineGroups.engineGroups.map(item => ({id: item['@id'], text: `${item.code}-${item.name}`, value: item['@id']}))
 
-    function filterEngineGroups(type) {
-        return {
-            label: value => optionsEngineGroups.find(item => item.value === value)?.text
-                ?? null,
-            options: optionsEngineGroups.filter(item => item.value.includes(type))
-        }
-    }
-    function getGroups(typeValue) {
-        if (typeof typeValue !== 'undefined' && typeValue !== null) return filterEngineGroups(typeValue)
-        return {
-            label: value => optionsEngineGroups.find(item => item.value === value)?.text
-                ?? null,
-            options: optionsEngineGroups
-        }
-    }
+    // function filterEngineGroups(type) {
+    //     return {
+    //         label: value => optionsEngineGroups.find(item => item.value === value)?.text
+    //             ?? null,
+    //         options: optionsEngineGroups.filter(item => item.value.includes(type))
+    //     }
+    // }
+    // function getGroups(typeValue) {
+    //     if (typeof typeValue !== 'undefined' && typeValue !== null) return filterEngineGroups(typeValue)
+    //     return {
+    //         label: value => optionsEngineGroups.find(item => item.value === value)?.text
+    //             ?? null,
+    //         options: optionsEngineGroups
+    //     }
+    // }
     //endregion
     //region récupération des zones
     const fetchZones = useZonesStore()
@@ -60,10 +60,10 @@
     }
     //endregion
     //region récupération des Machines de référence (modèles)
-    const fetchManufacturerEngines = useManufacturerEngineStore()
+    // const fetchManufacturerEngines = useManufacturerEngineStore()
     const tableCriteriaME = useFetchCriteria('ManufacturerEngines')
     tableCriteriaME.addFilter('pagination', 'false')
-    await fetchManufacturerEngines.fetchAll(tableCriteriaME.getFetchCriteria)
+    // await fetchManufacturerEngines.fetchAll(tableCriteriaME.getFetchCriteria)
     // const optionsManufacturerEngines = fetchManufacturerEngines.engines.map(item => ({id: item['@id'], text: `${item.code} [${item.partNumber}]`, value: item['@id']}))
     // function labelManufacturerEngine(value) {
     //     return optionsManufacturerEngines.find(item => item.id === value)?.text
@@ -93,14 +93,26 @@
             type: 'select'
         },
         {label: 'Marque', min: false, name: 'brand', trie: true, type: 'text'},
+        // {
+        //     label: 'Groupe',
+        //     min: false,
+        //     name: 'group',
+        //     options: getGroups(formData.value['@type']),
+        //     searchDisabled: true, //désactivation de la fonction filtre car Group est une classe abstraite...
+        //     trie: false,
+        //     type: 'select'
+        // },
         {
             label: 'Groupe',
             min: false,
             name: 'group',
-            options: getGroups(formData.value['@type']),
-            searchDisabled: true, //désactivation de la fonction filtre car Group est une classe abstraite...
+            isGetter: true,
+            target: 'group',
+            api: '/api/engine-groups',
+            filteredProperty: 'getterFilter',
+            type: 'multiselect-fetch',
             trie: false,
-            type: 'select'
+            max: 1
         },
         {
             label: 'Zone',
