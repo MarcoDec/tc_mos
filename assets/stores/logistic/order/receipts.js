@@ -1,11 +1,11 @@
 import {defineStore} from 'pinia'
 import api from '../../../api'
 
-export const usePurchaseOrderItemComponentsStore = defineStore('purchaseOrderItem', {
+export const useReceiptsStore = defineStore('receiptsItem', {
     actions: {
         async fetch(criteria = '') {
-            const response = await api(`/api/purchase-order-item-components${criteria}`, 'GET')
-            this.purchaseOrderitemComponents = await this.updatePagination(response)
+            const response = await api(`api/receipts${criteria}`, 'GET')
+            this.receiptsItems = await this.updatePagination(response)
         },
         async updatePagination(response) {
             const responseData = await response['hydra:member']
@@ -26,44 +26,30 @@ export const usePurchaseOrderItemComponentsStore = defineStore('purchaseOrderIte
             }
             this.pagination = false
             return responseData
-        },
-        async remove(id){
-            await api(`/api/purchase-order-items/${id}`, 'DELETE')
-            this.purchaseOrderitemComponents = this.purchaseOrderitemComponents.filter(purchaseOrderitemComponent => Number(purchaseOrderitemComponent['@id'].match(/\d+/)[0]) !== id)
-        },
-        async fetchById(id) {
-            const response = await api(`/api/purchase-order-item-components/${id}`, 'GET')
-            this.purchaseOrderitemComponent = response
         }
     },
     getters: {
-        itemsPurchaseOrderItemComponents: state => state.purchaseOrderitemComponents.map(item => {
+        itemsReceipts: state => state.receiptsItems.map(item => {
             const newObject = {
                 '@id': item['@id'],
                 component: item.item,
-                product: null,
-                ref: item.item.manufacturerCode,
-                requestedQuantity: {
-                    code: item.requestedQuantity.code,
-                    value: item.requestedQuantity.value
+                // confirmedQuantity: {
+                //     code: item.requestedQuantity.code,
+                //     value: item.requestedQuantity.value
+                // },
+                quantityReceived: {
+                    code: item.quantity.code,
+                    value: item.quantity.value
                 },
-                requestedDate: item.requestedDate,
-                confirmedQuantity: {
-                    code: item.confirmedQuantity.code,
-                    value: item.confirmedQuantity.value
-                },
-                confirmedDate: item.confirmedDate,
-                etat: item.embState.state ? item.embState.state : null,
-                notes: item.notes,
-                targetCompany: item.targetCompany
+                requestedDate: item.date,
+                etat: item.embState.state ? item.embState.state : null
             }
             return newObject
         })
     },
 
     state: () => ({
-        purchaseOrderitemComponents: [],
-        purchaseOrderitemComponent: [],
+        receiptsItems: [],
         pagination : false,
         firstPage: "",
         lastPage : "",

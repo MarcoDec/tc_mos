@@ -5,6 +5,7 @@ namespace App\Entity\Logistics\Order;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Logistics\Order\State;
 use App\Entity\Embeddable\Measure;
@@ -20,6 +21,7 @@ use App\Entity\Purchase\Component\Family as ComponentFamily;
 use App\Entity\Purchase\Order\Item;
 use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Quality\Reception\Check;
+use App\Filter\SetFilter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -30,6 +32,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
+    ApiFilter(filterClass: SetFilter::class, properties: ['item' => 'partial']),
+
     ApiResource(
         description: 'Réception',
         collectionOperations: [
@@ -125,7 +129,13 @@ class Receipt extends Entity implements MeasuredInterface {
         $this->quantity = new Measure();
         $this->stocks = new ArrayCollection();
     }
-
+    #[
+        ApiProperty(description: 'Commande', example: '/api/purchase-order/1'),
+        Serializer\Groups(['read:receipt', 'write:receipt'])
+    ]
+    public function getPurchaseOrder(){
+        return $this->item?->getOrder();
+    }
     /**
      * @param Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier> $check
      *

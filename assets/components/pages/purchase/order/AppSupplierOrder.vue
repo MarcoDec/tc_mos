@@ -21,25 +21,20 @@
                 </AppSuspense>
             </AppTab>
             <AppTab
-                id="gui-start-gestion"
-                icon="folder"
+                id="gui-start-purchase-rec" 
+                icon="truck-moving"
                 tabs="gui-start"
-                title="Gestion des modifications">
-                <!-- <AppCollectionTableGestion/> -->
+                title="Réception">
+                <AppSuspense>
+                    <AppCollectionTableReception/>
+                </AppSuspense>
             </AppTab>
-            <AppTab id="gui-start-reception" icon="truck-moving" tabs="gui-start" title="Réception">
-                <AppTabs id="gui-start" class="gui-start-content">
-                    <AppTab
-                        id="gui-start-purchase-rec"
-                        icon="truck-moving"
-                        tabs="gui-start"
-                        title="Réception">
-                        <!-- <AppCollectionTableReception/> -->
-                    </AppTab>
-                    <AppTab id="gui-start-bl" icon="clipboard-check" tabs="gui-start" title="BL">
-                        <h1>en cours de traitement</h1>
-                    </AppTab>
-                </AppTabs>
+            <AppTab 
+                id="gui-start-bl" 
+                icon="clipboard-check" 
+                tabs="gui-start" 
+                title="BL">
+                <h1>en cours de traitement</h1>
             </AppTab>
             <AppTab
                 id="gui-start-purchase-quantite"

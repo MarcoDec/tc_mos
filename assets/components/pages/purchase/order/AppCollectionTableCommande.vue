@@ -224,7 +224,7 @@
     async function cancelPurchaseOrderItemComponent() {
         purchaseOrderItemComponentCriteria.resetAllFilter()
         await storePurchaseOrderItemComponentItems.fetch(purchaseOrderItemComponentCriteria.getFetchCriteria)
-    }
+    } 
 
 </script>
 
