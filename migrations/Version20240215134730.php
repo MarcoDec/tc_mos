@@ -35,7 +35,15 @@ final class Version20240215134730 extends AbstractMigration implements Container
     public function up(Schema $schema): void
     {
         $jsonFilePath =  __DIR__ . '/../migrations-data/exportjson_table_attachment.json';
+        if (!file_exists($jsonFilePath)) {
+            $this->write('Fichier de données non trouvé.');
+            return;
+        }
         $data = json_decode(file_get_contents($jsonFilePath), true);
+        if ($data === null && json_last_error() != JSON_ERROR_NONE) {
+            $this->write('Erreur lors de la lecture du fichier de données JSON.');
+            return;
+        }
         foreach ($data as $item) {
             if ($item['id_engine'] !== null && $item['is_pic'] == '1') {
                 $oldId = $item['id_engine'];
