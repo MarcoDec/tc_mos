@@ -268,8 +268,7 @@ class NeedsController extends AbstractController
         
             $componentfield[$componentId] = [
                 'componentStockDefaults' => $componentStockDefault,
-                'family' => '',
-                'ref' => 'code'
+                'famuly' => ''
 
             ];
             $uniqueDates = [];
