@@ -19,7 +19,7 @@ export default function useField(field, parent) {
                 if (this.measure !== null)
                     await this.measure.code.fetch()
                 if (this.options !== null && this.options.$id.startsWith('options/'))
-                    await this.options.fetch()
+                    if (!this.options.isLoaded) await this.options.fetch()
             }
         },
         getters: {
@@ -53,11 +53,13 @@ export default function useField(field, parent) {
                 name: field.name,
                 options: null,
                 search: field.search ?? true,
+                step: field.step ?? 1,
                 sort: field.sort ?? true,
                 type: field.type ?? 'text',
                 update: field.update ?? true
             }
             if (field.options) {
+                //console.log('field.options', field.options)
                 if (Array.isArray(field.options)) {
                     state.options = useOptions(`${id}/${field.name}`, 'value')
                     state.options.options = field.options

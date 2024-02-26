@@ -24,7 +24,9 @@ final class AttributeDataProvider implements ContextAwareCollectionDataProviderI
     }
 
     /**
-     * @param Context $context
+     * @param string $resourceClass
+     * @param string|null $operationName
+     * @param array $context
      *
      * @return Paginator<Attribute>
      */
@@ -60,6 +62,6 @@ final class AttributeDataProvider implements ContextAwareCollectionDataProviderI
      * @param Context $context
      */
     public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool {
-        return $resourceClass === Attribute::class && $operationName === 'get';
+        return $resourceClass === Attribute::class && $operationName === 'gete';
     }
 }

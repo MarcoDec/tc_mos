@@ -7,10 +7,17 @@
         field: {required: true, type: Object},
         form: {required: true, type: String},
         id: {required: true, type: String},
-        modelValue: {default: '', type: [Number, String]}
+        modelValue: {default: ''}
+    })
+    const theValue = computed(() => {
+        if (typeof props.modelValue === 'boolean') {
+            console.warn('AppInput.vue entrée booléenne détectée, remplacement valeur par chaine texte vide', props.field)
+            return ''
+        }
+        return props.modelValue
     })
     const type = computed(() => props.field.type ?? 'text')
-
+    const multiple = computed(() => props.field.multiple ?? true)
     function input(e) {
         emit('update:modelValue', e.target.value)
     }
@@ -19,13 +26,16 @@
 <template>
     <input
         :id="id"
-        :disabled="disabled"
+        :disabled="disabled || field.disabled"
         :form="form"
         :name="field.name"
+        :multiple="multiple"
         :placeholder="field.label"
+        :readonly="field.readonly"
         :type="type"
-        :value="modelValue"
+        :value="theValue"
         autocomplete="off"
+        :step="field.step ? field.step : .01"
         class="form-control form-control-sm"
         @input="input"/>
 </template>

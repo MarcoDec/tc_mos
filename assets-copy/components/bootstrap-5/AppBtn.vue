@@ -4,29 +4,21 @@
 
     const props = withDefaults(
         defineProps<{
-            icon?: string | null
             size?: BootstrapSize
             type?: 'button' | 'reset' | 'submit'
             variant?: BootstrapVariant
         }>(),
         {
-            icon: null,
             size: 'sm',
             type: 'button',
             variant: 'primary'
         }
     )
-    const btnClass = computed(() => ({
-        [`btn-${props.size} btn-${props.variant}`]: true,
-        'btn-icon': Boolean(props.icon)
-    }))
+    const btnClass = computed(() => `btn-${props.size} btn-${props.variant}`)
 </script>
 
 <template>
     <button :class="btnClass" :type="type" class="btn">
         <slot/>
-        <slot>
-            <Fa v-if="icon" :icon="icon"/>
-        </slot>
     </button>
 </template>

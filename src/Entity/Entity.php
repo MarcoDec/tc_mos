@@ -29,8 +29,14 @@ abstract class Entity {
     public function getId(): ?int {
         return $this->id;
     }
-
+    #[
+        ApiProperty(description: 'true when the item has been deleted', example: false),
+        Serializer\Groups(['read:id'])
+    ]
     final public function isDeleted(): bool {
         return $this->deleted;
+    }
+    final public function setDeleted(bool $deleted) {
+        $this->deleted = $deleted;
     }
 }

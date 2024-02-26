@@ -27,6 +27,21 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Récupère les familles de produit',
                 ]
             ],
+            'options' => [
+                'controller' => PlaceholderAction::class,
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:product-family:option'],
+                    'openapi_definition_name' => 'Product-family-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les familles de produit pour les select',
+                    'summary' => 'Récupère les familles de produit  pour les select',
+                ],
+                'order' => ['name' => 'asc'],
+                'path' => '/product-families/options'
+            ],
             'post' => [
                 'controller' => PlaceholderAction::class,
                 'input_formats' => ['multipart'],
@@ -68,7 +83,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'ProductFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:family', 'read:file', 'read:id'],
+            'groups' => ['read:product-family', 'read:file', 'read:id'],
             'openapi_definition_name' => 'ProductFamily-read',
             'skip_null_values' => false
         ],
@@ -83,18 +98,25 @@ class Family extends AbstractFamily {
     protected DoctrineCollection $children;
 
     #[
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:product-family'])
+    ]
+    protected ?string $filePath = null;
+
+    #[
         ApiProperty(description: 'Nom', required: true, example: 'Faisceaux'),
-        Assert\Length(min: 3, max: 20),
+        Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
-        ORM\Column(length: 30),
-        Serializer\Groups(['read:family', 'write:family'])
+        ORM\Column(length: 50),
+        Serializer\Groups(['read:product-family', 'write:family', 'read:product-family:option'])
     ]
     protected ?string $name = null;
 
     #[
         ApiProperty(description: 'Famille parente', readableLink: false, example: '/api/product-families/1'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
-        Serializer\Groups(['read:family', 'write:family'])
+        Serializer\Groups(['read:product-family', 'write:family'])
     ]
     protected $parent;
 
@@ -127,10 +149,6 @@ class Family extends AbstractFamily {
             });
     }
 
-    #[
-        ApiProperty(description: 'Icône', example: '/uploads/product-families/1.jpg'),
-        Serializer\Groups(['read:file'])
-    ]
     final public function getFilepath(): ?string {
         return parent::getFilepath();
     }
@@ -148,5 +166,9 @@ class Family extends AbstractFamily {
             $reference->removeItem($this);
         }
         return $this;
+    }
+    #[Serializer\Groups(['read:product-family:option'])]
+    public function getText(): ?string {
+        return $this->getFullName();
     }
 }

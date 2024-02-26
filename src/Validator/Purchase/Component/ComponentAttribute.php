@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraint;
 final class ComponentAttribute extends Constraint {
     public string $message = 'La valeur de cet attribut doit être {{ type }}.';
 
-    public function getTargets() {
+    public function getTargets(): string {
         return self::CLASS_CONSTRAINT;
     }
 }

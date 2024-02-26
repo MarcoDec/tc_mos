@@ -20,26 +20,26 @@
 
 <style lang="scss" scoped>
     .gui-card {
-       height: v-bind('height');
-       margin-top: v-bind('marginTop');
-       max-height: v-bind('height');
-       min-height: v-bind('height');
+        height: v-bind('height');
+        margin-top: v-bind('marginTop');
+        max-height: v-bind('height');
+        min-height: v-bind('height');
     }
 
     @media (max-width: 1140px) {
-       .gui-card {
-          max-width: v-bind('innerWidth');
-          min-width: v-bind('innerWidth');
-          width: v-bind('innerWidth');
-       }
+        .gui-card {
+            max-width: v-bind('innerWidth');
+            min-width: v-bind('innerWidth');
+            width: v-bind('innerWidth');
+        }
     }
 
     @media (min-width: 1140px) {
-       .gui-card {
-          margin-right: v-bind('marginEnd');
-          max-width: v-bind('width');
-          min-width: v-bind('width');
-          width: v-bind('width');
-       }
+        .gui-card {
+            margin-right: v-bind('marginEnd');
+            max-width: v-bind('width');
+            min-width: v-bind('width');
+            width: v-bind('width');
+        }
     }
 </style>

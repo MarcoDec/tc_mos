@@ -5,7 +5,7 @@ namespace App\Repository\Logistics\Stock;
 use App\Collection;
 use App\Entity\Logistics\Stock\Group;
 use App\Entity\Logistics\Stock\Stock;
-use App\Entity\Logistics\Warehouse;
+use App\Entity\Logistics\Warehouse\Warehouse;
 use App\Paginator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

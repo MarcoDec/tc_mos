@@ -103,11 +103,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:family', 'write:file'],
+            'groups' => ['write:family', 'write:component-family', 'write:file'],
             'openapi_definition_name' => 'ComponentFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:family', 'read:file', 'read:id'],
+            'groups' => ['read:family', 'read:component-family', 'read:file', 'read:id'],
             'openapi_definition_name' => 'ComponentFamily-read',
             'skip_null_values' => false
         ],
@@ -122,18 +122,25 @@ class Family extends AbstractFamily {
     protected DoctrineCollection $children;
 
     #[
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:component-family'])
+    ]
+    protected ?string $filePath = null;
+
+    #[
         ApiProperty(description: 'Nom', required: true, example: 'Câbles'),
         Assert\Length(min: 3, max: 40),
         Assert\NotBlank,
         ORM\Column(length: 40),
-        Serializer\Groups(['read:family', 'write:family'])
+        Serializer\Groups(['read:family', 'write:family', 'write:component-family', 'read:component-family'])
     ]
     protected ?string $name = null;
 
     #[
         ApiProperty(description: 'Famille parente', readableLink: false, example: '/api/component-families/2'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
-        Serializer\Groups(['read:family', 'write:family'])
+        Serializer\Groups(['read:family', 'write:family', 'write:component-family', 'read:component-family'])
     ]
     protected $parent;
 
@@ -150,7 +157,7 @@ class Family extends AbstractFamily {
         Assert\Length(exactly: 3),
         Assert\NotBlank,
         ORM\Column(type: 'char', length: 3),
-        Serializer\Groups(['read:family', 'write:family'])
+        Serializer\Groups(['read:family', 'write:family', 'read:component-family', 'write:component-family'])
     ]
     private ?string $code = null;
 
@@ -161,7 +168,7 @@ class Family extends AbstractFamily {
     #[
         ApiProperty(description: 'Cuivré ', example: true),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:family', 'write:family'])
+        Serializer\Groups(['read:family', 'write:family', 'write:component-family', 'read:component-family'])
     ]
     private bool $copperable = false;
 
@@ -223,9 +230,17 @@ class Family extends AbstractFamily {
     }
 
     final public function getCode(): ?string {
+        if ($this->code === null && $this->parent !== null) {
+            return $this->parent->getCode();
+        }
         return $this->code;
     }
-
+    public function getCustomsCode(): ?string {
+        if ($this->customsCode === null && $this->parent !== null) {
+            return $this->parent->getCustomsCode();
+        }
+        return $this->customsCode;
+    }
     /**
      * @return DoctrineCollection<int, Component>
      */

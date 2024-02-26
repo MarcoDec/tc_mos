@@ -47,24 +47,25 @@ use Symfony\Component\Serializer\Annotation\Groups;
             'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
          ]
       ],
-      itemOperations: [
-         'get' => [
-            'openapi_context' => [
-               'description' => 'Récupère un fichier associé à un composant',
-               'summary' => 'Récupère un fichier associé à un composant'
-            ],
-            'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
-         ],
-         'delete' => [
-            'openapi_context' => [
-               'description' => 'Supprime un fichier',
-               'summary' => 'Supprime un fichier'
-            ]
-         ]
-      ],
-      paginationItemsPerPage: 2
+       itemOperations: [
+          'get' => [
+             'openapi_context' => [
+                'description' => 'Récupère un fichier associé à un composant',
+                'summary' => 'Récupère un fichier associé à un composant'
+             ],
+             'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
+          ],
+          'delete' => [
+             'openapi_context' => [
+                'description' => 'Supprime un fichier',
+                'summary' => 'Supprime un fichier'
+             ]
+          ]
+       ],
+       paginationClientEnabled: true,
+       paginationItemsPerPage: 2
    ),
-   ApiFilter(SearchFilter::class, properties: ['composant' => 'exact', 'category' => 'partial'])
+   ApiFilter(SearchFilter::class, properties: ['component' => 'exact', 'category' => 'partial'])
 ]
 class ComponentAttachment extends AbstractAttachment
 {

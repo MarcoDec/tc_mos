@@ -5,6 +5,8 @@ export default function useAttribute(attribute, parent) {
         actions: {
             dispose() {
                 this.parent.removeAttribute(this)
+                this.parent = null
+                this.attribute = null
                 this.$dispose()
             },
             update(attributes, family) {

@@ -310,8 +310,8 @@ SQL);
         $this->addQuery('ALTER TABLE `component_family` DROP `old_subfamily_id`');
         $this->addQuery('ALTER TABLE `customer_address` DROP `old_id`');
         $this->addQuery('ALTER TABLE `customer_contact` DROP `old_id`');
-        $this->addQuery('ALTER TABLE `employee` DROP `old_id`, DROP `matricule`, DROP `id_society`');
-        $this->addQuery('ALTER TABLE `engine` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `employee` DROP `matricule`, DROP `id_society`');
+        //$this->addQuery('ALTER TABLE `engine` DROP `old_id`');
         $this->addQuery('ALTER TABLE `engine_group` DROP `old_id`');
         $this->addQuery('ALTER TABLE `expedition` DROP `old_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
@@ -353,14 +353,80 @@ CREATE TABLE `attribute` (
     `name` VARCHAR(255) NOT NULL,
     `unit_id` INT UNSIGNED DEFAULT NULL,
     `attribut_id_family` VARCHAR(255) DEFAULT NULL,
-    `type` enum('bool', 'color', 'int', 'percent', 'text', 'unit') DEFAULT 'text' NOT NULL COMMENT '(DC2Type:attribute)',
+    `type` enum('bool', 'color', 'int', 'percent', 'text', 'measure', 'measureSelect') DEFAULT 'text' NOT NULL COMMENT '(DC2Type:attribute)',
     CONSTRAINT `IDX_FA7AEFFBF8BD700D` FOREIGN KEY (`unit_id`) REFERENCES `unit` (`id`)
 )
 SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`
+//FROM `attribut`
+//SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 14
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%section%"
+//SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 10
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%taille%"
+//SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 15
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%courant%"
+//SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 16
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%dia%"
+//OR LOWER(libelle) LIKE "%largeur%"
+//OR LOWER(libelle) LIKE "%largueur%"
+//OR LOWER(libelle) LIKE "%longueur%"
+//OR LOWER(libelle) LIKE "%tolerance%"
+//OR LOWER(libelle) LIKE "%dimension%"
+//OR LOWER(libelle) LIKE "%paisseur%"
+//SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 17
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%t°%"
+//SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 18
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%voltage%"
+//SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 20
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%resistance%"
+//SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 19
+FROM `attribut`
+WHERE LOWER(libelle) LIKE "%puissance%"
+SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "text"
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%couleur%"
+//SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`)
 SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`
 FROM `attribut`
+WHERE LOWER(libelle) NOT LIKE "%puissance%"
 SQL);
         $this->addQuery('DROP TABLE `attribut`');
         $this->addQuery(<<<'SQL'
@@ -703,15 +769,31 @@ CREATE TABLE `reference` (
     `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `name` VARCHAR(100) NOT NULL,
+    `sample_quantity` INT UNSIGNED DEFAULT 1,
+    `min_value_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `min_value_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `min_value_value` DOUBLE PRECISION DEFAULT 0,
+    `max_value_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `max_value_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `max_value_value` DOUBLE PRECISION DEFAULT 0,
     `kind` ENUM('Dimensionnel', 'Documentaire', 'GO/NOGO', 'Quantitatif', 'Visuel') DEFAULT 'Quantitatif' NOT NULL COMMENT '(DC2Type:check_kind)',
     `type` ENUM('component', 'component_family', 'product', 'product_family', 'supplier') NOT NULL COMMENT '(DC2Type:check)'
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `reference` (`old_id`, `name`, `kind`, `type`)
+INSERT INTO `reference` (`old_id`, `name`, `sample_quantity`, `min_value_value`, `max_value_value`, `kind`, `type`)
 SELECT
     `component_controle_reception`.`id`,
     `component_controle_reception`.`libelle`,
+    `component_controle_reception`.`nb`,
+    CASE
+        WHEN `component_controle_reception`.`value` is null THEN 0.0
+        ELSE`component_controle_reception`.`value`
+    END,
+    CASE
+        WHEN `component_controle_reception`.`value_2` is null THEN 0.0
+        ELSE`component_controle_reception`.`value_2`
+    END,
     CASE
         WHEN `component_controle_reception`.`id_type_controle` = 1 THEN 'Documentaire'
         WHEN `component_controle_reception`.`id_type_controle` = 2 THEN 'Dimensionnel'
@@ -905,13 +987,24 @@ CREATE TABLE `component_attribute` (
     CONSTRAINT `IDX_248373AAE2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`)
 )
 SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `component_attribute` (`component_id`, `attribute_id`, `value`)
+//SELECT `component`.`id`, `attribute`.`id`, `component_attribut`.`valeur_attribut`
+//FROM `component_attribut`
+//INNER JOIN `attribute` ON `component_attribut`.`id_attribut` = `attribute`.`old_id`
+//INNER JOIN `component` ON `component_attribut`.`id_component` = `component`.`old_id`
+//WHERE `component_attribut`.`valeur_attribut` IS NOT NULL AND TRIM(`component_attribut`.`valeur_attribut`) != ''
+//SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `component_attribute` (`component_id`, `attribute_id`, `value`)
-SELECT `component`.`id`, `attribute`.`id`, `component_attribut`.`valeur_attribut`
+INSERT INTO `component_attribute` (`component_id`, `attribute_id`, `value`, `measure_value`)
+SELECT `component`.`id`, `attribute`.`id`, `component_attribut`.`valeur_attribut`, CAST(REGEXP_REPLACE(`component_attribut`.`valeur_attribut`, 'W', '') AS DOUBLE PRECISION)
 FROM `component_attribut`
 INNER JOIN `attribute` ON `component_attribut`.`id_attribut` = `attribute`.`old_id`
 INNER JOIN `component` ON `component_attribut`.`id_component` = `component`.`old_id`
-WHERE `component_attribut`.`valeur_attribut` IS NOT NULL AND TRIM(`component_attribut`.`valeur_attribut`) != ''
+WHERE 
+    `component_attribut`.`valeur_attribut` IS NOT NULL 
+    AND TRIM(`component_attribut`.`valeur_attribut`) != ''
+    AND `attribute`.`type` = "measureSelect"
 SQL);
         $this->addQuery('DROP TABLE `component_attribut`');
         $this->addQuery('CALL LINK_COMPONENTS_ATTRIBUTES');
@@ -2521,27 +2614,33 @@ CREATE TABLE `manufacturer_engine` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `code` VARCHAR(255) DEFAULT NULL,
+    `name` VARCHAR(255) DEFAULT NULL,
+    `group_id` INT UNSIGNED DEFAULT NULL,
     `date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `engine_id` INT UNSIGNED DEFAULT NULL,
     `manufacturer_id` INT UNSIGNED DEFAULT NULL,
     `serial_number` VARCHAR(255) DEFAULT NULL,
+    `type` ENUM('counter-part','tool','workstation') NOT NULL COMMENT '(DC2Type:engine)',
+    CONSTRAINT `IDX_E8A81A8DFE54D948` FOREIGN KEY (`group_id`) REFERENCES `engine_group` (`id`),
     CONSTRAINT `IDX_F514547DE78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`),
     CONSTRAINT `IDX_F514547DA23B42D` FOREIGN KEY (`manufacturer_id`) REFERENCES `manufacturer` (`id`),
     UNIQUE KEY `UNIQ_F514547DE78C9C0A` (`engine_id`)
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `manufacturer_engine` (`code`, `date`, `engine_id`, `manufacturer_id`, `serial_number`)
+INSERT INTO `manufacturer_engine` (`name`, `date`, `engine_id`, `manufacturer_id`, `serial_number`, `group_id`, `type`)
 SELECT
     `old_engine`.`reffourn`,
     `old_engine`.`date_fabrication`,
     `engine`.`id`,
     `manufacturer`.`id`,
-    `old_engine`.`numero_serie`
+    `old_engine`.`numero_serie`,
+    `engine_group`.`id`,
+    `engine_group`.`type`
 FROM `old_engine`
+INNER JOIN `engine_group` ON `old_engine`.`id_engine_group` = `engine_group`.`old_id`
 INNER JOIN `engine` ON `old_engine`.`id` = `engine`.`old_id`
-LEFT JOIN `society` ON `old_engine`.`id_fabricant` = `society`.`old_id`
-LEFT JOIN `manufacturer` ON `society`.`id` = `manufacturer`.`society_id`
+LEFT JOIN `manufacturer` ON `old_engine`.`id_fabricant` = `manufacturer`.`id`
 SQL);
         $this->addQuery('DROP TABLE `old_engine`');
     }
@@ -4243,7 +4342,7 @@ CREATE TABLE `skill` (
     `started_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `type_id` INT UNSIGNED DEFAULT NULL,
     CONSTRAINT `IDX_5E3DE4778C03F15C` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`),
-    CONSTRAINT `IDX_5E3DE477E78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`),
+    CONSTRAINT `IDX_5E3DE477E78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `manufacturer_engine` (`id`),
     CONSTRAINT `IDX_5E3DE477C35E566A` FOREIGN KEY (`family_id`) REFERENCES `engine_group` (`id`),
     CONSTRAINT `IDX_5E3DE477B4B58540` FOREIGN KEY (`in_trainer_id`) REFERENCES `employee` (`id`),
     CONSTRAINT `IDX_5E3DE47778A19B66` FOREIGN KEY (`out_trainer_id`) REFERENCES `out_trainer` (`id`),
@@ -4508,6 +4607,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `company` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `currency_id` INT UNSIGNED DEFAULT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `delivery_time` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)',
     `delivery_time_open_days` BOOLEAN DEFAULT TRUE NOT NULL,
@@ -4521,14 +4621,16 @@ CREATE TABLE `company` (
     `number_of_team_per_day` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)',
     `society_id` INT UNSIGNED DEFAULT NULL,
     `work_timetable` VARCHAR(255) DEFAULT NULL,
-    CONSTRAINT `IDX_4FBF094FE6389D24` FOREIGN KEY (`society_id`) REFERENCES `society` (`id`)
+    CONSTRAINT `IDX_4FBF094FE6389D24` FOREIGN KEY (`society_id`) REFERENCES `society` (`id`),
+    CONSTRAINT `FK_4FBF094F38248176` FOREIGN KEY (`currency_id`) REFERENCES `currency` (`id`)
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `company` (`name`, `society_id`)
-SELECT `society_old`.`nom`, `society`.`id`
+INSERT INTO `company` (`name`, `society_id`, `currency_id`)
+SELECT `society_old`.`nom`, `society`.`id`, `currency`.`id`
 FROM `society_old`
 INNER JOIN `society` ON `society_old`.`id` = `society`.`old_id`
+LEFT JOIN `currency` ON `currency`.`code` = 'EUR'
 WHERE `society_old`.`is_company` = 1 AND `society_old`.`statut` = 0
 SQL);
         $this->addQuery(<<<'SQL'
@@ -5020,6 +5122,12 @@ CREATE TABLE `team` (
     CONSTRAINT `IDX_C4E0A61FD62B0FA` FOREIGN KEY (`time_slot_id`) REFERENCES `time_slot` (`id`)
 )
 SQL);
+        $this->addQuery(<<<'SQL'
+        INSERT INTO `team` (`company_id`, `name`, `time_slot_id`) VALUES
+        (3 , 'matin', 1),
+        (3, 'journée', 2),
+        (3, 'soir', 3)
+        SQL);
     }
 
     private function upTimeSlots(): void {
@@ -5035,11 +5143,11 @@ CREATE TABLE `time_slot` (
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `time_slot` (`end`, `end_break`, `name`, `start`, `start_break`) VALUES
-('13:30:00', NULL, 'Matin', '05:30:00', NULL),
-('17:30:00', '13:30:00', 'Journée', '07:30:00', '12:30:00'),
-('21:30:00',  NULL, 'Après-midi', '13:30:00', NULL),
-('08:00:00',  NULL, 'Samedi', '13:00:00', NULL)
+INSERT INTO `time_slot` (`id`,`end`, `end_break`, `name`, `start`, `start_break`) VALUES
+(1, '13:30:00', NULL, 'Matin', '05:30:00', NULL),
+(2, '17:30:00', '13:30:00', 'Journée', '07:30:00', '12:30:00'),
+(3, '21:30:00',  NULL, 'Après-midi', '13:30:00', NULL),
+(4, '08:00:00',  NULL, 'Samedi', '13:00:00', NULL)
 SQL);
     }
 

@@ -1,4 +1,5 @@
 <script setup>
+    import AppContainer from './AppContainer'
     import AppNavbar from './nav/AppNavbar.vue'
     import {computed} from 'vue'
     import {useRoute} from 'vue-router'

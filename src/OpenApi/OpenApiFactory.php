@@ -262,6 +262,23 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 ],
                 'type' => 'object'
             ]),
+            'Measure-generic' => new ArrayObject([
+                'description' => 'Mesure générique',
+                'properties' => [
+                    'code' => [
+                        'default' => 's',
+                        'description' => 'Code (example donné pour les secondes)',
+                        'example' => 's',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 1,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
             'Measure-duration' => new ArrayObject([
                 'description' => 'Temps',
                 'properties' => [
@@ -302,6 +319,23 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 ],
                 'type' => 'object'
             ]),
+            'Measure-generic' => new ArrayObject([
+                'description' => 'Mesure composant',
+                'properties' => [
+                    'code' => [
+                        'default' => 'm',
+                        'description' => 'Code',
+                        'example' => 'm',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 1,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
             'Measure-length' => new ArrayObject([
                 'description' => 'Masse linéique',
                 'properties' => [
@@ -314,6 +348,40 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                     'value' => [
                         'description' => 'Valeur',
                         'example' => 1,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
+            'Measure-section' => new ArrayObject([
+                'description' => 'Surface',
+                'properties' => [
+                    'code' => [
+                        'default' => 'm²',
+                        'description' => 'Code',
+                        'example' => 'm²',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 0.00025,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
+            'Measure-strength' => new ArrayObject([
+                'description' => 'Force',
+                'properties' => [
+                    'code' => [
+                        'default' => 'N',
+                        'description' => 'Code',
+                        'example' => 'N',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 5.2,
                         'type' => 'number'
                     ]
                 ],

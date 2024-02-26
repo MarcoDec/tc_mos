@@ -112,7 +112,7 @@ class Check extends Entity {
 
     /** @var null|Receipt<I> */
     #[
-        ApiProperty(description: 'Reçu', readableLink: false, example: '/api/receipts/1'),
+        ApiProperty(description: 'Reçu', readableLink: true),
         ORM\ManyToOne(cascade: ['persist'], inversedBy: 'checks'),
         Serializer\Groups(['read:check', 'write:check'])
     ]
@@ -120,7 +120,7 @@ class Check extends Entity {
 
     /** @var null|Reference<C> */
     #[
-        ApiProperty(description: 'Référence', readableLink: false, example: '/api/references/1'),
+        ApiProperty(description: 'Référence', readableLink: true),
         ORM\ManyToOne,
         Serializer\Groups(['read:check', 'write:check'])
     ]

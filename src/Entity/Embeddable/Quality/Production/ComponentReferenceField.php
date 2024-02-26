@@ -4,11 +4,13 @@ namespace App\Entity\Embeddable\Quality\Production;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Entity\Embeddable\Measure;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Unit;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\Embeddable]
-class ComponentReferenceField {
+class ComponentReferenceField implements MeasuredInterface {
     #[
         ApiProperty(description: 'Requis', example: true),
         ORM\Column(options: ['default' => true]),
@@ -60,5 +62,23 @@ class ComponentReferenceField {
     final public function setValue(Measure $value): self {
         $this->value = $value;
         return $this;
+    }
+
+    public function getMeasures(): array
+    {
+        return [$this->value, $this->tolerance];
+    }
+    public function getUnitMeasures(): array
+    {
+        return [$this->value, $this->tolerance];
+    }
+    public function getCurrencyMeasures(): array
+    {
+        return [];
+    }
+
+    public function getUnit(): ?Unit
+    {
+        return null;
     }
 }

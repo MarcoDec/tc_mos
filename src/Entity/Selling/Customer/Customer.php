@@ -6,6 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Blocker;
@@ -15,19 +16,25 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Selling\Customer\State;
 use App\Entity\Embeddable\Selling\Customer\WebPortal;
 use App\Entity\Entity;
+use App\Entity\Interfaces\FileEntity;
 use App\Entity\Management\Currency;
 use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
 use App\Entity\Selling\Customer\Attachment\CustomerAttachment;
+use App\Entity\Traits\FileTrait;
+use App\Filter\SetFilter;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state', 'address.zipCode']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'address.zipCode', 'address.city', 'copper.index.value']),
     ApiResource(
         description: 'Client',
         collectionOperations: [
@@ -51,8 +58,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Créer un client',
                     'summary' => 'Créer un client'
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')',
-                'validation_groups' => ['Product-create']
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -69,6 +75,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'summary' => 'Récupère un client',
                 ]
             ],
+            'patch image' => [
+                'openapi_context' => [
+                    'description' => 'Modifie le logo d\'un client',
+                    'summary' => 'Modifie le logo d\'un client'
+                ],
+                'denormalization_context' => [
+                    'groups' => ['write:customer:image'],
+                    'openapi_definition_name' => 'Customer-image'
+                ],
+                'normalization_context' => [
+                    'groups' => ['read:customer:image'],
+                    'openapi_definition_name' => 'Customer-image'
+                ],
+                'path' => '/customers/{id}/image',
+                'controller' => PlaceholderAction::class,
+                'method' => 'POST',
+                'input_formats' => ['multipart'],
+            ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un client',
@@ -77,7 +101,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                         'name' => 'process',
                         'required' => true,
                         'schema' => [
-                            'enum' => ['accounting', 'admin', 'logistics', 'main'],
+                            'enum' => ['accounting', 'admin', 'logistics', 'main', 'quality'],
                             'type' => 'string'
                         ]
                     ]],
@@ -123,14 +147,16 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'Customer-write'
         ],
         normalizationContext: [
-            'groups' => ['read:address', 'read:copper', 'read:customer', 'read:id', 'read:measure', 'read:state'],
+            'groups' => ['read:address', 'read:copper', 'read:customer', 'read:id', 'read:measure', 'read:state', 'read:file'],
             'openapi_definition_name' => 'Customer-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\Entity
 ]
-class Customer extends Entity {
+class Customer extends Entity implements FileEntity {
+    use FileTrait;
     #[
         ApiProperty(description: 'Portail de gestion'),
         ORM\Embedded,
@@ -141,7 +167,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Adresse'),
         ORM\Embedded,
-        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection'])
+        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:main'])
     ]
     private Address $address;
 
@@ -149,7 +175,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
         ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'customers'),
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['create:customer', 'read:customer', 'write:customer', 'write:customer:main'])
     ]
     private Collection $administeredBy;
 
@@ -161,19 +187,21 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Temps de livraison', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
         ORM\Embedded,
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
     ]
     private Measure $conveyanceDuration;
 
     #[
         ApiProperty(description: 'Cuivre'),
+        Assert\NotNull,
         ORM\Embedded,
-        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection'])
+        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:accounting'])
     ]
     private Copper $copper;
 
     #[
         ApiProperty(description: 'Monnaie', readableLink: false, example: '/api/currencies/1'),
+        Assert\NotNull,
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['create:customer', 'read:customer', 'write:customer', 'write:customer:accounting'])
@@ -195,23 +223,35 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Acceptation des équivalents', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:main'])
     ]
     private bool $equivalentEnabled = false;
 
     #[
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:customer:collection'])
+    ]
+    protected ?string $filePath = '';
+    #[
         ApiProperty(description: 'Factures par email', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private bool $invoiceByEmail = false;
 
     #[
         ApiProperty(description: 'Langue', example: 'Français'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:main'])
     ]
     private ?string $language = null;
+    #[
+        ApiProperty(description: 'Portail logistique'),
+        ORM\Embedded,
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+    ]
+    private WebPortal $logisticPortal;
 
     #[
         ApiProperty(description: 'Encours mensuels', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
@@ -222,14 +262,16 @@ class Customer extends Entity {
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Kaporingol'),
+        Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:admin'])
+        Serializer\Groups(['read:nomenclature', 'create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:admin', 'read:item'])
     ]
     private ?string $name = null;
 
     #[
         ApiProperty(description: 'Nombre de bons de livraison mensuel', example: 10),
         ORM\Column(type: 'tinyint', options: ['default' => 10, 'unsigned' => true]),
+        Assert\LessThanOrEqual(value: 254),
         Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
     ]
     private int $nbDeliveries = 10;
@@ -237,6 +279,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Nombre de factures mensuel', example: 10),
         ORM\Column(type: 'tinyint', options: ['default' => 10, 'unsigned' => true]),
+        Assert\LessThanOrEqual(value: 254),
         Serializer\Groups(['read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private int $nbInvoices = 10;
@@ -256,18 +299,60 @@ class Customer extends Entity {
     private Measure $outstandingMax;
 
     #[
-        ApiProperty(description: 'Date de réglement de la facture', readableLink: false, example: '/api/invoice-time-dues/1'),
+        ApiProperty(description: 'Condition calendaire de réglement de la facture', readableLink: false, example: '/api/invoice-time-dues/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['create:customer', 'read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private ?InvoiceTimeDue $paymentTerms = null;
+    #[
+        ApiProperty(description: 'Portail de gestion Qualité'),
+        ORM\Embedded,
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:quality'])
+    ]
+    private WebPortal $qualityPortal;
 
+    /**
+     * @return Collection
+     */
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
+
+    /**
+     * @param Collection $attachments
+     * @return Customer
+     */
+    public function setAttachments(Collection $attachments): Customer
+    {
+        $this->attachments = $attachments;
+        return $this;
+    }
+
+    /**
+     * @return WebPortal
+     */
+    public function getQualityPortal(): WebPortal
+    {
+        return $this->qualityPortal;
+    }
+
+    /**
+     * @param WebPortal $qualityPortal
+     * @return Customer
+     */
+    public function setQualityPortal(WebPortal $qualityPortal): Customer
+    {
+        $this->qualityPortal = $qualityPortal;
+        return $this;
+    }
     #[
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/1'),
+        Assert\NotNull,
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection'])
+        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:admin'])
     ]
     private ?Society $society = null;
 
@@ -486,5 +571,27 @@ class Customer extends Entity {
         return $this;
     }
 
+    
+    public function getLogisticPortal(): WebPortal
+    {
+        return $this->logisticPortal;
+    }
 
+    public function setLogisticPortal(WebPortal $logisticPortal): self
+    {
+        $this->logisticPortal = $logisticPortal;
+
+        return $this;
+    }
+    #[
+        ApiProperty(description: 'Icône', example: '/uploads/customer/1.jpg'),
+        Serializer\Groups(['read:file'])
+    ]
+    final public function getFilepath(): ?string {
+        return $this->filePath;
+    }
+    public function setFilePath(?string $filePath): void
+    {
+        $this->filePath = $filePath;
+    }
 }

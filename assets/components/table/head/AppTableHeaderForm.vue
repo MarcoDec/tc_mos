@@ -1,9 +1,11 @@
 <script setup>
-    import {computed} from 'vue'
+    import AppBtnJS from '../../AppBtnJS'
+    import {computed, ref} from 'vue'
 
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
         canReverse: {type: Boolean},
+        disableAdd: {required: false, type: Boolean},
         fields: {required: true, type: Object},
         icon: {default: 'search', type: String},
         id: {required: true, type: String},
@@ -22,13 +24,22 @@
     const form = computed(() => `${props.id}-form`)
     const fullReverseLabel = computed(() => `Basculer en mode ${props.reverseLabel}`)
     const lowerLabel = computed(() => props.label.toLowerCase())
-
+    const localData = ref(props.modelValue)
     function input(v) {
-        emit('update:modelValue', v)
+        if (props.store.isCompanyFiltered) {
+            const newV = {...v, company: props.store.company}
+            localData.value = newV
+            emit('update:modelValue', newV)
+        } else {
+            localData.value = v
+            emit('update:modelValue', v)
+        }
     }
-
     function reverse() {
         props.send(props.reverseMode)
+    }
+    function localSubmit() {
+        props.submit()
     }
 </script>
 
@@ -37,7 +48,7 @@
         <td class="text-center">
             <template v-if="canReverse">
                 <Fa :icon="icon"/>
-                <AppBtn :icon="reverseIcon" :label="fullReverseLabel" @click="reverse"/>
+                <AppBtnJS v-if="!disableAdd" :icon="reverseIcon" :label="fullReverseLabel" @click="reverse"/>
             </template>
         </td>
         <td class="text-center">
@@ -48,23 +59,24 @@
                 :label="label"
                 :send="send"
                 :store="store"
-                :submit="submit"
+                :submit="localSubmit"
                 :variant="variant"
                 name="form">
-                <AppForm :id="form" class="d-inline m-0 p-0" @submit="submit">
-                    <AppBtn :icon="icon" :label="label" :variant="variant" type="submit"/>
+                <AppForm :id="form" class="d-inline m-0 p-0" @submit="localSubmit">
+                    <AppBtnJS :icon="icon" :label="label" :variant="variant" type="submit"/>
                 </AppForm>
             </slot>
             <slot/>
         </td>
         <AppTableFormField
-            v-for="field in fields.fields"
+            v-for="(field, index) in fields.fields"
             :key="field.name"
             :field="field"
+            :initial-field="fields.initialFields[index]"
             :form="form"
             :label="lowerLabel"
             :mode="mode"
-            :model-value="modelValue"
+            :model-value="localData"
             :store="store"
             :violations="violations"
             @update:model-value="input">

@@ -74,7 +74,7 @@ class Planning extends Entity {
         ApiProperty(description: 'Nom'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:planning', 'write:planning'])
+        Serializer\Groups(['read:planning', 'write:planning','read:engine-maintenance-event'])
     ]
     private ?string $name = null;
 

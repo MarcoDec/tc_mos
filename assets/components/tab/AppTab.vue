@@ -16,3 +16,14 @@
         <slot/>
     </div>
 </template>
+
+<style scoped>
+    div.tab-pane {
+        box-shadow: black 5px 5px 10px 0px;
+        padding: 5px 5px 5px 5px;
+    }
+    div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
+    .gui-start-content {
+        font-size: 14px;
+    }
+</style>

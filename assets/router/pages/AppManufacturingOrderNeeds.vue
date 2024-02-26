@@ -32,15 +32,15 @@
         {{ title }}
     </h1>
     <AppTabs id="gui-start">
-        <AppTab id="collapse-new-ofs" active icon="tools" title="collapse new Ofs">
+        <AppTab id="collapse-new-ofs" active icon="tools" title="collapse new Ofs" tabs="gui-start">
             <h4>{{ storeCollapseNewOfsItems.items.length }} Commandes/OFs TCONCEPT à passer pour les 2 prochaines semaines</h4>
             <AppManufacturingTable :id="route.name" :form="form" :fields="fieldsCollapsenewOfs" :items="storeCollapseNewOfsItems.items" title="collapse new Ofs"/>
         </AppTab>
-        <AppTab id="collapse-ofs-to-confirm" icon="tools" title="collapse ofs ToConfirm">
+        <AppTab id="collapse-ofs-to-confirm" icon="tools" title="collapse ofs ToConfirm" tabs="gui-start">
             <h4> {{ storeCollapseOfsToConfirmItems.items.length }} OFs TCONCEPT en draft à confirmer</h4>
             <AppManufacturingTable :id="route.name" :form="form" :fields="fieldsCollapseOfsToConfirm" :items="storeCollapseOfsToConfirmItems.items" title="collapse ofs ToConfirm"/>
         </AppTab>
-        <AppTab id="collapse-on-going-local-of" icon="tools" title="collapse onGoing LocalOf">
+        <AppTab id="collapse-on-going-local-of" icon="tools" title="collapse onGoing LocalOf" tabs="gui-start">
             <h4> {{ storeCollapseOnGoingLocalOfItems.items.length }} OFs TCONCEPT en cours de fabrication localement</h4>
             <AppManufacturingTable :id="route.name" :form="form" :fields="fieldsCollapseOnGoingLocalOf" :items="storeCollapseOnGoingLocalOfItems.items" title="collapse onGoing LocalOf"/>
         </AppTab>

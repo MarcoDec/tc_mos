@@ -16,18 +16,25 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  */
 #[
     ApiResource(
-        description: 'Définition d\'un contrôle réception',
+        description: 'Définition d\'un contrôle réception Fournisseur',
         collectionOperations: [
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer un contrôle réception',
-                    'summary' => 'Créer un contrôle réception',
+                    'description' => 'Créer un contrôle réception pour tous les composants d\'un même fournisseur',
+                    'summary' => 'Créer un contrôle réception pour tous les composants d\'un même fournisseur',
                     'tags' => ['Reference']
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_QUALITY_WRITER.'\')'
             ]
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        itemOperations: [
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère un contrôle réception pour tous les composant d\'un même fournisseur',
+                    'summary' => 'Récupère un contrôle réception pour tous les composant d\'un même fournisseur',
+                    'tags' => ['Reference']
+                ],
+            ]],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_QUALITY_READER.'\')'
         ],

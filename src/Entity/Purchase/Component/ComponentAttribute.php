@@ -28,6 +28,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'summary' => 'Récupère les caractéristiques d\'un composant',
                 ],
             ],
+            'post'
         ],
         itemOperations: [
             'get' => NO_ITEM_GET_OPERATION,
@@ -43,15 +44,15 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:component-attribute'],
+            'groups' => ['write:component-attribute', 'write:measure'],
             'openapi_definition_name' => 'ComponentAttribute-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:component-attribute'],
+            'groups' => ['read:id', 'read:component-attribute', 'read:measure'],
             'openapi_definition_name' => 'ComponentAttribute-read',
             'skip_null_values' => false
         ],
-        paginationEnabled: false
+        paginationClientEnabled: true
     ),
     ORM\Entity(repositoryClass: ComponentAttributeRepository::class),
     ORM\UniqueConstraint(columns: ['attribute_id', 'component_id'])
@@ -61,12 +62,12 @@ class ComponentAttribute extends Entity implements MeasuredInterface {
         ApiProperty(description: 'Attribut', readableLink: false, example: '/api/attributes/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne(inversedBy: 'attributes'),
-        Serializer\Groups(['read:component-attribute'])
+        Serializer\Groups(['read:component-attribute', 'write:component-attribute'])
     ]
     private ?Attribute $attribute = null;
 
     #[
-        ApiProperty(description: 'Couleur', readableLink: false, example: '/api/colors/1'),
+        ApiProperty(description: 'Couleur'),
         ORM\ManyToOne,
         Serializer\Groups(['read:component-attribute', 'write:component-attribute'])
     ]
@@ -76,7 +77,7 @@ class ComponentAttribute extends Entity implements MeasuredInterface {
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne(inversedBy: 'attributes'),
-        Serializer\Groups(['read:component-attribute'])
+        Serializer\Groups(['read:component-attribute', 'write:component-attribute'])
     ]
     private ?Component $component = null;
 
@@ -116,6 +117,14 @@ class ComponentAttribute extends Entity implements MeasuredInterface {
 
     final public function getMeasures(): array {
         return [$this->measure];
+    }
+    final public function getUnitMeasures(): array
+    {
+        return [$this->measure];
+    }
+    final public function getCurrencyMeasures(): array
+    {
+        return [];
     }
 
     final public function getType(): string {

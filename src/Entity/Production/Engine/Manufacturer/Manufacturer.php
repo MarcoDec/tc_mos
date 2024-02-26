@@ -2,6 +2,7 @@
 
 namespace App\Entity\Production\Engine\Manufacturer;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -27,6 +28,23 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Récupère les fabricants',
                     'summary' => 'Récupère les fabricants',
                 ],
+            ],
+            'options' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:manufacturer:option'],
+                    'openapi_definition_name' => 'Manufacturer-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les fabriquants pour les select',
+                    'summary' => 'Récupère les fabriquants pour les select',
+                ],
+                'order' => ['name' => 'asc'],
+                'pagination_enabled' => false,
+                'path' => '/manufacturers/options'
             ],
             'post' => [
                 'openapi_context' => [
@@ -65,6 +83,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Manufacturer-read',
             'skip_null_values' => false
         ],
+        paginationEnabled: false
     ),
     ORM\Entity
 ]
@@ -73,7 +92,7 @@ class Manufacturer extends Entity {
         ApiProperty(description: 'Nom', required: true, example: 'Peugeot'),
         Assert\NotBlank,
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:manufacturer', 'write:manufacturer'])
+        Serializer\Groups(['read:manufacturer', 'write:manufacturer', 'read:manufacturer-engine'])
     ]
     private ?string $name = null;
 
@@ -92,6 +111,10 @@ class Manufacturer extends Entity {
         return $this->society;
     }
 
+    #[Serializer\Groups(['read:manufacturer:option'])]
+    final public function getText(): ?string {
+        return $this->getName();
+    }
     final public function setName(?string $name): self {
         $this->name = $name;
         return $this;

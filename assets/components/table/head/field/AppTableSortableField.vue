@@ -21,7 +21,7 @@
 
 <template>
     <th :aria-sort="ariaSort" @click="sort">
-        <span class="d-flex justify-content-between">
+        <span class="display-flex justify-content-between">
             <span>{{ field.label }}</span>
             <span class="d-flex flex-column">
                 <Fa :class="up" icon="caret-up"/>

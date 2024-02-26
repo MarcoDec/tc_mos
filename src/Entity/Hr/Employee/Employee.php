@@ -3,6 +3,9 @@
 namespace App\Entity\Hr\Employee;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use App\Entity\Interfaces\FileEntity;
+use App\Entity\Traits\FileTrait;
+use App\Validator as AppAssert;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -24,6 +27,7 @@ use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\NumericFilter;
+use App\Filter\SetFilter;
 use App\Repository\Hr\Employee\EmployeeRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -34,15 +38,31 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Controller\Hr\Employee\EmployeePatchController;
+use App\Entity\Production\Manufacturing\OperationEmployee;
+use App\Filter\CustomGetterFilter;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['userEnabled']),
     ApiFilter(filterClass: NumericFilter::class, properties: ['id']),
+    ApiFilter(filterClass: CustomGetterFilter::class, properties: ['getterFilter'=>['fields'=>['name', 'surname']]]),
     ApiFilter(
         filterClass: SearchFilter::class,
-        properties: ['initials' => 'partial', 'name' => 'partial', 'surname' => 'partial', 'username' => 'partial', 'company'=>'exact']
+        properties: [
+            'initials' => 'partial',
+            'name' => 'partial',
+            'surname' => 'partial',
+            'username' => 'partial',
+            'company'=>'exact',
+            'notes' => 'partial',
+            'entryDate' => 'partial',
+            'timeCard' => 'partial'
+        ]
     ),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['initials', 'id', 'name', 'surname', 'username']),
+    ApiFilter(
+        filterClass: OrderFilter::class,
+        properties: ['initials', 'id', 'name', 'surname', 'username', 'timeCard', 'initials']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
         description: 'Employé',
         collectionOperations: [
@@ -83,7 +103,28 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Récupère un employé'
                 ]
             ],
+            'patch image' => [
+                'openapi_context' => [
+                    'description' => 'Modifie la photo d\'un employee',
+                    'summary' => 'Modifie la photo d\'un employee'
+                ],
+                'denormalization_context' => [
+                    'groups' => ['write:employee:image'],
+                    'openapi_definition_name' => 'Employee-image'
+                ],
+                'normalization_context' => [
+                    'groups' => ['read:employee:image'],
+                    'openapi_definition_name' => 'Employee-image'
+                ],
+                'path' => '/employees/{id}/image',
+                'controller' => PlaceholderAction::class,
+                'method' => 'POST',
+                'input_formats' => ['multipart'],
+                'validation_groups' => ['patchImage'],
+            ],
             'patch' => [
+                'controller' => PlaceholderAction::class, //EmployeePatchController::class,
+                'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Modifier un employé',
                     'parameters' => [[
@@ -98,7 +139,10 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Modifier un employé'
                 ],
                 'path' => '/employees/{id}/{process}',
+                'read' => true,
+                'write' => true,
                 'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')',
+                'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ],
             'promote' => [
                 'controller' => PlaceholderAction::class,
@@ -155,13 +199,18 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity(repositoryClass: EmployeeRepository::class)
 ]
-class Employee extends Entity implements BarCodeInterface, PasswordAuthenticatedUserInterface, UserInterface {
-    use BarCodeTrait;
+class Employee extends Entity implements BarCodeInterface, PasswordAuthenticatedUserInterface, UserInterface, FileEntity {
+    use BarCodeTrait, FileTrait;
 
     #[
-        Assert\Valid,
+        ApiProperty(description: 'Ancien_Identifiant', example: 1),
+        ORM\Column(type: 'integer', nullable: true)
+    ]
+    private ?int $oldId = 0;
+    #[
+        Assert\Valid(groups: ['Default', 'creation', 'update']),
         ORM\Embedded(Address::class),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
     private Address $address;
 
@@ -178,7 +227,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Ville de naissance', example: 'Nancy'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $birthCity = null;
 
@@ -197,7 +246,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:user', 'read:employee:collection', 'write:employee', 'write:employee:it'])
     ]
     private ?Company $company = null;
 
@@ -207,7 +256,10 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     ]
     private Blocker $embBlocker;
 
-    #[ORM\Embedded]
+    #[  
+        ORM\Embedded,
+        Serializer\Groups(['create:employee', 'read:employee', 'write:employee', 'write:employee:it'])
+    ]
     private Roles $embRoles;
 
     #[
@@ -219,9 +271,17 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Date d\'arrivée', example: '2021-01-12'),
         ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr', 'create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr'])
     ]
+
     private ?DateTimeImmutable $entryDate = null;
+
+    #[
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:employee:collection', 'read:employee'])
+    ]
+    protected ?string $filePath = '';
 
     #[
         ApiProperty(description: 'Sexe', example: GenderType::TYPE_MALE, openapiContext: ['enum' => GenderType::TYPES]),
@@ -255,7 +315,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Prénom', required: true, example: 'Super'),
         ORM\Column(length: 30),
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr'])
+        Serializer\Groups(['read:production-quality', 'create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation', 'read:skill'])
     ]
     private ?string $name = null;
 
@@ -268,14 +328,14 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[
         ORM\Column(type: 'char', length: 60, nullable: true),
-        Serializer\Groups(['create:employee'])
+        Serializer\Groups(['create:employee', 'write:employee', 'write:employee:it'])
     ]
     private ?string $password = null;
 
     #[
         ApiProperty(description: 'Mot de passe', example: 'L0r3m@Ipsum'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:employee'])
+        Serializer\Groups(['create:employee', 'write:employee', 'write:employee:it'])
     ]
     private ?string $plainPassword = null;
 
@@ -297,44 +357,59 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Nom', example: 'Roosevelt'),
         ORM\Column,
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr'])
+        Serializer\Groups(['read:production-quality', 'create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation', 'read:skill'])
     ]
     private ?string $surname = null;
 
     #[
-       ApiProperty(description: 'Equipe', example: 'Equipe du matin'),
+       ApiProperty(description: 'Equipe', readableLink: false, example: '/api/teams/1'),
        ORM\ManyToOne(inversedBy: 'employees'),
-       Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection'])
+       Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection', 'write:employee', 'write:employee:production'])
     ]
     private ?Team $team = null;
 
     #[
-        ApiProperty(description: 'Carte de pointage', example: '65465224'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:employee', 'read:employee:collection'])
+        ApiProperty(description: 'Badge', example: '65465224'),
+        ORM\Column(type: 'integer' , nullable: true),
+        Serializer\Groups(['read:employee', 'read:employee:collection', 'write:employee', 'write:employee:it'])
     ]
-    private ?string $timeCard = null;
+    private ?int $timeCard = null;
 
     #[
         ApiProperty(description: 'Compte validé', required: true, example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'write:employee', 'write:employee:it'])
     ]
     private bool $userEnabled = false;
 
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
         ORM\Column(length: 20, nullable: true),
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user'])
+        Serializer\Groups(['read:operation-employee', 'create:employee', 'read:employee','read:employee:collection', 'read:user', 'read:manufacturing-operation', 'write:employee', 'write:employee:it'])
     ]
     private ?string $username = null;
+
+    #[
+        ApiProperty(description: 'Opération'),
+        ORM\OneToMany(mappedBy: 'employee', targetEntity: OperationEmployee::class),
+        Serializer\Groups(['read:manufacturing-operation', 'read:operation-employee', 'read:employee'])
+    ]
+    private ?Collection $operationEmployees = null;
+    
+    public function getOperationEmployees(): ?Collection
+    {
+        return $this->operationEmployees;
+    }
 
     public function __construct() {
         $this->apiTokens = new ArrayCollection();
         $this->embBlocker = new Blocker();
         $this->embRoles = new Roles();
-       $this->attachments = new ArrayCollection();
+        $this->attachments = new ArrayCollection();
         $this->embState = new EmployeeEngineState();
+        $this->address = new Address();
+        $this->clockings = new ArrayCollection();
+        $this->operationEmployees = new ArrayCollection();
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -449,6 +524,13 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     final public function getName(): ?string {
         return $this->name;
     }
+    #[
+        ApiProperty(description: 'Nom complet', example: 'Roosevelt Super'),
+        Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection'])
+    ]
+    final public function getGetterFilter(): string {
+        return $this->name.' '.$this->surname;
+    }
 
     final public function getNotes(): ?string {
         return $this->notes;
@@ -464,7 +546,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     final public function getPlainPassword(): ?string {
         return $this->plainPassword;
     }
-
+    
     /**
      * @return string[]
      *
@@ -509,7 +591,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->team;
     }
 
-    final public function getTimeCard(): ?string {
+    final public function getTimeCard(): ?int {
         return $this->timeCard;
     }
 
@@ -647,6 +729,11 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
+    final public function setRoles(array $embRoles): self {
+        $this->embRoles->setRoles($embRoles);
+        return $this;
+    }
+
     final public function setSituation(?string $situation): self {
         $this->situation = $situation;
         return $this;
@@ -672,7 +759,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
-    final public function setTimeCard(?string $timeCard): self {
+    final public function setTimeCard(?int $timeCard): self {
         $this->timeCard = $timeCard;
         return $this;
     }
@@ -686,4 +773,44 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         $this->username = $username;
         return $this;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getFilePath(): ?string
+    {
+        return $this->filePath;
+    }
+
+    /**
+     * @param string|null $filePath
+     * @return Employee
+     */
+    public function setFilePath(?string $filePath): Employee
+    {
+        $this->filePath = $filePath;
+        return $this;
+    }
+
+    public function getOldId(): ?int
+    {
+        return $this->oldId;
+    }
+
+    public function setOldId(?int $oldId): void
+    {
+        $this->oldId = $oldId;
+    }
+
+    public function getClockings(): Collection
+    {
+        return $this->clockings;
+    }
+
+    public function setClockings(Collection $clockings): void
+    {
+        $this->clockings = $clockings;
+    }
+
+
 }

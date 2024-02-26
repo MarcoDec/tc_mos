@@ -2,6 +2,7 @@
 
 namespace App\Entity\Logistics;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -32,6 +33,23 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Créer un incoterms',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
+            ],
+            'options' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:incoterm:option'],
+                    'openapi_definition_name' => 'Incoterm-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les incoterms pour les select',
+                    'summary' => 'Récupère les incoterms pour les select',
+                ],
+                'order' => ['code' => 'asc'],
+                'pagination_enabled' => false,
+                'path' => '/incoterms/options'
             ]
         ],
         itemOperations: [
@@ -63,6 +81,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Incoterms-read',
             'skip_null_values' => false
         ],
+        paginationEnabled: false
     ),
     ORM\Entity,
     UniqueEntity('code'),
@@ -74,7 +93,7 @@ class Incoterms extends Entity {
         Assert\Length(min: 3, max: 25),
         Assert\NotBlank,
         ORM\Column(length: 25),
-        Serializer\Groups(['read:incoterms', 'write:incoterms'])
+        Serializer\Groups(['read:incoterms', 'write:incoterms', 'read:society'])
     ]
     private ?string $code = null;
 
@@ -83,7 +102,7 @@ class Incoterms extends Entity {
         Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
         ORM\Column(length: 50),
-        Serializer\Groups(['read:incoterms', 'write:incoterms'])
+        Serializer\Groups(['read:incoterms', 'write:incoterms', 'read:society'])
     ]
     private ?string $name = null;
 
@@ -103,5 +122,9 @@ class Incoterms extends Entity {
     final public function setName(?string $name): self {
         $this->name = $name;
         return $this;
+    }
+    #[Serializer\Groups(['read:incoterm:option'])]
+    final public function getText(): ?string {
+        return $this->getCode().' - '.$this->getName();
     }
 }

@@ -12,6 +12,7 @@ use App\Entity\Management\Unit;
 use App\Validator as AppAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use App\Entity\Purchase\Supplier\Component as SupplierComponent;
 
 #[
     ApiResource(
@@ -75,7 +76,7 @@ class Price extends Entity implements MeasuredInterface {
 
     #[
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/supplier-components/1'),
-        ORM\ManyToOne,
+        ORM\ManyToOne(targetEntity: SupplierComponent::class, inversedBy: 'prices'),
         Serializer\Groups(['read:price', 'write:price'])
     ]
     private ?Component $component = null;
@@ -106,6 +107,14 @@ class Price extends Entity implements MeasuredInterface {
 
     final public function getMeasures(): array {
         return [$this->price, $this->quantity];
+    }
+    final public function getUnitMeasures(): array
+    {
+        return [$this->quantity];
+    }
+    final public function getCurrencyMeasures(): array
+    {
+        return [$this->price];
     }
 
     final public function getPrice(): Measure {

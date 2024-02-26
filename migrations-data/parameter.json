@@ -38,7 +38,7 @@
     "name": "COMPONENT_ATTACHMENT_CATEGORIES",
     "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Component\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
     "process": "purchase",
-    "value": "doc_a_date,qualité,technique",
+    "value": "doc_a_date,qualité,technique,rohs,reach",
     "type": "ARRAY"
   },
   {
@@ -222,5 +222,33 @@
     "process": "hr",
     "value": "180",
     "type" : "INTEGER"
+  },
+  {
+    "name": "WAREHOUSE_DIRECTORIES",
+    "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté pour un entrepôt\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
+    "process": "logistic",
+    "value": "plans,divers",
+    "type": "ARRAY"
+  },
+  {
+    "name": "WAREHOUSE_ATTACHMENT_CATEGORIES",
+    "description": "Catégories de pièce jointe",
+    "process": "logistic",
+    "value": "plans,divers",
+    "type": "ARRAY"
+  },
+  {
+    "name": "WAREHOUSE_EXPIRATION_DIRECTORIES",
+    "description": "Répertoires où sont stockés les fichiers périssables des entrepôts.",
+    "process": "logistic",
+    "value": "",
+    "type": "ARRAY"
+  },
+  {
+    "name": "WAREHOUSE_EXPIRATION_DURATION",
+    "description": "Durée en mois d'expiration des répertoires où sont stockés les fichiers périssables des entrepôts.",
+    "process": "logistic",
+    "value": "84",
+    "type": "INTEGER"
   }
 ]

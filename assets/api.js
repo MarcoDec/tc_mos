@@ -43,11 +43,11 @@ class ApiRequest {
     set #formDataBody(body) {
         for (const [key, value] of Object.entries(Object.fromEntries(body))) {
             if (typeof value === 'undefined' || value === null)
-                body['delete'](key)
+                body.delete(key)
             else if (typeof value === 'string') {
                 body.set(key, value.trim())
                 if (body.get(key).length === 0)
-                    body['delete'](key)
+                    body.delete(key)
             }
         }
         this.#body = body
@@ -90,6 +90,11 @@ export default async function api(url, method = 'GET', body = null) {
     case 422: {
         const content = await response.json()
         throw content.violations
+    }
+    case 500: {
+        const content = await response.json()
+        throw content['hydra:description']
+        //throw await response.json()
     }
     default:
         throw response.statusText

@@ -1,5 +1,9 @@
 # TConcept-GPAO
 
+## Objectifs de la branche preprod
+La branche de `preprod` a pour objectif de mettre l'application dans des conditions proches de la production.
+Elle dérive de la branche `develop` et est destinée à être fusionnée dans la branche `master`.
+
 ## Installation
 
 Le projet est prévu pour s'installer sur un système d'exploitation en base Linux. Il est possible sur Windows d'utiliser

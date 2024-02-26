@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 trait AttachmentTrait {
     #[
-      ORM\Column,
+      ORM\Column(type: 'string', length: 255, options: ['default' => 'doc']),
       ApiProperty(description: 'Catégorie de fichier', required: true, example: 'doc'),
       Groups(AbstractAttachment::API_GROUPS_CATEGORY)
    ]

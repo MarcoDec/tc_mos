@@ -14,14 +14,14 @@ abstract class Event extends Entity {
     #[
         ApiProperty(description: 'Date', example: '2022-10-08'),
         ORM\Column(type: 'datetime_immutable', nullable: true),
-        Serializer\Groups(['read:event', 'write:event'])
+        Serializer\Groups(['read:event', 'write:event','read:engine-maintenance-event'])
     ]
     protected ?DateTimeImmutable $date = null;
 
     #[
         ApiProperty(description: 'Fini', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:event'])
+        Serializer\Groups(['read:event','read:engine-maintenance-event', 'write:event'])
     ]
     protected bool $done = false;
 
@@ -33,8 +33,7 @@ abstract class Event extends Entity {
     protected ?Company $managingCompany = null;
 
     #[
-        ApiProperty(description: 'Nom', example: 'Congés d\'été'),
-        Assert\NotBlank,
+        ApiProperty(description: 'Nom', example: 'Evènement annuel'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:event', 'write:event'])
     ]

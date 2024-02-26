@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Entity\Embeddable\Hr\Employee;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -22,7 +23,9 @@ class Roles {
         self::ROLE_HR_WRITER => self::ROLE_HR_READER,
         self::ROLE_HR_ADMIN => self::ROLE_HR_WRITER,
         // Informatique
-        self::ROLE_IT_ADMIN => self::ROLE_USER,
+        self::ROLE_IT_READER => self::ROLE_USER,
+        self::ROLE_IT_WRITER => self::ROLE_IT_READER,
+        self::ROLE_IT_ADMIN => self::ROLE_IT_WRITER,
         // Niveaux
         self::ROLE_LEVEL_OPERATOR => self::ROLE_USER,
         self::ROLE_LEVEL_ANIMATOR => self::ROLE_LEVEL_OPERATOR,
@@ -69,6 +72,8 @@ class Roles {
 
     // Informatique
     final public const ROLE_IT_ADMIN = 'ROLE_IT_ADMIN';
+    final public const ROLE_IT_READER = 'ROLE_IT_READER';
+    final public const ROLE_IT_WRITER = 'ROLE_IT_WRITER';
 
     // Niveaux
     final public const ROLE_LEVEL_ANIMATOR = 'ROLE_LEVEL_ANIMATOR';
@@ -120,8 +125,16 @@ class Roles {
     final public const ROLE_USER = 'ROLE_USER';
 
     /** @var string[] */
-    #[ORM\Column(type: 'simple_array')]
+    #[
+        ORM\Column(type: 'simple_array'),
+        Serializer\Groups(['read:user', 'read:employee', 'write:employee', 'write:employee:it'])
+        ]
     private array $roles = [self::ROLE_USER];
+
+    final public function setRoles(array $roles): self {
+        $this->roles = $roles;
+        return $this;
+    }
 
     final public function addRole(string $role): self {
         if (!in_array($role, $this->roles)) {

@@ -101,14 +101,14 @@ class Receipt extends Entity implements MeasuredInterface {
 
     /** @var Item<I>|null */
     #[
-        ApiProperty(description: 'Item', readableLink: false, example: '/api/purchase-order-items/1'),
+        ApiProperty(description: 'Item de commande d\'achat', readableLink: false, example: '/api/purchase-order-items/1'),
         ORM\ManyToOne(inversedBy: 'receipts'),
         Serializer\Groups(['read:receipt'])
     ]
     private ?Item $item = null;
 
     #[
-        ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ApiProperty(description: 'Quantité réceptionnée', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
         Serializer\Groups(['read:receipt'])
     ]
@@ -180,6 +180,13 @@ class Receipt extends Entity implements MeasuredInterface {
 
     final public function getMeasures(): array {
         return [$this->quantity];
+    }
+
+    final public function getUnitMeasures(): array {
+        return [$this->quantity];
+    }
+    final public function getCurrencyMeasures(): array {
+        return [];
     }
 
     final public function getQuantity(): Measure {

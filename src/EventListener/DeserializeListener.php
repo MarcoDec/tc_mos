@@ -6,6 +6,8 @@ use ApiPlatform\Core\EventListener\DeserializeListener as ApiDeserializeListener
 use ApiPlatform\Core\Serializer\SerializerContextBuilderInterface;
 use ApiPlatform\Core\Util\RequestAttributesExtractor;
 use App\Collection;
+use App\Entity\Management\Society\Company\Company;
+use App\Entity\Purchase\Supplier\Supplier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -22,6 +24,7 @@ final class DeserializeListener {
 
     public function __invoke(RequestEvent $event): void {
         $request = $event->getRequest();
+//        dump($request);
         if ($request->isMethodCacheable() || $request->isMethod(Request::METHOD_DELETE)) {
             return;
         }
@@ -29,7 +32,32 @@ final class DeserializeListener {
         if (in_array($request->getContentType(), ['form', 'multipart'])) {
             $this->denormalizeMultipart($request);
         } else {
-            $this->decorated->onKernelRequest($event);
+           if ($request->getMethod()==='PATCH' && str_contains($request->getPathInfo(),'/api/suppliers/')) {
+               preg_match('/\/api\/suppliers\/(\d+)/', $request->getPathInfo(),$supplierIdArr);
+               $supplierId = intval($supplierIdArr[1]);
+               preg_match_all('/\/api\/companies\/(\d+)/', $request->getContent(),$companyIdsArr);
+               $companyIds = $companyIdsArr[1];
+               $supplierRepository = $this->em->getRepository(Supplier::class);
+               $companyRepository = $this->em->getRepository(Company::class);
+               $supplier = $supplierRepository->find($supplierId);
+               /** @var Company $item */
+              foreach ($supplier->getAdministeredBy() as $item){
+                 $currentId = $item->getId();
+                  if (!in_array($currentId, $companyIds)) {
+                     $aCompany = $companyRepository->find($currentId);
+                     $supplier->removeAdministeredBy($aCompany);
+                  }
+               }
+               foreach ($companyIds as $companyId) {
+                  $aCompany = $companyRepository->find($companyId);
+                  $supplier->addAdministeredBy($aCompany);
+               }
+               $this->em->persist($supplier);
+               $this->em->flush();
+           }
+           if ($request->getMethod()==='POST' && str_contains($request->getPathInfo(),'/api/balance-sheet-items/from-excel')){
+//               dump("POST from Excel");
+           } else $this->decorated->onKernelRequest($event);
         }
     }
 

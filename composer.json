@@ -65,6 +65,7 @@
     "ext-iconv": "*",
     "ext-intl": "*",
     "ext-pdo_mysql": "*",
+    "ext-ssh2": "*",
     "ext-zip": "*",
     "api-platform/core": "2.6.8",
     "cweagans/composer-patches": "^1.7.2",

@@ -7,6 +7,7 @@
 
     const props = defineProps({
         action: {type: Boolean},
+        disableAdd: {required: false, type: Boolean},
         fields: {required: true, type: Object},
         id: {required: true, type: String},
         machine: {required: true, type: Object},
@@ -21,7 +22,7 @@
     <thead :id="id" class="table-dark">
         <AppTableFields :action="action" :fields="fields" :send="machine.send" :store="store"/>
         <AppTableAdd
-            v-if="machine.state.value.matches('create')"
+            v-if="machine.state.value.matches('create') && !disableAdd"
             :id="add"
             :fields="fields"
             :machine="machine"
@@ -30,7 +31,7 @@
                 <slot :name="s.slot" v-bind="args"/>
             </template>
         </AppTableAdd>
-        <AppTableSearch v-else-if="fields.search" :id="search" :fields="fields" :send="machine.send" :store="store">
+        <AppTableSearch v-else-if="fields.search" :id="search" :fields="fields" :send="machine.send" :store="store" :disable-add="disableAdd">
             <template v-for="s in searchSlots" :key="s.name" #[s.name]="args">
                 <slot :name="s.slot" v-bind="args"/>
             </template>
