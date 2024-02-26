@@ -58,4 +58,12 @@ final class UnitRepository extends ServiceEntityRepository {
         }
         return $units;
     }
+
+    /**
+     * @param int $id
+     * @return null|Unit
+     */
+    public function findById(int $id): ?Unit {
+        return $this->find($id);
+    }
 }

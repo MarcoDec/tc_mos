@@ -54,7 +54,6 @@ class Measure {
 
     final public function convert(AbstractUnit $unit, ?AbstractUnit $denominator = null): self {
         $safeUnit = $this->getSafeUnit();
-//        dump(['convert','unit'=>$unit, 'this'=>$this, 'denominator'=>$denominator]);
         $safeUnit->assertSameAs($unit);
         if ($safeUnit->getCode() !== $unit->getCode()) {
             $this->value *= $safeUnit->getConvertorDistance($unit);

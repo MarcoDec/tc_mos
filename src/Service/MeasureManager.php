@@ -24,38 +24,23 @@ final class MeasureManager {
     ) {
     }
 
-    public function ConvertAfterMultiply(Measure $measure1, Measure $measure2): array {
-        $newMeasure1 = new Measure();
-        $newMeasure1->setCode($measure1->getCode());
-        $newMeasure1->setDenominator($measure1->getDenominator());
-        $newMeasure1->setUnit($measure1->getUnit()); 
-        $newMeasure1->setValue($measure1->getValue());
+    public function convertMeasure(Measure $measure, Unit $unit2, ?Unit $denominator = null): Measure
+    {
+        // Convertir la mesure dans une autre unité
+        $convertedMeasure = $measure->convert($unit2);
+       // dump(['convertedMeasure',$convertedMeasure]);
     
-        $newMeasure2 = new Measure();
-        $newMeasure2->setCode($measure2->getCode());
-        $newMeasure2->setDenominator($measure2->getDenominator());
-        $newMeasure2->setUnit($measure2->getUnit()); 
-        $newMeasure2->setValue($measure2->getValue());
-    
-        // Convertir les mesures avant la multiplication
-        $convertedMeasure1 = $newMeasure1->convert($newMeasure2->getSafeUnit(), $newMeasure2->getDenominatorUnit());
-        $convertedMeasure2 = $newMeasure2->convert($newMeasure1->getSafeUnit(), $newMeasure1->getDenominatorUnit());
-    
-        // Effectuer la multiplication des valeurs converties
-        $product = $convertedMeasure1->getValue() * $convertedMeasure2->getValue();
-    
-        $totalMeasure = new Measure();
-        $totalMeasure->setValue($product);
-    
-        // Retourner un tableau contenant convertedMeasure1 et convertedMeasure2
-        return [
-            'convertedMeasure1' => $convertedMeasure1,
-            'convertedMeasure2' => $convertedMeasure2,
-            'totalMeasure' => $totalMeasure,
-        ];
-    }
+        // Si un dénominateur est spécifié, convertir également la mesure du dénominateur
+        if ($denominator !== null) {
+            // Mettre à jour la valeur convertie avec le dénominateur
+            $convertedMeasure->setValue($convertedMeasure->getValue() / $measure->getDenominatorUnit()->getBase());
 
+        }
+        // Retourner la mesure convertie
+        return $convertedMeasure;
+    }
     
+
    public function ConvertAfterMul(Unit $unit1,float $quantity1, Unit $unit2, float $quantity2 ): array {
         $newMeasure1 = new Measure();
         $newMeasure1->setCode($unit1->getCode());
@@ -88,4 +73,4 @@ final class MeasureManager {
     
 
 }
-?>
+?> 
