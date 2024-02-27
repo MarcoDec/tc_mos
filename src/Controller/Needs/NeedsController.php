@@ -162,6 +162,7 @@ class NeedsController extends AbstractController
             // Ajouter la quantité de stock à la somme existante pour ce stockComponentId
             $stockQuantities[$stockComponentId] += $stockComponentQuantity;
         }
+
         $uniqueDates = [];
 
         foreach ($invertedMatrix as $compositeKey => $orders) {
@@ -201,10 +202,14 @@ class NeedsController extends AbstractController
         //$stockMinimum = $this->getStockMinPerDate($ordersForComponent, $uniqueDatesForComponent);
         $components = $this->componentRepository->findById($componentId);
         $stockMinimum =  $components->getMinStock()->getValue();
+        $FamilyId = $components->getFamily()->getId();
+        $componentCode = $components->getCode();
+
+        dump($FamilyId);
 
         $stockMinimumPerDate = [];
         foreach ($uniqueDatesForComponent as $date) {
-            $stockMinimumPerDate[] = $stockMinimum;
+            $stockMinimumPerDate[$date] = $stockMinimum;
         }
         $stockTotalPerDate = [];
         $stockTotal = 0;
@@ -218,7 +223,6 @@ class NeedsController extends AbstractController
         $purchaseQuantityPerComponent = [];
         $purchaseCodePerComponent = [];
         $stockProgressPerDateForComponent = [];
-        $componentStockDefault = [];
 
         foreach ($uniqueDatesForComponent as $date) {
             $remainingQuantity = 0;
@@ -244,17 +248,43 @@ class NeedsController extends AbstractController
             $purchaseQuantityPerDate[$componentId] = $purchaseQuantityPerComponent;
             $purchaseCodePerDate[$componentId] = $purchaseCodePerComponent;
         
-            $stockProgressPerDateForComponent[] = $stockTotalPerDate[$date] - $needsPerDate[$date] + $purchaseQuantityPerComponent[$date];
+            $stockProgressPerDateForComponent[$date] = $stockTotalPerDate[$date] - $needsPerDate[$date] + $purchaseQuantityPerComponent[$date];
         
-            if (isset($stockMinimumPerDate[$date]) && isset($stockProgressPerDateForComponent[$date])) {
-                if ($stockProgressPerDateForComponent[$date] < $stockMinimumPerDate[$date]) {
-                    $componentStockDefault[] = ['date' => $date];
+        }
+        $componentStockDefault = [];
+        $i=1;
+        if (isset($stockMinimumPerDate) && isset($stockProgressPerDateForComponent)) {
+            $allStocksBelowMinimum = true;
+            foreach ($uniqueDatesForComponent as $date) {
+                if (!isset($stockProgressPerDateForComponent[$date]) || !isset($stockMinimumPerDate[$date]) || $stockProgressPerDateForComponent[$date] >= $stockMinimumPerDate[$date]) {
+                    $allStocksBelowMinimum = false;
+                    break;
                 }
             }
+            if ($allStocksBelowMinimum) {
+                foreach ($uniqueDatesForComponent as $date) {
+                $componentStockDefault[$i] = ['date' => $date];
+                $i= $i+1;
+                }
+            }
+
         }
-        
+        $newSupplierOrderNeeds = [];
+        foreach ($componentStockDefault as $stockDefault) {
+            $date = DateTime::createFromFormat('d/m/Y', $stockDefault['date']);
+            $date->modify('-1 month');
+            $quantity = $stockMinimumPerDate[$stockDefault['date']] - $stockProgressPerDateForComponent[$stockDefault['date']];
+            $newSupplierOrderNeeds[] = ['date' => $date->format('d/m/Y'), 'quantity' => $quantity];
 
-
+        }
+            if (!empty($componentStockDefault)) {
+            $componentfield[$componentId] = [
+                'componentStockDefaults' => $componentStockDefault,
+                'family'=>$FamilyId,
+                'newSupplierOrderNeeds'=>$newSupplierOrderNeeds,
+                'ref' => $componentCode
+            ];
+            }
             $componentChartData[$componentId] = [
                 'labels' => $uniqueDatesForComponent,
                 'stockMinimum' => $stockMinimumPerDate,
@@ -265,14 +295,7 @@ class NeedsController extends AbstractController
                // 'unite_matrice' => $unitsPerDate,
                 'stockProgress' => $stockProgressPerDateForComponent
             ];
-        
-            $componentfield[$componentId] = [
-                'componentStockDefaults' => $componentStockDefault,
-                'famuly' => ''
-
-            ];
             $uniqueDates = [];
-
     }
 
 
