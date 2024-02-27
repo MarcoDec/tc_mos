@@ -4,6 +4,7 @@ namespace App\Entity\Hr\Employee;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
 use App\Entity\Interfaces\FileEntity;
+use App\Entity\Logistics\Warehouse\Warehouse;
 use App\Entity\Traits\FileTrait;
 use App\Validator as AppAssert;
 use ApiPlatform\Core\Annotation\ApiFilter;
@@ -132,7 +133,7 @@ use App\Filter\CustomGetterFilter;
                         'name' => 'process',
                         'required' => true,
                         'schema' => [
-                            'enum' => ['main', 'hr', 'it', 'production'],
+                            'enum' => ['main', 'hr', 'it', 'production', 'logistics', 'quality'],
                             'type' => 'string'
                         ]
                     ]],
@@ -204,7 +205,8 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[
         ApiProperty(description: 'Ancien_Identifiant', example: 1),
-        ORM\Column(type: 'integer', nullable: true)
+        ORM\Column(type: 'integer', nullable: true),
+        Serializer\Groups(['read:employee', 'read:employee:collection', 'read:user'])
     ]
     private ?int $oldId = 0;
     #[
@@ -338,6 +340,13 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         Serializer\Groups(['create:employee', 'write:employee', 'write:employee:it'])
     ]
     private ?string $plainPassword = null;
+
+    #[
+        ApiProperty(description: 'Entrepôt préféré', readableLink: false, example: '/api/warehouses/1'),
+        ORM\ManyToOne(targetEntity: Warehouse::class),
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:logistics'])
+    ]
+    private ?Warehouse $preferredWarehouse = null;
 
     #[
         ApiProperty(description: 'Situation', example: SituationType::TYPE_SINGLE, openapiContext: ['enum' => SituationType::TYPES]),
@@ -807,10 +816,28 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->clockings;
     }
 
-    public function setClockings(Collection $clockings): void
+    public function setClockings(Collection $clockings): Employee
     {
         $this->clockings = $clockings;
+        return $this;
     }
 
+    public function getPreferredWarehouse(): ?Warehouse
+    {
+        return $this->preferredWarehouse;
+    }
 
+    public function setPreferredWarehouse(?Warehouse $preferredWarehouse): Employee
+    {
+        $this->preferredWarehouse = $preferredWarehouse;
+        return $this;
+    }
+    #[
+        ApiProperty(description: 'oldId Entrepôt préféré', example: 1),
+        Serializer\Groups(['read:employee', 'read:employee:collection', 'read:user'])
+    ]
+    public function getOldWarehouseId(): ?int
+    {
+        return $this->getPreferredWarehouse()?->getOldId();
+    }
 }

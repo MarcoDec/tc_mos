@@ -330,7 +330,7 @@ SQL);
         $this->addQuery('ALTER TABLE `society` DROP `old_id`');
         $this->addQuery('ALTER TABLE `stock` DROP `old_id`');
         $this->addQuery('ALTER TABLE `supplier_component` DROP `old_id`');
-        $this->addQuery('ALTER TABLE `warehouse` DROP `old_id`');
+//        $this->addQuery('ALTER TABLE `warehouse` DROP `old_id`');
     }
 
     private function upAttributes(): void {
