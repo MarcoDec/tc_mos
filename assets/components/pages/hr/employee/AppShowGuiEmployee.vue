@@ -29,25 +29,23 @@
         modeDetail.value = false
     }
 
-    onBeforeMount(() => {
+    function updateStores() {
         const promises = []
         // console.log('onBeforeMount')
         promises.push(fetchEmployeeStore.fetchOne(idEmployee))
         promises.push(fetchEmployeeStore.fetchAll())
         promises.push(fetchEmployeeStore.fetchTeams())
         Promise.all(promises).then(() => {
+            // console.debug('employee', fetchEmployeeStore.employee)
             beforeMountDataLoaded.value = true
         })
+    }
+
+    onBeforeMount(() => {
+        updateStores()
     })
     const onUpdated = () => {
-        // console.log('onUpdated')
-        const promises = []
-        promises.push(fetchEmployeeStore.fetchOne(idEmployee))
-        promises.push(fetchEmployeeStore.fetchAll())
-        promises.push(fetchEmployeeStore.fetchTeams())
-        Promise.all(promises).then(() => {
-            beforeMountDataLoaded.value = true
-        })
+        updateStores()
     }
     const onImageUpdate = () => {
         window.location.reload()

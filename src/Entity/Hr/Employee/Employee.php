@@ -344,7 +344,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Entrepôt préféré', readableLink: false, example: '/api/warehouses/1'),
         ORM\ManyToOne(targetEntity: Warehouse::class),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:logistics'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:logistics', 'write:employee:production'])
     ]
     private ?Warehouse $preferredWarehouse = null;
 
