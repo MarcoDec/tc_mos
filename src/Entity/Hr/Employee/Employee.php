@@ -315,6 +315,13 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     private ?self $manager = null;
 
     #[
+        ApiProperty(description: 'Matricule', example: '65465224'),
+        ORM\Column(type: 'string', length: 20, nullable: true),
+        Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection', 'write:employee', 'write:employee:it'])
+    ]
+    private ?string $matricule = null;
+
+    #[
         ApiProperty(description: 'Prénom', required: true, example: 'Super'),
         ORM\Column(length: 30),
         Serializer\Groups(['read:production-quality', 'create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation', 'read:skill'])
@@ -840,4 +847,23 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     {
         return $this->getPreferredWarehouse()?->getOldId();
     }
+
+    /**
+     * @return string|null
+     */
+    public function getMatricule(): ?string
+    {
+        return $this->matricule;
+    }
+
+    /**
+     * @param string|null $matricule
+     * @return Employee
+     */
+    public function setMatricule(?string $matricule): Employee
+    {
+        $this->matricule = $matricule;
+        return $this;
+    }
+
 }

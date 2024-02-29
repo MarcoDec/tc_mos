@@ -42,17 +42,19 @@
     if (Array.isArray(localModelValue.value) && localModelValue.value.length > 0) {
         // on charge les données de l'api et on les met dans items pour que la variable 'options' soit mise à jour
         localModelValue.value.forEach(value => {
-            // console.log('value', value)
-            if (typeof value['@id'] === 'undefined') api(value, 'GET').then(response => {
-                items.value.push(response)
-                newModelValue.value.push(response['@id'])
-                key.value++
-            })
-            else api(value['@id'], 'GET').then(response => {
-                items.value.push(response)
-                newModelValue.value.push(response['@id'])
-                key.value++
-            })
+            //console.log('value', value)
+            if (value !== null) {
+                if (typeof value['@id'] === 'undefined') api(value, 'GET').then(response => {
+                    items.value.push(response)
+                    newModelValue.value.push(response['@id'])
+                    key.value++
+                })
+                else api(value['@id'], 'GET').then(response => {
+                    items.value.push(response)
+                    newModelValue.value.push(response['@id'])
+                    key.value++
+                })
+            }
         })
     }
     async function updateItems() {

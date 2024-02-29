@@ -71,7 +71,8 @@
                     <button class="text-dark" @click="goBack">
                         <FontAwesomeIcon icon="user-tag"/>
                     </button>
-                    <b>Employee ({{ fetchEmployeeStore.employee.id }})</b>: {{ fetchEmployeeStore.employee.name }}
+                    <b>Employee
+                        <span v-if="fetchEmployeeStore.employee.matricule !== null">({{ fetchEmployeeStore.employee.matricule }})</span></b>: {{ fetchEmployeeStore.employee.name }}
                     <span class="btn-float-right">
                         <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
                         <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
