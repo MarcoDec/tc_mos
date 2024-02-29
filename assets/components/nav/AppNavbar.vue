@@ -1,11 +1,18 @@
 <script setup>
     import AppNavbarMenu from './AppNavbarMenu.vue'
     import useUser from '../../stores/security'
+    import {ref} from 'vue'
 
     const user = useUser()
     const appMode = import.meta.env.MODE
     console.info(`App mode: ${appMode}`)
     const logoPath = '/img/TConcept_Logo.png'
+    const hamburger = ref()
+    function handleCloseMenu() {
+        if (hamburger.value.getAttribute('aria-expanded') === 'true') {
+            hamburger.value.click()
+        }
+    }
 </script>
 
 <template>
@@ -16,8 +23,9 @@
                     <img :src="logoPath" alt="TConcept"/>
                 </AppRouterLink>
             </span>
-            <AppNavbarMenu v-if="user.isLogged" id="nav-navigation"/>
+            <AppNavbarMenu v-if="user.isLogged" id="nav-navigation" @close-menu="handleCloseMenu"/>
             <button
+                ref="hamburger"
                 aria-controls="nav-navigation"
                 aria-expanded="false"
                 aria-label="Toggle navigation"
