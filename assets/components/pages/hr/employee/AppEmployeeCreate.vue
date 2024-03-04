@@ -64,7 +64,7 @@
             label: 'Manager',
             name: 'manager',
             type: 'multiselect-fetch',
-            api: "/api/employees",
+            api: '/api/employees',
             filteredProperty: 'getterFilter',
             max: 1,
             permanentFilters: [

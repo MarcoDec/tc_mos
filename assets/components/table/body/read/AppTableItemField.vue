@@ -1,86 +1,90 @@
 <script setup>
-    import { computed, onMounted, ref, watch } from 'vue'
-    import { get } from 'lodash'
+    import {computed, onMounted, ref, watch} from 'vue'
+    import {get} from 'lodash'
     import api from '../../../../api'
 
     const props = defineProps({
-        field: { required: true, type: Object, validator: (field) => field !== null && 'name' in field},
+        field: {required: true, type: Object, validator: field => field !== null && 'name' in field},
         item: {required: true, type: Object},
         initialField: {default: null, required: false, type: Object},
         row: {required: true, type: String}
     })
     // console.info(props)
-    const keySelect = ref(
-        0)
+    const keySelect = ref(0)
     const itemMultiSelectFetchLoaded = ref([])
 
-    const getLabelValue = (thevalue) => {
+    const getLabelValue = thevalue => {
         if (!props.field || !thevalue) return ''
         console.log(props.field.type)
         switch (props.field.type) {
-        case 'address':
-            return theValue.address || ''
-        case 'text':
-        case 'textarea':
-        case 'link':
-            return thevalue || ''
-        case 'boolean':
-            return thevalue ? 'Oui' : 'Non'
-        case 'color':
-            if (props.field.optionsList?.length>0) return props.field.optionsList.find((element) => element.value === thevalue ).text
-            return thevalue || '#000000'
-        case 'date':
-        case 'datetime-local':
-            return new Date(thevalue).toLocaleString()
-        case 'time':
-            return thevalue || ''
-
-        case 'file':
-            return thevalue.name || ''
-
-        case 'grpbutton':
-        case 'rating':
-        case 'trafficLight':
-            // TODO: implémenter la logique pour ces types
-            return ''
-
-        case 'int':
-        case 'number':
-            return Number(thevalue) || 0
-
-        case 'measure':
-            if (!thevalue.value || !thevalue.code) return ''
-            return `${thevalue.value} ${thevalue.code}`
-
-        case 'measureSelect':
-            // TODO: implémenter la logique pour ce type
-            return ''
-
-        case 'multiselect':
-            return thevalue.map(v => v.text).join(', ') || ''
-
-        case 'multiselect-fetch':
-            console.log('multiselect-fetch', thevalue, props.field)
-            if (!itemMultiSelectFetchLoaded.value.length) {
-                thevalue.forEach(item => {
-                    api(item['@id'], 'GET').then(res => {
-                        itemMultiSelectFetchLoaded.value.push(res[props.initialField.filteredProperty])
-                        keySelect.value++
-                    })
-                })
+            case 'address':
+                return theValue.address || ''
+            case 'text':
+            case 'textarea':
+            case 'link':
+                return thevalue || ''
+            case 'boolean':
+                return thevalue ? 'Oui' : 'Non'
+            case 'color': {
+                if (props.field.optionsList?.length > 0) return props.field.optionsList.find(element => element.value === thevalue).text
+                return thevalue || '#000000'
             }
-            return itemMultiSelectFetchLoaded.value.join(', ') || ''
+            case 'date':
+            case 'datetime-local':
+                return new Date(thevalue).toLocaleString()
+            case 'time':
+                return thevalue || ''
 
-        case 'password':
-            return '******'
+            case 'file':
+                return thevalue.name || ''
 
-        case 'select':
-            if (typeof thevalue === 'object') return props.field.options.options.find(e => e.value === thevalue['@id']).text
-            const selectedOption = props.field.options.options.find(e => e.value === thevalue)
-            return selectedOption ? selectedOption.text : ''
+            case 'grpbutton':
+            case 'rating':
+            case 'trafficLight': {
+                // TODO: implémenter la logique pour ces types
+                return ''
+            }
 
-        default:
-            return thevalue || ''
+            case 'int':
+            case 'number':
+                return Number(thevalue) || 0
+
+            case 'measure': {
+                if (!thevalue.value || !thevalue.code) return ''
+                return `${thevalue.value} ${thevalue.code}`
+            }
+
+            case 'measureSelect':
+                // TODO: implémenter la logique pour ce type
+                return ''
+
+            case 'multiselect':
+                return thevalue.map(v => v.text).join(', ') || ''
+
+            case 'multiselect-fetch': {
+                console.log('multiselect-fetch', thevalue, props.field)
+                if (!itemMultiSelectFetchLoaded.value.length) {
+                    thevalue.forEach(item => {
+                        api(item['@id'], 'GET').then(res => {
+                            itemMultiSelectFetchLoaded.value.push(res[props.initialField.filteredProperty])
+                            keySelect.value++
+                        })
+                    })
+                }
+                return itemMultiSelectFetchLoaded.value.join(', ') || ''
+            }
+
+            case 'password':
+                return '******'
+
+            case 'select': {
+                if (typeof thevalue === 'object') return props.field.options.options.find(e => e.value === thevalue['@id']).text
+                const selectedOption = props.field.options.options.find(e => e.value === thevalue)
+                return selectedOption ? selectedOption.text : ''
+            }
+
+            default:
+                return thevalue || ''
         }
     }
 
@@ -88,9 +92,9 @@
     const color = computed(() => props.field.type === 'color')
     const date = computed(() => ['date', 'datetime-local', 'time'].includes(props.field.type))
     const shortDate = computed(() => {
-        const value = getLabelValue(get(props.item, props.field.name))
-        if (typeof value !== 'undefined' && String(value).length > 10) return String(value).slice(0, 10)
-        return value
+        const aValue = getLabelValue(get(props.item, props.field.name))
+        if (typeof aValue !== 'undefined' && String(aValue).length > 10) return String(aValue).slice(0, 10)
+        return aValue
     })
     const id = computed(() => `${props.row}-${props.field.name}`)
     const value = computed(() => get(props.item, props.field.name))
