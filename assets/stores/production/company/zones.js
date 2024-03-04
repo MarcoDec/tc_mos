@@ -39,6 +39,18 @@ export default function useZonesStore() {
             },
             async postNewZone(data) {
                 return api('/api/zones', 'post', data);
+            },
+            async patchZone(zoneIri, data) {
+                return api(zoneIri, 'patch', data);
+            },
+            async getZone(zoneIri) {
+                return api(zoneIri).then(response => {
+                    console.log('response', response)
+                    this.zone = response
+                })
+            },
+            async deleteZone(zoneIri) {
+                return api(zoneIri, 'DELETE');
             }
         },
         getters: {
@@ -47,6 +59,7 @@ export default function useZonesStore() {
             isLoaded: false,
             isLoading: false,
             zones: [],
+            zone: null,
             warehouseID: 0
         })
     })()

@@ -37,7 +37,7 @@ class ApiRequest {
     }
 
     get #contentType() {
-        return this.#method === 'PATCH' ? 'application/merge-patch+json' : 'application/json'
+        return this.#method.toUpperCase() === 'PATCH' ? 'application/merge-patch+json' : 'application/json'
     }
 
     set #formDataBody(body) {

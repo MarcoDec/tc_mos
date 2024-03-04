@@ -43,14 +43,16 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Supprime une zone',
                     'summary' => 'Supprime une zone',
                 ],
+                'method' => 'DELETE',
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get',
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une zone',
                     'summary' => 'Modifie une zone'
                 ],
+                'method' => 'PATCH',
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
             ]
         ],
@@ -59,11 +61,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         denormalizationContext: [
             'groups' => ['write:zone'],
-            'openapi_definition_name' => 'CompanySupply-write'
+            'openapi_definition_name' => 'Zone-write'
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:zone'],
-            'openapi_definition_name' => 'CompanySupply-read',
+            'openapi_definition_name' => 'Zone-read',
             'skip_null_values' => false
         ],
         paginationClientEnabled: true

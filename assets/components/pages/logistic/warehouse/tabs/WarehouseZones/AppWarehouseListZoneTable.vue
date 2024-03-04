@@ -71,7 +71,7 @@ async function updateListe() {
     itemsTable.value = fetchZones.zones
 }
 async function deleted(id){
-    await fetchZones.deleted(id)
+    await fetchZones.deleteZone(`/api/zones/${id}`)
     await updateListe()
 }
 async function getPage(nPage){
