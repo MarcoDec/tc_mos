@@ -47,7 +47,7 @@
     <tr :id="id">
         <td class="text-center" width="120">
             <template v-if="canReverse">
-<!--                <Fa :icon="icon"/>-->
+                <!-- <Fa :icon="icon"/>-->
                 <AppBtnJS v-if="!disableAdd" :icon="reverseIcon" :label="fullReverseLabel" @click="reverse"/>
             </template>
             <slot

@@ -1,5 +1,5 @@
 <script setup>
-    import {computed} from 'vue'
+    // import {computed} from 'vue'
 
     const props = defineProps({
         action: {type: Boolean},
@@ -7,12 +7,12 @@
         enableShow: {type: Boolean},
         fields: {required: true, type: Object},
         id: {required: true, type: String},
-        index: {required: true, type: Number},
+        // index: {required: true, type: Number},
         item: {required: true, type: Object},
         send: {required: true, type: Function}
     })
     const emits = defineEmits(['show'])
-    const normalizedIndex = computed(() => props.index + 1)
+    // const normalizedIndex = computed(() => props.index + 1)
     //console.log(props.id ,props.fields)
     async function remove() {
         if (confirm('Voulez-vous vraiment supprimer cet élément ?') === false) {

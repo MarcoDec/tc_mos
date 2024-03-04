@@ -65,25 +65,22 @@
 
             case 'multiselect-fetch': {
                 // console.log('multiselect-fetch', thevalue, itemMultiSelectFetchLoaded.value)
-                if (!typeof thevalue === 'string') {
+                if (typeof thevalue === 'string') {
+                    api(thevalue, 'GET').then(res => {
+                        itemMultiSelectFetchLoaded.value.push(res[props.initialField.filteredProperty])
+                        return res[props.initialField.filteredProperty] || ''
+                    })
+                } else {
                     const allPromises = []
                     thevalue.forEach(item => {
                         allPromises.push(api(item['@id'], 'GET').then(res => {
                             itemMultiSelectFetchLoaded.value.push(res[props.initialField.filteredProperty])
                         }))
-                        Promise.all(allPromises).then(() => {
-                            // console.log('allPromises', itemMultiSelectFetchLoaded.value)
-                            return itemMultiSelectFetchLoaded.value.join(', ') || ''
-                        })
-                    })
-                } else {
-                    api(thevalue, 'GET').then(res => {
-                        itemMultiSelectFetchLoaded.value.push(res[props.initialField.filteredProperty])
-                        return res[props.initialField.filteredProperty] || ''
+                        Promise.all(allPromises).then(() => itemMultiSelectFetchLoaded.value.join(', ') || '')
                     })
                 }
+                return ''
             }
-
             case 'password':
                 return '******'
 
@@ -115,34 +112,34 @@
     const multiselectFetch = computed(() => props.field.type === 'multiselect-fetch')
     const downloadText = computed(() => props.field.type === 'downloadText')
 
-    const fetchMultiSelectData = () => {
-        if (multiselectFetch.value && props.item[props.field.name]) {
-            // console.log('item', props.item, props.item[props.field.name])
-            if (!typeof props.item[props.field.name] === 'string') {
-                // props.item[props.field.name].forEach(item => {
-                //     if (!itemMultiSelectFetchLoaded.value.includes(item['@id'])) {
-                //         api(item['@id'], 'GET').then(res => {
-                //             itemMultiSelectFetchLoaded.value.push(res[props.initialField.filteredProperty])
-                //             keySelect.value++
-                //         })
-                //     }
-                // })
-            } else {
-                //api(props.item[props.field.name], 'GET').then(res => {
-                //    itemMultiSelectFetchLoaded.value.push(res[props.initialField.filteredProperty])
-                //    keySelect.value++
-                //})
-            }
-        }
-    }
+    // const fetchMultiSelectData = () => {
+    //     if (multiselectFetch.value && props.item[props.field.name]) {
+    //         // console.log('item', props.item, props.item[props.field.name])
+    //         if (!typeof props.item[props.field.name] === 'string') {
+    //             // props.item[props.field.name].forEach(item => {
+    //             //     if (!itemMultiSelectFetchLoaded.value.includes(item['@id'])) {
+    //             //         api(item['@id'], 'GET').then(res => {
+    //             //             itemMultiSelectFetchLoaded.value.push(res[props.initialField.filteredProperty])
+    //             //             keySelect.value++
+    //             //         })
+    //             //     }
+    //             // })
+    //         } else {
+    //             //api(props.item[props.field.name], 'GET').then(res => {
+    //             //    itemMultiSelectFetchLoaded.value.push(res[props.initialField.filteredProperty])
+    //             //    keySelect.value++
+    //             //})
+    //         }
+    //     }
+    // }
 
     watch(() => props.item, () => {
         itemMultiSelectFetchLoaded.value = []
-        fetchMultiSelectData()
+        // fetchMultiSelectData()
     })
 
     onMounted(() => {
-        fetchMultiSelectData()
+        // fetchMultiSelectData()
     })
 </script>
 

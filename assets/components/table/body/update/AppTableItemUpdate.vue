@@ -5,12 +5,12 @@
     const props = defineProps({
         fields: {required: true, type: Object},
         id: {required: true, type: String},
-        index: {required: true, type: Number},
+        //index: {required: true, type: Number},
         item: {required: true, type: Object},
         machine: {required: true, type: Object}
     })
     const form = computed(() => `${props.id}-form`)
-    const normalizedIndex = computed(() => props.index + 1)
+    // const normalizedIndex = computed(() => props.index + 1)
     props.item.initUpdate(props.fields)
 
     function cancel() {
