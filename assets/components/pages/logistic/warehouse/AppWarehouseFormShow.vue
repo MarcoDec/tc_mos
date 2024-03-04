@@ -168,38 +168,18 @@
 </script>
 
 <template>
-    <AppTabs id="gui-start" class="gui-start-content">
+    <div style="min-height: 45vh; height: 45vh; background-color: rgba(255, 255, 255, 0.8)">
         <AppSuspense>
-            <AppTab
-                id="gui-start-main"
-                active
-                title="Généralité"
-                icon="pencil"
-                tabs="gui-start">
-                <AppSuspense>
-                    <AppCardShow
-                        id="addGeneralites"
-                        :key="key"
-                        :fields="Generalitesfields"
-                        :component-attribute="localData"
-                        @cancel="cancel"
-                        @update="updateGeneral"
-                        @update:model-value="localDataChange"/>
-                </AppSuspense>
-            </AppTab>
-            <AppTab id="gui-start-files" title="Fichiers" icon="folder" tabs="gui-start">
-                <AppSuspense>
-                    <AppTabFichiers
-                        attachment-element-label="warehouse"
-                        :element-api-url="`/api/warehouses/${warehouseId}`"
-                        :element-attachment-store="warehouseAttachmentStore"
-                        :element-id="warehouseId"
-                        element-parameter-name="WAREHOUSE_ATTACHMENT_CATEGORIES"
-                        :element-store="warehouseStore"/>
-                </AppSuspense>
-            </AppTab>
+            <AppCardShow
+                id="addGeneralites"
+                :key="key"
+                :fields="Generalitesfields"
+                :component-attribute="localData"
+                @cancel="cancel"
+                @update="updateGeneral"
+                @update:model-value="localDataChange"/>
         </AppSuspense>
-    </AppTabs>
+    </div>
 </template>
 
 <style scoped>
