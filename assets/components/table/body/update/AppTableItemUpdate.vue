@@ -40,9 +40,6 @@
             </AppForm>
             <AppBtn icon="times" label="Annuler" variant="danger" @click="cancel"/>
         </td>
-        <td class="text-center">
-            {{ normalizedIndex }}
-        </td>
         <AppTableItemUpdateField
             v-for="(field, i) in fields.fields"
             :key="field.name"

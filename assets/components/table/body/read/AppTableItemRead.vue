@@ -41,9 +41,6 @@
             <AppBtn v-if="fields.update" icon="pencil-alt" label="Modifier" @click="update"/>
             <AppBtn v-if="!disableRemove" icon="trash" label="Supprimer" variant="danger" @click="remove"/>
         </td>
-        <td class="text-center">
-            {{ normalizedIndex }}
-        </td>
         <AppTableItemField
             v-for="(field, i) in fields.fields"
             :key="field.name"
