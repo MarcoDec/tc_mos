@@ -26,6 +26,19 @@ export default function useZonesStore() {
                 this.zones = await this.fetch(url)
                 this.isLoading = false
                 this.isLoaded = true
+            },
+            async fetchZones($filter = null) {
+                let url = '/api/zones'
+                if ($filter !== null) url = String(url).concat($filter)
+                this.isLoaded = false
+                this.isLoading = true
+                this.zones = []
+                this.zones = await this.fetch(url)
+                this.isLoading = false
+                this.isLoaded = true
+            },
+            async postNewZone(data) {
+                return api('/api/zones', 'post', data);
             }
         },
         getters: {
@@ -33,7 +46,8 @@ export default function useZonesStore() {
         state: () => ({
             isLoaded: false,
             isLoading: false,
-            zones: []
+            zones: [],
+            warehouseID: 0
         })
     })()
 }

@@ -1,6 +1,8 @@
 <script setup>
     import {useWarehouseStocksItemsStore} from '../../../../stores/production/warehouseStocksItems'
     import AppWarehouseListStockTable from './tabs/WarehouseStocks/AppWarehouseListStockTable.vue'
+    import AppTab from "../../../tab/AppTab.vue";
+    import AppWarehouseListZoneTable from "./tabs/WarehouseZones/AppWarehouseListZoneTable.vue";
     //import AppWarehouseListVolumeTable from './provisoir/AppWarehouseListVolumeTable.vue'
     const storeWarehouseStocksItems = useWarehouseStocksItemsStore()
     storeWarehouseStocksItems.fetchItems()
@@ -11,6 +13,12 @@
         <AppTab id="gui-start-stock" active title="Stock" icon="cubes-stacked" tabs="gui-start-bottom">
             <AppSuspense>
                 <AppWarehouseListStockTable/>
+            </AppSuspense>
+        </AppTab>
+
+        <AppTab id="gui-start-zones" title="Zones" tabs="gui-start-bottom" icon="map-marked">
+            <AppSuspense>
+                <AppWarehouseListZoneTable/>
             </AppSuspense>
         </AppTab>
         <!--        <AppTab id="gui-start-volume" title="Volume" icon="ruler-vertical" tabs="gui-start-bottom">-->
