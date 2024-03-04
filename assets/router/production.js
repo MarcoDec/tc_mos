@@ -74,7 +74,18 @@ export default [
         path: '/zones',
         props: {
             apiBaseRoute: 'zones',
-            fields: [{label: 'Nom', name: 'name'}],
+            fields: [
+                {label: 'Nom', name: 'name'},
+                {
+                    label: 'Entrepôt',
+                    name: 'warehouse',
+                    type: 'multiselect-fetch',
+                    api: '/api/warehouses',
+                    filteredProperty: 'name',
+                    permanentFilters: [],
+                    max: 1
+                }
+            ],
             icon: 'map-marked',
             isCompanyFiltered: true,
             sort: readonly({label: 'Nom', name: 'name'}),
