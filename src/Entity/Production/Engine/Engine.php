@@ -34,10 +34,10 @@ use App\Filter\DiscriminatorFilter;
 #[
     ApiFilter(filterClass: DiscriminatorFilter::class),
     // ApiFilter(CustomGetterFilter::class, properties: ['getterFilter' => ['fields' => ['group']]]),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['brand'=>'partial', 'code'=> 'partial', 'name' => 'partial', 'serialNumber' => 'partial', 'zone.company', 'group' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['brand'=>'partial', 'code'=> 'partial', 'name' => 'partial', 'serialNumber' => 'partial', 'zone.company', 'group' => 'partial', 'id' => 'partial']),
     ApiFilter(filterClass: DateFilter::class, properties: ['entryDate']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['group', 'zone', 'manufacturerEngine']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['brand', 'code', 'entryDate', 'manufacturerEngine.name', 'name', 'serialNumber']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['brand', 'code', 'entryDate', 'manufacturerEngine.name', 'name', 'serialNumber', 'id']),
     //ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
         description: 'Équipement',

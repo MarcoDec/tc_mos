@@ -143,6 +143,7 @@
     //endregion
     //region Définition de la liste des champs pour l'affichage de la liste
     const tabFields = [
+        { label: 'ID', name: 'id', type: 'text', width: 50, filter: true, trie: true },
         {
             label: 'Img',
             name: 'filePath',
