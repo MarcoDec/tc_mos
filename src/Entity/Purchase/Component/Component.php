@@ -38,10 +38,10 @@ use App\Entity\Purchase\Supplier\Component as SupplierComponent;
 use App\Filter\SetFilter;
 
 #[
-    ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name', 'code']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name', 'code', 'id']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['index' => 'partial', 'name' => 'partial', 'code' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['index' => 'partial', 'name' => 'partial', 'code' => 'partial', 'id' => 'exact']),
     ApiResource(
         description: 'Composant',
         collectionOperations: [
