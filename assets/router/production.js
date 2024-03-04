@@ -83,7 +83,8 @@ export default [
                     api: '/api/warehouses',
                     filteredProperty: 'name',
                     permanentFilters: [],
-                    max: 1
+                    max: 1,
+                    sort: false
                 }
             ],
             icon: 'map-marked',
