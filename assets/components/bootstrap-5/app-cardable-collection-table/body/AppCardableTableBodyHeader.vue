@@ -33,9 +33,9 @@
 
 <template>
     <tr class="header">
-        <th scope="row" class="px50">
-            <Fa icon="filter"/>
-        </th>
+        <!--        <th scope="row" class="px50">-->
+        <!--            <Fa icon="filter"/>-->
+        <!--        </th>-->
         <td class="px100">
             <button class="btngris" @click="search">
                 <Fa icon="search"/>

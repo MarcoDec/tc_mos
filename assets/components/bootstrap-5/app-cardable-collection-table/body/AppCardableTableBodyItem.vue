@@ -17,19 +17,19 @@
         emit('deleted', id)
     }
 
-    function calculIndice(index, currentPage){
-        if (props.pagine === false){
-            return index + 1
-        }
-        return index + 1 + 15 * (currentPage - 1)
-    }
+    // function calculIndice(index, currentPage){
+    //     if (props.pagine === false){
+    //         return index + 1
+    //     }
+    //     return index + 1 + 15 * (currentPage - 1)
+    // }
 </script>
 
 <template>
     <tr v-for="(item, index) in items" :key="index">
-        <th scope="row" :title="currentPage">
-            {{ calculIndice(index, currentPage) }}
-        </th>
+        <!--        <th scope="row" :title="currentPage">-->
+        <!--            {{ calculIndice(index, currentPage) }}-->
+        <!--        </th>-->
         <AppCardableTableBody :item="item" :fields="fields" :should-delete="shouldDelete" :should-see="shouldSee" @update="update" @deleted="deleted"/>
     </tr>
 </template>
