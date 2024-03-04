@@ -8,7 +8,7 @@
      * - `props.field.filteredProperty` : défini le nom de la propriété de l'object qui sera utilisé pour le filtre
      * - `props.field.max` : défini le nombre max d'élément sélectionnable. Si cette valeur vaut 1, alors c'est un simple select.
      */
-    import {computed, ref} from 'vue'
+    import {computed, onBeforeMount, ref} from 'vue'
     import api from '../../../../../api'
     import AppMultiselect from './AppMultiselect.vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
@@ -22,7 +22,13 @@
         mode: {default: 'tags', type: String},
         modelValue: {default: null, type: [Array, String]}
     })
-    const localModelValue = ref(props.modelValue)
+    const localModelValue = ref({})
+    // Initialisation de localModelValue
+    if (props.field.max === 1) {
+        localModelValue.value = [props.modelValue]
+    } else {
+        localModelValue.value = props.modelValue
+    }
     const emit = defineEmits(['searchChange', 'update:modelValue'])
     const fetchCriteria = useFetchCriteria(`${props.form}FetchCriteria`)
     const items = ref([])
@@ -35,31 +41,24 @@
     const newModelValue = ref([])
     if (Array.isArray(localModelValue.value) && localModelValue.value.length > 0) {
         // on charge les données de l'api et on les met dans items pour que la variable 'options' soit mise à jour
-        console.log('localModelValue', localModelValue.value)
         localModelValue.value.forEach(value => {
-            if (value['@id'] === 'undefined') api(value, 'GET').then(response => {
-                items.value.push(response)
-                newModelValue.value.push(response['@id'])
-                // newModelValue.value.push({
-                //     text: `${response[props.field.filteredProperty]}`,
-                //     value: response['@id']
-                // })
-                key.value++
-            })
-            else api(value['@id'], 'GET').then(response => {
-                items.value.push(response)
-                // newModelValue.value.push({
-                //     text: `${response[props.field.filteredProperty]}`,
-                //     value: response['@id']
-                // })
-                newModelValue.value.push(response['@id'])
-                key.value++
-            })
-            //console.log('items', items.value)
-            //console.log(newModelValue.value)
+            //console.log('value', value)
+            if (value !== null) {
+                if (typeof value['@id'] === 'undefined') api(value, 'GET').then(response => {
+                    items.value.push(response)
+                    newModelValue.value.push(response['@id'])
+                    key.value++
+                })
+                else api(value['@id'], 'GET').then(response => {
+                    items.value.push(response)
+                    newModelValue.value.push(response['@id'])
+                    key.value++
+                })
+            }
         })
     }
     async function updateItems() {
+        // console.info('updateItems')
         try {
             const response = await api(`${props.field.api}${fetchCriteria.getFetchCriteria}`, 'GET')
             items.value = response['hydra:member']
@@ -68,6 +67,7 @@
         }
     }
     async function onSearchChange(data) {
+        // console.info('onSearchChange')
         if (data !== '') {
             emit('searchChange', data)
             fetchCriteria.addFilter(props.field.filteredProperty, data)
@@ -75,9 +75,18 @@
         await updateItems()
     }
     async function onUpdateModelValue(value) {
+        // console.info('onUpdateModelValue', value)
         emit('update:modelValue', value)
-        await updateItems()
+        if (value.length > 0) await updateItems()
     }
+    onBeforeMount(() => {
+        // console.info('onBeforeMount')
+        if (props.field.permanentFilters) {
+            props.field.permanentFilters.forEach(filter => {
+                fetchCriteria.addFilter(filter.field, filter.value)
+            })
+        }
+    })
 </script>
 
 <template>

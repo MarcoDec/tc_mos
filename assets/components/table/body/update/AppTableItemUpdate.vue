@@ -11,7 +11,6 @@
     })
     const form = computed(() => `${props.id}-form`)
     const normalizedIndex = computed(() => props.index + 1)
-
     props.item.initUpdate(props.fields)
 
     function cancel() {

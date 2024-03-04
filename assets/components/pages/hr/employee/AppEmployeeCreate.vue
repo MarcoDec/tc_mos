@@ -39,9 +39,9 @@
         {label: 'Prenom ', name: 'name', type: 'text'},
         {label: 'Nom', name: 'surname', type: 'text'},
         {label: 'Initiales', name: 'initials', type: 'text'},
-        {label: 'Compte utilisateur', name: 'userEnabled', type: 'boolean'},
-        {label: 'Identifiant', name: 'username', type: 'text'},
-        {label: 'Mot de passe', name: 'plainPassword', type: 'text'},
+        // {label: 'Compte utilisateur', name: 'userEnabled', type: 'boolean'},
+        // {label: 'Identifiant', name: 'username', type: 'text'},
+        // {label: 'Mot de passe', name: 'plainPassword', type: 'text'},
         {label: 'Company',
          name: 'company',
          options: {
@@ -59,6 +59,17 @@
                 options: levelOptions
             },
             type: 'select'
+        },
+        {
+            label: 'Manager',
+            name: 'manager',
+            type: 'multiselect-fetch',
+            api: "/api/employees",
+            filteredProperty: 'getterFilter',
+            max: 1,
+            permanentFilters: [
+                {field: 'company', value: props.currentCompany}
+            ]
         }
     ])
 
@@ -90,11 +101,11 @@
                 embRoles: [employeeData.value.level],
                 initials: employeeData.value.initials ?? '',
                 name: employeeData.value.name ?? '',
-                password: employeeData.value.password ?? '',
-                plainPassword: employeeData.value.plainPassword ?? '',
+                // password: employeeData.value.password ?? '',
+                // plainPassword: employeeData.value.plainPassword ?? '',
                 surname: employeeData.value.surname ?? '',
-                userEnabled: employeeData.value.userEnabled ?? false,
-                username: employeeData.value.username ?? '',
+                // userEnabled: employeeData.value.userEnabled ?? false,
+                // username: employeeData.value.username ?? '',
                 company: employeeData.value.company ?? props.currentCompany
             }
             await storeEmployeesList.addEmployee(employee)

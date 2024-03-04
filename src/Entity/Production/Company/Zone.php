@@ -10,6 +10,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\CompanyInterface;
+use App\Entity\Logistics\Warehouse\Warehouse;
 use App\Entity\Management\Society\Company\Company;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -86,6 +87,14 @@ class Zone extends Entity {
     ]
     private ?string $name = null;
 
+    #[
+        ApiProperty(description: 'Entrepôt', readableLink: false),
+        ORM\ManyToOne(targetEntity: Warehouse::class),
+        ORM\JoinColumn(nullable: true),
+        Serializer\Groups(['read:zone', 'write:zone'])
+    ]
+    private ?Warehouse $warehouse = null;
+
     final public function getCompany(): ?Company {
         return $this->company;
     }
@@ -103,4 +112,23 @@ class Zone extends Entity {
         $this->name = $name;
         return $this;
     }
+
+    /**
+     * @return Warehouse|null
+     */
+    public function getWarehouse(): ?Warehouse
+    {
+        return $this->warehouse;
+    }
+
+    /**
+     * @param Warehouse|null $warehouse
+     * @return Zone
+     */
+    public function setWarehouse(?Warehouse $warehouse): Zone
+    {
+        $this->warehouse = $warehouse;
+        return $this;
+    }
+
 }

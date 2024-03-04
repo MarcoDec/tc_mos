@@ -29,25 +29,23 @@
         modeDetail.value = false
     }
 
-    onBeforeMount(() => {
+    function updateStores() {
         const promises = []
         // console.log('onBeforeMount')
         promises.push(fetchEmployeeStore.fetchOne(idEmployee))
         promises.push(fetchEmployeeStore.fetchAll())
         promises.push(fetchEmployeeStore.fetchTeams())
         Promise.all(promises).then(() => {
+            // console.debug('employee', fetchEmployeeStore.employee)
             beforeMountDataLoaded.value = true
         })
+    }
+
+    onBeforeMount(() => {
+        updateStores()
     })
     const onUpdated = () => {
-        // console.log('onUpdated')
-        const promises = []
-        promises.push(fetchEmployeeStore.fetchOne(idEmployee))
-        promises.push(fetchEmployeeStore.fetchAll())
-        promises.push(fetchEmployeeStore.fetchTeams())
-        Promise.all(promises).then(() => {
-            beforeMountDataLoaded.value = true
-        })
+        updateStores()
     }
     const onImageUpdate = () => {
         window.location.reload()
@@ -73,7 +71,8 @@
                     <button class="text-dark" @click="goBack">
                         <FontAwesomeIcon icon="user-tag"/>
                     </button>
-                    <b>Employee ({{ fetchEmployeeStore.employee.id }})</b>: {{ fetchEmployeeStore.employee.name }}
+                    <b>Employee
+                        <span v-if="fetchEmployeeStore.employee.matricule !== null">({{ fetchEmployeeStore.employee.matricule }})</span></b>: {{ fetchEmployeeStore.employee.name }}
                     <span class="btn-float-right">
                         <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
                         <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
