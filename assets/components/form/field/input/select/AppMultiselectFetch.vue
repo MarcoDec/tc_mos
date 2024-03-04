@@ -75,8 +75,9 @@
         await updateItems()
     }
     async function onUpdateModelValue(value) {
-        // console.info('onUpdateModelValue', value)
-        emit('update:modelValue', value)
+        // console.info('onUpdateModelValue', value, props.field.max === 1)
+        if (props.field.max === 1) emit('update:modelValue', value[0] ?? null)
+        else emit('update:modelValue', value)
         if (value.length > 0) await updateItems()
     }
     onBeforeMount(() => {

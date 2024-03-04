@@ -12,10 +12,12 @@
     // console.info(props)
     const keySelect = ref(0)
     const itemMultiSelectFetchLoaded = ref([])
-
+    /*
+        * Récupère la valeur d'un champ en fonction de son type
+     */
     const getLabelValue = thevalue => {
         if (!props.field || !thevalue) return ''
-        console.log(props.field.type)
+        // console.log(props.field.type)
         switch (props.field.type) {
             case 'address':
                 return theValue.address || ''
@@ -62,16 +64,24 @@
                 return thevalue.map(v => v.text).join(', ') || ''
 
             case 'multiselect-fetch': {
-                console.log('multiselect-fetch', thevalue, props.field)
-                if (!itemMultiSelectFetchLoaded.value.length) {
+                // console.log('multiselect-fetch', thevalue, itemMultiSelectFetchLoaded.value)
+                if (!typeof thevalue === 'string') {
+                    const allPromises = []
                     thevalue.forEach(item => {
-                        api(item['@id'], 'GET').then(res => {
+                        allPromises.push(api(item['@id'], 'GET').then(res => {
                             itemMultiSelectFetchLoaded.value.push(res[props.initialField.filteredProperty])
-                            keySelect.value++
+                        }))
+                        Promise.all(allPromises).then(() => {
+                            // console.log('allPromises', itemMultiSelectFetchLoaded.value)
+                            return itemMultiSelectFetchLoaded.value.join(', ') || ''
                         })
                     })
+                } else {
+                    api(thevalue, 'GET').then(res => {
+                        itemMultiSelectFetchLoaded.value.push(res[props.initialField.filteredProperty])
+                        return res[props.initialField.filteredProperty] || ''
+                    })
                 }
-                return itemMultiSelectFetchLoaded.value.join(', ') || ''
             }
 
             case 'password':
@@ -107,14 +117,22 @@
 
     const fetchMultiSelectData = () => {
         if (multiselectFetch.value && props.item[props.field.name]) {
-            props.item[props.field.name].forEach(item => {
-                if (!itemMultiSelectFetchLoaded.value.includes(item['@id'])) {
-                    api(item['@id'], 'GET').then(res => {
-                        itemMultiSelectFetchLoaded.value.push(res[props.initialField.filteredProperty])
-                        keySelect.value++
-                    })
-                }
-            })
+            // console.log('item', props.item, props.item[props.field.name])
+            if (!typeof props.item[props.field.name] === 'string') {
+                // props.item[props.field.name].forEach(item => {
+                //     if (!itemMultiSelectFetchLoaded.value.includes(item['@id'])) {
+                //         api(item['@id'], 'GET').then(res => {
+                //             itemMultiSelectFetchLoaded.value.push(res[props.initialField.filteredProperty])
+                //             keySelect.value++
+                //         })
+                //     }
+                // })
+            } else {
+                //api(props.item[props.field.name], 'GET').then(res => {
+                //    itemMultiSelectFetchLoaded.value.push(res[props.initialField.filteredProperty])
+                //    keySelect.value++
+                //})
+            }
         }
     }
 
