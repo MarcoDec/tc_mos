@@ -280,6 +280,9 @@
             case 'infra':
                 await storeEngines.createInfra(itemsAddData)
                 break
+            case 'informatique':
+                await storeEngines.createInformatique(itemsAddData)
+                break
         }
         AddForm.value = false
         await refreshList()

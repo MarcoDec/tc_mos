@@ -16,6 +16,9 @@ export const useEngineStore = defineStore('engines', {
         async createMachine(data) {
             await api('/api/machines', 'POST', data)
         },
+        async createInformatique(data) {
+            await api('/api/informatiques', 'POST', data)
+        },
         async createTool(data) {
             await api('/api/tools', 'POST', data)
         },
