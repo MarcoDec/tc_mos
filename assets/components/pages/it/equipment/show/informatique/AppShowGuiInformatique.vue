@@ -62,7 +62,7 @@
 
     const router = useRouter()
     function goBack() {
-        router.push({name: 'engines'})
+        router.push({name: 'informatiques'})
     }
 </script>
 
@@ -71,8 +71,8 @@
         <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <button class="text-dark" @click="goBack">
-                        <FontAwesomeIcon icon="oil-well"/>
+                    <button class="text-dark" style="margin-right:10px;" @click="goBack" title="Retour à la liste des matériels informatiques">
+                        <FontAwesomeIcon icon="laptop-code"/> Matériel informatique
                     </button>
                     <b>{{ useEngineStore.engine.code }}</b>: {{ useEngineStore.engine.name }}
 <!--                    <span class="btn-float-right">-->
@@ -102,11 +102,6 @@
                         <FontAwesomeIcon v-else icon="fa-solid fa-magnifying-glass-plus" @click="activateFullScreen"/>
                     </span>
                 </div>
-                <!--            <AppTabs id="gui-bottom">-->
-                <!--                <AppTab id="gui-bottom-components" active icon="puzzle-piece" tabs="gui-bottom" title="Fournitures"/>-->
-                <!--                <AppTab id="gui-bottom-receipts" icon="receipt" tabs="gui-bottom" title="Réceptions"/>-->
-                <!--                <AppTab id="gui-bottom-orders" icon="shopping-cart" tabs="gui-bottom" title="Commandes"/>-->
-                <!--            </AppTabs>-->
             </template>
             <template #gui-right>
                 <!--            {{ route.params.id_product }}-->
