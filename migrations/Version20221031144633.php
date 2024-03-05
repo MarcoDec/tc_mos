@@ -2495,7 +2495,7 @@ CREATE TABLE `engine_group` (
     `code` VARCHAR(3) NOT NULL,
     `name` VARCHAR(35) NOT NULL,
     `safety_device` BOOLEAN DEFAULT FALSE NOT NULL,
-    `type` ENUM('counter-part', 'tool', 'workstation') NOT NULL COMMENT '(DC2Type:engine)'
+    `type` ENUM('counter-part', 'tool', 'workstation', 'machine', 'spare-part', 'infra', 'informatique') NOT NULL COMMENT '(DC2Type:engine)'
 )
 SQL);
         $this->addQuery(<<<'SQL'
@@ -2569,7 +2569,7 @@ CREATE TABLE `engine` (
     `max_operator` TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '(DC2Type:tinyint)',
     `name` VARCHAR(255) NOT NULL,
     `notes` TEXT,
-    `type` ENUM('counter-part','tool','workstation') NOT NULL COMMENT '(DC2Type:engine)',
+    `type` ENUM('counter-part','tool','workstation', 'machine', 'spare-part', 'infra', 'informatique') NOT NULL COMMENT '(DC2Type:engine)',
     `zone_id` INT UNSIGNED DEFAULT NULL,
     CONSTRAINT `IDX_E8A81A8D9F2C3FAB` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`),
     CONSTRAINT `IDX_E8A81A8DFE54D947` FOREIGN KEY (`group_id`) REFERENCES `engine_group` (`id`)
@@ -2621,7 +2621,7 @@ CREATE TABLE `manufacturer_engine` (
     `engine_id` INT UNSIGNED DEFAULT NULL,
     `manufacturer_id` INT UNSIGNED DEFAULT NULL,
     `serial_number` VARCHAR(255) DEFAULT NULL,
-    `type` ENUM('counter-part','tool','workstation') NOT NULL COMMENT '(DC2Type:engine)',
+    `type` ENUM('counter-part','tool','workstation', 'machine', 'spare-part', 'infra', 'informatique') NOT NULL COMMENT '(DC2Type:engine)',
     CONSTRAINT `IDX_E8A81A8DFE54D948` FOREIGN KEY (`group_id`) REFERENCES `engine_group` (`id`),
     CONSTRAINT `IDX_F514547DE78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`),
     CONSTRAINT `IDX_F514547DA23B42D` FOREIGN KEY (`manufacturer_id`) REFERENCES `manufacturer` (`id`),

@@ -19,7 +19,11 @@ use App\Entity\Interfaces\FileEntity;
 use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\Attachment\EngineAttachment;
 use App\Entity\Production\Engine\CounterPart\CounterPart;
+use App\Entity\Production\Engine\Infra\Infra;
+use App\Entity\Production\Engine\Machine\Machine;
 use App\Entity\Production\Engine\Manufacturer\Engine as ManufacturerEngine;
+use App\Entity\Production\Engine\Informatique\Informatique;
+use App\Entity\Production\Engine\SparePart\SparePart;
 use App\Entity\Production\Engine\Tool\Tool;
 use App\Entity\Production\Engine\Workstation\Workstation;
 use App\Entity\Traits\BarCodeTrait;
@@ -140,7 +144,11 @@ abstract class Engine extends Entity implements BarCodeInterface, FileEntity {
     final public const TYPES = [
         EngineType::TYPE_COUNTER_PART => CounterPart::class,
         EngineType::TYPE_TOOL => Tool::class,
-        EngineType::TYPE_WORKSTATION => Workstation::class
+        EngineType::TYPE_WORKSTATION => Workstation::class,
+        EngineType::TYPE_MACHINE => Machine::class,
+        EngineType::TYPE_SPARE_PART => SparePart::class,
+        EngineType::TYPE_INFRA => Infra::class,
+        EngineType::TYPE_INFORMATIQUE => Informatique::class
     ];
 
     #[ORM\OneToMany(mappedBy: 'engine', targetEntity: EngineAttachment::class)]
