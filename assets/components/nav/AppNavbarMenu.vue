@@ -40,6 +40,7 @@
     const variantProject = user.isProjectAdmin ? 'danger' : user.isProjectWriter ? 'warning' : user.isProjectReader ? 'info' : null
     const variantQuality = user.isQualityAdmin ? 'danger' : user.isQualityWriter ? 'warning' : user.isQualityReader ? 'info' : null
     const variantHr = user.isHrAdmin ? 'danger' : user.isHrWriter ? 'warning' : user.isHrReader ? 'info' : null
+    const variantIt = user.isItAdmin ? 'danger' : user.isItWriter ? 'warning' : user.isItReader ? 'info' : null
     const variantSelling = user.isSellingAdmin ? 'danger' : user.isSellingWriter ? 'warning' : user.isSellingReader ? 'info' : null
     const variantPurchase = user.isPurchaseAdmin ? 'danger' : user.isPurchaseWriter ? 'warning' : user.isPurchaseReader ? 'info' : null
     //const variantIt = user.isItAdmin ? 'danger' : null
@@ -117,7 +118,10 @@
                     </AppNavbarLink>
                 </template>
             </AppNavbarItem>
-            <AppNavbarItem v-if="user.isItAdmin" id="it" icon="laptop" title="Informatique">
+            <AppNavbarItem v-if="user.isItReader||user.isItWriter||user.isItAdmin" id="it" icon="laptop" title="Informatique">
+                <AppNavbarLink icon="laptop-code" to="informatiques" :variant="variantIt" @click="emit('close-menu')">
+                    Eléments informatiques
+                </AppNavbarLink>
                 <template v-if="user.isItAdmin">
                     <AppDropdownItem disabled variant="danger">
                         <span class="text-white">Administration</span>
@@ -151,14 +155,23 @@
             <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
                 <!--TODO                <p>Production</p>-->
                 <!--TODO                    <p>Catégories d'événements des équipements (engine-events)</p>-->
-                <AppNavbarLink icon="toolbox" to="tools" :variant="variantProduction" @click="emit('close-menu')">
-                    Liste des Outils
-                </AppNavbarLink>
                 <AppNavbarLink icon="desktop" to="workstations" :variant="variantProduction" @click="emit('close-menu')">
-                    Liste des Postes de travail
+                    Postes de travail
+                </AppNavbarLink>
+                <AppNavbarLink icon="cogs" to="machines" :variant="variantProduction" @click="emit('close-menu')">
+                    Machines
+                </AppNavbarLink>
+                <AppNavbarLink icon="toolbox" to="tools" :variant="variantProduction" @click="emit('close-menu')">
+                    Outils
                 </AppNavbarLink>
                 <AppNavbarLink icon="flask" to="counter-parts" :variant="variantProduction" @click="emit('close-menu')">
-                    Liste des Contre-parties de test
+                    Contre-parties de test
+                </AppNavbarLink>
+                <AppNavbarLink icon="puzzle-piece" to="spare-parts" :variant="variantProduction" @click="emit('close-menu')">
+                    Pièces de rechange
+                </AppNavbarLink>
+                <AppNavbarLink icon="building" to="infrastructures" :variant="variantProduction" @click="emit('close-menu')">
+                    Eléments d'infrastructures
                 </AppNavbarLink>
                 <AppNavbarLink icon="map-marked" to="zones" :variant="variantProduction" @click="emit('close-menu')">
                     Zones

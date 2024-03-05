@@ -165,6 +165,50 @@ export default [
         }
     },
     {
+        component: AppEngineList,
+        meta: {title: 'Machines — T-Concept GPAO'},
+        name: 'machines',
+        path: '/machines',
+        props: {
+            icon: 'cogs',
+            title: 'Machines',
+            engineType: 'machine'
+        }
+    },
+    {
+        component: AppEngineList,
+        meta: {title: 'Pièces de rechange — T-Concept GPAO'},
+        name: 'spare-parts',
+        path: '/spare-parts',
+        props: {
+            icon: 'puzzle-piece',
+            title: 'Pièces de rechange',
+            engineType: 'spare-part'
+        }
+    },
+    {
+        component: AppEngineList,
+        meta: {title: 'Infrastructure — T-Concept GPAO'},
+        name: 'infrastructures',
+        path: '/infrastructures',
+        props: {
+            icon: 'building',
+            title: 'Elément d\'infrastructure',
+            engineType: 'infra'
+        }
+    },
+    {
+        component: AppEngineList,
+        meta: {title: 'Informatique — T-Concept GPAO'},
+        name: 'informatiques',
+        path: '/informatiques',
+        props: {
+            icon: 'laptop-code',
+            title: 'Eléments Informatique',
+            engineType: 'informatique'
+        }
+    },
+    {
         component: AppShowGuiTestCounterPart,
         meta: {container: false, title: 'Test Counter Part — T-Concept GPAO'},
         name: 'counterPartShow',
