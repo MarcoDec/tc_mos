@@ -11,10 +11,12 @@ import purchase from './purchase'
 import quality from './quality'
 import selling from './selling'
 import useUser from '../stores/security'
+import it from './it'
 
 const router = createRouter({
     history: createWebHistory(), routes: [
         ...hr,
+        ...it,
         ...logistics,
         ...management,
         ...production,

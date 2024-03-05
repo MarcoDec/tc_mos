@@ -198,17 +198,6 @@ export default [
         }
     },
     {
-        component: AppEngineList,
-        meta: {title: 'Informatique — T-Concept GPAO'},
-        name: 'informatiques',
-        path: '/informatiques',
-        props: {
-            icon: 'laptop-code',
-            title: 'Eléments Informatique',
-            engineType: 'informatique'
-        }
-    },
-    {
         component: AppShowGuiTestCounterPart,
         meta: {container: false, title: 'Test Counter Part — T-Concept GPAO'},
         name: 'counterPartShow',
