@@ -6,6 +6,7 @@ import AppShowGuiWorkstation from '../components/pages/production/equipment/show
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTablePageType from '../components/pages/table/AppTablePageType.vue'
 import {readonly} from 'vue'
+import AppShowGuiMachine from "../components/pages/production/equipment/show/machine/AppShowGuiMachine.vue";
 
 const myOptions = [
     {iri: 'counter-part', text: 'Contrepartie de test', value: 'counter-part'},
@@ -214,7 +215,15 @@ export default [
         meta: {container: false, title: 'Tool — T-Concept GPAO'},
         name: 'toolShow',
         path: '/tool/:id_engine'
-    }//,
+    },
+    { //screwdriver-wrench
+        component: AppShowGuiMachine,
+        meta: {container: false, title: 'Machine — T-Concept GPAO'},
+        name: 'machineShow',
+        path: '/machine/:id_engine'
+    },
+
+    //,
     // {
     //     component: AppEquipementListEvent,
     //     meta: {container: false, title: 'Evénements Equipements — T-Concept GPAO'},
