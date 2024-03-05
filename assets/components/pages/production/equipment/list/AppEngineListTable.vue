@@ -301,6 +301,18 @@
         } else if (item['@type'] === 'CounterPart') {
             // eslint-disable-next-line camelcase
             router.push({name: 'counterPartShow', params: {id_engine: idEngine}})
+        } else if (item['@type'] === 'Machine') {
+            // eslint-disable-next-line camelcase
+            router.push({name: 'machineShow', params: {id_engine: idEngine}})
+        } else if (item['@type'] === 'SparePart') {
+            // eslint-disable-next-line camelcase
+            router.push({name: 'sparePartShow', params: {id_engine: idEngine}})
+        } else if (item['@type'] === 'Infra') {
+            // eslint-disable-next-line camelcase
+            router.push({name: 'infraShow', params: {id_engine: idEngine}})
+        } else if (item['@type'] === 'Informatique') {
+            // eslint-disable-next-line camelcase
+            router.push({name: 'informatiqueShow', params: {id_engine: idEngine}})
         }
     }
     async function deleted(id){
