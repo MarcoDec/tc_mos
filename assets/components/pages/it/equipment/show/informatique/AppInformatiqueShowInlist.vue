@@ -1,12 +1,4 @@
 <script setup>
-    //inlist
-    import generateItems from '../../../../../../stores/table/items'
-    import {useRoute} from 'vue-router'
-    import {useTableMachine} from '../../../../../../machine'
-    const products = generateItems('products')
-    const route = useRoute()
-    const machine = useTableMachine(route.name)
-
     const fieldsTypesMaintenances = [
         {
             create: false,
@@ -172,20 +164,15 @@
 </script>
 
 <template>
-    <div>
-        <AppTabs id="gui-start" class="gui-start-content">
-            <AppTab id="gui-start-maintenances" active icon="paint-roller" title="Types de maintenances">
-                <AppTable :id="route.name" :fields="fieldsTypesMaintenances" :store="products" :machine="machine"/>
-            </AppTab>
-            <AppTab id="gui-start-history" icon="history" title="Historique des maintenances">
-                <AppTable :id="route.name" :fields="fieldsHistoriqueMaintenances" :store="products" :machine="machine"/>
-            </AppTab>
-            <AppTab id="gui-start-Pieces" icon="retweet" title="Pièces de rechange">
-                <AppTable :id="route.name" :fields="fieldsPiecesRechange" :store="products" :machine="machine"/>
-            </AppTab>
-            <AppTab id="gui-start-of" icon="file-invoice" title="OF">
-                <AppTable :id="route.name" :fields="fieldsOF" :store="products" :machine="machine"/>
-            </AppTab>
-        </AppTabs>
-    </div>
+    <AppTabs id="gui-start-exploitation" class="gui-start-content">
+<!--        <AppTab id="gui-start-maintenances" active icon="paint-roller" title="Types de maintenances" tabs="gui-start-exploitation">-->
+<!--            TODO-->
+<!--        </AppTab>-->
+<!--        <AppTab id="gui-start-history" icon="history" title="Historique des maintenances" tabs="gui-start-exploitation">-->
+<!--            TODO-->
+<!--        </AppTab>-->
+<!--        <AppTab id="gui-start-Pieces" icon="retweet" title="Pièces de rechange" tabs="gui-start-exploitation">-->
+<!--            TODO-->
+<!--        </AppTab>-->
+    </AppTabs>
 </template>

@@ -36,6 +36,15 @@
                     :element-store="useCounterPartStore"/>
             </AppSuspense>
         </AppTab>
+        <AppTab id="gui-start-maintenances" icon="paint-roller" title="Types de maintenances" tabs="gui-start">
+            TODO
+        </AppTab>
+        <AppTab id="gui-start-history" icon="history" title="Historique des maintenances" tabs="gui-start">
+            TODO
+        </AppTab>
+        <AppTab id="gui-start-Pieces" icon="retweet" title="Pièces de rechange" tabs="gui-start">
+            TODO
+        </AppTab>
         <!--        <AppTab id="gui-start-quality" title="Qualité" icon="certificate" tabs="gui-start">-->
         <!--            <AppCardShow id="addQualite" :fields="qualityFields" :component-attribute="fetchEngineStore.engine"/>-->
         <!--        </AppTab>-->
