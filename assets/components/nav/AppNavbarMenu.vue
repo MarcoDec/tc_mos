@@ -151,8 +151,14 @@
             <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
                 <!--TODO                <p>Production</p>-->
                 <!--TODO                    <p>Catégories d'événements des équipements (engine-events)</p>-->
-                <AppNavbarLink icon="oil-well" to="engines" :variant="variantProduction" @click="emit('close-menu')">
-                    Liste des Equipements
+                <AppNavbarLink icon="toolbox" to="tools" :variant="variantProduction" @click="emit('close-menu')">
+                    Liste des Outils
+                </AppNavbarLink>
+                <AppNavbarLink icon="desktop" to="workstations" :variant="variantProduction" @click="emit('close-menu')">
+                    Liste des Postes de travail
+                </AppNavbarLink>
+                <AppNavbarLink icon="flask" to="counter-parts" :variant="variantProduction" @click="emit('close-menu')">
+                    Liste des Contre-parties de test
                 </AppNavbarLink>
                 <AppNavbarLink icon="map-marked" to="zones" :variant="variantProduction" @click="emit('close-menu')">
                     Zones

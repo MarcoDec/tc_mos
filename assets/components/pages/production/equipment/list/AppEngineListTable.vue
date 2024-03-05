@@ -16,9 +16,12 @@
     import useZonesStore from '../../../../../stores/production/company/zones'
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 
-    defineProps({
-        title: {required: true, type: String}
+    const props = defineProps({
+        title: {required: true, type: String},
+        engineType: {required: true, type: String},
+        icon: {required: true, type: String}
     })
+    console.log('props', props)
     const roleuser = ref('reader')
     const AddForm = ref(false)
     const formData = ref({})
@@ -61,7 +64,7 @@
     //endregion
     //region récupération des Machines de référence (modèles)
     // const fetchManufacturerEngines = useManufacturerEngineStore()
-    const tableCriteriaME = useFetchCriteria('ManufacturerEngines')
+    const tableCriteriaME = useFetchCriteria(`ManufacturerEngines_${props.engineType}`)
     tableCriteriaME.addFilter('pagination', 'false')
     // await fetchManufacturerEngines.fetchAll(tableCriteriaME.getFetchCriteria)
     // const optionsManufacturerEngines = fetchManufacturerEngines.engines.map(item => ({id: item['@id'], text: `${item.code} [${item.partNumber}]`, value: item['@id']}))
@@ -71,12 +74,23 @@
     // }
     //endregion
     //region récupération des Machines
-    const tableCriteria = useFetchCriteria('Engines')
+    const tableCriteria = useFetchCriteria(`Engines_${props.engineType}`)
     tableCriteria.addFilter('zone.company', currentCompany)
+    tableCriteria.addFilter('type', props.engineType)
     const storeEngines = useEngineStore()
     await storeEngines.fetchAll(tableCriteria.getFetchCriteria)
     //endregion
     //region Définition de la liste des champs pour le formulaire de création
+    const groupsApiUrl = computed(() => {
+        switch (props.engineType) {
+            case 'tool':
+                return '/api/tool-groups'
+            case 'workstation':
+                return '/api/workstation-groups'
+            case 'counter-part':
+                return '/api/counter-part-groups'
+        }
+    })
     const addFormFields = computed(() => [
         {
             label: 'Type',
@@ -108,7 +122,7 @@
             name: 'group',
             isGetter: true,
             target: 'group',
-            api: '/api/engine-groups',
+            api: groupsApiUrl.value,
             filteredProperty: 'getterFilter',
             type: 'multiselect-fetch',
             trie: false,
@@ -152,21 +166,21 @@
             width: 100,
             filter: false
         },
-        {
-            label: 'Type',
-            min: true,
-            name: '@type',
-            options: {
-                label: value =>
-                    optionsEngineTypes.find(option => option.value === value)?.text
-                    ?? null,
-                options: optionsEngineTypes
-            },
-            // searchDisabled: true,
-            trie: false,
-            type: 'select',
-            width: 80
-        },
+        // {
+        //     label: 'Type',
+        //     min: true,
+        //     name: '@type',
+        //     options: {
+        //         label: value =>
+        //             optionsEngineTypes.find(option => option.value === value)?.text
+        //             ?? null,
+        //         options: optionsEngineTypes
+        //     },
+        //     // searchDisabled: true,
+        //     trie: false,
+        //     type: 'select',
+        //     width: 80
+        // },
         {label: 'Code', min: true, name: 'code', trie: true, type: 'text', width: 80},
         {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
         {label: 'Numero de série', min: true, name: 'serialNumber', trie: true, type: 'text', width: 150},
@@ -214,13 +228,14 @@
     //endregion
     async function refreshList() {
         tableCriteria.addFilter('zone.company', currentCompany)
+        tableCriteria.addFilter('type', props.engineType)
         const criteria = tableCriteria.getFetchCriteria
         await storeEngines.fetchAll(criteria)
     }
     function showAddForm(){
         // // On vide le formulaire avant de l'afficher
         formData.value = {
-            '@type': null,
+            '@type': props.engineType,
             brand: null,
             code: null,
             entryDate: null,
@@ -303,9 +318,9 @@
             if (filter.field === 'getterFilter' && filter.field.name === 'manufacturerEngine') {
                 tableCriteria.addFilter('manufacturerEngine', filter.value[0])
             }
-            if (filter.field === '@type') {
-                tableCriteria.addFilter('type', filter.value)
-            }
+            // if (filter.field === '@type') {
+            //     tableCriteria.addFilter('type', filter.value)
+            // }
             tableCriteria.addFilter(filter.field, filter.value)
         })
         await refreshList()
@@ -328,7 +343,7 @@
     <div class="container">
         <div class="row">
             <h1 class="col">
-                <FontAwesomeIcon icon="oil-well"/>
+                <FontAwesomeIcon :icon="icon"/>
                 {{ title }}
             </h1>
             <span class="col">

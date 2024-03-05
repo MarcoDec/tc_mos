@@ -133,12 +133,35 @@ export default [
     },
     {
         component: AppEngineList,
-        meta: {title: 'Equipement — T-Concept GPAO'},
-        name: 'engines',
-        path: '/engines',
+        meta: {title: 'Outils — T-Concept GPAO'},
+        name: 'tools',
+        path: '/tools',
         props: {
-            icon: 'city',
-            title: 'Equipement'
+            icon: 'toolbox',
+            title: 'Outils',
+            engineType: 'tool'
+        }
+    },
+    {
+        component: AppEngineList,
+        meta: {title: 'Postes de travail — T-Concept GPAO'},
+        name: 'workstations',
+        path: '/workstations',
+        props: {
+            icon: 'desktop',
+            title: 'Postes de travail',
+            engineType: 'workstation'
+        }
+    },
+    {
+        component: AppEngineList,
+        meta: {title: 'Contre-partie de test — T-Concept GPAO'},
+        name: 'counter-parts',
+        path: '/counter-parts',
+        props: {
+            icon: 'flask',
+            title: 'Contre-partie de test',
+            engineType: 'counter-part'
         }
     },
     {

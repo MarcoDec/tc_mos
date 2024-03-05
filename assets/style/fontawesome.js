@@ -115,7 +115,7 @@ import {
     faMagnifyingGlassMinus,
     faPaintRoller,
     faHistory,
-    faRetweet
+    faRetweet, faFlask, faDesktop
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -161,6 +161,7 @@ library.add(faClock)
 library.add(faCommentsDollar)
 library.add(faCubesStacked)
 library.add(faDatabase)
+library.add(faDesktop)
 library.add(faDownload)
 library.add(faElementor)
 library.add(faEuroSign)
@@ -170,6 +171,7 @@ library.add(faFileContract)
 library.add(faFileInvoice)
 library.add(faFileInvoiceDollar)
 library.add(faFilter)
+library.add(faFlask)
 library.add(faFolder)
 library.add(faForwardFast)
 library.add(faForwardStep)
