@@ -6,8 +6,9 @@ import AppShowGuiWorkstation from '../components/pages/production/equipment/show
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTablePageType from '../components/pages/table/AppTablePageType.vue'
 import {readonly} from 'vue'
-import AppShowGuiMachine from "../components/pages/production/equipment/show/machine/AppShowGuiMachine.vue";
-import AppShowGuiSparePart from "../components/pages/production/equipment/show/spare-part/AppShowGuiSparePart.vue";
+import AppShowGuiMachine from '../components/pages/production/equipment/show/machine/AppShowGuiMachine.vue'
+import AppShowGuiSparePart from '../components/pages/production/equipment/show/spare-part/AppShowGuiSparePart.vue'
+import AppShowGuiInfra from '../components/pages/production/equipment/show/infrastructure/AppShowGuiInfra.vue'
 
 const myOptions = [
     {iri: 'counter-part', text: 'Contrepartie de test', value: 'counter-part'},
@@ -228,6 +229,12 @@ export default [
         meta: {container: false, title: 'Pièce de rechange — T-Concept GPAO'},
         name: 'sparePartShow',
         path: '/spare-part/:id_engine'
+    },
+    { //screwdriver-wrench
+        component: AppShowGuiInfra,
+        meta: {container: false, title: 'Equipement d\'infrastructure — T-Concept GPAO'},
+        name: 'infraShow',
+        path: '/infra/:id_engine'
     }
 
     //,
