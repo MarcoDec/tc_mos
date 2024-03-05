@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Production\Engine\Engine;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -64,14 +65,14 @@ class Machine extends Engine {
         ORM\OneToMany( mappedBy: 'parentMachine', targetEntity: Machine::class),
         Serializer\Groups(['read:engine', 'write:engine'])
     ]
-    private ArrayCollection $subMachines;
+    private Collection $subMachines;
 
     public function __construct() {
         parent::__construct();
         $this->subMachines = new ArrayCollection();
     }
 
-    public function getSubMachines(): ArrayCollection
+    public function getSubMachines(): Collection
     {
         return $this->subMachines;
     }

@@ -21,7 +21,7 @@
         engineType: {required: true, type: String},
         icon: {required: true, type: String}
     })
-    console.log('props', props)
+    // console.log('props', props)
     const roleuser = ref('reader')
     const AddForm = ref(false)
     const formData = ref({})
@@ -256,7 +256,7 @@
             code: formData1.get('code'),
             entryDate: formData1.get('entryDate'),
             group: formData1.get('group'),
-            manufacturerEngine: formData.value.getterFilter[0],
+            manufacturerEngine: formData.value.getterFilter ? formData.value.getterFilter[0] : null,
             name: formData1.get('name'),
             serialNumber: formData1.get('serialNumber'),
             zone: formData1.get('zone')
@@ -270,6 +270,9 @@
                 break
             case 'counter-part':
                 await storeEngines.createCounterPart(itemsAddData)
+                break
+            case 'machine':
+                await storeEngines.createMachine(itemsAddData)
                 break
         }
         AddForm.value = false
