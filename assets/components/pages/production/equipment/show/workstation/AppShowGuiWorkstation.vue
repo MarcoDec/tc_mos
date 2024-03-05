@@ -51,7 +51,7 @@
     }
     const router = useRouter()
     function goBack() {
-        router.push({name: 'engines'})
+        router.push({name: 'workstations'})
     }
 </script>
 
@@ -61,14 +61,14 @@
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
                     <!--                    <img src="/public/img/production/icons8-usine-48.png" alt="icône Workstation"/>-->
-                    <button class="text-dark" @click="goBack">
-                        <FontAwesomeIcon icon="oil-well"/>
+                    <button class="text-dark" style="margin-right:10px;" @click="goBack" title="Retour à la liste des stations de travail">
+                        <FontAwesomeIcon icon="desktop"/> Station de travail
                     </button>
                     <b>{{ useFetchWorkstationsStore.engine.code }}</b>: {{ useFetchWorkstationsStore.engine.name }}
-                    <span class="btn-float-right">
-                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
-                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
-                    </span>
+<!--                    <span class="btn-float-right">-->
+<!--                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>-->
+<!--                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>-->
+<!--                    </span>-->
                 </div>
                 <div class="d-flex flex-row">
                     <AppImg
@@ -84,7 +84,7 @@
                     <div class="full-visible-width">
                         <AppSuspense>
                             <AppWorkstationFormShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100"/>
-                            <AppWorkstationShowInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>
+<!--                            <AppWorkstationShowInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>-->
                         </AppSuspense>
                     </div>
                     <span>
