@@ -7,6 +7,9 @@ export const useEngineStore = defineStore('engines', {
         async createCounterPart(data) {
             await api('/api/counter-parts', 'POST', data)
         },
+        async createSparePart(data) {
+            await api('/api/spare-parts', 'POST', data)
+        },
         async createMachine(data) {
             await api('/api/machines', 'POST', data)
         },

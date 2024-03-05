@@ -274,6 +274,9 @@
             case 'machine':
                 await storeEngines.createMachine(itemsAddData)
                 break
+            case 'spare-part':
+                await storeEngines.createSparePart(itemsAddData)
+                break
         }
         AddForm.value = false
         await refreshList()
