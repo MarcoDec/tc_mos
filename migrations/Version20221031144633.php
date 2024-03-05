@@ -310,8 +310,9 @@ SQL);
         $this->addQuery('ALTER TABLE `component_family` DROP `old_subfamily_id`');
         $this->addQuery('ALTER TABLE `customer_address` DROP `old_id`');
         $this->addQuery('ALTER TABLE `customer_contact` DROP `old_id`');
-        $this->addQuery('ALTER TABLE `employee` DROP `old_id`, DROP `matricule`, DROP `id_society`');
-        $this->addQuery('ALTER TABLE `engine` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `employee` DROP `id_society`');
+//        $this->addQuery('ALTER TABLE `employee` DROP `matricule`, DROP `id_society`');
+        //$this->addQuery('ALTER TABLE `engine` DROP `old_id`');
         $this->addQuery('ALTER TABLE `engine_group` DROP `old_id`');
         $this->addQuery('ALTER TABLE `expedition` DROP `old_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
@@ -330,7 +331,7 @@ SQL);
         $this->addQuery('ALTER TABLE `society` DROP `old_id`');
         $this->addQuery('ALTER TABLE `stock` DROP `old_id`');
         $this->addQuery('ALTER TABLE `supplier_component` DROP `old_id`');
-        $this->addQuery('ALTER TABLE `warehouse` DROP `old_id`');
+//        $this->addQuery('ALTER TABLE `warehouse` DROP `old_id`');
     }
 
     private function upAttributes(): void {
@@ -2494,7 +2495,7 @@ CREATE TABLE `engine_group` (
     `code` VARCHAR(3) NOT NULL,
     `name` VARCHAR(35) NOT NULL,
     `safety_device` BOOLEAN DEFAULT FALSE NOT NULL,
-    `type` ENUM('counter-part', 'tool', 'workstation') NOT NULL COMMENT '(DC2Type:engine)'
+    `type` ENUM('counter-part', 'tool', 'workstation', 'machine', 'spare-part', 'infra', 'informatique') NOT NULL COMMENT '(DC2Type:engine)'
 )
 SQL);
         $this->addQuery(<<<'SQL'
@@ -2568,7 +2569,7 @@ CREATE TABLE `engine` (
     `max_operator` TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '(DC2Type:tinyint)',
     `name` VARCHAR(255) NOT NULL,
     `notes` TEXT,
-    `type` ENUM('counter-part','tool','workstation') NOT NULL COMMENT '(DC2Type:engine)',
+    `type` ENUM('counter-part','tool','workstation', 'machine', 'spare-part', 'infra', 'informatique') NOT NULL COMMENT '(DC2Type:engine)',
     `zone_id` INT UNSIGNED DEFAULT NULL,
     CONSTRAINT `IDX_E8A81A8D9F2C3FAB` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`),
     CONSTRAINT `IDX_E8A81A8DFE54D947` FOREIGN KEY (`group_id`) REFERENCES `engine_group` (`id`)
@@ -2620,7 +2621,7 @@ CREATE TABLE `manufacturer_engine` (
     `engine_id` INT UNSIGNED DEFAULT NULL,
     `manufacturer_id` INT UNSIGNED DEFAULT NULL,
     `serial_number` VARCHAR(255) DEFAULT NULL,
-    `type` ENUM('counter-part','tool','workstation') NOT NULL COMMENT '(DC2Type:engine)',
+    `type` ENUM('counter-part','tool','workstation', 'machine', 'spare-part', 'infra', 'informatique') NOT NULL COMMENT '(DC2Type:engine)',
     CONSTRAINT `IDX_E8A81A8DFE54D948` FOREIGN KEY (`group_id`) REFERENCES `engine_group` (`id`),
     CONSTRAINT `IDX_F514547DE78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`),
     CONSTRAINT `IDX_F514547DA23B42D` FOREIGN KEY (`manufacturer_id`) REFERENCES `manufacturer` (`id`),
@@ -4342,7 +4343,7 @@ CREATE TABLE `skill` (
     `started_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `type_id` INT UNSIGNED DEFAULT NULL,
     CONSTRAINT `IDX_5E3DE4778C03F15C` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`),
-    CONSTRAINT `IDX_5E3DE477E78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`),
+    CONSTRAINT `IDX_5E3DE477E78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `manufacturer_engine` (`id`),
     CONSTRAINT `IDX_5E3DE477C35E566A` FOREIGN KEY (`family_id`) REFERENCES `engine_group` (`id`),
     CONSTRAINT `IDX_5E3DE477B4B58540` FOREIGN KEY (`in_trainer_id`) REFERENCES `employee` (`id`),
     CONSTRAINT `IDX_5E3DE47778A19B66` FOREIGN KEY (`out_trainer_id`) REFERENCES `out_trainer` (`id`),
@@ -4607,6 +4608,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `company` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `currency_id` INT UNSIGNED DEFAULT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `delivery_time` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)',
     `delivery_time_open_days` BOOLEAN DEFAULT TRUE NOT NULL,
@@ -4620,14 +4622,16 @@ CREATE TABLE `company` (
     `number_of_team_per_day` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)',
     `society_id` INT UNSIGNED DEFAULT NULL,
     `work_timetable` VARCHAR(255) DEFAULT NULL,
-    CONSTRAINT `IDX_4FBF094FE6389D24` FOREIGN KEY (`society_id`) REFERENCES `society` (`id`)
+    CONSTRAINT `IDX_4FBF094FE6389D24` FOREIGN KEY (`society_id`) REFERENCES `society` (`id`),
+    CONSTRAINT `FK_4FBF094F38248176` FOREIGN KEY (`currency_id`) REFERENCES `currency` (`id`)
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `company` (`name`, `society_id`)
-SELECT `society_old`.`nom`, `society`.`id`
+INSERT INTO `company` (`name`, `society_id`, `currency_id`)
+SELECT `society_old`.`nom`, `society`.`id`, `currency`.`id`
 FROM `society_old`
 INNER JOIN `society` ON `society_old`.`id` = `society`.`old_id`
+LEFT JOIN `currency` ON `currency`.`code` = 'EUR'
 WHERE `society_old`.`is_company` = 1 AND `society_old`.`statut` = 0
 SQL);
         $this->addQuery(<<<'SQL'

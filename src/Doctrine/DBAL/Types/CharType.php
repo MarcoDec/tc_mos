@@ -13,6 +13,11 @@ final class CharType extends Type {
      * @param array{length: int} $column
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string {
-        return "CHAR({$column['length']})";
+//        print_r($column);
+//        echo $column['type'].'\n';
+        if (isset($column['length'])) {
+            return "CHAR({$column['length']})";
+        }
+        return $column['type'];
     }
 }

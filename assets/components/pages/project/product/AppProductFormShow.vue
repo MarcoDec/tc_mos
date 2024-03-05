@@ -1,6 +1,5 @@
 <script setup>
     import AppShowProductTabAdmin from './tabs/AppShowProductTabAdmin.vue'
-    import AppShowProductTabGeneral from './tabs/AppShowProductTabGeneral.vue'
     import AppShowProductTabLogistic from './tabs/AppShowProductTabLogistic.vue'
     import AppShowProductTabPrice from './tabs/AppShowProductTabPrice.vue'
     import AppShowProductTabProduction from './tabs/AppShowProductTabProduction.vue'
@@ -14,18 +13,38 @@
     const route = useRoute()
     const idProduct = Number(route.params.id_product)
     const fetchProductAttachmentStore = useProductAttachmentStore()
-    await fetchProductAttachmentStore.fetchByElement(idProduct)
+    try {
+        await fetchProductAttachmentStore.fetchByElement(idProduct)
+    } catch (e) {
+        console.error(e)
+    }
+    const fetchProductStore = useProductStore()
 </script>
 
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab
-            id="gui-start-main"
+            id="gui-start-files"
             active
-            title="Généralités"
-            icon="pencil"
+            title="Fichiers"
+            icon="laptop"
             tabs="gui-start">
-            <AppSuspense><AppShowProductTabGeneral/></AppSuspense>
+            <AppSuspense>
+                <AppTabFichiers
+                    attachment-element-label="product"
+                    :element-api-url="`/api/products/${idProduct}`"
+                    :element-attachment-store="fetchProductAttachmentStore"
+                    :element-id="idProduct"
+                    element-parameter-name="PRODUCT_ATTACHMENT_CATEGORIES"
+                    :element-store="fetchProductStore"/>
+            </AppSuspense>
+        </AppTab>
+        <AppTab
+            id="gui-start-Prix"
+            title="Prix"
+            icon="circle-dollar-to-slot"
+            tabs="gui-start">
+            <AppSuspense><AppShowProductTabPrice/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-project"
@@ -54,28 +73,6 @@
             icon="pallet"
             tabs="gui-start">
             <AppSuspense><AppShowProductTabAdmin/></AppSuspense>
-        </AppTab>
-        <AppTab
-            id="gui-start-files"
-            title="Fichiers"
-            icon="laptop"
-            tabs="gui-start">
-            <AppSuspense>
-                <AppTabFichiers
-                    attachment-element-label="product"
-                    :element-api-url="`/api/products/${idProduct}`"
-                    :element-attachment-store="fetchProductAttachmentStore"
-                    :element-id="idProduct"
-                    element-parameter-name="PRODUCT_ATTACHMENT_CATEGORIES"
-                    :element-store="useProductStore"/>
-            </AppSuspense>
-        </AppTab>
-        <AppTab
-            id="gui-start-Prix"
-            title="Prix"
-            icon="circle-dollar-to-slot"
-            tabs="gui-start">
-            <AppSuspense><AppShowProductTabPrice/></AppSuspense>
         </AppTab>
     </AppTabs>
 </template>

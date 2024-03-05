@@ -14,13 +14,13 @@ function AppFormGroupJS(props, context) {
     }
     const children = []
     if (props.violation) {
-        attrs['class'] = 'is-invalid'
+        attrs.class = 'is-invalid'
         children.push(h(resolveComponent('AppInputGuesserJS'), attrs))
         children.push(h('div', {class: 'invalid-feedback'}, props.violation.message))
     } else {
         children.push(h(resolveComponent('AppInputGuesserJS'), attrs))
     }
-    return h('div', {class: 'row mb-3'}, [
+    return h('div', {class: 'row mb-1'}, [
         h(AppLabelJS, {cols: props.labelCols, field: props.field, for: id}),
         h('div', {class: 'col'}, children)
     ])

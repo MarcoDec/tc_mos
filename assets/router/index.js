@@ -1,4 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
+//import AppAnalogClock from './pages/AppAnalogClock.vue'
 import AppHome from '../components/pages/AppHome'
 import AppLogin from '../components/pages/AppLogin.vue'
 import hr from './hr'
@@ -10,10 +11,12 @@ import purchase from './purchase'
 import quality from './quality'
 import selling from './selling'
 import useUser from '../stores/security'
+import it from './it'
 
 const router = createRouter({
     history: createWebHistory(), routes: [
         ...hr,
+        ...it,
         ...logistics,
         ...management,
         ...production,

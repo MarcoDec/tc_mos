@@ -1,5 +1,4 @@
 import AppShowGuiWarehouse from '../components/pages/logistic/warehouse/AppShowGuiWarehouse.vue'
-
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import {readonly} from 'vue'
 
@@ -108,6 +107,64 @@ export default [
                     type: 'measure'
                 }
             ]
+        }
+    },
+    {
+        component: async () => import('../components/pages/logistic/label/AppLabelTemplateList.vue'),
+        meta: {requiresAuth: true},
+        name: 'label-template-list',
+        path: '/label-template-list',
+        props: {}
+    },
+    {
+        component: async () => import('../components/pages/logistic/label/AppLabelTemplateGenerate.vue'),
+        name: 'label-template-generate',
+        path: '/label-template-generate/:idLabelTemplate',
+        props: {}
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Etiquettes Générées — T-Concept GPAO'},
+        name: 'etiquette-list',
+        path: '/etiquette-list',
+        props: {
+            apiBaseRoute: 'label-cartons',
+            fields: [
+                {label: 'Numéro de Lot', name: 'batchnumber'},
+                {label: 'Site de livraison client', name: 'customerAddressName'},
+                {label: 'Point de destination', name: 'customerDestinationPoint'},
+                {label: 'Poids total', name: 'grossWeight'},
+                {label: 'Poids net', name: 'netWeight'},
+                {label: 'Numéro étiquette', name: 'labelNumber'},
+                {label: 'Reference Logistique', name: 'logisticReference'},
+                {label: 'Fabricant', name: 'manufacturer'},
+                {label: 'Désignation Produit', name: 'productDescription'},
+                {label: 'Reference Produit', name: 'productReference'},
+                {label: 'Indice Produit', name: 'productIndice'},
+                {label: 'Quantité', name: 'quantity', type: 'number'},
+                {label: 'Site de départ', name: 'shipFromAddressName'},
+                {label: 'Référence du Vendeur', name: 'vendorNumber'},
+                {label: 'Date', name: 'date', type: 'date'},
+                {
+                    label: 'Type Etiquette',
+                    name: 'labelKind',
+                    options: [
+                        {text: 'Carton - TCONCEPT', value: 'TConcept'},
+                        {text: 'Carton - ETI9', value: 'ETI9'}
+                    ],
+                    type: 'select',
+                    update: true,
+                    create: true,
+                    search: true
+                },
+                {label: 'Code ZPL', name: 'zpl', create: false, update: false, sort: false, search: false, type: 'downloadText'},
+                {label: 'Image', name: 'url', create: false, update: false, sort: false, search: false, type: 'link'}
+                // {label: 'Unité', name: 'unit', options: {base: 'units'}, sortName: 'unit.code', type: 'select'},
+                // {create: false, label: 'Familles', name: 'familiesName', search: false, sort: false, update: false}
+            ],
+            icon: 'tags',
+            sort: readonly({label: 'Référence Produit', name: 'productReference'}),
+            title: 'Etiquettes Générées'
         }
     }
 ]

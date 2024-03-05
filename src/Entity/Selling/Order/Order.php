@@ -130,7 +130,7 @@ class Order extends Entity {
     #[
         ApiProperty(description: 'Destination', readableLink: false, example: '/api/delivery-addresses/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:order', 'write:order'])
+        Serializer\Groups(['read:order', 'write:order', 'read:item'])
     ]
     private ?DeliveryAddress $destination = null;
 
@@ -150,7 +150,7 @@ class Order extends Entity {
         ApiProperty(description: 'Type', example: KindType::TYPE_PROTOTYPE, openapiContext: ['enum' => KindType::TYPES]),
         Assert\Choice(choices: KindType::TYPES),
         ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_PROTOTYPE]),
-        Serializer\Groups(['read:order', 'write:order'])
+        Serializer\Groups(['read:order', 'write:order', 'read:item'])
     ]
     private ?string $kind = KindType::TYPE_PROTOTYPE;
 
@@ -164,7 +164,7 @@ class Order extends Entity {
     #[
         ApiProperty(description: 'Référence', example: 'EJZ65'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:order', 'write:order'])
+        Serializer\Groups(['read:order', 'write:order', 'read:item'])
     ]
     private ?string $ref = null;
 

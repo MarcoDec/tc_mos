@@ -3,6 +3,8 @@ import {defineStore} from 'pinia'
 import useOption from './option'
 
 function sort(a, b) {
+    // console.log(a.text, b.text)
+    if (typeof a.text === 'undefined' || typeof b.text === 'undefined') return 0
     return a.text.localeCompare(b.text)
 }
 
@@ -15,28 +17,39 @@ export default function useOptions(base, valueProp = '@id') {
                     if (typeof option.dispose === 'function')
                         option.$dispose()
                 this.$dispose()
+                this.isLoaded = false
             },
             async fetch() {
-                if (!this.fetchable)
+                if (!this.fetchable || this.isLoaded)
                     return
+                this.isLoaded = false
                 const response = await api(this.url)
                 this.resetItems()
-                for (const option of response['hydra:member'])
+                for (const option of response['hydra:member']) {
                     this.options.push(useOption(option, this))
+                    this.items.push(option)
+                }
                 this.options.sort(sort)
+                this.isLoaded = true
                 this.fetchable = false
             },
             async fetchOp() {
-                const response = await api(this.url)
-                this.resetItems()
-                for (const option of response['hydra:member'])
-                    this.options.push(useOption(option, this))
-                this.isLoaded = true
-                this.options.sort(sort)
+                if (this.isLoaded === false) {
+                    const response = await api(this.url)
+                    this.resetItems()
+                    for (const option of response['hydra:member']) {
+                        this.options.push(useOption(option, this))
+                        this.items.push(option)
+                    }
+                    this.isLoaded = true
+                    this.options.sort(sort)
+                }
             },
             resetItems() {
                 const options = [...this.options]
                 this.options = []
+                this.items = []
+                this.isLoaded = false
                 for (const option of options)
                     option.$dispose()
             }
@@ -68,6 +81,6 @@ export default function useOptions(base, valueProp = '@id') {
                 return state.options.length > 0
             }
         },
-        state: () => ({base, fetchable: false, id, isLoaded: false, options: [], valueProp})
+        state: () => ({base, fetchable: false, id, isLoaded: false, options: [], valueProp, items: []})
     })()
 }

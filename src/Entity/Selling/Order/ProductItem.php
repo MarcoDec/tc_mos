@@ -11,12 +11,17 @@ use App\Filter\RelationFilter;
 use App\Repository\Selling\Order\ProductItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @template-extends Item<Product>
  */
-#[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['item']),
+#[   
+    ApiFilter(filterClass: RelationFilter::class, properties: ['item',  'order.customer.id']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['order.customer.id' => 'partial', 'ref' => 'partial', 'requestedQuantity.value' => 'partial', 'requestedQuantity.code' => 'partial', 'confirmedQuantity.code' => 'partial', 'confirmedQuantity.value' => 'partial', 'confirmedDate' => 'partial', 'requestedDate' => 'partial',
+    'order.ref' => 'partial', 'embState.state' =>'partial', 'order.kind' => 'partial'
+]),
+
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -54,10 +59,10 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 ]
 class ProductItem extends Item {
     #[
-        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
+        ApiProperty(description: 'Produit', readableLink: true),
         ORM\JoinColumn(name: 'product_id'),
         ORM\ManyToOne(targetEntity: Product::class),
-        Serializer\Groups(['read:item', 'write:item'])
+        Serializer\Groups(['read:item', 'write:item', 'read:expedition'])
     ]
     protected $item;
 }

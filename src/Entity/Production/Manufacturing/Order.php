@@ -24,10 +24,18 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use App\Controller\Manufacturing\Component\ItemManufacturingComponentController;
+
+
 
 #[
+    ApiFilter(filterClass: OrderFilter::class, properties: ['deliveryDate' => 'DESC']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['company']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['product.product.code'=> 'exact', 'embState.state','embBlocker.state', 'product.customer.id' => 'exact', 'product.product.name' => 'partial', 'deliveryDate' => 'partial', 'ref' => 'partial', 'product.product.index' => 'partial', 'quantityRequested.value' => 'partial', 'quantityRequested.code' => 'partial', 'product.product.price.code' => 'exact', 'product.product.price.value' => 'partial']),
+
     ApiResource(
         description: 'OF',
         collectionOperations: [
@@ -43,6 +51,24 @@ use Doctrine\Common\Collections\ArrayCollection;
                     'summary' => 'Créer un OF',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
+            ],
+            'filtreComponent' => [
+                'controller' => ItemManufacturingComponentController::class,
+                'method' => 'GET',
+                'openapi_context' => [
+                    'description' => 'Filtrer par fournisseur',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'api',
+                        'schema' => [
+                            'type' => 'integer',
+                        ]
+                    ]],
+                    'summary' => 'Filtrer par composant'
+                ],
+                'path' => '/manufacturing-orders/componentFilter/{api}',
+                'read' => false,
+                'write' => false
             ]
         ],
         itemOperations: [
@@ -118,82 +144,82 @@ class Order extends Entity implements BarCodeInterface {
     #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?Company $company;
 
     #[
         ApiProperty(description: 'Date de livraison', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?DateTimeImmutable $deliveryDate = null;
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:manufacturing-order', 'read:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-order', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private Closer $embBlocker;
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:manufacturing-order', 'read:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-order', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private State $embState;
 
     #[
         ApiProperty(description: 'Index', example: 1),
         ORM\Column(name: '`index`', type: 'tinyint', options: ['default' => 1, 'unsigned' => true]),
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private int $index = 1;
 
     #[
         ApiProperty(description: 'Compagnie fabricante', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?Company $manufacturingCompany = null;
 
     #[
         ApiProperty(description: 'Date de production', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?DateTimeImmutable $manufacturingDate = null;
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
         ORM\Column(type: 'text', nullable: true),
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?string $notes = null;
 
     #[
         ApiProperty(description: 'Commande du client', readableLink: false, example: '/api/selling-orders/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
+        Serializer\Groups(['read:production-quality', 'read:manufacturing-order', 'write:manufacturing-order'])
     ]
     private ?SellingOrder $order = null;
 
     #[
-        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
-        ORM\ManyToOne (inversedBy:'productorders'),
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
+        ApiProperty(description: 'Produit', readableLink: true, example: '/api/products/1'),
+        ORM\ManyToOne(inversedBy:'productorders'),
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?Product $product = null;
 
     #[
         ApiProperty(description: 'Quantité demandée', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order','read:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order','read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private Measure $quantityRequested;
 
     #[
         ApiProperty(description: 'Référence', example: '20230320'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?string $ref = null;
 

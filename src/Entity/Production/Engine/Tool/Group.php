@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ],
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        itemOperations: ['get'],
         shortName: 'ToolGroup',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'

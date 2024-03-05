@@ -15,25 +15,33 @@ use App\Entity\Embeddable\Production\Engine\State;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
+use App\Entity\Interfaces\FileEntity;
 use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\Attachment\EngineAttachment;
 use App\Entity\Production\Engine\CounterPart\CounterPart;
+use App\Entity\Production\Engine\Infra\Infra;
+use App\Entity\Production\Engine\Machine\Machine;
 use App\Entity\Production\Engine\Manufacturer\Engine as ManufacturerEngine;
+use App\Entity\Production\Engine\Informatique\Informatique;
+use App\Entity\Production\Engine\SparePart\SparePart;
 use App\Entity\Production\Engine\Tool\Tool;
 use App\Entity\Production\Engine\Workstation\Workstation;
 use App\Entity\Traits\BarCodeTrait;
+use App\Entity\Traits\FileTrait;
 use App\Filter\RelationFilter;
-//use App\Filter\SetFilter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-
+use App\Filter\DiscriminatorFilter;
+// use App\Filter\CustomGetterFilter;
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['brand'=>'partial', 'code'=> 'partial', 'name' => 'partial', 'serialNumber' => 'partial', 'zone.company']),
+    ApiFilter(filterClass: DiscriminatorFilter::class),
+    // ApiFilter(CustomGetterFilter::class, properties: ['getterFilter' => ['fields' => ['group']]]),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['brand'=>'partial', 'code'=> 'partial', 'name' => 'partial', 'serialNumber' => 'partial', 'zone.company', 'group' => 'partial', 'id' => 'partial']),
     ApiFilter(filterClass: DateFilter::class, properties: ['entryDate']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['zone', 'manufacturerEngine']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['brand', 'code', 'entryDate', 'manufacturerEngine.name', 'name', 'serialNumber']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['group', 'zone', 'manufacturerEngine']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['brand', 'code', 'entryDate', 'manufacturerEngine.name', 'name', 'serialNumber', 'id']),
     //ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
         description: 'Équipement',
@@ -58,6 +66,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère un équipement',
                     'summary' => 'Récupère un équipement',
                 ]
+            ],
+            'patch image' => [
+                'openapi_context' => [
+                    'description' => 'Modifie l\'image d\'une machine',
+                    'summary' => 'Modifie l\'image d\'une machine'
+                ],
+                'denormalization_context' => [
+                    'groups' => ['write:engine:image'],
+                    'openapi_definition_name' => 'Engine-image'
+                ],
+                'normalization_context' => [
+                    'groups' => ['read:engine:image'],
+                    'openapi_definition_name' => 'Engine-image'
+                ],
+                'path' => '/engines/{id}/image',
+                'controller' => PlaceholderAction::class,
+                'method' => 'POST',
+                'input_formats' => ['multipart'],
             ],
             'patch' => [
                 'openapi_context' => [
@@ -102,7 +128,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         normalizationContext: [
             'enable_max_depth' => true,
-            'groups' => ['read:engine', 'read:id', 'read:state'],
+            'groups' => ['read:engine', 'read:id', 'read:state', 'read:file'],
             'openapi_definition_name' => 'Engine-read',
             'skip_null_values' => false
         ]
@@ -112,13 +138,17 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE')
 ]
-abstract class Engine extends Entity implements BarCodeInterface {
-    use BarCodeTrait;
+abstract class Engine extends Entity implements BarCodeInterface, FileEntity {
+    use BarCodeTrait, FileTrait;
 
     final public const TYPES = [
         EngineType::TYPE_COUNTER_PART => CounterPart::class,
         EngineType::TYPE_TOOL => Tool::class,
-        EngineType::TYPE_WORKSTATION => Workstation::class
+        EngineType::TYPE_WORKSTATION => Workstation::class,
+        EngineType::TYPE_MACHINE => Machine::class,
+        EngineType::TYPE_SPARE_PART => SparePart::class,
+        EngineType::TYPE_INFRA => Infra::class,
+        EngineType::TYPE_INFORMATIQUE => Informatique::class
     ];
 
     #[ORM\OneToMany(mappedBy: 'engine', targetEntity: EngineAttachment::class)]
@@ -127,14 +157,14 @@ abstract class Engine extends Entity implements BarCodeInterface {
     #[
         ApiProperty(description: 'Marque', example: 'Apple'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event',  'read:operation-employee:collection'])
     ]
     protected ?string $brand = null;
 
     #[
         ApiProperty(description: 'Référence', example: 'MA-1'),
         ORM\Column(length: 10, nullable: true),
-        Serializer\Groups(['read:engine','read:manufacturing-operation','read:engine-maintenance-event'])
+        Serializer\Groups(['read:engine','read:manufacturing-operation','read:engine-maintenance-event', 'read:skill', 'read:operation-employee:collection'])
     ]
     protected ?string $code = null;
 
@@ -144,7 +174,12 @@ abstract class Engine extends Entity implements BarCodeInterface {
         Serializer\Groups(['read:engine', 'write:engine'])
     ]
     protected ?DateTimeImmutable $entryDate = null;
-
+    #[
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:engine:collection', 'read:engine', 'write:engine'])
+    ]
+    protected ?string $filePath = '';
     /**
      * @var Group|null
      */
@@ -152,10 +187,14 @@ abstract class Engine extends Entity implements BarCodeInterface {
     #[
         ApiProperty(description: 'Nom', example: 'Compresseur d\'air'),
         ORM\Column,
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event', 'read:operation-employee:collection'])
     ]
     protected ?string $name = null;
 
+    #[
+        ORM\Column(type: 'integer', nullable: true)
+    ]
+    protected int $oldId;
     #[
         ApiProperty(description: 'Numéro de série', example: '10021'),
         ORM\Column(nullable: true),
@@ -190,18 +229,18 @@ abstract class Engine extends Entity implements BarCodeInterface {
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:engine','read:manufacturing-operation'])
+        Serializer\Groups(['read:engine','read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private Blocker $embBlocker;
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:engine','read:manufacturing-operation'])
+        Serializer\Groups(['read:engine','read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private State $embState;
 
     #[
-        ApiProperty(description: 'Modele de machine', readableLink: false, example: '/api/manufacturer-engines/15'),
+        ApiProperty(description: 'Modele de machine', readableLink: true, example: '/api/manufacturer-engines/15'),
         ORM\ManyToOne(targetEntity: ManufacturerEngine::class, cascade: ['persist']),
         ORM\JoinColumn(onDelete: 'SET NULL'),
         Serializer\Groups(['read:engine', 'write:engine', 'read:manufacturing-operation'])
@@ -364,5 +403,32 @@ abstract class Engine extends Entity implements BarCodeInterface {
       $this->attachments = $attachments;
    }
 
+    #[
+        ApiProperty(description: 'Icône', example: '/uploads/engine/1.jpg'),
+        Serializer\Groups(['read:file'])
+    ]
+    final public function getFilepath(): ?string {
+        return $this->filePath;
+    }
+    public function setFilePath(?string $filePath): void
+    {
+        $this->filePath = $filePath;
+    }
 
+    public function getOldId(): int
+    {
+        return $this->oldId;
+    }
+
+    public function setOldId(int $oldId): void
+    {
+        $this->oldId = $oldId;
+    }
+    #[
+        ApiProperty(description: 'Récupère le code et le nom du Groupe de la machine', example: 'MA-Machine'),
+        Serializer\Groups(['read:engine', 'read:engine:collection'])
+    ]
+    public function getGetterFilter(): string {
+        return $this->getGroup() ? $this->getGroup()->getGetterFilter() : '';
+    }
 }

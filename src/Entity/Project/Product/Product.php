@@ -17,6 +17,7 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Project\Product\Product\State;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
+use App\Entity\Interfaces\FileEntity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
@@ -25,7 +26,9 @@ use App\Entity\Project\Product\Attachment\ProductAttachment;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Selling\ProductReference;
 use App\Entity\Traits\BarCodeTrait;
+use App\Entity\Traits\FileTrait;
 use App\Filter\RelationFilter;
+use App\Filter\SetFilter;
 use App\Repository\Project\Product\ProductRepository;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Validator as AppAssert;
@@ -35,18 +38,22 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\Selling\Customer\Product as ProductCustomer;
 
 #[
     ApiFilter(filterClass: DateFilter::class, properties: ['endOfLife']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'index', 'kind']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'index', 'kind', 'name', 'id']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'index' => 'partial', 'kind' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial', 'price.code' => 'partial', 'price.value' => 'partial',
+        'index' => 'partial', 'forecastVolume.code' => 'partial', 'forecastVolume.value' => 'partial', 'kind' => 'partial', 'id' => 'partial'
+    ]),
     ApiResource(
         description: 'Produit',
         collectionOperations: [
             'get' => [
                 'normalization_context' => [
-                    'groups' => ['read:measure', 'read:product:collection', 'read:state'],
+                    'groups' => ['read:measure', 'read:product:collection', 'read:state', 'read:id'],
                     'openapi_definition_name' => 'Product-collection',
                     'skip_null_values' => false
                 ],
@@ -96,6 +103,24 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Récupère un produit',
                     'summary' => 'Récupère un produit'
                 ]
+            ],
+            'patch image' => [
+                'openapi_context' => [
+                    'description' => 'Modifie l\'image d\'un produit',
+                    'summary' => 'Modifie l\'image d\'un produit'
+                ],
+                'denormalization_context' => [
+                    'groups' => ['write:product:image'],
+                    'openapi_definition_name' => 'Product-image'
+                ],
+                'normalization_context' => [
+                    'groups' => ['read:product:image'],
+                    'openapi_definition_name' => 'Product-image'
+                ],
+                'path' => '/products/{id}/image',
+                'controller' => PlaceholderAction::class,
+                'method' => 'POST',
+                'input_formats' => ['multipart'],
             ],
             'patch' => [
                 'openapi_context' => [
@@ -169,17 +194,26 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:measure', 'read:product', 'read:state'],
             'openapi_definition_name' => 'Product-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\Entity(repositoryClass: ProductRepository::class),
     UniqueEntity(fields: ['code', 'index'], groups: ['Product-admin', 'Product-clone', 'Product-create'])
 ]
-class Product extends Entity implements BarCodeInterface, MeasuredInterface {
-    use BarCodeTrait;
+class Product extends Entity implements BarCodeInterface, MeasuredInterface, FileEntity {
+    use BarCodeTrait, FileTrait;
 
    /** @var DoctrineCollection<int, ProductAttachment> */
     #[ORM\OneToMany(mappedBy: 'product',targetEntity: ProductAttachment::class)]
     private DoctrineCollection $attachments;
+
+    /** @var DoctrineCollection<int, ProductCustomer> */
+    #[
+        ApiProperty(description: 'Relations Clients', readableLink: false, example: ['/api/customer-products/1']),
+        Serializer\Groups(['read:product', 'read:product:collection']),
+        ORM\OneToMany(mappedBy: 'product', targetEntity: ProductCustomer::class)
+    ]
+    private DoctrineCollection $productCustomers;
 
     #[
         ApiProperty(description: 'Temps auto', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
@@ -196,7 +230,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Référence', example: '54587F'),
         Assert\Length(min: 3, max: 50),
         ORM\Column(length: 50),
-        Serializer\Groups(['create:product', 'read:item', 'read:product', 'read:product:collection', 'read:stock', 'write:product', 'write:product:admin', 'write:product:clone'])
+        Serializer\Groups(['read:manufacturing-order', 'create:product', 'read:item', 'read:product', 'read:product:collection', 'read:stock', 'write:product', 'write:product:admin', 'write:product:clone', 'read:product-customer', 'read:nomenclature', 'read:supply'])
     ]
     private ?string $code = null;
 
@@ -216,7 +250,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
         Assert\Length(min: 4, max: 10, groups: ['Product-logistics']),
         ORM\Column(length: 10, nullable: true),
-        Serializer\Groups(['read:product', 'write:product', 'write:product:logistics'])
+        Serializer\Groups(['read:product', 'write:product', 'write:product:logistics', 'read:manufacturing-order'])
     ]
     private ?string $customsCode = null;
 
@@ -228,7 +262,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:product', 'read:product:collection'])
+        Serializer\Groups(['read:product', 'read:product:collection', 'read:nomenclature'])
     ]
     private State $embState;
 
@@ -249,10 +283,17 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     private ?Family $family = null;
 
     #[
-        ApiProperty(description: 'Volume prévisionnel', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:product', 'read:product:collection'])
+    ]
+    protected ?string $filePath = '';
+
+    #[
+        ApiProperty(description: 'Volume prévisionnel année en cours', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         AppAssert\Measure(groups: ['Product-create']),
         ORM\Embedded,
-        Serializer\Groups(['create:product', 'read:product'])
+        Serializer\Groups(['create:product', 'read:product', 'read:product-customer', 'read:nomenclature'])
     ]
     private Measure $forecastVolume;
 
@@ -267,7 +308,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Indice', required: false, example: '02'),
         Assert\Length(min: 1, max: 10, groups: ['Product-admin', 'Product-create']),
         ORM\Column(name: '`index`', length: 10, nullable: true),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
+        Serializer\Groups(['read:manufacturing-order', 'create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone', 'read:product-customer', 'read:manufacturing-order', 'read:supply'])
     ]
     private ?string $index = null;
 
@@ -276,7 +317,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         Assert\NotNull,
         Assert\PositiveOrZero,
         ORM\Column(type: 'tinyint', options: ['default' => 1, 'unsigned' => true]),
-        Serializer\Groups(['read:product'])
+        Serializer\Groups(['read:manufacturing-order', 'read:product', 'read:nomenclature'])
     ]
     private int $internalIndex = 1;
 
@@ -284,7 +325,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Type', example: KindType::TYPE_PROTOTYPE, openapiContext: ['enum' => KindType::TYPES]),
         Assert\Choice(choices: KindType::TYPES, groups: ['Product-admin', 'Product-create', 'Product-project']),
         ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_PROTOTYPE]),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:project'])
+        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:project', 'read:supply'])
     ]
     private ?string $kind = KindType::TYPE_PROTOTYPE;
 
@@ -338,7 +379,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         Assert\Length(min: 3, max: 160),
         Assert\NotBlank(groups: ['Product-admin', 'Product-create']),
         ORM\Column(length: 160, nullable: true),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'read:stock'])
+        Serializer\Groups(['read:manufacturing-order', 'create:product', 'read:expedition', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'read:stock', 'read:product-customer', 'read:manufacturing-order', 'read:nomenclature', 'read:supply'])
     ]
     private ?string $name = null;
 
@@ -378,7 +419,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     #[
         ApiProperty(description: 'Prix', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
-        Serializer\Groups(['read:product'])
+        Serializer\Groups(['read:manufacturing-order', 'read:product', 'read:product-customer', 'read:manufacturing-order'])
     ]
     private Measure $price; // Champ calculé
 
@@ -456,6 +497,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->transfertPriceWork = new Measure();
         $this->weight = new Measure();
         $this->productorders = new ArrayCollection();
+        $this->productCustomers = new ArrayCollection();
     }
 
     public function __clone() {
@@ -601,6 +643,33 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
             $this->transfertPriceSupplies,
             $this->transfertPriceWork,
             $this->weight
+        ];
+    }
+
+    final public function getUnitMeasures(): array
+    {
+        return [
+            $this->autoDuration,
+            $this->costingAutoDuration,
+            $this->costingManualDuration,
+            $this->forecastVolume,
+            $this->manualDuration,
+            $this->maxProto,
+            $this->minDelivery,
+            $this->minProd,
+            $this->minStock,
+            $this->packaging,
+            $this->productionDelay,
+            $this->weight
+        ];
+    }
+    final public function getCurrencyMeasures(): array
+    {
+        return [
+            $this->price,
+            $this->priceWithoutCopper,
+            $this->transfertPriceSupplies,
+            $this->transfertPriceWork
         ];
     }
 
@@ -892,4 +961,64 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
       $this->attachments = $attachments;
    }
 
+    /**
+     * @return DoctrineCollection
+     */
+    public function getProductCustomers(): DoctrineCollection
+    {
+        return $this->productCustomers;
+    }
+
+    /**
+     * @param DoctrineCollection $productCustomers
+     * @return Product
+     */
+    public function setProductCustomers(DoctrineCollection $productCustomers): Product
+    {
+        $this->productCustomers = $productCustomers;
+        return $this;
+    }
+    #[
+        ApiProperty(description: 'Clients', readableLink: false, example: ['{@id: "/api/customers/4", @type: "Customer"}']),
+        Serializer\Groups(['read:product', 'read:product:collection']),
+    ]
+    public function getCustomers() : DoctrineCollection
+    {
+        $customers = new ArrayCollection();
+        foreach ($this->productCustomers as $productCustomer) {
+            $customers->add($productCustomer->getCustomer());
+        }
+        return $customers;
+    }
+    #[
+        ApiProperty(description: 'Compagnies gérantes', readableLink: false, example: '[{@id: "/api/companies/1", @type: "Company"}]'),
+        Serializer\Groups(['read:product', 'read:product:collection']),
+    ]
+    public function getCompanies() : DoctrineCollection
+    {
+        $companies = [];
+        foreach ($this->productCustomers as $productCustomer) {
+            $companies = array_merge($companies, $productCustomer->getAdministeredBy()->toArray());
+        }
+        return new ArrayCollection($companies);
+    }
+
+    #[
+        ApiProperty(description: 'Icône', example: '/uploads/project-product-product/1.jpg'),
+        Serializer\Groups(['read:file'])
+    ]
+    public function getFilePath(): ?string
+    {
+        return $this->filePath;
+    }
+
+    /**
+     * @param string|null $filePath
+     * @return Product
+     */
+    public function setFilePath(?string $filePath): Product
+    {
+        $this->filePath = $filePath;
+        return $this;
+    }
 }

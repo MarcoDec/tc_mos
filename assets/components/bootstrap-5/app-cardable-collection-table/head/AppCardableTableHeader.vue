@@ -4,7 +4,8 @@
     const emit = defineEmits(['trierAlphabet'])
 
     defineProps({
-        fields: {required: true, type: Array}
+        fields: {required: true, type: Array},
+        title: {default: null, required: false, type: String}
     })
     function trierAlphabet(payload) {
         emit('trierAlphabet', payload)
@@ -13,8 +14,14 @@
 
 <template>
     <thead class="table-dark">
+        <tr v-if="title !== null">
+            <td class="bg-secondary text-uppercase text-xl-center" :colspan="fields.length + 1">
+                <slot name="title">
+                    {{ title }}
+                </slot>
+            </td>
+        </tr>
         <tr>
-            <th scope="col"/>
             <th scope="col">
                 Actions
             </th>

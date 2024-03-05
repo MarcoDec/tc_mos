@@ -14,6 +14,12 @@ use App\Entity\Management\Society\Company\Company;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use App\Filter\RelationFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+
 
 #[
     ApiResource(
@@ -99,9 +105,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 ]
 class DeliveryNote extends Entity {
     #[
-        ApiProperty(description: 'Facture', readableLink: false, example: '/api/bills/1'),
+        ApiProperty(description: 'Facture', readableLink: true),
         ORM\ManyToOne,
-        Serializer\Groups(['read:delivery-note', 'write:delivery-note'])
+        Serializer\Groups(['read:delivery-note', 'write:delivery-note', 'read:expedition'])
     ]
     private ?Bill $bill = null;
 
@@ -115,34 +121,34 @@ class DeliveryNote extends Entity {
     #[
         ApiProperty(description: 'Date', readableLink: false, example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['read:delivery-note', 'write:delivery-note'])
+        Serializer\Groups(['read:delivery-note', 'write:delivery-note', 'read:expedition'])
     ]
     private ?DateTimeImmutable $date = null;
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:delivery-note'])
+        Serializer\Groups(['read:delivery-note', 'read:expedition'])
     ]
     private State $embState;
 
     #[
         ApiProperty(description: 'Supplément de transport', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
-        Serializer\Groups(['read:delivery-note', 'write:delivery-note'])
+        Serializer\Groups(['read:delivery-note', 'write:delivery-note', 'read:expedition'])
     ]
     private Measure $freightSurcharge;
 
     #[
         ApiProperty(description: 'Non facturable', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:delivery-note', 'write:delivery-note'])
+        Serializer\Groups(['read:delivery-note', 'write:delivery-note', 'read:expedition'])
     ]
     private bool $nonBillable = false;
 
     #[
         ApiProperty(description: 'Référence'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:delivery-note', 'write:delivery-note'])
+        Serializer\Groups(['read:delivery-note', 'write:delivery-note', 'read:expedition'])
     ]
     private ?string $ref = null;
 

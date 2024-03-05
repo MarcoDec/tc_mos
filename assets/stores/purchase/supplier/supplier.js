@@ -8,7 +8,6 @@ export default function generateSupplier(supplier) {
                 this.$reset()
                 this.$dispose()
             },
-
             async updateAccounting(data) {
                 const response = await api(`/api/suppliers/${supplier.id}/accounting`, 'PATCH', data)
                 this.$state = {...response}

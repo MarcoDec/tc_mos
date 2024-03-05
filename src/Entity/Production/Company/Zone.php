@@ -10,13 +10,14 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\CompanyInterface;
+use App\Entity\Logistics\Warehouse\Warehouse;
 use App\Entity\Management\Society\Company\Company;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'company'=> 'exact']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'company' => 'exact', 'warehouse' => 'exact']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
     ApiResource(
         description: 'Zone',
@@ -42,14 +43,16 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Supprime une zone',
                     'summary' => 'Supprime une zone',
                 ],
+                'method' => 'DELETE',
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get',
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une zone',
                     'summary' => 'Modifie une zone'
                 ],
+                'method' => 'PATCH',
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
             ]
         ],
@@ -58,11 +61,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         denormalizationContext: [
             'groups' => ['write:zone'],
-            'openapi_definition_name' => 'CompanySupply-write'
+            'openapi_definition_name' => 'Zone-write'
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:zone'],
-            'openapi_definition_name' => 'CompanySupply-read',
+            'openapi_definition_name' => 'Zone-read',
             'skip_null_values' => false
         ],
         paginationClientEnabled: true
@@ -86,6 +89,14 @@ class Zone extends Entity {
     ]
     private ?string $name = null;
 
+    #[
+        ApiProperty(description: 'Entrepôt', readableLink: false),
+        ORM\ManyToOne(targetEntity: Warehouse::class),
+        ORM\JoinColumn(nullable: true),
+        Serializer\Groups(['read:zone', 'write:zone'])
+    ]
+    private ?Warehouse $warehouse = null;
+
     final public function getCompany(): ?Company {
         return $this->company;
     }
@@ -103,4 +114,23 @@ class Zone extends Entity {
         $this->name = $name;
         return $this;
     }
+
+    /**
+     * @return Warehouse|null
+     */
+    public function getWarehouse(): ?Warehouse
+    {
+        return $this->warehouse;
+    }
+
+    /**
+     * @param Warehouse|null $warehouse
+     * @return Zone
+     */
+    public function setWarehouse(?Warehouse $warehouse): Zone
+    {
+        $this->warehouse = $warehouse;
+        return $this;
+    }
+
 }

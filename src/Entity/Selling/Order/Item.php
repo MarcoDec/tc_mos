@@ -10,6 +10,7 @@ use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Selling\Order\Item\State;
+use App\Entity\Selling\Customer\Customer;
 use App\Entity\Item as BaseItem;
 use App\Entity\Production\Manufacturing\Expedition;
 use App\Filter\RelationFilter;
@@ -18,6 +19,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+
 
 /**
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
@@ -88,7 +91,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'SellingOrderItem-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:item', 'read:measure', 'read:state'],
+            'groups' => ['read:id', 'read:item', 'read:measure', 'read:state', 'read:order', 'read:customer'],
             'openapi_definition_name' => 'SellingOrderItem-read',
             'skip_null_values' => false
         ]
@@ -123,7 +126,7 @@ abstract class Item extends BaseItem {
 
     #[
         ApiProperty(description: 'Commande', readableLink: false, example: '/api/selling-orders/1'),
-        ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'sellingOrderItems'),
+        ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'sellingOrderItems', fetch: "EAGER"),
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $order;
@@ -140,6 +143,14 @@ abstract class Item extends BaseItem {
         $this->embBlocker = new Closer();
         $this->embState = new State();
         $this->expeditions = new ArrayCollection();
+    }
+    /*, 'read:expedition'*/
+    #[
+        ApiProperty(description: 'Client'),
+        Serializer\Groups(['read:item','write:item'])
+    ]
+    final public function getCustomer(): ?Customer {
+        return $this->order->getCustomer();
     }
 
     final public function getBlocker(): string {

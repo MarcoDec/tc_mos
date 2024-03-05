@@ -16,6 +16,7 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
+use App\Entity\Interfaces\FileEntity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Component\Preparation;
 use App\Entity\Management\Unit;
@@ -23,6 +24,7 @@ use App\Entity\Purchase\Component\Attachment\ComponentAttachment;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Purchase\ComponentReference;
 use App\Entity\Traits\BarCodeTrait;
+use App\Entity\Traits\FileTrait;
 use App\Filter\RelationFilter;
 use App\Repository\Purchase\Component\ComponentRepository;
 use App\Validator as AppAssert;
@@ -30,20 +32,23 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
+use PHPUnit\TextUI\XmlConfiguration\File;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Purchase\Supplier\Component as SupplierComponent;
+use App\Filter\SetFilter;
 
 #[
-    ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name', 'code', 'id']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['index' => 'partial', 'name' => 'partial', 'code' => 'partial']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['index' => 'partial', 'name' => 'partial', 'code' => 'partial', 'id' => 'exact']),
     ApiResource(
         description: 'Composant',
         collectionOperations: [
             'get' => [
                 'normalization_context' => [
-                    'groups' => ['read:component:collection', 'read:measure', 'read:state'],
+                    'groups' => ['read:component:collection', 'read:measure', 'read:state', 'read:id'],
                     'openapi_definition_name' => 'Component-collection',
                     'skip_null_values' => false
                 ],
@@ -58,14 +63,14 @@ use App\Entity\Purchase\Supplier\Component as SupplierComponent;
                 'method' => 'GET',
                 'normalization_context' => [
                     'groups' => ['read:id', 'read:component:option'],
-                    'openapi_definition_name' => 'Component-options',
+                    'openapi_definition_name' => 'PurchaseComponent-options',
                     'skip_null_values' => false
                 ],
                 'openapi_context' => [
                     'description' => 'Récupère les composants pour les select',
                     'summary' => 'Récupère les composants pour les select',
                 ],
-                'order' => ['id' => 'asc'],
+                'order' => ['name' => 'asc'],
                 'pagination_enabled' => false,
                 'path' => '/components/options'
             ],
@@ -111,8 +116,27 @@ use App\Entity\Purchase\Supplier\Component as SupplierComponent;
                     'summary' => 'Récupère un composant',
                 ]
             ],
+            'patch image' => [
+                'openapi_context' => [
+                  'description' => 'Modifie l\'image d\'un composant',
+                  'summary' => 'Modifie l\'image d\'un composant'
+                ],
+                'denormalization_context' => [
+                    'groups' => ['write:component:image'],
+                    'openapi_definition_name' => 'Component-image'
+                ],
+                'normalization_context' => [
+                    'groups' => ['read:component:image'],
+                    'openapi_definition_name' => 'Component-image'
+                ],
+                'path' => '/components/{id}/image',
+                'controller' => PlaceholderAction::class,
+                'method' => 'POST',
+                'input_formats' => ['multipart'],
+            ],
             'patch' => [
-                'controller' => ComponentController::class,
+//                'controller' => ComponentController::class,
+                'controller' => PlaceholderAction::class,
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Modifie un composant',
@@ -128,10 +152,10 @@ use App\Entity\Purchase\Supplier\Component as SupplierComponent;
                     'summary' => 'Modifie un composant'
                 ],
                 'path' => '/components/{id}/{process}',
-                'read' => false,
-                'write' =>true,
-                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'//,
-                //'validation_groups' => AppAssert\ProcessGroupsGenerator::class
+                'read' => true,
+                'write' => true,
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
+                'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ],
             'promote' => [
                 'controller' => PlaceholderAction::class,
@@ -184,15 +208,16 @@ use App\Entity\Purchase\Supplier\Component as SupplierComponent;
             'openapi_definition_name' => 'Component-write'
         ],
         normalizationContext: [
-            'groups' => ['read:component', 'read:measure', 'read:state'],
+            'groups' => ['read:component', 'read:measure', 'read:state', 'read:id', 'read:file'],
             'openapi_definition_name' => 'Component-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\Entity(repositoryClass: ComponentRepository::class)
 ]
-class Component extends Entity implements BarCodeInterface, MeasuredInterface {
-    use BarCodeTrait;
+class Component extends Entity implements BarCodeInterface, MeasuredInterface, FileEntity {
+    use BarCodeTrait, FileTrait;
 
    /** @var DoctrineCollection<int, ComponentAttachment> */
     #[ ORM\OneToMany(mappedBy: 'component', targetEntity: ComponentAttachment::class) ]
@@ -213,7 +238,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
         Assert\Length(min: 4, max: 16, groups: ['Component-logistics']),
         ORM\Column(length: 16, nullable: true),
-        Serializer\Groups(['read:component', 'write:component', 'write:component:logistics'])
+        Serializer\Groups(['read:component', 'write:component', 'write:component:logistics', 'write:component:admin'])
     ]
     private ?string $customsCode = null;
 
@@ -241,10 +266,17 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Famille', readableLink: false, required: true, example: '/api/component-families/1'),
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(targetEntity: Family::class, fetch: 'EAGER', inversedBy: 'components'),
+        ORM\ManyToOne(targetEntity: Family::class, fetch: 'LAZY', inversedBy: 'components'),
         Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin'])
     ]
     private ?Family $family = null;
+
+    #[
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:component:collection', 'read:product-family'])
+    ]
+    protected ?string $filePath = '';
 
     #[
         ApiProperty(description: 'Poids cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
@@ -298,7 +330,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Nom', required: true, example: '2702 SCOTCH ADHESIF PVC T2 19MMX33M NOIR'),
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\Column,
-        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone', 'read:stock', 'read:id', 'read:component-preparation'])
+        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone', 'read:stock', 'read:component-preparation'])
     ]
     private ?string $name = null;
 
@@ -375,8 +407,8 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         Assert\NotBlank(groups: ['Component-create', 'Component-logistics']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(fetch:'EAGER'),
-        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:logistics'])
+        ORM\ManyToOne(fetch:'LAZY'),
+        Serializer\Groups(['read:component:collection', 'create:component', 'read:component', 'write:component', 'write:component:logistics'])
     ]
     private ?Unit $unit = null;
 
@@ -392,7 +424,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ORM\Column,
         Serializer\Groups(['read:component', 'read:component:collection', 'read:stock', 'read:item', 'read:component-preparation'])
     ]
-    private ?string $code;
+    private ?string $code='';
 
     #[
         ORM\OneToMany(targetEntity: Preparation::class, mappedBy: 'component', fetch: 'EAGER')
@@ -409,6 +441,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->references = new ArrayCollection();
         $this->supplierComponents = new ArrayCollection();
         $this->weight = new Measure();
+        $this->code = '';
         $this->code = $this->getCode();
         $this->preparationComponents = new ArrayCollection();
 
@@ -516,6 +549,14 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
 
     public function getMeasures(): array {
         return [$this->copperWeight, $this->forecastVolume, $this->minStock, $this->weight];
+    }
+
+    public function getUnitMeasures(): array {
+        return [$this->copperWeight, $this->forecastVolume, $this->minStock, $this->weight];
+    }
+    public function getCurrencyMeasures(): array
+    {
+        return [];
     }
 
     final public function getMinStock(): Measure {
@@ -786,5 +827,15 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
       $this->attachments = $attachments;
    }
 
-
+    #[
+        ApiProperty(description: 'Icône', example: '/uploads/component-families/1.jpg'),
+        Serializer\Groups(['read:file'])
+    ]
+    final public function getFilepath(): ?string {
+        return $this->filePath;
+    }
+    public function setFilePath(?string $filePath): void
+    {
+        $this->filePath = $filePath;
+    }
 }

@@ -73,8 +73,16 @@ class EdiPostController extends AbstractController
        }
        //endregion
        //region connexion et envoi du fichier JSON sur SFTP
-        $directory = $ediMode === 'TEST'?'/test/':'/prod';
-        $directory = $ediType === 'ORDERS'?$directory.'orders/':$directory;
+        $directory = $ediMode === 'TEST'?'/test/':'/prod/';
+        switch ($ediType) {
+            case 'ORDERS':
+                $directory .= 'orders/';
+                break;
+            case 'DELFOR':
+                $directory .= 'delfor/';
+                break;
+        }
+
         $filePathNameFinal = $directory.$inputRef.'.json';
         $filePathNameTMP = $filePathNameFinal.'.tmp';
        try {

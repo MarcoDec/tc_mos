@@ -2,7 +2,6 @@
     import AppShowEmployeeContact from './tabs/AppShowEmployeeTabContact.vue'
     import AppShowEmployeeTabAccess from './tabs/AppShowEmployeeTabAccess.vue'
     import AppShowEmployeeTabDroits from './tabs/AppShowEmployeeTabDroits.vue'
-    import AppShowEmployeeTabGeneral from './tabs/AppShowEmployeeTabGeneral.vue'
     import AppShowEmployeeTabInfos from './tabs/AppShowEmployeeTabInfos.vue'
     import AppShowEmployeeTabProduction from './tabs/AppShowEmployeeTabProduction.vue'
     import AppSuspense from '../../../AppSuspense.vue'
@@ -19,15 +18,8 @@
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab
-            id="gui-start-main"
-            active
-            title="Généralités"
-            icon="pencil"
-            tabs="gui-start">
-            <AppSuspense><AppShowEmployeeTabGeneral/></AppSuspense>
-        </AppTab>
-        <AppTab
             id="gui-start-Informations"
+            active
             title="Informations personelles"
             icon="circle-info"
             tabs="gui-start">
@@ -71,7 +63,7 @@
         </AppTab>
         <AppTab
             id="gui-start-production"
-            title="Production"
+            title="Organisation"
             icon="industry"
             tabs="gui-start">
             <AppSuspense><AppShowEmployeeTabProduction/></AppSuspense>

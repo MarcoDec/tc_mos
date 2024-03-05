@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Collection;
+use App\Controller\Purchase\Order\ItemSupplierControler;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
@@ -31,8 +32,10 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
- *
+ *    ApiFilter(filterClass: SearchFilter::class, properties: ['confirmedDate' => 'partial', 'requestedDate' => 'partial', 'confirmedQuantity' => 'partial', 'requestedQuantity' => 'partial']),
+
  * @template-extends BaseItem<I, Order>
+ *
  */
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['order']),
@@ -46,7 +49,25 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'summary' => 'Récupère les lignes',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\') or is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
-            ]
+            ],
+            'filtreSupplier' => [
+                'controller' => ItemSupplierControler::class,
+                'method' => 'GET',
+                'openapi_context' => [
+                    'description' => 'Filtrer par fournisseur',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'api',
+                        'schema' => [
+                            'type' => 'integer',
+                        ]
+                    ]],
+                    'summary' => 'Filtrer par fournisseur'
+                ],
+                'path' => '/purchase-order-items/supplierFilter/{api}',
+                'read' => false,
+                'write' => false
+            ],
         ],
         itemOperations: [
             'delete' => [
@@ -123,8 +144,16 @@ abstract class Item extends BaseItem {
     protected Measure $copperPrice;
 
     #[
+        ApiProperty(description: 'Prix du', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
-        Serializer\Groups(['read:item'])
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    protected Measure $price;
+
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:item']),
     ]
     protected Closer $embBlocker;
 
@@ -219,7 +248,7 @@ abstract class Item extends BaseItem {
         return $this->item?->getChecks() ?? new Collection();
     }
    public function getMeasures(): array {
-      return array_merge(parent::getMeasures(),[$this->copperPrice]);
+        return array_merge(parent::getMeasures(),[$this->copperPrice/* , $this->getReceiptQuantity() */]);
    }
     /**
      * @return Collection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
@@ -239,7 +268,10 @@ abstract class Item extends BaseItem {
         return $checks->mapWithKeys($mapper);
     }
 
-    #[Serializer\Groups(['read:item'])]
+    #[
+        ApiProperty(description: 'Quantité réceptionnée', openapiContext: ['$ref' => '#/components/schemas/Measure-generic']),
+        Serializer\Groups(['read:item']
+    )]
     final public function getReceiptQuantity(): Measure {
         $quantity = (new Measure())
             ->setCode($this->getUnit()?->getCode())
@@ -249,7 +281,24 @@ abstract class Item extends BaseItem {
         }
         return $quantity;
     }
+    
+    /***
+     * ref
+    */
+    // #[
+    //     ApiProperty(description: 'Réference', readableLink: false, example: 'azerty'),
+    //     ORM\ManyToOne,
+    //     Serializer\Groups(['read:item', 'write:item'])
+    // ]
+    // protected string $ref; 
+    // final public function getRef(): string {
+    //     return $this->ref;
+    // }
 
+    // final public function setRef(string $reference): self {
+    //     $this->ref = $reference;
+    //     return $this;
+    // }
     /**
      * @return DoctrineCollection<int, Receipt<I>>
      */
@@ -261,6 +310,10 @@ abstract class Item extends BaseItem {
         return $this->embState->getState();
     }
 
+    #[
+        ApiProperty(description: 'Fournisseur', readableLink: false, example: '/api/suppliers/1'),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
     final public function getSupplier(): ?Supplier {
         return $this->order?->getSupplier();
     }

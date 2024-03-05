@@ -29,7 +29,7 @@
     //endregion
     //region Chargement de la liste des entrepôts liés à la compagnie de l'utilisateur
     const storeWarehouseList = useWarehouseListStore()
-    const warehouseListCriteria = useFetchCriteria('warehouse-list-criteria')
+    const warehouseListCriteria = useFetchCriteria('warehouse-engine-list-criteria')
     warehouseListCriteria.addFilter('company', currentCompany)
     async function refreshTable() {
         await storeWarehouseList.fetch(warehouseListCriteria.getFetchCriteria)
@@ -166,6 +166,8 @@
         }
     ]
     const tabFields = [
+
+        {label: 'ID', name: 'id', type: 'text', min: true, width: 10, trie: true},
         {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
         {
             label: 'Famille ',
@@ -200,6 +202,7 @@
         warehouseListCriteria.resetAllFilter()
         warehouseListCriteria.addFilter('company', currentCompany)
         if (inputValues.name) warehouseListCriteria.addFilter('name', inputValues.name)
+        if (inputValues.id) warehouseListCriteria.addFilter('id', inputValues.id)
         if (inputValues.families) warehouseListCriteria.addFilter('families[]', inputValues.families)
         if (inputValues.destination) warehouseListCriteria.addFilter('destination', inputValues.destination)
         await storeWarehouseList.fetch(warehouseListCriteria.getFetchCriteria)

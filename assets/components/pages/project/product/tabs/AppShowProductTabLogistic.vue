@@ -4,6 +4,7 @@
     import {useIncotermStore} from '../../../../../stores/logistic/incoterm/incoterm'
     import useOptions from '../../../../../stores/option/options'
     import {useProductStore} from '../../../../../stores/project/product/products'
+    import AppCardShow from '../../../../AppCardShow.vue'
 
     const isError2 = ref(false)
     const violations2 = ref([])
@@ -39,29 +40,39 @@
         },
         {
             label: 'Stock Min',
-            measure: {code: 'U', value: 'valeur'},
+            measure: {
+                code: {
+                    label: 'unité',
+                    name: 'code',
+                    type: 'text'
+                },
+                value: {
+                    label: 'valeur',
+                    name: 'value',
+                    type: 'number',
+                    step: 0.01
+                }
+            },
             name: 'minStock',
             type: 'measure'
-            // options: {
-            //     label: value =>
-            //         optionsUnitText.value.find(option => option.type === value)?.text
-            //         ?? null,
-            //     options: optionsUnitText.value
-            // },
-            // type: 'measureSelect'
         },
         {
             label: 'Delivery Min',
-            measure: {code: 'U', value: 'valeur'},
+            measure: {
+                code: {
+                    label: 'unité',
+                    name: 'code',
+                    type: 'text'
+                },
+                value: {
+                    label: 'valeur',
+                    name: 'value',
+                    type: 'number',
+                    step: 0.01
+                }
+            },
             name: 'minDelivery',
             type: 'measure'
-            // options: {
-            //     label: value =>
-            //         optionsUnitText.value.find(option => option.type === value)?.text
-            //         ?? null,
-            //     options: optionsUnitText.value
-            // },
-            // type: 'measureSelect'
         },
         {
             label: 'Poids',
@@ -121,6 +132,7 @@
             id="addLogistique"
             :fields="Logistiquefields"
             :component-attribute="fetchProductStore.product"
+            title="Logistique"
             @update="updateLogistique(fetchProductStore.product)"/>
         <div v-if="isError2" class="alert alert-danger" role="alert">
             <div v-for="violation in violations2" :key="violation">

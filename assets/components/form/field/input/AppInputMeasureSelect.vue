@@ -1,4 +1,5 @@
 <script setup>
+    import AppInput from './AppInput.vue'
     import AppSelectMeasure from './select/AppSelectMeasure.vue'
     import {computed} from 'vue'
 
@@ -26,10 +27,10 @@
 
 <template>
     <div :id="id" class="input-group">
-        <AppInputGuesserJS
+        <AppInput
             :id="valueId"
             :disabled="disabled"
-            :field="field.name"
+            :field="field"
             :form="form"
             :name="valueName"
             :model-value="modelValue?.value"

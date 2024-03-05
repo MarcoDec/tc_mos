@@ -14,7 +14,7 @@ class EmployeeEngineState extends State {
     #[
         ApiProperty(description: 'état', openapiContext: ['enum' => EmployeeEngineStateType::TYPES]),
         ORM\Column(type: 'employee_engine_state', options: ['default' => 'warning']),
-        Serializer\Groups(['read:state'])
+        Serializer\Groups(['read:state',  'read:operation-employee:collection'])
     ]
     protected string $state = EmployeeEngineStateType::TYPE_STATE_WARNING;
 }

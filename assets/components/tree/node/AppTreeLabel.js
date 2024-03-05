@@ -9,12 +9,12 @@ function AppTreeLabel(props, context) {
         }
     }
     if (props.item.selected)
-        attrs['class'] = 'bg-warning'
+        attrs.class = 'bg-warning'
     return h(
         'span',
         attrs,
         [
-            typeof context.slots['default'] === 'function' ? context.slots['default']() : h('span', {class: 'pe-2'}),
+            typeof context.slots.default === 'function' ? context.slots.default() : h('span', {class: 'pe-2'}),
             h(resolveComponent('Fa'), {class: 'me-1', icon: 'layer-group'}),
             props.item.name
         ]

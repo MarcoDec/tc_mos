@@ -11,7 +11,7 @@
     })
     const theValue = computed(() => {
         if (typeof props.modelValue === 'boolean') {
-            console.warn('AppInput.vue entrée booléenne détectée, remplacement valeur par chaine texte vide')
+            console.warn('AppInput.vue entrée booléenne détectée, remplacement valeur par chaine texte vide', props.field)
             return ''
         }
         return props.modelValue
@@ -35,7 +35,7 @@
         :type="type"
         :value="theValue"
         autocomplete="off"
-        step=".01"
+        :step="field.step ? field.step : .01"
         class="form-control form-control-sm"
         @input="input"/>
 </template>

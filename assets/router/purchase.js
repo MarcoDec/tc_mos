@@ -1,12 +1,40 @@
 import AppShowGui from '../components/pages/AppShowGui.vue'
-import AppShowGuiComponent from '../components/pages/purchase/component/AppShowGuiComponent.vue'
-import AppShowGuiSupplier from '../components/pages/purchase/supplier/AppShowGuiSupplier.vue'
+import AppShowGuiComponent from '../components/pages/purchase/component/show/AppShowGuiComponent.vue'
+import AppShowGuiSupplier from '../components/pages/purchase/supplier/show/AppShowGuiSupplier.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTreePageAttribute from '../components/pages/tree/AppTreePageAttribute.vue'
 import AppTreePageSuspense from '../components/pages/tree/AppTreePageSuspense.vue'
 import {readonly} from 'vue'
 
 export default [
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Groupes d\'équivalence — T-Concept GPAO'},
+        name: 'component-equivalents',
+        path: '/component-equivalents',
+        props: {
+            apiBaseRoute: 'component-equivalents',
+            fields: [
+                {create: false, label: 'Code', name: 'code', update: false},
+                {label: 'Nom', name: 'name'},
+                {label: 'Description', name: 'description'},
+                {label: 'Unité', name: 'unit', options: {base: 'units'}, sortName: 'unit.code', type: 'select'},
+                {/*create: false,*/ label: 'Famille', name: 'family', options: {base: 'component-families'}, sortName: 'family.code', type: 'select'},
+                {
+                    create: false,
+                    label: 'Items',
+                    name: 'components',
+                    type: 'multiselect-fetch',
+                    api: '/api/components',
+                    filteredProperty: 'code',
+                    update: true
+                }
+            ],
+            icon: 'magnet',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Equivalences'
+        }
+    },
     {
         component: AppTablePageSuspense,
         meta: {title: 'Attributs — T-Concept GPAO'},
@@ -95,6 +123,28 @@ export default [
             readFilter: '?pagination=false&type=purchase',
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Paramètres'
+        }
+    },
+    {
+        component: () => import('../components/pages/purchase/component/list/AppComponentPage.vue'),
+        meta: {requiresAuth: true},
+        name: 'component-list',
+        path: '/component-list'
+    },
+    // {
+    //     component: () => import('./pages/supplier/AppSupplierPage.vue'),
+    //     meta: {requiresAuth: true},
+    //     name: 'supplier-list',
+    //     path: '/supplier-list'
+    // },
+    {
+        component: () => import('../components/pages/purchase/supplier/list/AppSupplierListPage.vue'),
+        meta: {requiresAuth: true},
+        name: 'supplier-list',
+        path: '/supplier-list',
+        props: {
+            icon: 'user-tag',
+            title: 'Liste des Fournisseurs'
         }
     }
 ]

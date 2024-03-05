@@ -68,6 +68,14 @@ class ComponentReferenceField implements MeasuredInterface {
     {
         return [$this->value, $this->tolerance];
     }
+    public function getUnitMeasures(): array
+    {
+        return [$this->value, $this->tolerance];
+    }
+    public function getCurrencyMeasures(): array
+    {
+        return [];
+    }
 
     public function getUnit(): ?Unit
     {

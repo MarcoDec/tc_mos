@@ -1,4 +1,26 @@
-const types = ['boolean', 'color', 'file', 'multiselect', 'number', 'password', 'select', 'text', 'textarea', 'time', 'measure', 'address', 'date', 'rating', 'measureSelect', 'grpbutton']
+const types = [
+    'address',
+    'boolean',
+    'color',
+    'date',
+    'datetime-local',
+    'file',
+    'grpbutton',
+    'int',
+    'link',
+    'measure',
+    'measureSelect',
+    'multiselect',
+    'multiselect-fetch',
+    'number',
+    'password',
+    'rating',
+    'select',
+    'text',
+    'textarea',
+    'time',
+    'trafficLight'
+]
 
 export function fieldValidator(field) {
     if (typeof field !== 'object' || field === null || Array.isArray(field)) {
@@ -15,7 +37,7 @@ export function fieldValidator(field) {
             return false
         }
         if (!types.includes(field.type)) {
-            console.error(`field.type must be on of [${types.join(', ')}]`)
+            console.error(`field.type must be on of [${types.join(', ')}]`, field)
             return false
         }
         if (field.type === 'select') {
@@ -23,15 +45,19 @@ export function fieldValidator(field) {
                 console.error('field.options must be defined and not null')
                 return false
             }
-            if (!Array.isArray(field.options.options)) {
-                console.error('field.options.options must be defined and an array', field.options)
-                return false
-            }
-            for (const option of field.options.options)
-                if (typeof option.text === 'undefined' || option.text === null || typeof option.value === 'undefined') {
-                    console.error('field.options', 'field.text and field.value must be defined', field)
+            if (typeof field.options.base === 'undefined'){
+                if (!Array.isArray(field.options.options)) {
+                    console.error('field.options.options must be defined and an array', field.options)
                     return false
                 }
+                for (const option of field.options.options)
+                    if (typeof option.text === 'undefined' || option.text === null || typeof option.value === 'undefined') {
+                        console.error('field.options', 'field.text and field.value must be defined', field, option)
+                        return false
+                    }
+            } else {
+                //console.log('field.options.base', field.options.base)
+            }
         }
     }
     return true

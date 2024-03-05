@@ -12,16 +12,24 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Production\Manufacturing\Expedition\State;
 use App\Entity\Entity;
 use App\Entity\Logistics\Stock\Stock;
-use App\Entity\Selling\Order\Item;
+use App\Entity\Selling\Order\ProductItem;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use App\Filter\RelationFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 /**
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
+    ApiFilter(filterClass: OrderFilter::class, properties: ['note.date', 'note.bill.dueDate']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['item.item.customer.id' => 'partial', 'note.embState.state' => 'partial', 'note.freightSurcharge.code' => 'partial', 'note.freightSurcharge.value' => 'partial', 'note.nonBillable' => 'partial', 'note.date' => 'partial', 'note.ref' => 'partial'
+    ]),
     ApiResource(
         description: 'Expédition',
         collectionOperations: [
@@ -135,14 +143,13 @@ class Expedition extends Entity {
         Serializer\Groups(['read:expedition', 'write:expedition'])
     ]
     private Collection $expedition_items;
-
-    /** @var Item<I>|null */
+    /** @var ProductItem<I>|null */
     #[
-        ApiProperty(description: 'Item', readableLink: false, example: '/api/selling-order-items/1'),
+        ApiProperty(description: 'Item', readableLink: true),
         ORM\ManyToOne (inversedBy:'expeditions'),
         Serializer\Groups(['read:expedition', 'write:expedition'])
     ]
-    private ?Item $item = null;
+    private ?ProductItem $item = null;
 
     #[
         ApiProperty(description: 'Localisation', example: 'New York City'),
@@ -152,7 +159,7 @@ class Expedition extends Entity {
     private ?string $location = null;
 
     #[
-        ApiProperty(description: 'Note de livraison', readableLink: false, example: '/api/delivery-notes/1'),
+        ApiProperty(description: 'Note de livraison', readableLink: true, example: '/api/delivery-notes/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:expedition', 'write:expedition'])
     ]
@@ -200,7 +207,7 @@ class Expedition extends Entity {
     final public function getEmbBlocker(): Blocker {
         return $this->embBlocker;
     }
-    
+
     public function getExpeditionItems(): Collection {
         return $this->expedition_items;
     }
@@ -214,9 +221,9 @@ class Expedition extends Entity {
     }
 
     /**
-     * @return Item<I>|null
+     * @return ProductItem<I>|null
      */
-    final public function getItem(): ?Item {
+    final public function getItem(): ?ProductItem {
         return $this->item;
     }
 
@@ -274,11 +281,11 @@ class Expedition extends Entity {
     }
 
     /**
-     * @param Item<I>|null $item
+     * @param ProductItem<I>|null $item
      *
      * @return $this
      */
-    final public function setItem(?Item $item): self {
+    final public function setItem(?ProductItem $item): self {
         $this->item = $item;
         return $this;
     }

@@ -22,8 +22,17 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use App\Filter\RelationFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
-#[
+#[          
+    ApiFilter(filterClass: OrderFilter::class, properties: ['dueDate']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['ref' => 'partial', 'billingDate' => 'partial', 'dueDate' => 'partial', 'forceVat' => 'partial', 'notes' => 'partial', 'vatMessage.name' => 'partial',
+        'exclTax.value' => 'partial', 'exclTax.code' => 'partial', 'inclTax.value' => 'partial', 'inclTax.code' => 'partial', 'vat.value' => 'partial', 'vat.code' => 'partial', 'customer' => 'exact'
+    ]),
     ApiResource(
         description: 'Facture',
         collectionOperations: [
@@ -149,7 +158,7 @@ class Bill extends Entity {
     #[
         ApiProperty(description: 'Date de facturation', example: '2022-03-27'),
         ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['read:bill', 'write:bill'])
+        Serializer\Groups(['read:bill', 'write:bill','read:expedition'])
     ]
     private ?DateTimeImmutable $dueDate = null;
 
@@ -203,7 +212,7 @@ class Bill extends Entity {
     private Measure $vat;
 
     #[
-        ApiProperty(description: 'Message TVA', readableLink: false, example: '/api/vat-messages/1'),
+        ApiProperty(description: 'Message TVA', readableLink: true),
         ORM\ManyToOne,
         Serializer\Groups(['read:bill', 'write:bill'])
     ]

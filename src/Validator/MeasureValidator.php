@@ -5,6 +5,7 @@ namespace App\Validator;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
+use App\Service\MeasureHydrator;
 use App\Validator\Measure as MeasureAttribute;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -16,11 +17,11 @@ use Psr\Log\LoggerInterface;
 final class MeasureValidator extends ConstraintValidator {
     
     public function __construct(
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private MeasureHydrator $hydrator
     ) {
     }
     public function validate(mixed $value, Constraint $constraint): void {
-        
         #$this->logger->debug('MeasureValidator:validate',[$value, $constraint]);
         if (!($constraint instanceof MeasureAttribute)) {
             throw new UnexpectedTypeException($constraint, MeasureAttribute::class);
@@ -33,7 +34,11 @@ final class MeasureValidator extends ConstraintValidator {
         if (!($value instanceof Measure)) {
             throw new UnexpectedValueException($value, Measure::class);
         }
+//        dump(['validate' => $value, 'constraint' => $constraint]);
         $unit = $this->getUnit();
+        if ($value->getUnit() === null) {
+            $this->hydrator->hydrateUnit($value);
+        }
         $unitValue = $value->getUnit();
         #$this->logger->debug('MeasureValidator:units',[$unit->getCode(), $unitValue->getCode()]);
         if (!$unitValue->has($unit)) {
@@ -55,7 +60,7 @@ final class MeasureValidator extends ConstraintValidator {
 
     private function getUnit(): Unit {
        $myObject=$this->getObject();
-       #dump(["MeasureValidator::getUnit myObject" => $myObject, "getUnit"=> $myObject->getUnit()]);
+//       dump(["MeasureValidator::getUnit myObject" => $myObject, "getUnit"=> $myObject->getUnit()]);
         if (!empty($unit = $myObject->getUnit())) {
             return $unit;
         }

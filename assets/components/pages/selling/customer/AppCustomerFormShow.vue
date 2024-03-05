@@ -2,7 +2,6 @@
     import AppShowCustomerTabAccounting from './tabs/AppShowCustomerTabAccounting.vue'
     import AppShowCustomerTabAddress from './tabs/AppShowCustomerTabAddress.vue'
     import AppShowCustomerTabContact from './tabs/AppShowCustomerTabContact.vue'
-    import AppShowCustomerTabGeneral from './tabs/AppShowCustomerTabGeneral.vue'
     import AppShowCustomerTabLogistic from './tabs/AppShowCustomerTabLogistic.vue'
     import AppShowCustomerTabQuality from './tabs/AppShowCustomerTabQuality.vue'
     import AppSuspense from '../../../AppSuspense.vue'
@@ -14,18 +13,21 @@
     import useOptions from '../../../../stores/option/options'
     import {useRoute} from 'vue-router'
     import {useSocietyStore} from '../../../../stores/management/societies/societies'
+    import {useInvoiceTimeDuesStore} from '../../../../stores/management/invoiceTimeDues'
 
     const route = useRoute()
     const idCustomer = route.params.id_customer
     const fecthOptions = useOptions('countries')
     await fecthOptions.fetchOp()
     const fetchCustomerStore = useCustomerStore()
+    const fetchInvoiceTime = useInvoiceTimeDuesStore()
     const fetchSocietyStore = useSocietyStore()
     const fetchCustomerAttachmentStore = useCustomerAttachmentStore()
     const fecthCustomerContactsStore = useCustomerContactsStore()
     await fetchCustomerStore.fetchOne(idCustomer)
-    await fetchCustomerStore.fetchInvoiceTime()
-    await fetchSocietyStore.fetch()
+    await fetchInvoiceTime.fetchInvoiceTime()
+    const invoiceData = fetchInvoiceTime.invoicesData
+    fetchCustomerStore.invoicesData = invoiceData
     const societyId = Number(fetchCustomerStore.customer.society.match(/\d+/))
     const customerId = Number(fetchCustomerStore.customer.id)
     await fetchSocietyStore.fetchById(societyId)
@@ -44,18 +46,8 @@
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab
-            id="gui-start-main"
-            active
-            title="Généralités"
-            icon="pencil"
-            tabs="gui-start">
-            <AppSuspense>
-                <AppShowCustomerTabGeneral
-                    :data-customers="fetchCustomerStore.customer"/>
-            </AppSuspense>
-        </AppTab>
-        <AppTab
             id="gui-start-files"
+            active
             title="Fichiers"
             icon="laptop"
             tabs="gui-start">

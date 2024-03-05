@@ -153,6 +153,13 @@ abstract class Item extends Entity implements MeasuredInterface {
         return [$this->price, $this->quantity, $this->weight];
     }
 
+    final public function getUnitMeasures(): array {
+        return [$this->quantity, $this->weight];
+    }
+    final public function getCurrencyMeasures(): array {
+        return [$this->price];
+    }
+
     final public function getNotes(): ?string {
         return $this->notes;
     }
