@@ -65,7 +65,7 @@
     // //endregion
     const router = useRouter()
     function goBack() {
-        router.push({name: 'engines'})
+        router.push({name: 'tools'})
     }
 </script>
 
@@ -74,8 +74,8 @@
         <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <button class="text-dark" @click="goBack">
-                        <FontAwesomeIcon icon="oil-well"/>
+                    <button class="text-dark mr-10" title="Retour à la liste des outils" @click="goBack">
+                        <FontAwesomeIcon icon="toolbox"/> Outils
                     </button>
                     <b>{{ useFetchToolsStore.engine.code }}</b>: {{ useFetchToolsStore.engine.name }}
                     <span class="btn-float-right">
