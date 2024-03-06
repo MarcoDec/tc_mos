@@ -18,7 +18,7 @@
 
     const icon = 'building'
     const goToListMessage = 'Retour à la liste des pièces des équipements d\'infrastructure'
-    const engineStr = 'Equipement d\'infrastructures'
+    const engineStr = 'Elément d\'infrastructures'
 
     //region récupération information SpareParts
     const useFetchEnginesStore = useGenEngineStore(enginesStr, baseUrl)
