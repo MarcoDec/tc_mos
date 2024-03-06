@@ -36,12 +36,12 @@
             keyTitle.value++
         })
     }
-    const requestDetails = () => {
-        modeDetail.value = true
-    }
-    const requestExploitation = () => {
-        modeDetail.value = false
-    }
+    // const requestDetails = () => {
+    //     modeDetail.value = true
+    // }
+    // const requestExploitation = () => {
+    //     modeDetail.value = false
+    // }
     const onImageUpdate = () => {
         window.location.reload()
     }
@@ -62,8 +62,8 @@
         <AppShowGuiGen>
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <button class="text-dark" style="margin-right:10px;" @click="goBack" :title="goToListMessage">
-                        <FontAwesomeIcon :icon="icon"/> {{engineStr}}
+                    <button class="text-dark mr-10" :title="goToListMessage" @click="goBack">
+                        <FontAwesomeIcon :icon="icon"/> {{ engineStr }}
                     </button>
                     <b>{{ useFetchEnginesStore().engine.code }}</b>: {{ useFetchEnginesStore().engine.name }}
                     <!--                    <span class="btn-float-right">-->
@@ -85,7 +85,7 @@
                     <div class="full-visible-width">
                         <AppSuspense>
                             <AppSparePartFormShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100"/>
-<!--                            <AppWorkstationShowInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>-->
+                            <!--       <AppWorkstationShowInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>-->
                         </AppSuspense>
                     </div>
                     <span>

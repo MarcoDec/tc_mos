@@ -9,7 +9,7 @@ export const useEngineAttachmentStore = defineStore('informatiqueAttachment', {
             const form = new FormData()
             form.append('file', data.file)
             form.append('category', data.category)
-            form.append(linkedEntity, data['informatique'])
+            form.append(linkedEntity, data.informatique)
             await api(baseUrl, 'POST', form)
             this.fetchByElement(this.id)
         },

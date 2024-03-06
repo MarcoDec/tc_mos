@@ -3,14 +3,12 @@
     import useOptions from '../../../../../../stores/option/options'
     import {useRoute, useRouter} from 'vue-router'
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
-    import AppBtn from '../../../../../AppBtn.vue'
     import {onBeforeMount, ref} from 'vue'
     import AppImg from '../../../../../AppImg.vue'
     import AppSuspense from '../../../../../AppSuspense.vue'
     import AppShowInformatiqueTabGeneral from './AppShowInformatiqueTabGeneral.vue'
     import AppInformatiqueFormShow from './AppInformatiqueFormShow.vue'
     import {useInformatiqueStore} from '../../../../../../stores/it/equipment/informatique/informatique'
-    import AppInformatiqueShowInlist from "./AppInformatiqueShowInlist.vue";
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
@@ -50,12 +48,12 @@
             keyTitle.value++
         })
     }
-    const requestDetails = () => {
-        modeDetail.value = true
-    }
-    const requestExploitation = () => {
-        modeDetail.value = false
-    }
+    // const requestDetails = () => {
+    //     modeDetail.value = true
+    // }
+    // const requestExploitation = () => {
+    //     modeDetail.value = false
+    // }
     const onImageUpdate = () => {
         window.location.reload()
     }
@@ -71,14 +69,14 @@
         <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <button class="text-dark" style="margin-right:10px;" @click="goBack" title="Retour à la liste des matériels informatiques">
+                    <button class="text-dark mr-10" title="Retour à la liste des matériels informatiques" @click="goBack">
                         <FontAwesomeIcon icon="laptop-code"/> Matériel informatique
                     </button>
                     <b>{{ useEngineStore.engine.code }}</b>: {{ useEngineStore.engine.name }}
-<!--                    <span class="btn-float-right">-->
-<!--                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>-->
-<!--                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>-->
-<!--                    </span>-->
+                    <!--    <span class="btn-float-right">-->
+                    <!--        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>-->
+                    <!--        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>-->
+                    <!--    </span>-->
                 </div>
                 <div class="d-flex flex-row">
                     <AppImg
@@ -94,7 +92,7 @@
                     <div class="full-visible-width">
                         <AppSuspense>
                             <AppInformatiqueFormShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100"/>
-<!--                            <AppInformatiqueShowInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>-->
+                            <!-- <AppInformatiqueShowInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>-->
                         </AppSuspense>
                     </div>
                     <span>

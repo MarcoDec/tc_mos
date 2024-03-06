@@ -38,10 +38,10 @@ export default function useZonesStore() {
                 this.isLoaded = true
             },
             async postNewZone(data) {
-                return api('/api/zones', 'post', data);
+                return api('/api/zones', 'post', data)
             },
             async patchZone(zoneIri, data) {
-                return api(zoneIri, 'patch', data);
+                return api(zoneIri, 'patch', data)
             },
             async getZone(zoneIri) {
                 return api(zoneIri).then(response => {
@@ -50,7 +50,7 @@ export default function useZonesStore() {
                 })
             },
             async deleteZone(zoneIri) {
-                return api(zoneIri, 'DELETE');
+                return api(zoneIri, 'DELETE')
             }
         },
         getters: {

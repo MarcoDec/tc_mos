@@ -52,7 +52,7 @@
     ]
 
     const fields = computed(() => [
-        { 'label': 'ID', 'name': 'id', 'trie': true, 'type': 'text', 'width': 50, 'filter': true},
+        {label: 'ID', name: 'id', trie: true, type: 'text', width: 50, filter: true},
         {
             label: 'Img',
             name: 'filePath',

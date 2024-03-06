@@ -7,7 +7,6 @@
     import {useRoute} from 'vue-router'
     import useOptions from '../../../../stores/option/options'
     import {useWarehouseAttachmentStore} from '../../../../stores/logistic/warehouses/warehouseAttachements'
-    import AppTabFichiers from '../../../tab/AppTabFichiers.vue'
 
     const maRoute = useRoute()
     const warehouseId = maRoute.params.id_warehouse
@@ -168,7 +167,7 @@
 </script>
 
 <template>
-    <div style="min-height: 45vh; height: 45vh; background-color: rgba(255, 255, 255, 0.8)">
+    <div>
         <AppSuspense>
             <AppCardShow
                 id="addGeneralites"

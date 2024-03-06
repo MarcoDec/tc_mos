@@ -3,15 +3,11 @@
     import AppFormCardable from '../../../../form-cardable/AppFormCardable'
     import AppSuspense from '../../../../AppSuspense.vue'
     import router from '../../../../../router'
-    // import useEngineGroups from '../../../../../stores/production/engine/groups/engineGroups'
     import {
         useEngineStore
     } from '../../../../../stores/production/engine/engines'
     import {useEngineTypeStore} from '../../../../../stores/production/engine/type/engineTypes'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
-    // import {
-    //     useManufacturerEngineStore
-    // } from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
     import useUser from '../../../../../stores/security'
     import useZonesStore from '../../../../../stores/production/company/zones'
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
@@ -89,6 +85,8 @@
                 return '/api/workstation-groups'
             case 'counter-part':
                 return '/api/counter-part-groups'
+            default:
+                return '/api/engine-groups'
         }
     })
     const addFormFields = computed(() => [
@@ -157,7 +155,7 @@
     //endregion
     //region Définition de la liste des champs pour l'affichage de la liste
     const tabFields = [
-        { label: 'ID', name: 'id', type: 'text', width: 50, filter: true, trie: true },
+        {label: 'ID', name: 'id', type: 'text', width: 50, filter: true, trie: true},
         {
             label: 'Img',
             name: 'filePath',

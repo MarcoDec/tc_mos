@@ -118,7 +118,7 @@
                     </AppNavbarLink>
                 </template>
             </AppNavbarItem>
-            <AppNavbarItem v-if="user.isItReader||user.isItWriter||user.isItAdmin" id="it" icon="laptop" title="Informatique">
+            <AppNavbarItem v-if="user.isItReader || user.isItWriter || user.isItAdmin" id="it" icon="laptop" title="Informatique">
                 <AppNavbarLink icon="laptop-code" to="informatiques" :variant="variantIt" @click="emit('close-menu')">
                     Eléments informatiques
                 </AppNavbarLink>

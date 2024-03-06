@@ -26,6 +26,7 @@
     <AppSuspense>
         <AppShowGuiGen>
             <template #gui-header="{size}">
+                {{ size }}
             </template>
             <template #gui-left>
                 <div class="row">

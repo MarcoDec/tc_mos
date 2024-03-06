@@ -1,13 +1,13 @@
 <script setup>
     import {useWarehouseStocksItemsStore} from '../../../../stores/production/warehouseStocksItems'
     import AppWarehouseListStockTable from './tabs/WarehouseStocks/AppWarehouseListStockTable.vue'
-    import AppTab from "../../../tab/AppTab.vue";
-    import AppWarehouseListZoneTable from "./tabs/WarehouseZones/AppWarehouseListZoneTable.vue";
-    import {useWarehouseShowStore as warehouseStore} from "../../../../stores/logistic/warehouses/warehouseShow";
-    import AppTabFichiers from "../../../tab/AppTabFichiers.vue";
-    import {useRoute} from "vue-router";
-    import {useWarehouseAttachmentStore} from "../../../../stores/logistic/warehouses/warehouseAttachements";
-    //import AppWarehouseListVolumeTable from './provisoir/AppWarehouseListVolumeTable.vue'
+    import AppTab from '../../../tab/AppTab.vue'
+    import AppWarehouseListZoneTable from './tabs/WarehouseZones/AppWarehouseListZoneTable.vue'
+    import {useWarehouseShowStore as warehouseStore} from '../../../../stores/logistic/warehouses/warehouseShow'
+    import AppTabFichiers from '../../../tab/AppTabFichiers.vue'
+    import {useRoute} from 'vue-router'
+    import {useWarehouseAttachmentStore} from '../../../../stores/logistic/warehouses/warehouseAttachements'
+
     const storeWarehouseStocksItems = useWarehouseStocksItemsStore()
     const maRoute = useRoute()
     const warehouseId = Number(maRoute.params.id_warehouse)

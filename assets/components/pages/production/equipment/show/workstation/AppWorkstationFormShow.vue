@@ -7,8 +7,8 @@
     import useUser from '../../../../../../stores/security'
     import {useWorkstationsStore} from '../../../../../../stores/production/engine/workstation/workstations'
     import useZonesStore from '../../../../../../stores/production/company/zones'
-    import AppWorkstationTabMaintenance from "./tabs/AppWorkstationTabMaintenance.vue";
-    import AppWorkstationTabHistMaintenance from "./tabs/AppWorkstationTabHistMaintenance.vue";
+    import AppWorkstationTabMaintenance from './tabs/AppWorkstationTabMaintenance.vue'
+    import AppWorkstationTabHistMaintenance from './tabs/AppWorkstationTabHistMaintenance.vue'
     const currentCompany = useUser().company
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
