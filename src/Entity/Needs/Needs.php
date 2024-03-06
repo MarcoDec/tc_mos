@@ -1,15 +1,16 @@
 <?php
 
 namespace App\Entity\Needs;
-use ApiPlatform\Core\Annotation\ApiResource;
+
 use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
  * @ApiResource(
  *     collectionOperations={
  *         "get"={
  *             "method"="GET",
- *             "path"="/api/needs",
+ *             "path"="/api/needs/products",
  *         },
  *         "get_components"={
  *             "method"="GET",
@@ -24,108 +25,94 @@ use ApiPlatform\Core\Annotation\ApiProperty;
  *     }
  * )
  */
-class Needs
-{ 
+class Needs {
+    private $componentChartsData;
+    private $components;
+    private $customers;
+
     /**
      * @ApiProperty(identifier=true)
      */
     private $id;
-    private $componentChartsData;
-    private $components;
-    private $customers;
+
     private $productChartsData;
     private $productFamilies;
     private $products;
     private $suppliers;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-    public function setId(int $id)
-    {
-        return $this->id= $id;
-    }
-
-    public function getComponentChartsData(): ?array
-    {
+    public function getComponentChartsData(): ?array {
         return $this->componentChartsData;
     }
 
-    public function setComponentChartsData(array $componentChartsData): self
-    {
+    public function getComponents(): ?array {
+        return $this->components;
+    }
+
+    public function getCustomers(): ?array {
+        return $this->customers;
+    }
+
+    public function getId(): ?int {
+        return $this->id;
+    }
+
+    public function getProductChartsData(): ?array {
+        return $this->productChartsData;
+    }
+
+    public function getProductFamilies(): ?array {
+        return $this->productFamilies;
+    }
+
+    public function getProducts(): ?array {
+        return $this->products;
+    }
+
+    public function getSuppliers(): ?array {
+        return $this->suppliers;
+    }
+
+    public function setComponentChartsData(array $componentChartsData): self {
         $this->componentChartsData = $componentChartsData;
 
         return $this;
     }
 
-    public function getComponents(): ?array
-    {
-        return $this->components;
-    }
-
-    public function setComponents(array $components): self
-    {
+    public function setComponents(array $components): self {
         $this->components = $components;
 
         return $this;
     }
 
-    public function getCustomers(): ?array
-    {
-        return $this->customers;
-    }
-
-    public function setCustomers(array $customers): self
-    {
+    public function setCustomers(array $customers): self {
         $this->customers = $customers;
 
         return $this;
     }
 
-    public function getProductChartsData(): ?array
-    {
-        return $this->productChartsData;
+    public function setId(int $id) {
+        return $this->id = $id;
     }
 
-    public function setProductChartsData(array $productChartsData): self
-    {
+    public function setProductChartsData(array $productChartsData): self {
         $this->productChartsData = $productChartsData;
 
         return $this;
     }
 
-    public function getProductFamilies(): ?array
-    {
-        return $this->productFamilies;
-    }
-
-    public function setProductFamilies(array $productFamilies): self
-    {
+    public function setProductFamilies(array $productFamilies): self {
         $this->productFamilies = $productFamilies;
 
         return $this;
     }
 
-    public function getProducts(): ?array
-    {
-        return $this->products;
-    }
-
-    public function setProducts(array $products): self
-    {
+    public function setProducts(array $products): self {
         $this->products = $products;
 
         return $this;
     }
 
-    public function getSuppliers(): ?array
-    {
-        return $this->suppliers;
-    }
-
-    public function setSuppliers(array $suppliers): self
-    {
+    public function setSuppliers(array $suppliers): self {
         $this->suppliers = $suppliers;
 
         return $this;

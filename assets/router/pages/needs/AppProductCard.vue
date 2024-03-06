@@ -10,21 +10,40 @@
     const listDisplayed = useNeeds()
 </script>
 
+<style>
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .table-wrapper table {
+        max-width: 100%;
+    }
+
+    .table-wrapper th,
+    .table-wrapper td {
+        max-width: 200px; /* Définissez la largeur maximale des cellules ici */
+        white-space: normal; /* Permettre le retour à la ligne */
+        overflow: hidden; /* Masquer le contenu dépassant */
+        text-overflow: ellipsis; /* Afficher des points de suspension (...) pour indiquer le texte coupé */
+    }
+</style>
+
 <template>
     <div class="card">
         <div class="no-gutters row">
             <div class="canvas col-sm-5">
                 <Vue3ChartJs
-                    :id="listDisplayed.normalizedChartComp(productId).id"
-                    :type="listDisplayed.normalizedChartComp(productId).type"
-                    :data="listDisplayed.normalizedChartComp(productId).data"
-                    :options="listDisplayed.normalizedChartComp(productId).options"/>
+                    :id="listDisplayed.normalizedChartProd(productId).id"
+                    :type="listDisplayed.normalizedChartProd(productId).type"
+                    :data="listDisplayed.normalizedChartProd(productId).data"
+                    :options="listDisplayed.normalizedChartProd(productId).options"/>
             </div>
             <div class="col-sm-7">
                 <div class="card-body">
                     <h5 class="card-title">
-                        {{ list.productRef }}
+                        {{ list.productRef }}-{{ list.productIndex }} 
                     </h5>
+                    <p></p>
                     <table
                         class="table table-bordered table-hover table-responsive table-sm table-striped">
                         <thead>
@@ -61,6 +80,7 @@
                     <h5 class="card-title">
                         Dates stock épuisés
                     </h5>
+                <div class="table-wrapper">
                     <table
                         class="table table-bordered table-hover table-responsive table-sm table-striped">
                         <thead>
@@ -77,6 +97,7 @@
                             </tr>
                         </thead>
                     </table>
+                </div>
                     <h5 class="card-title">
                         Besoins lancement nouveaux OFs <Fa icon="info-circle"/>
                     </h5>

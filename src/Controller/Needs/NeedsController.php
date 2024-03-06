@@ -4,19 +4,15 @@ namespace App\Controller\Needs;
 
 use DateTime;
 use DateInterval;
-use App\Entity\Needs\Needs;
 use Psr\Log\LoggerInterface;
-use App\Entity\Management\Unit;
 use App\Service\MeasureManager;
-use App\Service\MeasureHydrator;
-use App\Entity\Embeddable\Measure;
 use App\Entity\Project\Product\Product;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\Management\UnitRepository;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Repository\Project\Product\ProductRepository;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use App\Repository\Selling\Order\ProductItemRepository;
 use App\Repository\Logistics\Stock\ProductStockRepository;
 use App\Repository\Project\Product\NomenclatureRepository;
@@ -32,7 +28,11 @@ use App\Repository\Selling\Customer\ProductRepository as ProductCustomerReposito
  *     collectionOperations={
  *         "get"={
  *             "method"="GET",
- *             "path"="/api/needs"
+ *             "path"="/api/needs/products",
+ *         },
+ *         "get_components"={
+ *             "method"="GET",
+ *             "path"="/api/needs/components",
  *         }
  *     },
  *     itemOperations={
@@ -84,35 +84,60 @@ class NeedsController extends AbstractController
     }
 
     /**
-     * @Route("/api/needs", name="needs", methods={"GET"})
+     * @Route("/api/needs/products", name="needs_products", methods={"GET"})
      */
     public function index(): JsonResponse
     {
-        $products = $this->productRepository->findByEmbBlockerAndEmbState();
-        $productcustomers = $this->productCustomerRepository->findAll();
-        $sellingItems = $this->productItemRepository->findByEmbBlockerAndEmbState();
-        $manufacturingOrders = $this->manufacturingProductItemRepository->findByEmbBlockerAndEmbState();
-        $stocks = $this->productStockRepository->findAll();
-        $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks);
-        $productFamilies = $this->getProductFamilies($products);
-        $customersData = $this->generateCustomersData($productcustomers);
+        $cacheDirectory = '../var/cache';
+        $directoryName = 'product';
 
-        foreach ($products as $prod) {
-            $productId = $prod->getId();
-            $minStock = $this->generateMinStock($prod);
-            $this->updateStockMinimumForProduct($productChartsData, $productId, $minStock);
-            $productsData[$productId] = $this->generateProductData($prod, $productChartsData, $stocks);
+        // Vérifier si le répertoire existe déjà
+        if (!file_exists($cacheDirectory . '/' . $directoryName)) {
+            // Créer le répertoire s'il n'existe pas
+            mkdir($cacheDirectory . '/' . $directoryName, 0777, true);
         }
-
-        $productChartsData = $this->finalizeProductChartsData($productChartsData);
-        return new JsonResponse([
-            'productChartsData' => $productChartsData,
-            'productFamilies' => $productFamilies,
-            'products' => $productsData,
-            'customers' => $customersData,
-        ]);
+        // Utiliser le répertoire "racha" comme répertoire de cache
+        $cache = new FilesystemAdapter($directoryName, 0, $cacheDirectory);
+        $cacheKey = 'api_needs_products_data';
+    
+        // Vérifie si les données sont en cache
+        $cacheItem = $cache->getItem($cacheKey);
+        if (!$cacheItem->isHit()) {
+            // Les données ne sont pas en cache, donc on les génère et on les met en cache
+            $products = $this->productRepository->findByEmbBlockerAndEmbState();
+            $productcustomers = $this->productCustomerRepository->findAll();
+            $sellingItems = $this->productItemRepository->findByEmbBlockerAndEmbState();
+            $manufacturingOrders = $this->manufacturingProductItemRepository->findByEmbBlockerAndEmbState();
+            $stocks = $this->productStockRepository->findAll();
+            $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks);
+            $productFamilies = $this->getProductFamilies($products);
+            $customersData = $this->generateCustomersData($productcustomers);
+    
+            $productsData = [];
+            foreach ($products as $prod) {
+                $productId = $prod->getId();
+                $minStock = $this->generateMinStock($prod);
+                $this->updateStockMinimumForProduct($productChartsData, $productId, $minStock);
+                $productsData[$productId] = $this->generateProductData($prod, $productChartsData, $stocks);
+            }
+    
+            $productChartsData = $this->finalizeProductChartsData($productChartsData);
+    
+            // Mettre les données en cache pour 1 heure
+            $cacheItem->set([
+                'productChartsData' => $productChartsData,
+                'productFamilies' => $productFamilies,
+                'products' => $productsData,
+                'customers' => $customersData,
+            ]);
+            $cacheItem->expiresAfter(3600); // 1 heure
+            $cache->save($cacheItem);
+        }
+    
+        // Renvoie les données mises en cache
+        return new JsonResponse($cacheItem->get());
     }
-
+    
     /**
      * @Route("/api/needs/components", name="needs_components", methods={"GET"})
      */
@@ -194,7 +219,7 @@ class NeedsController extends AbstractController
             //$stockMinimum = $this->getStockMinPerDate($ordersForComponent, $uniqueDatesForComponent);
             $components = $this->componentRepository->findById($componentId);
             $stockMinimum =  $components->getMinStock()->getValue();
-            $FamilyId = $components->getFamily()->getId();
+            $FamilyName = $components->getFamily()->getFullName();
             $componentCode = $components->getCode();
 
             $stockMinimumPerDate = [];
@@ -271,7 +296,7 @@ class NeedsController extends AbstractController
             if (!empty($componentStockDefault)) {
                 $componentfield[$componentId] = [
                     'componentStockDefaults' => $componentStockDefault,
-                    'family' => $FamilyId,
+                    'family' => $FamilyName,
                     'newSupplierOrderNeeds' => $newSupplierOrderNeeds,
                     'ref' => $componentCode
                 ];
@@ -283,30 +308,12 @@ class NeedsController extends AbstractController
             ];
             $uniqueDates = [];
         }
-
-
-        /*$components = [
-        1 => [
-            'componentStockDefaults' => [
-                1 => ['date' => '2022-07-12'],
-                2 => ['date' => '2022-02-08']
-            ],
-            'family' => [1, 2, 3],
-            'newSupplierOrderNeeds' => [
-                1 => ['date' => '2022-05-12', 'quantity' => 200],
-                2 => ['date' => '2022-02-08', 'quantity' => 100]
-            ],
-            'ref' => 1
-        ],*/
-
-
         return new JsonResponse([
             'componentChartData' => $componentChartData,
             'component' => $componentfield
 
         ]);
     }
-
 
     function getUnitsPerDate($orders, $uniqueDates)
     {
@@ -764,7 +771,6 @@ class NeedsController extends AbstractController
         $components = $this->generateComponentsData($prod);
 
         $familyId = $prod->getFamily()?->getId();
-
         $minStock = $prod->getMinStock()->getValue();
         $newOFNeeds = $this->generateNewOFNeedsData($prod, $productChartsData);
         $allStock = $this->generateProductStockData($prod, $stocks);
@@ -778,6 +784,7 @@ class NeedsController extends AbstractController
             'newOFNeeds' => $newOFNeeds,
             'productDesg' => $prod->getName(),
             'productRef' => $prod->getCode(),
+            'productIndex' => $prod->getIndex(),
             'productStock' => $allStock,
             'productToManufacturing' => $maxQuantity,
             'stockDefault' => $stockDefault,
