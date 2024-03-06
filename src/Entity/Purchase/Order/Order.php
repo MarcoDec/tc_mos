@@ -228,7 +228,7 @@ class Order extends Entity {
     /**
      * @return Collection<int, Item<Component|Product>>
      */
-    final public function getItems(): Collection {
+    public function getItems(): Collection {
         return $this->items;
     }
 
