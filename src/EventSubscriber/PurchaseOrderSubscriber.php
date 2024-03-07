@@ -9,18 +9,27 @@ use Symfony\Component\Workflow\Event\Event;
 use Symfony\Component\Workflow\Registry;
 use Psr\Log\LoggerInterface as Logger;
 
-
+/**
+ * Ce fichier à pour but de gérer les transitions des objets PurchaseOrder et Receipt
+ ** PurchaseOrder -> validate -> PurchaseOrderItem
+ ** PurchaseOrder -> pay -> PurchaseOrderItem
+ ** Receipt -> validate -> PurchaseOrderItem
+ */
 class PurchaseOrderSubscriber implements EventSubscriberInterface
 {
     private $workflowRegistry;
 
 
-    public function __construct(Registry $workflowRegistry, private Logger $logger)
+    public function __construct(Registry $workflowRegistry, private readonly Logger $logger)
     {
         $this->workflowRegistry = $workflowRegistry;
     }
 
-
+    /**
+     * Cette méthode permet de gérer les transitions des objets PurchaseOrder "validate" et "pay"
+     * @param Event $event
+     * @return void
+     */
     public function onWorkflowPurchaseOrderTransition(Event $event): void
     {
         $object = $event->getSubject();
@@ -79,17 +88,18 @@ class PurchaseOrderSubscriber implements EventSubscriberInterface
         }
     }
 
-    private function updateWorkflowState($objects, $workflowName, $transitionName, $workflowRegistry): void
+    public function updateWorkflowState($objects, $workflowName, $transitionName, $workflowRegistry): void
     {
         foreach ($objects as $object) {
-            $workflow = $workflowRegistry->get($object, $workflowName);
-            if ($workflow->can($object, $transitionName)) {
-                $workflow->apply($object, $transitionName);
-            }
+            $this->applyTransitionToWorkflow($object, $workflowName, $transitionName, $workflowRegistry);
+//            $workflow = $workflowRegistry->get($object, $workflowName);
+//            if ($workflow->can($object, $transitionName)) {
+//                $workflow->apply($object, $transitionName);
+//            }
         }
     }
 
-    private function applyTransitionToWorkflow($object, $workflowName, $transitionName, $workflowRegistry): void
+    public function applyTransitionToWorkflow($object, $workflowName, $transitionName, $workflowRegistry): void
     {
         $workflow = $workflowRegistry->get($object, $workflowName);
 
