@@ -105,6 +105,10 @@ use Doctrine\Common\Collections\Collection;
     ORM\Entity
 ]
 class Expedition extends Entity {
+    /**
+     * Numéro de lot du produit expédié
+     * @var null|string
+     */
     #[
         ApiProperty(description: 'Numéro de lot', example: '165486543'),
         ORM\Column(nullable: true),
@@ -112,6 +116,10 @@ class Expedition extends Entity {
     ]
     private ?string $batchNumber = null;
 
+    /**
+     * Date de l'expédition
+     * @var DateTimeImmutable
+     */
     #[
         ApiProperty(description: 'Date', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: false),
@@ -119,31 +127,47 @@ class Expedition extends Entity {
     ]
     private DateTimeImmutable $date;
 
+    /**
+     * Date d'expédition prête à envoi
+     * @var DateTimeImmutable|null
+     */
     #[
         ApiProperty(description: 'Date déterminée ', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:expedition', 'write:expedition'])
     ]
     private ?DateTimeImmutable $readyDate = null;
-
+    /**
+     * Etat de Blocage de l'expédition
+     * @var Blocker
+     */
     #[
         ORM\Embedded,
         Serializer\Groups(['read:engine','read:expedition'])
     ]
     private Blocker $embBlocker;
-
+    /**
+     * Etat de maturité de l'expédition
+     * @var State
+     */
     #[
         ORM\Embedded,
         Serializer\Groups(['read:expedition'])
     ]
     private State $embState;
-
+    /**
+     * Liste des items de factueation associés à l'expédition
+     * @var Collection<AccountingItem>
+     */
     #[
-        ORM\OneToMany(targetEntity: AccountingItem::class, mappedBy: 'expedition'),
+        ORM\OneToMany(mappedBy: 'expedition', targetEntity: AccountingItem::class),
         Serializer\Groups(['read:expedition', 'write:expedition'])
     ]
     private Collection $expedition_items;
-    /** @var ProductItem<I>|null */
+    /**
+     * Item de vente associé à l'expédition
+     * @var ProductItem<I>|null
+     */
     #[
         ApiProperty(description: 'Item', readableLink: true),
         ORM\ManyToOne (inversedBy:'expeditions'),
@@ -151,13 +175,20 @@ class Expedition extends Entity {
     ]
     private ?ProductItem $item = null;
 
+    /**
+     * Localisation de l'expédition dans l'entrepôt ?
+     * @var null|string
+     */
     #[
         ApiProperty(description: 'Localisation', example: 'New York City'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:expedition', 'write:expedition'])
     ]
     private ?string $location = null;
-
+    /**
+     * Bordereau de livraison associé à l'expédition
+     * @var null|DeliveryNote
+     */
     #[
         ApiProperty(description: 'Note de livraison', readableLink: true, example: '/api/delivery-notes/1'),
         ORM\ManyToOne,
@@ -165,6 +196,10 @@ class Expedition extends Entity {
     ]
     private ?DeliveryNote $note = null;
 
+    /**
+     * Quantité de Produit expédiée
+     * @var Measure
+     */
     #[
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
@@ -172,7 +207,10 @@ class Expedition extends Entity {
     ]
     private Measure $quantity;
 
-    /** @var null|Stock<I> */
+    /**
+     * Stock associé à l'expédition
+     * @var null|Stock<I>
+     */
     #[
         ApiProperty(description: 'Item', readableLink: false, example: '/api/stocks/1'),
         ORM\ManyToOne,

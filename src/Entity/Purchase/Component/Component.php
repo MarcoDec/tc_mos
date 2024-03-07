@@ -21,6 +21,7 @@ use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Component\Preparation;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Attachment\ComponentAttachment;
+use App\Entity\Purchase\Order\ComponentItem;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Purchase\ComponentReference;
 use App\Entity\Traits\BarCodeTrait;
@@ -216,6 +217,10 @@ use App\Filter\SetFilter;
     ),
     ORM\Entity(repositoryClass: ComponentRepository::class)
 ]
+/**
+ * Composant
+ * @template-extends Entity<Component>
+ */
 class Component extends Entity implements BarCodeInterface, MeasuredInterface, FileEntity {
     use BarCodeTrait, FileTrait;
 
@@ -427,9 +432,16 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     private ?string $code='';
 
     #[
-        ORM\OneToMany(targetEntity: Preparation::class, mappedBy: 'component', fetch: 'EAGER')
+        ORM\OneToMany(mappedBy: 'component', targetEntity: Preparation::class, fetch: 'EAGER')
     ]
     private DoctrineCollection $preparationComponents;
+
+    #[
+        ApiProperty(description: 'Items de commande fournisseur associés', example: '[/api/purchase-order-items/1]'),
+        ORM\OneToMany(mappedBy: "item", targetEntity: ComponentItem::class),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    private DoctrineCollection $componentItems;
 
     public function __construct() {
         $this->attributes = new ArrayCollection();
@@ -838,4 +850,16 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     {
         $this->filePath = $filePath;
     }
+
+    public function getComponentItems(): DoctrineCollection
+    {
+        return $this->componentItems;
+    }
+
+    public function setComponentItems(DoctrineCollection $componentItems): void
+    {
+        $this->componentItems = $componentItems;
+    }
+
+
 }
