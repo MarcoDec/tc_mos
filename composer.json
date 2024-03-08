@@ -44,6 +44,9 @@
       },
       "symfony/validator": {
         "Symfony\\Component\\Validator\\Context\\ExecutionContext: $translator & $translationDomain to public": "./patches/symfony/validator/Context/ExecutionContext.patch"
+      },
+      "api-platform/core": {
+        "Fix ResetInterface::reset return type": "./patches/api-platform/core/src/Bridge/Symfony/Bundle/DataCollector/RequestDataCollector-reset-method.patch"
       }
     },
     "symfony": {
