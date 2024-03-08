@@ -171,3 +171,12 @@ services:
     decorates: api_platform.serializer.context_builder
 
   Symfony\Component\Validator\Mapping\Factory\MetadataFactoryInterface: '@validator.mapping.class_metadata_factory'
+
+  App\DataPersister\Logistics\Label\CartonDataPersister:
+    autoconfigure: false
+    tags: [ 'api_platform.data_persister' ]
+
+  App\Filter\CustomGetterFilter:
+    autoconfigure: false
+    tags: [ 'api_platform.filter' ]
+    arguments: [ '@doctrine' ]

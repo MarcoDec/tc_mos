@@ -3,6 +3,7 @@
     import AppInput from './AppInput.vue'
     import AppInputMeasure from './AppInputMeasure.vue'
     import AppInputNumber from './AppInputNumber.vue'
+    import AppTrafficLight from './AppTrafficLight.vue'
     import AppMultiselect from './select/AppMultiselect.vue'
     import AppSelect from './select/AppSelect.vue'
     import AppSwitch from './AppSwitch.vue'
@@ -22,7 +23,7 @@
         switch (props.field.type) {
             case 'boolean':
                 return AppSwitch
-            case 'number':
+            case 'number' || 'int':
                 return AppInputNumber
             case 'measure':
                 return AppInputMeasure
@@ -32,6 +33,8 @@
                 return AppMultiselectFetch
             case 'select':
                 return AppSelect
+            case 'trafficLight':
+                return AppTrafficLight
             case 'textarea':
                 return AppTextArea
             default:
@@ -40,6 +43,7 @@
     })
 
     function input(v) {
+        // console.log('input', v)
         emit('update:modelValue', v)
     }
     function searchChange(data) {

@@ -15,8 +15,8 @@ function AppTableSearchJS(props, context) {
             variant: 'danger'
         })
     }
-    if (typeof context.slots['default'] === 'function')
-        children.submit = args => context.slots['default'](args)
+    if (typeof context.slots.default === 'function')
+        children.submit = args => context.slots.default(args)
     return h(
         resolveComponent('AppTableHeaderFormJS'),
         {

@@ -3,10 +3,6 @@ FROM node:14-alpine as build
 ARG API_HOST
 
 WORKDIR /app
-COPY package.json ./
-COPY yarn.lock ./
-RUN yarn install --network-timeout 1000000
-WORKDIR /app
 RUN ls -l
 COPY package.json ./
 COPY yarn.lock ./
@@ -15,6 +11,7 @@ COPY src/ ./src
 COPY .env ./
 RUN echo "REACT_APP_DOMAIN = $API_HOST" > .env
 COPY public/ ./public
+RUN yarn install
 RUN yarn build
 
 # production env

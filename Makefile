@@ -5,7 +5,10 @@ all: rebuild
 
 # Définition de la tâche 'build' pour construire les services
 build:
-	@GROUP_ID=$(shell id -g) USER_ID=$(shell id -u) USER_NAME=$USER docker compose build
+	@export GROUP_ID=$(shell id -g) ;\
+    export USER_ID=$(shell id -u) ;\
+    export USER_NAME=$$USER ;\
+	docker compose build --build-arg GROUP_ID=$$GROUP_ID --build-arg USER_ID=$$USER_ID --build-arg USER_NAME=$$USER_NAME
 
 # Définition de la tâche 'up' pour lancer les services en mode détaché
 up:
@@ -13,6 +16,8 @@ up:
 
 up-dev:
 	make up ENV=.env.dev.local
+up-preprod:
+	make up ENV=.env.preprod.local
 up-prod:
 	make up ENV=.env.prod.local
 yarndev:

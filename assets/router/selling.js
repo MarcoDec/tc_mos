@@ -29,5 +29,15 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Paramètres'
         }
+    },
+    {
+        component: () => import('../components/pages/selling/customer/AppCustomerListPage.vue'),
+        meta: {requiresAuth: true},
+        name: 'customer-list',
+        path: '/customer-list',
+        props: {
+            icon: 'user-tie',
+            title: 'Liste des clients'
+        }
     }
 ]

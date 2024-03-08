@@ -47,6 +47,7 @@
     ]
 
     const tabFields = [
+        // {label: 'ID', min: true, name: 'id', trie: true, type: 'text', filter: true, width: 50},
         {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
         {label: 'Adresse', min: false, name: 'address', trie: true, type: 'text'},
         {label: 'Complément d\'adresse', min: false, name: 'address2', trie: true, type: 'text'},

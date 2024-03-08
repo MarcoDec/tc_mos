@@ -92,5 +92,21 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Paramètres'
         }
+    },
+    {
+        component: () => import('../components/pages/production/manufacturingOrder/AppManufacturingOrderPage.vue'),
+        meta: {requiresAuth: true},
+        name: 'manufacturingOrder-list',
+        path: '/manufacturingOrder-list'
+    },
+    {
+        component: () => import('../components/pages/project/product/AppProductListPage.vue'),
+        meta: {requiresAuth: true},
+        name: 'product-list',
+        path: '/product-list',
+        props: {
+            icon: 'product-hunt',
+            title: 'Liste des produits'
+        }
     }
 ]

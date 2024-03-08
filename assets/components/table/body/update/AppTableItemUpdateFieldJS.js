@@ -11,7 +11,7 @@ function AppTableItemUpdateFieldJS(props, context) {
     }
     watch(originalValue, input)
     return () => {
-        const slot = context.slots['default']
+        const slot = context.slots.default
         return h(
             resolveComponent('AppTableFormFieldJS'),
             {

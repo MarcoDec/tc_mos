@@ -2,7 +2,7 @@ import {generateField, generateLabelCols} from '../../props'
 import {h} from 'vue'
 
 function AppLabelJS(props) {
-    return h('label', {class: `col-form-label ${props.cols}`, for: props['for']}, props.field.label)
+    return h('label', {class: `col-form-label ${props.cols}`, for: props.for}, props.field.label)
 }
 
 AppLabelJS.props = {

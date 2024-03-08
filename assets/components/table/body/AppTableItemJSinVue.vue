@@ -53,7 +53,7 @@
                 variant="primary"
                 @click="machine.send('update', {updated: item['@id']})"/>
             <AppBtnJS
-                v-if="options['delete']"
+                v-if="options.delete"
                 icon="trash"
                 label="Supprimer"
                 title="Supprimer"

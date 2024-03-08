@@ -1,8 +1,8 @@
 <script setup>
     import AppEmployeeListFormation from './AppEmployeeListFormation.vue'
     import AppEmployeeListEvenement from './AppEmployeeListEvenement.vue'
-    import AppEmployeeListOF from './AppEmployeeListOF.vue'
-    import AppEmployeeListClocking from './AppEmployeeListClocking.vue'
+    // import AppEmployeeListOF from './AppEmployeeListOF.vue'
+    // import AppEmployeeListClocking from './AppEmployeeListClocking.vue'
 </script>
 
 <template>
@@ -17,16 +17,16 @@
                 <AppEmployeeListEvenement/>
             </AppSuspense>
         </AppTab>
-        <AppTab id="gui-start-of" title="OF" icon="file-invoice" tabs="gui-start-bottom">
-            <AppSuspense>
-                <AppEmployeeListOF/>
-            </AppSuspense>
-        </AppTab>
-        <AppTab id="gui-start-pointage" title="Pointage" icon="bullseye" tabs="gui-start-bottom">
-            <AppSuspense>
-                <AppEmployeeListClocking/>
-            </AppSuspense>
-        </AppTab>
+        <!--        <AppTab id="gui-start-of" title="OF" icon="file-invoice" tabs="gui-start-bottom">-->
+        <!--            <AppSuspense>-->
+        <!--                <AppEmployeeListOF/>-->
+        <!--            </AppSuspense>-->
+        <!--        </AppTab>-->
+        <!--        <AppTab id="gui-start-pointage" title="Pointage" icon="bullseye" tabs="gui-start-bottom">-->
+        <!--            <AppSuspense>-->
+        <!--                <AppEmployeeListClocking/>-->
+        <!--            </AppSuspense>-->
+        <!--        </AppTab>-->
     </AppTabs>
 </template>
 

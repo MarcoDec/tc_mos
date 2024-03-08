@@ -15,6 +15,7 @@ use App\Entity\Embeddable\Copper;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Purchase\Supplier\State;
 use App\Entity\Entity;
+use App\Entity\Interfaces\FileEntity;
 use App\Entity\Management\Currency;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
@@ -25,6 +26,7 @@ use App\Entity\Purchase\Supplier\Attachment\SupplierAttachment;
 use App\Entity\Purchase\Supplier\Company\SupplierCompany;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Purchase\SupplierReference;
+use App\Entity\Traits\FileTrait;
 use App\Filter\SetFilter;
 use App\Repository\Purchase\Supplier\SupplierRepository;
 use App\Validator as AppAssert;
@@ -36,9 +38,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\Purchase\Supplier\SupplierPatchController;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial']),
-    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial', 'id' => 'exact', 'society.name' => 'partial', 'embState.state' => 'exact', 'embBlocker.state' => 'exact']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state', 'address.zipCode', 'address.city']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'address.zipCode', 'address.city', 'id']),
     ApiResource(
         description: 'Fournisseur',
         collectionOperations: [
@@ -96,6 +98,24 @@ use App\Controller\Purchase\Supplier\SupplierPatchController;
                     'description' => 'Récupère un fournisseur',
                     'summary' => 'Récupère un fournisseur',
                 ]
+            ],
+            'patch image' => [
+                'openapi_context' => [
+                    'description' => 'Modifie le logo d\'un fournisseur',
+                    'summary' => 'Modifie le logo d\'un fournisseur'
+                ],
+                'denormalization_context' => [
+                    'groups' => ['write:supplier:image'],
+                    'openapi_definition_name' => 'Supplier-image'
+                ],
+                'normalization_context' => [
+                    'groups' => ['read:supplier:image'],
+                    'openapi_definition_name' => 'Supplier-image'
+                ],
+                'path' => '/suppliers/{id}/image',
+                'controller' => PlaceholderAction::class,
+                'method' => 'POST',
+                'input_formats' => ['multipart'],
             ],
             'patch' => [
                 'controller' => SupplierPatchController::class,
@@ -155,7 +175,7 @@ use App\Controller\Purchase\Supplier\SupplierPatchController;
             'openapi_definition_name' => 'Supplier-write'
         ],
         normalizationContext: [
-            'groups' => ['read:address', 'read:copper', 'read:id', 'read:measure', 'read:state', 'read:supplier'],
+            'groups' => ['read:address', 'read:copper', 'read:id', 'read:measure', 'read:state', 'read:supplier', 'read:file'],
             'openapi_definition_name' => 'Supplier-read',
             'skip_null_values' => false
         ],
@@ -163,7 +183,8 @@ use App\Controller\Purchase\Supplier\SupplierPatchController;
     ),
     ORM\Entity(repositoryClass: SupplierRepository::class)
 ]
-class Supplier extends Entity {
+class Supplier extends Entity implements FileEntity {
+    use FileTrait;
     #[
         ApiProperty(description: 'Adresse'),
         ORM\Embedded,
@@ -174,7 +195,7 @@ class Supplier extends Entity {
     /** @var DoctrineCollection<int, Company> */
     #[
         ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
-        Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:main'])
+        Serializer\Groups(['create:supplier', 'read:supplier', 'write:supplier', 'write:supplier:main'])
     ]
     private DoctrineCollection $administeredBy;
 
@@ -196,7 +217,7 @@ class Supplier extends Entity {
         ApiProperty(description: 'Critère de confiance', example: 0),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:supplier', 'read:supplier:collection', 'write:supplier', 'write:supplier:quality', 'write:supplier:purchase-logistics'])
+        Serializer\Groups(['create:supplier', 'read:supplier', 'read:supplier:collection', 'write:supplier', 'write:supplier:quality', 'write:supplier:purchase-logistics'])
     ]
     private int $confidenceCriteria = 0;
 
@@ -226,7 +247,12 @@ class Supplier extends Entity {
         Serializer\Groups(['read:supplier', 'read:supplier:collection'])
     ]
     private State $embState;
-
+    #[
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:supplier:collection'])
+    ]
+    protected ?string $filePath = '';
     #[
         ApiProperty(description: 'Langue', example: 'Français'),
         ORM\Column(nullable: true),
@@ -244,14 +270,14 @@ class Supplier extends Entity {
     #[
         ApiProperty(description: 'Gestion de la production', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:purchase-logistics'])
+        Serializer\Groups(['create:supplier', 'read:supplier', 'write:supplier', 'write:supplier:purchase-logistics'])
     ]
     private bool $managedProduction = false;
 
     #[
         ApiProperty(description: 'Gestion de la qualité', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:quality'])
+        Serializer\Groups(['create:supplier', 'read:supplier', 'write:supplier', 'write:supplier:quality'])
     ]
     private bool $managedQuality = false;
 
@@ -265,7 +291,7 @@ class Supplier extends Entity {
     #[
         ApiProperty(description: 'Activation Commandes Ouvertes', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:purchase-logistics'])
+        Serializer\Groups(['create:supplier', 'read:supplier', 'write:supplier', 'write:supplier:purchase-logistics'])
     ]
     private bool $openOrdersEnabled = false;
 
@@ -560,5 +586,15 @@ class Supplier extends Entity {
         $this->supplierCompanies = $supplierCompanies;
         return $this;
     }
-
+    #[
+        ApiProperty(description: 'Icône', example: '/uploads/suppliers/1.jpg'),
+        Serializer\Groups(['read:file'])
+    ]
+    final public function getFilepath(): ?string {
+        return $this->filePath;
+    }
+    public function setFilePath(?string $filePath): void
+    {
+        $this->filePath = $filePath;
+    }
 }

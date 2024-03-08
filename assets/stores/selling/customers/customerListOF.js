@@ -249,12 +249,12 @@ export const useCustomerListOFStore = defineStore('customerListOF', {
             const dtLivraison = item.deliveryDate.split('T')[0]
             const newObject = {
                 '@id': item['@id'],
-                produit: item.product.product.name,
+                produit: item.product.name,
                 ref: item.ref,
-                indiceClient: item.product.product.index,
+                indiceClient: item.product.index,
                 dateLivraison: dtLivraison,
                 quantite: `${item.quantityRequested.value} ${item.quantityRequested.code}`,
-                prix: `${item.product.product.price.value} ${item.product.product.price.code}`
+                prix: `${item.product.price.value} ${item.product.price.code}`
             }
             return newObject
         })

@@ -35,7 +35,7 @@ export const useEmployeeListFormationStore = defineStore('employeeListFormation'
                 }
 
                 if (payload.competence !== ''){
-                    url += `type.name=${payload.competence}&`
+                    url += `kind.name=${payload.competence}&`
                 }
 
                 if (payload.machine !== ''){
@@ -130,7 +130,7 @@ export const useEmployeeListFormationStore = defineStore('employeeListFormation'
                         url += `remindedDate=${payload.filterBy.value.rappel}&`
                     }
                     if (payload.filterBy.value.competence !== ''){
-                        url += `type.name=${payload.filterBy.value.competence}&`
+                        url += `kind.name=${payload.filterBy.value.competence}&`
                     }
 
                     if (payload.filterBy.value.machine !== ''){
@@ -215,7 +215,7 @@ export const useEmployeeListFormationStore = defineStore('employeeListFormation'
                         url += `remindedDate=${payload.filterBy.value.rappel}&`
                     }
                     if (payload.filterBy.value.competence !== ''){
-                        url += `type.name=${payload.filterBy.value.competence}&`
+                        url += `kind.name=${payload.filterBy.value.competence}&`
                     }
 
                     if (payload.filterBy.value.machine !== ''){
@@ -280,7 +280,7 @@ export const useEmployeeListFormationStore = defineStore('employeeListFormation'
                     url += `remindedDate=${payload.filterBy.value.rappel}&`
                 }
                 if (payload.filterBy.value.competence !== ''){
-                    url += `type.name=${payload.filterBy.value.competence}&`
+                    url += `kind.name=${payload.filterBy.value.competence}&`
                 }
 
                 if (payload.filterBy.value.machine !== ''){
@@ -381,7 +381,7 @@ export const useEmployeeListFormationStore = defineStore('employeeListFormation'
                             url += `remindedDate=${filterBy.value.rappel}&`
                         }
                         if (filterBy.value.competence !== ''){
-                            url += `type.name=${filterBy.value.competence}&`
+                            url += `kind.name=${filterBy.value.competence}&`
                         }
 
                         if (filterBy.value.machine !== ''){
@@ -464,7 +464,7 @@ export const useEmployeeListFormationStore = defineStore('employeeListFormation'
                             url += `remindedDate=${filterBy.value.rappel}&`
                         }
                         if (filterBy.value.competence !== ''){
-                            url += `type.name=${filterBy.value.competence}&`
+                            url += `kind.name=${filterBy.value.competence}&`
                         }
 
                         if (filterBy.value.machine !== ''){
@@ -584,7 +584,7 @@ export const useEmployeeListFormationStore = defineStore('employeeListFormation'
                 startedDate: dt,
                 endedDate: dtCloture,
                 remindedDate: dtRappel,
-                type: item.type['@id'],
+                kind: item.kind ?? ['@id'],
                 engine: item.engine,
                 family: item.family,
                 level: item.level,

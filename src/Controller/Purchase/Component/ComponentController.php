@@ -26,7 +26,7 @@ class ComponentController
    public function __invoke(Request $request): Component {
       $componentId = $request->get('id');
       $sourceComponent = $this->componentRepository->find($componentId);
-
+//      dump('ComponentController');
       if (empty($sourceComponent)) {
          throw new NotFoundHttpException();
       }

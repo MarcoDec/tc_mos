@@ -62,8 +62,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
                ]
            ]
        ],
-       paginationItemsPerPage: 2,
-       paginationClientEnabled: true
+       paginationClientEnabled: true,
+       paginationItemsPerPage: 2
    ),
    ApiFilter(SearchFilter::class, properties: ['employee' => 'exact', 'category' => 'partial'])
 ]
@@ -71,7 +71,7 @@ class EmployeeAttachment extends AbstractAttachment {
     use AttachmentTrait;
 
     #[
-      ORM\Column,
+      ORM\Column(type: 'string', length: 255, options: ['default' => 'doc']),
       ApiProperty(description: 'Catégorie de fichier', required: true, example: 'PIC', openapiContext: [
           'enum' => ['contrats', 'doc_a_date', 'doc_a_date/formations', 'doc', 'qualité']
       ]),

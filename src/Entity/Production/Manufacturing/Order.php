@@ -200,7 +200,7 @@ class Order extends Entity implements BarCodeInterface {
     private ?SellingOrder $order = null;
 
     #[
-        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
+        ApiProperty(description: 'Produit', readableLink: true, example: '/api/products/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]

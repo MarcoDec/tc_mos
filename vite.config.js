@@ -2,6 +2,9 @@ import checker from 'vite-plugin-checker'
 import {defineConfig} from 'vite'
 import symfonyPlugin from 'vite-plugin-symfony'
 import vue from '@vitejs/plugin-vue'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 export default defineConfig({
     base: '/build/',

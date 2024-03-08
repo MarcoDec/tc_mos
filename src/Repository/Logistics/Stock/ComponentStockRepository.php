@@ -12,7 +12,8 @@ final class ComponentStockRepository extends StockRepository {
     public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, ComponentStock::class);
     }
-  /**
+    
+    /**
      * @return Stock[]|null
      */
     public function findStocksByCriteria(): ?array

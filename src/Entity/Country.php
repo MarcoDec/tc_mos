@@ -5,20 +5,20 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 
-#[ApiResource(
-    description: 'Pays',
-    collectionOperations: [
-        'get' => [
-            'path' => '/countries/options',
-            'openapi_context' => [
-                'description' => 'Récupère les pays',
-                'summary' => 'Récupère les pays'
-            ]
-        ]
-    ],
-    itemOperations: ['get' => NO_ITEM_GET_OPERATION],
-    paginationEnabled: false
-)]
+//#[ApiResource(
+//    description: 'Pays',
+//    collectionOperations: [
+//        'get' => [
+//            'path' => '/countries/options',
+//            'openapi_context' => [
+//                'description' => 'Récupère les pays',
+//                'summary' => 'Récupère les pays'
+//            ]
+//        ]
+//    ],
+//    itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+//    paginationEnabled: false
+//)]
 final class Country {
     #[ApiProperty(description: 'Code', identifier: true, example: 'FR')]
     private readonly string $code;

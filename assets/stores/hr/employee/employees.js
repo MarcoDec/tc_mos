@@ -20,6 +20,7 @@ export const useEmployeeStore = defineStore('employee', {
             this.isLoading = true
             const response = await api(`/api/employees/${id}`, 'GET')
             this.employee = generateEmployee(response, this)
+            this.item = response
             this.isLoading = false
             this.isLoaded = true
         },
@@ -34,6 +35,7 @@ export const useEmployeeStore = defineStore('employee', {
     },
     state: () => ({
         employee: {},
+        item: {},
         employeeContacts: [],
         isLoaded: false,
         isLoading: false,

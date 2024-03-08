@@ -65,6 +65,7 @@
     "ext-iconv": "*",
     "ext-intl": "*",
     "ext-pdo_mysql": "*",
+    "ext-ssh2": "*",
     "ext-zip": "*",
     "api-platform/core": "2.6.8",
     "cweagans/composer-patches": "^1.7.2",
@@ -97,8 +98,7 @@
     "symfony/validator": "6.1.*",
     "symfony/workflow": "6.1.*",
     "symfony/yaml": "6.1.*",
-    "voku/html-min": "^4.5.0",
-    "ext-ssh2": "*"
+    "voku/html-min": "^4.5.0"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.12.0",
