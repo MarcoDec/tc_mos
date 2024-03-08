@@ -46,7 +46,9 @@
         "Symfony\\Component\\Validator\\Context\\ExecutionContext: $translator & $translationDomain to public": "./patches/symfony/validator/Context/ExecutionContext.patch"
       },
       "api-platform/core": {
-        "Fix ResetInterface::reset return type": "./patches/api-platform/core/src/Bridge/Symfony/Bundle/DataCollector/RequestDataCollector-reset-method.patch"
+        "Fix ResetInterface::reset return type": "./patches/api-platform/core/src/Bridge/Symfony/Bundle/DataCollector/RequestDataCollector-reset-method.patch",
+        "ItemNormalizer Fix missing context argument in supportsNormalization and supportsDenomalization": "./patches/api-platform/core/src/JsonLd/Serializer/ItemNormalizer-context-argument.patch",
+        "AbstractItemNormalizer Fix missing context argument in supportsNormalization and supportsDenomalization": "./patches/api-platform/core/src/Serializer/AbstractItemNormalizer-context-argument.patch"
       }
     },
     "symfony": {
