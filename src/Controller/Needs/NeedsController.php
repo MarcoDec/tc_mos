@@ -770,7 +770,7 @@ class NeedsController extends AbstractController
     {
         $components = $this->generateComponentsData($prod);
 
-        $familyId = $prod->getFamily()?->getId();
+        $familyId = $prod->getFamily()->getId();
         $minStock = $prod->getMinStock()->getValue();
         $newOFNeeds = $this->generateNewOFNeedsData($prod, $productChartsData);
         $allStock = $this->generateProductStockData($prod, $stocks);

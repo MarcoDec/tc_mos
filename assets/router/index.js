@@ -12,6 +12,7 @@ import quality from './quality'
 import selling from './selling'
 import useUser from '../stores/security'
 import it from './it'
+import needs from './routes/needs'
 
 const router = createRouter({
     history: createWebHistory(), routes: [
