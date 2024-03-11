@@ -1,0 +1,24 @@
+diff --git a/vendor/api-platform/core/src/JsonSchema/Command/JsonSchemaGenerateCommand.php b/patches/tmp/ApiPlatform/JsonSchemaGenerateCommand.php
+index 9be6a2c03..ca96d3d58 100644
+--- a/vendor/api-platform/core/src/JsonSchema/Command/JsonSchemaGenerateCommand.php
++++ b/patches/tmp/ApiPlatform/JsonSchemaGenerateCommand.php
+@@ -16,6 +16,7 @@ namespace ApiPlatform\Core\JsonSchema\Command;
+ use ApiPlatform\Core\Api\OperationType;
+ use ApiPlatform\Core\JsonSchema\Schema;
+ use ApiPlatform\Core\JsonSchema\SchemaFactoryInterface;
++use Symfony\Component\Console\Attribute\AsCommand;
+ use Symfony\Component\Console\Command\Command;
+ use Symfony\Component\Console\Exception\InvalidOptionException;
+ use Symfony\Component\Console\Input\InputArgument;
+@@ -29,9 +30,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
+  *
+  * @author Jacques Lefebvre <jacques@les-tilleuls.coop>
+  */
++#[AsCommand(name: 'api:json-schema:generate', description: 'Generates the JSON Schema for a resource operation.')]
+ final class JsonSchemaGenerateCommand extends Command
+ {
+-    protected static $defaultName = 'api:json-schema:generate';
++//    protected static $defaultName = 'api:json-schema:generate';
+ 
+     private $schemaFactory;
+     private $formats;

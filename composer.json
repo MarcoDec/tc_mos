@@ -58,7 +58,8 @@
         "ApiPlatform (Problem) ErrorNormalizer patch": "patches/api-platform/core/src/Problem/Serializer/ErrorNormalizer-context-argument.patch",
         "ApiPlatform CollectionNormalizer patch": "patches/api-platform/core/src/Hydra/Serializer/CollectionNormalizer-context-argument.patch",
         "ApiPlatform DocumentationNormalizer patch": "patches/api-platform/core/src/Swagger/Serializer/DocumentationNormalizer-context-argument.patch",
-        "ApiPLatform IntegerDenormalizer patch": "patches/api-platform/core/src/Identifier/Normalizer/IntegerDenormalizer-context-argument.patch"
+        "ApiPLatform IntegerDenormalizer patch": "patches/api-platform/core/src/Identifier/Normalizer/IntegerDenormalizer-context-argument.patch",
+        "ApiPlatform JsonSchemaGenerateCommand patch": "patches/api-platform/core/src/JsonSchema/Command/JsonSchemaGenerateCommand-context-argument.patch"
       }
     },
     "symfony": {
