@@ -46,9 +46,19 @@
         "Symfony\\Component\\Validator\\Context\\ExecutionContext: $translator & $translationDomain to public": "./patches/symfony/validator/Context/ExecutionContext.patch"
       },
       "api-platform/core": {
-        "Fix ResetInterface::reset return type": "./patches/api-platform/core/src/Bridge/Symfony/Bundle/DataCollector/RequestDataCollector-reset-method.patch",
-        "ItemNormalizer Fix missing context argument in supportsNormalization and supportsDenomalization": "./patches/api-platform/core/src/JsonLd/Serializer/ItemNormalizer-context-argument.patch",
-        "AbstractItemNormalizer Fix missing context argument in supportsNormalization and supportsDenomalization": "./patches/api-platform/core/src/Serializer/AbstractItemNormalizer-context-argument.patch"
+        "ApiPlatform RequestDataCollector patch": "./patches/api-platform/core/src/Bridge/Symfony/Bundle/DataCollector/RequestDataCollector-reset-method.patch",
+        "ApiPlatform ItemNormalizer patch": "./patches/api-platform/core/src/JsonLd/Serializer/ItemNormalizer-context-argument.patch",
+        "ApiPlatform AbstractItemNormalizer patch": "./patches/api-platform/core/src/Serializer/AbstractItemNormalizer-context-argument.patch",
+        "ApiPlatform OpenApiNormalizer patch": "patches/api-platform/core/src/OpenApi/Serializer/OpenApiNormalizer-context-argument.patch",
+        "ApiPlatform ApiGatewayNormalizer patch": "patches/api-platform/core/src/Swagger/Serializer/ApiGatewayNormalizer-context-argument.patch",
+        "ApiPlatform AbstractConstraintViolationListNormalize patch": "patches/api-platform/core/src/Serializer/AbstractConstraintViolationListNormalizer-context-argument.patch",
+        "ApiPlatform (Hydra) ErrorNormalizer patch": "patches/api-platform/core/src/Hydra/Serializer/ErrorNormalizer-context-argument.patch",
+        "ApiPlatform PartialCollectionViewNormalizer patch": "patches/api-platform/core/src/Hydra/Serializer/PartialCollectionViewNormalizer-context-argument.patch",
+        "ApiPlatform CollectionFiltersNormalizer patch": "patches/api-platform/core/src/Hydra/Serializer/CollectionFiltersNormalizer-context-argument.patch",
+        "ApiPlatform (Problem) ErrorNormalizer patch": "patches/api-platform/core/src/Problem/Serializer/ErrorNormalizer-context-argument.patch",
+        "ApiPlatform CollectionNormalizer patch": "patches/api-platform/core/src/Hydra/Serializer/CollectionNormalizer-context-argument.patch",
+        "ApiPlatform DocumentationNormalizer patch": "patches/api-platform/core/src/Swagger/Serializer/DocumentationNormalizer-context-argument.patch",
+        "ApiPLatform IntegerDenormalizer patch": "patches/api-platform/core/src/Identifier/Normalizer/IntegerDenormalizer-context-argument.patch"
       }
     },
     "symfony": {

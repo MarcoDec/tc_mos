@@ -2,7 +2,10 @@
 
 namespace App\Tests\EventSubscriber;
 
+use App\Entity\Purchase\Order\Order as PurchaseOrder;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Workflow\Event\Event;
 use Symfony\Component\Workflow\Registry;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -10,15 +13,45 @@ use App\EventSubscriber\BlockerSubscriber;
 use App\Entity\Selling\Customer\Customer;
 use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Selling\Customer\State;
+use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;
+use Symfony\Component\Workflow\WorkflowInterface;
 
-class BlockerSubscriberTest extends TestCase
+class BlockerSubscriberTest extends KernelTestCase
 {
+    private $workflowRegistryMock;
+    private $workflowCustomer;
+    private LoggerInterface $loggerMock;
+    private Event $eventMock;
+    private EntityManagerInterface $entityManagerMock;
+    private BlockerSubscriber $subscriber;
+
+    public static function setUpBeforeClass(): void
+    {
+        echo "\nBlockerSubscriberTest\n";
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected function setUp(): void
+    {
+        self::bootKernel(['environment' => 'test', 'debug' => true]);
+        $registry = self::getContainer()->get(Registry::class);
+        $this->workflowRegistryMock = $registry;
+        /** @var WorkflowInterface $workflow**/
+        $workflow = $registry->get(new Customer(), 'blocker');
+        $this->workflowCustomer = $workflow;
+        $this->loggerMock = $this->createMock(LoggerInterface::class);
+        $this->eventMock = $this->createMock(Event::class);
+        $this->entityManagerMock = $this->createMock(EntityManagerInterface::class);
+        $this->subscriber = new BlockerSubscriber($this->workflowRegistryMock, $this->loggerMock, $this->entityManagerMock);
+    }
     public function testOnWorkflowBlockerTransition(): void
     {
-        $workflowRegistryMock = $this->createMock(Registry::class);
-        $loggerMock = $this->createMock(LoggerInterface::class);
-        $entityManagerMock = $this->createMock(EntityManagerInterface::class);
+        $workflowRegistryMock =  $this->workflowRegistryMock;
+        $loggerMock = $this->loggerMock;
+        $entityManagerMock = $this->entityManagerMock;
 
         // Create a dummy Customer object
         $customerMock = new Customer();

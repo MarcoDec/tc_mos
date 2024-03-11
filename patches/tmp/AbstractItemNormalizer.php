@@ -95,12 +95,11 @@ abstract class AbstractItemNormalizer extends AbstractObjectNormalizer
     }
 
     /**
-     * @param $data
-     * @param $format
-     * @param array $context
+     * {@inheritdoc}
+     *
      * @return bool
      */
-    public function supportsNormalization($data, $format = null, array $context = []): bool
+    public function supportsNormalization($data, $format = null, array $context = [])
     {
         if (!\is_object($data)) {
             return false;
@@ -177,13 +176,11 @@ abstract class AbstractItemNormalizer extends AbstractObjectNormalizer
     }
 
     /**
-     * @param $data
-     * @param $type
-     * @param $format
-     * @param array $context
+     * {@inheritdoc}
+     *
      * @return bool
      */
-    public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
+    public function supportsDenormalization($data, $type, $format = null, array $context = [])
     {
         return $this->localCache[$type] ?? $this->localCache[$type] = $this->resourceClassResolver->isResourceClass($type);
     }
