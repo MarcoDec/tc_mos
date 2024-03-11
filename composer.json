@@ -59,7 +59,9 @@
         "ApiPlatform CollectionNormalizer patch": "patches/api-platform/core/src/Hydra/Serializer/CollectionNormalizer-context-argument.patch",
         "ApiPlatform DocumentationNormalizer patch": "patches/api-platform/core/src/Swagger/Serializer/DocumentationNormalizer-context-argument.patch",
         "ApiPLatform IntegerDenormalizer patch": "patches/api-platform/core/src/Identifier/Normalizer/IntegerDenormalizer-context-argument.patch",
-        "ApiPlatform JsonSchemaGenerateCommand patch": "patches/api-platform/core/src/JsonSchema/Command/JsonSchemaGenerateCommand-context-argument.patch"
+        "ApiPlatform JsonSchemaGenerateCommand patch": "patches/api-platform/core/src/JsonSchema/Command/JsonSchemaGenerateCommand-context-argument.patch",
+        "ApiPlatform OpenApiCommand patch": "patches/api-platform/core/src/Bridge/Symfony/Bundle/Command/OpenApiCommand-context-argument.patch",
+        "ApiPlatform SwaggerCommand patch": "patches/api-platform/core/src/Bridge/Symfony/Bundle/Command/SwaggerCommand.patch"
       }
     },
     "symfony": {
