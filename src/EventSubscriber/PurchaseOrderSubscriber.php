@@ -112,9 +112,7 @@ class PurchaseOrderSubscriber implements EventSubscriberInterface
     {
         return [
             'workflow.purchase_order.transition' => 'onWorkflowPurchaseOrderTransition',
-            'workflow.receipt.transition' => 'onWorkflowReceiptTransition',
-            'workflow.receipt.transition' => 'onWorkflowReceiptTransition',
-
+            'workflow.receipt.transition' => 'onWorkflowReceiptTransition'
         ];
     }
 }

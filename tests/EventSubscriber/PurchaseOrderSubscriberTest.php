@@ -3,6 +3,7 @@
 namespace App\Tests\EventSubscriber;
 
 use App\Entity\Embeddable\Measure;
+use Exception;
 use Symfony\Component\Workflow\WorkflowInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Order\ComponentItem;
@@ -23,9 +24,9 @@ class PurchaseOrderSubscriberTest extends KernelTestCase
 {
     /**
      * Mock de l'objet Registry utilisé pour instancier les Subscribers
-     * @var (object&\PHPUnit\Framework\MockObject\MockObject)|\PHPUnit\Framework\MockObject\MockObject|Registry|(Registry&object&\PHPUnit\Framework\MockObject\MockObject)|(Registry&\PHPUnit\Framework\MockObject\MockObject)
+     * @var \PHPUnit\Framework\MockObject\MockObject|(object&\PHPUnit\Framework\MockObject\MockObject)|(Registry&object&\PHPUnit\Framework\MockObject\MockObject)|(Registry&\PHPUnit\Framework\MockObject\MockObject)|Registry
      */
-    private Registry|\PHPUnit\Framework\MockObject\MockObject $workflowRegistryMock;
+    private \PHPUnit\Framework\MockObject\MockObject|Registry $workflowRegistryMock;
     /**
      * Mock de l'objet LoggerInterface utilisé pour instancier les Subscribers
      * @var (object&\PHPUnit\Framework\MockObject\MockObject)|\PHPUnit\Framework\MockObject\MockObject|LoggerInterface|(LoggerInterface&object&\PHPUnit\Framework\MockObject\MockObject)|(LoggerInterface&\PHPUnit\Framework\MockObject\MockObject)
@@ -48,9 +49,13 @@ class PurchaseOrderSubscriberTest extends KernelTestCase
     private $validateTransitionMock;
 
     private PurchaseOrderSubscriber $subscriber;
-
+    public static function setUpBeforeClass(): void
+    {
+        echo "\nPurchaseOrderSubscriberTest\n";
+    }
     /**
-     * @throws \Exception
+     * @return void
+     * @throws Exception
      */
     protected function setUp(): void
     {
@@ -90,7 +95,8 @@ class PurchaseOrderSubscriberTest extends KernelTestCase
         return $purchaseOrder;
     }
      /**
-     * Test de la méthode **`onWorkflowPurchaseOrderTransition`** de la classe **`PurchaseOrderSubscriber`** dans le cas de la transition **`validate`**
+     * @test
+     * @testdox  Test de la méthode **`onWorkflowPurchaseOrderTransition`** de la classe **`PurchaseOrderSubscriber`** dans le cas de la transition **`validate`**
      * @return void
      */
     public function testApplyValidateTransitionToWorkflow()
@@ -124,27 +130,33 @@ class PurchaseOrderSubscriberTest extends KernelTestCase
         ]);
         //endregion
 
+//        $this->eventMock->method('getWorkflowName')->willReturn('purchase_order');
+//        $this->validateTransitionMock->method('getName')->willReturn('validate');
+//        $this->eventMock->method('getTransition')->willReturn($this->validateTransitionMock);
 
-        //region 5. On teste la transition validate
+        //region 3. On teste la transition validate dans le cas normal
+//        $this->eventMock->method('getSubject')->willReturn($purchaseOrder1a);
+//        $this->subscriber->onWorkflowPurchaseOrderTransition($this->eventMock);
         $this->subscriber->applyTransitionToWorkflow($purchaseOrder1a, 'purchase_order', 'validate', $this->workflowRegistryMock);
-        $this->assertEquals('agreed', $purchaseOrder1a->getState(), "Un purchaseOrder à l'état initial cart devrait être dans l'état agreed après l'application de la transition validate");
+        $this->assertEquals('agreed', $purchaseOrder1a->getState(), "T1: Un purchaseOrder à l'état initial cart devrait être dans l'état agreed après l'application de la transition validate");
         //Tous les items enfants du purchaseOrder1a sont dans l'état agreed
         foreach ($purchaseOrder1a->getItems() as $item) {
-            $this->assertEquals('agreed', $item->getState(), "Un purchaseOrderItem à l'état initial draft devrait être dans l'état agreed après l'application de la transition validate sur le purchaseOrder parent");
+            $this->assertEquals('agreed', $item->getState(), "T1: Un purchaseOrderItem à l'état initial draft devrait être dans l'état agreed après l'application de la transition validate sur le purchaseOrder parent");
         }
 
         $this->subscriber->applyTransitionToWorkflow($purchaseOrder1b, 'purchase_order', 'validate', $this->workflowRegistryMock);
-        $this->assertEquals('agreed', $purchaseOrder1b->getState(), "Un purchaseOrder à l'état initial draft devrait être dans l'état agreed après l'application de la transition validate");
+        $this->assertEquals('agreed', $purchaseOrder1b->getState(), "T2: Un purchaseOrder à l'état initial draft devrait être dans l'état agreed après l'application de la transition validate");
         //Tous les items enfants du purchaseOrder1b sont dans l'état agreed
         foreach ($purchaseOrder1b->getItems() as $item) {
-            $this->assertEquals('agreed', $item->getState(), "Un purchaseOrderItem à l'état initial draft devrait être dans l'état agreed après l'application de la transition validate sur le purchaseOrder parent");
+            $this->assertEquals('agreed', $item->getState(), "T2: Un purchaseOrderItem à l'état initial draft devrait être dans l'état agreed après l'application de la transition validate sur le purchaseOrder parent");
         }
-
+        //endregion
+        //region 4. On teste la transtion validation dans un cas non valide
         $this->subscriber->applyTransitionToWorkflow($purchaseOrder2, 'purchase_order', 'validate', $this->workflowRegistryMock);
-        $this->assertEquals('initial', $purchaseOrder2->getState(), "Un purchaseOrder à l'état initial initial devrait rester dans son état initial après l'application de la transition validate");
+        $this->assertEquals('initial', $purchaseOrder2->getState(), "T3: Un purchaseOrder à l'état initial initial devrait rester dans son état initial après l'application de la transition validate");
         //Aucun des items enfants du purchaseOrder2 n'est dans l'état agreed
         foreach ($purchaseOrder2->getItems() as $item) {
-            $this->assertNotEquals('agreed', $item->getState(), "Un purchaseOrderItem à l'état initial draft ne devrait pas être dans l'état agreed après l'application de la transition validate sur le purchaseOrder parent");
+            $this->assertNotEquals('agreed', $item->getState(), "T3: Un purchaseOrderItem à l'état initial draft ne devrait pas être dans l'état agreed après l'application de la transition validate sur le purchaseOrder parent");
         }
         //endregion
     }
