@@ -80,7 +80,6 @@ class PurchaseOrderSubscriber implements EventSubscriberInterface
             $receipt_blocker = $object->getEmbBlocker()->getstate();
             /** @var ComponentItem|ProductItem $purchaseOrderItem */
             $purchaseOrderItem = $object->getItem();
-//            print_r($purchaseOrderItem);
             /**
              * Si la transition est "validate" et que le blocker est "enabled" alors on continue
              */
@@ -95,7 +94,6 @@ class PurchaseOrderSubscriber implements EventSubscriberInterface
                     return;
                 }
                 $purchaseOrderItemState = $purchaseOrderItem->getEmbState()->getState();
-//                echo "\npurchaseOrderItemState: $purchaseOrderItemState\n";
                 $purchased_quantity_confirmed = $purchaseOrderItem->getConfirmedQuantity();
                 $purchased_received_quantity = $purchaseOrderItem->getReceivedQuantity();
 
