@@ -59,7 +59,7 @@ class PurchaseOrderSubscriberTest extends KernelTestCase
         //endregion
         /** @var PurchaseOrderSubscriber $subscriber */
         $subscriber = $this->getSubscriber();
-        $subscriber->applyTransitionToWorkflow(
+        $subscriber->applyTransition(
             $purchaseOrder1a,
             $this->getWorkflowName(),
             $this->getTransitionName(),
@@ -76,7 +76,7 @@ class PurchaseOrderSubscriberTest extends KernelTestCase
                 "T1: Un purchaseOrderItem à l'état initial draft devrait être dans l'état agreed après l'application de la transition validate sur le purchaseOrder parent");
         }
 
-        $subscriber->applyTransitionToWorkflow(
+        $subscriber->applyTransition(
             $purchaseOrder1b,
             $this->getWorkflowName(),
             $this->getTransitionName(),
@@ -94,7 +94,7 @@ class PurchaseOrderSubscriberTest extends KernelTestCase
         }
         //endregion
         //region 4. On teste la transtion validation dans un cas non valide
-        $subscriber->applyTransitionToWorkflow(
+        $subscriber->applyTransition(
             $purchaseOrder2,
             $this->getWorkflowName(),
             $this->getTransitionName(),
@@ -166,7 +166,7 @@ class PurchaseOrderSubscriberTest extends KernelTestCase
         //endregion
         /** @var PurchaseOrderSubscriber $subscriber */
         $subscriber = $this->getSubscriber();
-        $subscriber->applyTransitionToWorkflow(
+        $subscriber->applyTransition(
             $purchaseOrder3,
             $this->getWorkflowName(),
             $this->getTransitionName(),
@@ -182,7 +182,7 @@ class PurchaseOrderSubscriberTest extends KernelTestCase
                 'Un purchaseOrderItem à l\'état received devrait être dans l\'état paid après l\'application de la transition pay sur le purchaseOrder parent');
         }
         $purchaseOrder4b = clone $purchaseOrder4;
-        $subscriber->applyTransitionToWorkflow(
+        $subscriber->applyTransition(
             $purchaseOrder4,
             $this->getWorkflowName(),
             $this->getTransitionName(),
