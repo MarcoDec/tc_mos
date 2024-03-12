@@ -23,10 +23,10 @@ use App\Entity\Quality\Reception\Check;
 
 class BlockerSubscriber implements EventSubscriberInterface
 {
-    private $workflowRegistry;
-    private $entityManager;
+    private Registry $workflowRegistry;
+    private EntityManagerInterface $entityManager;
 
-    public function __construct(Registry $workflowRegistry, private Logger $logger, EntityManagerInterface $entityManager)
+    public function __construct(Registry $workflowRegistry, private readonly Logger $logger, EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
         $this->workflowRegistry = $workflowRegistry;
@@ -47,7 +47,7 @@ class BlockerSubscriber implements EventSubscriberInterface
                 $state = $object->getEmbState()->getState();
                 if ($block === 'enabled') {
                     if ($state === 'draft') {
-                        $this->logger->info(`custumer est en êtat $state passe directement a close ` . $state);
+                        $this->logger->info(`customer est en état $state passe directement a close ` . $state);
                         $this->applyTransitionToWorkflow($object, 'customer', 'validate', $this->workflowRegistry);
                     }
                     $this->applyTransitionToWorkflow($object, 'customer', 'close', $this->workflowRegistry);
