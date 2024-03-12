@@ -30,7 +30,7 @@ class BlockerSubscriberTest extends KernelTestCase
      */
     public function testOnWorkflowBlockerTransition(): void
     {
-        echo "\nBlockerSubscriberTest::testOnWorkflowBlockerTransition()\n";
+//        echo "\nBlockerSubscriberTest::testOnWorkflowBlockerTransition()\n";
         $this->setTransitionName('disable');
 
         // Create a dummy Customer object

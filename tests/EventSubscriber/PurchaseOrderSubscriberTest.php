@@ -27,7 +27,7 @@ class PurchaseOrderSubscriberTest extends KernelTestCase
      */
     public function testApplyValidateTransitionToWorkflow(): void
     {
-        echo "\nPurchaseOrderSubscriberTest::testApplyValidateTransitionToWorkflow()\n";
+//        echo "\nPurchaseOrderSubscriberTest::testApplyValidateTransitionToWorkflow()\n";
         $this->setTransitionName('validate');
         //region 1. On crée un purchaseOrder bon pour la transition validate
         $purchaseOrder1a = $this->generatePurchaseOrderFromArray([
@@ -142,7 +142,7 @@ class PurchaseOrderSubscriberTest extends KernelTestCase
      */
     public function testApplyPayTransitionToWorkflow(): void
     {
-        echo "\nPurchaseOrderSubscriberTest::testApplyPayTransitionToWorkflow()\n";
+//        echo "\nPurchaseOrderSubscriberTest::testApplyPayTransitionToWorkflow()\n";
         $this->setTransitionName('pay');
         //region 1. On crée un purchaseOrder bon pour la transition pay
         $purchaseOrder3 = $this->generatePurchaseOrderFromArray([

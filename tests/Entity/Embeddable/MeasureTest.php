@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 final class MeasureTest extends TestCase {
     public function testAdd(): void {
-        echo "\nMeasureTest::testAdd()\n";
+//        echo "\nMeasureTest::testAdd()\n";
         $units = self::getUnits();
         $added = (new Measure())
             ->setCode('kg')
@@ -40,7 +40,7 @@ final class MeasureTest extends TestCase {
     }
 
     public function testAddDenominator(): void {
-        echo "\nMeasureTest::testAddDenominator()\n";
+//        echo "\nMeasureTest::testAddDenominator()\n";
         $units = self::getUnits();
         $added = (new Measure())
             ->setCode('m')
@@ -84,7 +84,7 @@ final class MeasureTest extends TestCase {
     }
 
     public function testConvert(): void {
-        echo "\nMeasureTest::testConvert()\n";
+//        echo "\nMeasureTest::testConvert()\n";
         $units = self::getUnits();
         $measure = (new Measure())
             ->setCode('kg')
@@ -104,7 +104,7 @@ final class MeasureTest extends TestCase {
     }
 
     public function testConvertDenominator(): void {
-        echo "\nMeasureTest::testConvertDenominator()\n";
+//        echo "\nMeasureTest::testConvertDenominator()\n";
         $units = self::getUnits();
         $measure = (new Measure())
             ->setCode('km')
@@ -130,7 +130,7 @@ final class MeasureTest extends TestCase {
     }
 
     public function testIsGreaterThanOrEqual(): void {
-        echo "\nMeasureTest::testIsGreaterThanOrEqual()\n";
+//        echo "\nMeasureTest::testIsGreaterThanOrEqual()\n";
         $units = self::getUnits();
         $compared = (new Measure())
             ->setCode('m')
