@@ -183,7 +183,27 @@ services:
     networks:
       - traefik_reseau_tc
     restart: always
+  redis:
+    image: redis:latest
+    container_name: tconcept_gpao_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./docker/redis/data:/data
+    networks:
+      - traefik_reseau_tc
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.redis.rule=Host(`redis.${DOMAIN}`)"
+      - "traefik.http.routers.redis.entrypoints=websecure"
+      - "traefik.http.routers.redis.tls=true"
+      - "traefik.http.routers.redis.tls.certresolver=myresolver"
+      - "traefik.http.services.redis.loadbalancer.server.port=6379"
+
 networks:
   traefik_reseau_tc:
     external: true
 version: '3.3'
+
+
