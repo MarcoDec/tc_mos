@@ -23,6 +23,11 @@ class BlockerSubscriberTest extends KernelTestCase
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $this->subscriber = new BlockerSubscriber($this->workflowRegistry, $this->getLoggerMock(), $entityManager);
     }
+
+    /**
+     *  Teste la méthode onWorkflowBlockerTransition de la classe BlockerSubscriber
+     * @return void
+     */
     public function testOnWorkflowBlockerTransition(): void
     {
         echo "\nBlockerSubscriberTest::testOnWorkflowBlockerTransition()\n";
@@ -60,8 +65,7 @@ class BlockerSubscriberTest extends KernelTestCase
         $blockerSubscriber->onWorkflowBlockerTransition($this->getEventMock());
         $blockerSubscriber->applyTransitionToWorkflow($customerMock, 'blocker', 'disable', $this->getWorkflowRegistry());
 
-        // Add assertions to check the final state after transitions
-       // $this->assertEquals('disabled', $customerMock->getEmbBlocker()->getState());
+
         $this->assertEquals('closed', $customerMock->getEmbState()->getState());
     }
 }

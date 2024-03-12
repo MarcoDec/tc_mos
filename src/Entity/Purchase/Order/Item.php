@@ -425,8 +425,9 @@ abstract class Item extends BaseItem {
         return $this->receivedQuantity;
     }
 
-    public function setReceivedQuantity(Measure $receivedQuantity): void
+    public function setReceivedQuantity(Measure $receivedQuantity): self
     {
         $this->receivedQuantity = $receivedQuantity;
+        return $this;
     }
 }

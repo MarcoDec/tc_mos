@@ -347,7 +347,7 @@ class BlockerSubscriber implements EventSubscriberInterface
             'onWorkflowBlockerTransition' => 'handleBlockerTransition',
             'workflow.blocker.transition' => 'onWorkflowBlockerTransition',
             'workflow.closer.transition' => 'onWorkflowCloserTransition',
-            'workflow.purchase_order_item_closer.transition' => 'onWorkflowPurchaseOrderItemCloserTransition',
+            'workflow.purchase_order_item_closer.transition' => 'onWorkflowPurchaseOrderItemCloserTransition'
         ];
     }
 }

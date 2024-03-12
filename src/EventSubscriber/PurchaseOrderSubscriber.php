@@ -2,8 +2,10 @@
 
 namespace App\EventSubscriber;
 
+use App\Entity\Accounting\ComponentItem;
 use App\Entity\Logistics\Order\Receipt;
 use App\Entity\Purchase\Order\Order as PurchaseOrder;
+use App\Entity\Purchase\Order\ProductItem;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\Event;
@@ -76,20 +78,24 @@ class PurchaseOrderSubscriber implements EventSubscriberInterface
 
         if ($object instanceof Receipt && $workflowName === 'receipt') {
             $receipt_blocker = $object->getEmbBlocker()->getstate();
+            /** @var ComponentItem|ProductItem $purchaseOrderItem */
             $purchaseOrderItem = $object->getItem();
+//            print_r($purchaseOrderItem);
             /**
              * Si la transition est "validate" et que le blocker est "enabled" alors on continue
              */
             if ($transitionName === 'validate' && $receipt_blocker === 'enabled') {
                 $received_quantity = $object->getQuantity();
                 if (!isset($purchaseOrderItem)) {
+                    $message = "La réception ".$object->getId()." n'est associé à aucun item de commande";
                     $this->logger->warning(
-                        `La réception ${$object->getId()} n'est associé à aucun item de commande`,
+                        $message,
                         ['receipt' => $object, 'workflow' => 'receipt', 'transition' => 'validate', 'blocker' => $receipt_blocker, 'purchaseOrderItem' => $purchaseOrderItem]
                     );
                     return;
                 }
                 $purchaseOrderItemState = $purchaseOrderItem->getEmbState()->getState();
+//                echo "\npurchaseOrderItemState: $purchaseOrderItemState\n";
                 $purchased_quantity_confirmed = $purchaseOrderItem->getConfirmedQuantity();
                 $purchased_received_quantity = $purchaseOrderItem->getReceivedQuantity();
 
@@ -105,8 +111,9 @@ class PurchaseOrderSubscriber implements EventSubscriberInterface
                     if ($purchaseOrderItemState === 'agreed' || $purchaseOrderItemState === 'partially_received') {
                         $this->applyTransition($purchaseOrderItem, 'purchase_order_item', 'receive', $this->workflowRegistry);
                     } else {
+                        $message = "La réception ".$object->getId()." est associée à l'item de commande ".$purchaseOrderItem->getId()." dans le statut non compatible ".$purchaseOrderItemState;
                         $this->logger->warning(
-                            `La réception ${$object->getId()} est associé à l'item de commande ${$purchaseOrderItem->getId()} dans le statut non compatible $purchaseOrderItemState`,
+                            $message,
                             ['receipt' => $object, 'workflow' => 'receipt', 'transition' => 'validate', 'blocker' => $receipt_blocker, 'purchaseOrderItem' => $purchaseOrderItem]
                         );
                     }
@@ -120,8 +127,9 @@ class PurchaseOrderSubscriber implements EventSubscriberInterface
                         $this->applyTransition($purchaseOrderItem, 'purchase_order_item', 'partially_receive', $this->workflowRegistry);
                     } else {
                         if ($purchaseOrderItemState !== 'partially_received') {
+                            $message = "La réception ".$object->getId()." est associée à l'item de commande ".$purchaseOrderItem->getId()." dans le statut non compatible ".$purchaseOrderItemState;
                             $this->logger->warning(
-                                `La réception ${$object->getId()} est associé à l'item de commande ${$purchaseOrderItem->getId()} dans le statut non compatible $purchaseOrderItemState`,
+                                $message,
                                 ['receipt' => $object, 'workflow' => 'receipt', 'transition' => 'validate', 'blocker' => $receipt_blocker, 'purchaseOrderItem' => $purchaseOrderItem]
                             );
                         }
