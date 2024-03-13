@@ -2,38 +2,49 @@ import {
     faAddressCard,
     faAngleDoubleLeft,
     faArrowRightToBracket,
+    faAt,
     faAtom,
+    faBackwardFast,
+    faBackwardStep,
+    faBan,
     faBars,
     faBell,
     faBook,
     faBox,
-    faBoxes,
     faBoxOpen,
+    faBoxes,
     faBriefcase,
     faBuilding,
-    faBullseye,
     faBullhorn,
+    faBullseye,
     faBusinessTime,
     faCalendar,
+    faCalendarAlt,
     faCalendarDay,
     faCalendarWeek,
     faCaretDown,
     faCaretUp,
+    faCartShopping,
     faCertificate,
     faChartLine,
     faCheck,
     faCheckCircle,
+    faCheckDouble,
     faChevronDown,
+    faChevronRight,
     faChevronUp,
     faCircleDollarToSlot,
     faCircleInfo,
     faCity,
-    faClock,
     faClipboardCheck,
     faClipboardList,
+    faClock,
+    faCogs,
     faCommentsDollar,
     faCubesStacked,
     faDatabase,
+    faDesktop,
+    faDownload,
     faEuroSign,
     faExclamationTriangle,
     faEye,
@@ -41,38 +52,57 @@ import {
     faFileInvoice,
     faFileInvoiceDollar,
     faFilter,
+    faFlask,
     faFolder,
+    faForwardFast,
+    faForwardStep,
+    faGaugeHigh,
     faGear,
     faHandHoldingUsd,
+    faHandshake,
+    faHistory,
     faHourglass,
     faHourglassHalf,
     faIcons,
     faIndustry,
     faLaptop,
+    faLaptopCode,
     faLayerGroup,
     faListSquares,
     faLocationDot,
+    faLock,
     faMagnet,
+    faMagnifyingGlassMinus,
+    faMagnifyingGlassPlus,
     faMale,
     faMapMarked,
     faMapMarkedAlt,
     faMoneyBill1,
+    faMoneyBillWave,
+    faNetworkWired,
     faOilWell,
-    faPallet,
+    faPaintRoller,
     faPalette,
-    faPencilAlt,
+    faPallet,
+    faPaperPlane,
     faPencil,
+    faPencilAlt,
     faPeopleGroup,
     faPlus,
     faPlusCircle,
     faPrint,
     faProjectDiagram,
     faPuzzlePiece,
+    faQuestionCircle,
     faReceipt,
     faRepeat,
+    faRetweet,
     faRightToBracket,
+    faRotateLeft,
     faRulerHorizontal,
     faRulerVertical,
+    faSave,
+    faScaleBalanced,
     faScrewdriverWrench,
     faSearch,
     faServer,
@@ -82,51 +112,41 @@ import {
     faSignOutAlt,
     faSignal,
     faSitemap,
+    faSquare,
     faSquarePlus,
     faStar,
     faTags,
     faTimes,
-    faTruck,
+    faTimesCircle,
+    faToggleOff,
+    faToggleOn,
     faToolbox,
+    faTools,
     faTrash,
+    faTruck,
     faTruckField,
+    faTruckLoading,
+    faUnlock,
     faUserCircle,
     faUserGraduate,
-    faUsers,
     faUserTag,
     faUserTie,
+    faUsers,
+    faWallet,
     faWarehouse,
-    faWrench,
-    faGaugeHigh,
-    faCartShopping,
-    faScaleBalanced,
-    faBackwardStep,
-    faChevronRight,
-    faDownload,
-    faBackwardFast,
-    faForwardStep,
-    faForwardFast,
-    faSquare,
-    faNetworkWired,
-    faRotateLeft,
-    faSave,
-    faAt,
-    faMagnifyingGlassPlus,
-    faMagnifyingGlassMinus,
-    faPaintRoller,
-    faHistory,
-    faRetweet, faFlask, faDesktop, faCogs, faLaptopCode
+    faWrench
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
 
-library.add(faAt)
 library.add(faAddressCard)
 library.add(faAngleDoubleLeft)
 library.add(faArrowRightToBracket)
+library.add(faAt)
 library.add(faAtom)
 library.add(faBackwardFast)
 library.add(faBackwardStep)
+library.add(faBan)
 library.add(faBars)
 library.add(faBell)
 library.add(faBook)
@@ -135,10 +155,11 @@ library.add(faBoxOpen)
 library.add(faBoxes)
 library.add(faBriefcase)
 library.add(faBuilding)
-library.add(faBullseye)
 library.add(faBullhorn)
+library.add(faBullseye)
 library.add(faBusinessTime)
 library.add(faCalendar)
+library.add(faCalendarAlt)
 library.add(faCalendarDay)
 library.add(faCalendarWeek)
 library.add(faCaretDown)
@@ -148,6 +169,7 @@ library.add(faCertificate)
 library.add(faChartLine)
 library.add(faCheck)
 library.add(faCheckCircle)
+library.add(faCheckDouble)
 library.add(faChevronDown)
 library.add(faChevronRight)
 library.add(faChevronUp)
@@ -155,7 +177,6 @@ library.add(faCircleDollarToSlot)
 library.add(faCircleInfo)
 library.add(faCity)
 library.add(faClipboardCheck)
-library.add(faClipboardList)
 library.add(faClipboardList)
 library.add(faClock)
 library.add(faCogs)
@@ -179,6 +200,7 @@ library.add(faForwardStep)
 library.add(faGaugeHigh)
 library.add(faGear)
 library.add(faHandHoldingUsd)
+library.add(faHandshake)
 library.add(faHistory)
 library.add(faHourglass)
 library.add(faHourglassHalf)
@@ -189,20 +211,21 @@ library.add(faLaptopCode)
 library.add(faLayerGroup)
 library.add(faListSquares)
 library.add(faLocationDot)
-library.add(faLocationDot)
+library.add(faLock)
 library.add(faMagnet)
-library.add(faMale)
 library.add(faMagnifyingGlassMinus)
 library.add(faMagnifyingGlassPlus)
+library.add(faMale)
 library.add(faMapMarked)
 library.add(faMapMarkedAlt)
 library.add(faMoneyBill1)
+library.add(faMoneyBillWave)
 library.add(faNetworkWired)
 library.add(faOilWell)
 library.add(faPaintRoller)
 library.add(faPalette)
 library.add(faPallet)
-library.add(faPencil)
+library.add(faPaperPlane)
 library.add(faPencil)
 library.add(faPencilAlt)
 library.add(faPeopleGroup)
@@ -212,6 +235,7 @@ library.add(faPrint)
 library.add(faProductHunt)
 library.add(faProjectDiagram)
 library.add(faPuzzlePiece)
+library.add(faQuestionCircle)
 library.add(faReceipt)
 library.add(faRepeat)
 library.add(faRetweet)
@@ -229,21 +253,27 @@ library.add(faShoppingCart)
 library.add(faShuttleVan)
 library.add(faSignOutAlt)
 library.add(faSignal)
-library.add(faSignal)
 library.add(faSitemap)
 library.add(faSquare)
 library.add(faSquarePlus)
 library.add(faStar)
 library.add(faTags)
 library.add(faTimes)
+library.add(faTimesCircle)
+library.add(faToggleOff)
+library.add(faToggleOn)
 library.add(faToolbox)
+library.add(faTools)
 library.add(faTrash)
 library.add(faTruck)
 library.add(faTruckField)
+library.add(faTruckLoading)
+library.add(faUnlock)
 library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
 library.add(faUserTie)
 library.add(faUsers)
+library.add(faWallet)
 library.add(faWarehouse)
 library.add(faWrench)

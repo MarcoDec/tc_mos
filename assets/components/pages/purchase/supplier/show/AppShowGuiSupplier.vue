@@ -10,6 +10,8 @@
     import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
     import {useRoute} from 'vue-router'
     import AppSupplierShowTabGeneral from './tabs/AppSupplierShowTabGeneral.vue'
+    import AppWorkflow from "../../../../workflow/AppWorkflow.vue";
+    import AppWorkflowShow from "../../../../workflow/AppWorkflowShow.vue";
 
     const isFullScreen = ref(false)
 
@@ -18,15 +20,21 @@
     const fetchSupplierStore = useSuppliersStore()
     const route = useRoute()
     const idSupplier = Number(route.params.id_supplier)
+    const iriSupplier = ref('')
     const keyTabs = ref(0)
     const modeDetail = ref(true)
     const imageUpdateUrl = `/api/suppliers/${idSupplier}/image`
     const filePath = computed(() => `${fetchSupplierStore.supplier.filePath}?${Date.now()}`)
 
     onBeforeMount(() => {
+        // console.log('onBeforeMount start')
         fetchSupplierStore.fetchOne(idSupplier).then(() => {
+            // console.log('informations fournisseur chargées')
+            iriSupplier.value = fetchSupplierStore.supplier['@id']
             beforeMountDataLoaded.value = true
+            console.log(iriSupplier.value)
         })
+        // console.log('onBeforeMount end')
     })
     const onUpdated = () => {
         keyTitle.value++
@@ -46,6 +54,14 @@
     const deactivateFullScreen = () => {
         isFullScreen.value = false
     }
+    const possibleStateActions = [
+        'accept',
+        'reject'
+    ]
+    const currentState = 'draft'
+    /**
+     * v-if="beforeMountDataLoaded"
+     */
 </script>
 
 <template>
@@ -53,12 +69,19 @@
         <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <FontAwesomeIcon icon="user-tie"/>
-                    <b>{{ fetchSupplierStore.supplier.id }}</b>: {{ fetchSupplierStore.supplier.name }}
-                    <span class="btn-float-right">
-                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
-                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
-                    </span>
+                    <div class="d-flex flex-row">
+                        <div>
+                            <FontAwesomeIcon icon="user-tie"/>
+                            <b style="margin-left:10px;">{{ fetchSupplierStore.supplier.id }}</b>: {{ fetchSupplierStore.supplier.name }}
+                        </div>
+                        <AppSuspense>
+                            <AppWorkflowShow :workflow-to-show="['supplier', 'blocker']" :item-iri="iriSupplier"/>
+                        </AppSuspense>
+                        <span style="margin-left: auto">
+                            <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
+                            <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
+                        </span>
+                    </div>
                 </div>
                 <div class="d-flex flex-row">
                     <AppImg
