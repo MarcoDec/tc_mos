@@ -2,16 +2,20 @@
     import AppShowGuiGen from '../../../../AppShowGuiGen.vue'
     import {useRoute, useRouter} from 'vue-router'
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
-    import {ref} from 'vue'
+    import {onBeforeMount, ref} from 'vue'
     import AppImg from '../../../../../AppImg.vue'
     import {useGenEngineStore} from '../../../../../../stores/production/engine/generic/engines'
     import AppShowSparePartTabGeneral from './tabs/AppShowSparePartTabGeneral.vue'
     import AppSparePartFormShow from './AppSparePartFormShow.vue'
+    import AppSuspense from "../../../../../AppSuspense.vue";
+    import AppWorkflowShow from "../../../../../workflow/AppWorkflowShow.vue";
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
+    const iriEngine = ref('')
     const keyTitle = ref(0)
     const modeDetail = ref(true)
+    const beforeMountDataLoaded = ref(false)
     const enginesStr = 'spare-parts'
     const baseUrl = '/api/spare-parts'
 
@@ -26,6 +30,15 @@
     useFetchEnginesStore().fetchOne(idEngine)
     const keyTabs = ref(0)
     //endregion
+    onBeforeMount(() => {
+        const promises = []
+        // console.log('onBeforeMount')
+        promises.push(useFetchEnginesStore().fetchOne(idEngine))
+        Promise.all(promises).then(() => {
+            iriEngine.value = useFetchEnginesStore().engine['@id']
+            beforeMountDataLoaded.value = true
+        })
+    })
     const onUpdated = () => {
         // console.log('onUpdated')
         const promises = []
@@ -33,6 +46,8 @@
         promises.push(useFetchEnginesStore().fetchOne(idEngine))
         // promises.push(fetchUnits.fetchOp())
         Promise.all(promises).then(() => {
+            iriEngine.value = useFetchEnginesStore().engine['@id']
+            beforeMountDataLoaded.value = true
             keyTitle.value++
         })
     }
@@ -59,17 +74,24 @@
 
 <template>
     <AppSuspense>
-        <AppShowGuiGen>
+        <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <button class="text-dark mr-10" :title="goToListMessage" @click="goBack">
-                        <FontAwesomeIcon :icon="icon"/> {{ engineStr }}
-                    </button>
-                    <b>{{ useFetchEnginesStore().engine.code }}</b>: {{ useFetchEnginesStore().engine.name }}
+                    <div class="d-flex flex-row">
+                        <div>
+                            <button class="text-dark mr-10" :title="goToListMessage" @click="goBack">
+                                <FontAwesomeIcon :icon="icon"/> {{ engineStr }}
+                            </button>
+                            <b>{{ useFetchEnginesStore().engine.code }}</b>: {{ useFetchEnginesStore().engine.name }}
+                        </div>
+                        <AppSuspense>
+                            <AppWorkflowShow :workflow-to-show="['engine', 'blocker']" :item-iri="iriEngine"/>
+                        </AppSuspense>
                     <!--                    <span class="btn-float-right">-->
                     <!--                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>-->
                     <!--                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>-->
                     <!--                    </span>-->
+                    </div>
                 </div>
                 <div class="d-flex flex-row">
                     <AppImg
