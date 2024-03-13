@@ -9,9 +9,11 @@
     import AppShowInformatiqueTabGeneral from './AppShowInformatiqueTabGeneral.vue'
     import AppInformatiqueFormShow from './AppInformatiqueFormShow.vue'
     import {useInformatiqueStore} from '../../../../../../stores/it/equipment/informatique/informatique'
+    import AppWorkflowShow from "../../../../../workflow/AppWorkflowShow.vue";
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
+    const iriEngine = ref('')
     const fetchUnits = useOptions('units')
     const useEngineStore = useInformatiqueStore()
     const keyTitle = ref(0)
@@ -28,6 +30,7 @@
         promises.push(fetchUnits.fetchOp())
         promises.push(useEngineStore.fetchOne(idEngine))
         Promise.all(promises).then(() => {
+            iriEngine.value = useEngineStore.engine['@id']
             beforeMountDataLoaded.value = true
             // console.log('beforeMountDataLoaded', useEngineStore.engine)
         })
@@ -69,14 +72,21 @@
         <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <button class="text-dark mr-10" title="Retour à la liste des matériels informatiques" @click="goBack">
-                        <FontAwesomeIcon icon="laptop-code"/> Matériel informatique
-                    </button>
-                    <b>{{ useEngineStore.engine.code }}</b>: {{ useEngineStore.engine.name }}
+                    <div class="d-flex flex-row">
+                        <div>
+                            <button class="text-dark mr-10" title="Retour à la liste des matériels informatiques" @click="goBack">
+                                <FontAwesomeIcon icon="laptop-code"/> Matériel informatique
+                            </button>
+                            <b>{{ useEngineStore.engine.code }}</b>: {{ useEngineStore.engine.name }}
+                        </div>
+                        <AppSuspense>
+                            <AppWorkflowShow :workflow-to-show="['engine', 'blocker']" :item-iri="iriEngine"/>
+                        </AppSuspense>
                     <!--    <span class="btn-float-right">-->
                     <!--        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>-->
                     <!--        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>-->
                     <!--    </span>-->
+                    </div>
                 </div>
                 <div class="d-flex flex-row">
                     <AppImg
