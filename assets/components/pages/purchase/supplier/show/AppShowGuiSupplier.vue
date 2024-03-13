@@ -32,7 +32,6 @@
             // console.log('informations fournisseur chargées')
             iriSupplier.value = fetchSupplierStore.supplier['@id']
             beforeMountDataLoaded.value = true
-            console.log(iriSupplier.value)
         })
         // console.log('onBeforeMount end')
     })
@@ -54,11 +53,6 @@
     const deactivateFullScreen = () => {
         isFullScreen.value = false
     }
-    const possibleStateActions = [
-        'accept',
-        'reject'
-    ]
-    const currentState = 'draft'
     /**
      * v-if="beforeMountDataLoaded"
      */
