@@ -32,17 +32,28 @@ class BlockerSubscriber implements EventSubscriberInterface
         $this->workflowRegistry = $workflowRegistry;
     }
 
+    /**
+     * Cette méthode permet de gérer les transitions du workflow blocker des entités Customer, Expedition, Supplier, Component, Product et Receipt
+     * @param Event $event
+     * @return void
+     */
     public function onWorkflowBlockerTransition(Event $event): void
     {
         $object = $event->getSubject();
-        $workflowName = $event->getWorkflowName();
-        $transition = $event->getTransition();
-        $before = $transition->getFroms()[0];
-        $after = $transition->getTos()[0];
-        $transitionName = $transition->getName();
+        $blockerWorkflowName = $event->getWorkflowName();
+        $blockerTransition = $event->getTransition();
+        $before = $blockerTransition->getFroms()[0];
+        $after = $blockerTransition->getTos()[0];
+        $blockerTransitionName = $blockerTransition->getName();
 
-        if ($object instanceof Customer && $workflowName === 'blocker') {
-            if ($transitionName === 'disable' && $before === 'enabled' && $after === 'disabled') {
+        /**
+         * Dans le cas du workflow blocker de Customer
+         */
+        if ($object instanceof Customer && $blockerWorkflowName === 'blocker') {
+            /**
+             * Si un Customer est désactivé, on désactive les SellingOrders associées
+             */
+            if ($blockerTransitionName === 'disable' && $before === 'enabled' && $after === 'disabled') {
                 $block = $object->getBlocker();
                 $state = $object->getEmbState()->getState();
                 if ($block === 'enabled') {
@@ -57,22 +68,33 @@ class BlockerSubscriber implements EventSubscriberInterface
                 // on passe de enabled a closed dans le closer du sellingOrder
                 $this->updateWorkflowState($object->getSellingOrders(), 'closer', 'close', $this->workflowRegistry);
             }
-            if ($transitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
+            /**
+             * Si le Customer est débloqué, on débloque les commandes associées
+             */
+            if ($blockerTransitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
                 $this->updateWorkflowState($object->getSellingOrders(), 'closer', 'unlock', $this->workflowRegistry);
             }
-            if ($transitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
-                $sellingorders = $object->getSellingOrders();
-
-                foreach ($sellingorders as $sellingorder) {
-                    $sell = $sellingorder->getState();
-                    if ($sell === 'to-validate' || $sell === 'agreed' || $sell === 'partially_delivered') {
-                        $this->applyTransitionToWorkflow($sellingorder, 'closer', 'block', $this->workflowRegistry);
+            /**
+             * Si le customer est bloqué, on bloque les commandes associées
+             */
+            if ($blockerTransitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
+                $sellingOrders = $object->getSellingOrders();
+                foreach ($sellingOrders as $sellingOrder) {
+                    $sell = $sellingOrder->getState();
+                    if ($sell === 'to_validate' || $sell === 'agreed' || $sell === 'partially_delivered') {
+                        $this->applyTransitionToWorkflow($sellingOrder, 'closer', 'block', $this->workflowRegistry);
                     }
                 }
             }
         }
-        if ($object instanceof Expedition && $workflowName === 'blocker') {
-            if ($transitionName === 'disable' && $before === 'enabled' && $after === 'disabled') {
+        /**
+         * Dans le cas du workflow blocker de Expedition
+         */
+        if ($object instanceof Expedition && $blockerWorkflowName === 'blocker') {
+            /**
+             * Si l'expedition est désactivée, on désactive les items de facture associées
+             */
+            if ($blockerTransitionName === 'disable' && $before === 'enabled' && $after === 'disabled') {
                 $billItems = $object->getExpeditionItems();
                 foreach ($billItems as $billItem) {
                     $bill = $billItem->getBill();
@@ -84,20 +106,42 @@ class BlockerSubscriber implements EventSubscriberInterface
                     $this->applyTransitionToWorkflow($bill, 'blocker', 'disable', $this->workflowRegistry);
                 }
             }
-            if ($transitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
+            /**
+             * Si l'expedition est débloquée, on débloque les items de facture associées
+             */
+            if ($blockerTransitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
                 $billItems = $object->getExpeditionItems();
                 foreach ($billItems as $billItem) {
                     $bill = $billItem->getBill();
                     $this->applyTransitionToWorkflow($bill, 'blocker', 'unlock', $this->workflowRegistry);
                 }
             }
+            /**
+             * Si l'expedition est bloquée, on bloque les items de facture associées
+             */
+            if ($blockerTransitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
+                $billItems = $object->getExpeditionItems();
+                foreach ($billItems as $billItem) {
+                    $bill = $billItem->getBill();
+                    $this->applyTransitionToWorkflow($bill, 'blocker', 'block', $this->workflowRegistry);
+                }
+            }
         }
-        if ($object instanceof Supplier && $workflowName === 'blocker') {
-            if ($transitionName === 'disable' && $before === 'enabled' && $after === 'disabled') {
+        /**
+         * Dans le cas du workflow blocker de Supplier
+         */
+        if ($object instanceof Supplier && $blockerWorkflowName === 'blocker') {
+            /**
+             * Si un fournisseur est désactivé, on désactive les commandes fournisseurs associées
+             */
+            if ($blockerTransitionName === 'disable' && $before === 'enabled' && $after === 'disabled') {
                 $this->updateWorkflowState($object->getOrders(), 'closer', 'unlock', $this->workflowRegistry);
                 $this->updateWorkflowState($object->getOrders(), 'closer', 'close', $this->workflowRegistry);
             }
-            if ($transitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
+            /**
+             * Si le fournisseur est débloqué, on débloque les commandes fournisseurs associées
+             */
+            if ($blockerTransitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
                 $purchaseOrders = $object->getOrders();
                 foreach ($purchaseOrders as $purchaseOrder) {
                     $embState = $purchaseOrder->getEmbState()->getState();
@@ -106,7 +150,10 @@ class BlockerSubscriber implements EventSubscriberInterface
                     }
                 }
             }
-            if ($transitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
+            /**
+             * Si le fournisseur est bloqué, on bloque les commandes fournisseurs associées
+             */
+            if ($blockerTransitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
                 $purchaseOrders = $object->getOrders();
                 foreach ($purchaseOrders as $purchaseOrder) {
                     $embState = $purchaseOrder->getEmbState()->getState();
@@ -116,8 +163,14 @@ class BlockerSubscriber implements EventSubscriberInterface
                 }
             }
         }
-        if ($object instanceof Component && $workflowName === 'blocker') {
-            if ($transitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
+        /**
+         * Dans le cas du workflow blocker de Component
+         */
+        if ($object instanceof Component && $blockerWorkflowName === 'blocker') {
+            /**
+             * Si un composant est débloqué, on débloque les commandes fournisseurs associées, ainsi que les réceptions associées
+             */
+            if ($blockerTransitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
                 //les commandes fournisseurs qui sont en cours passe a enabled si le composant passe a enabled
                 $compo = $object->getId();
                 $componentItemRepository = $this->entityManager->getRepository(ComponentItem::class);
@@ -137,7 +190,10 @@ class BlockerSubscriber implements EventSubscriberInterface
                     }
                 }
             }
-            if ($transitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
+            /**
+             * Si un composant est bloqué, on bloque les commandes fournisseurs associées, ainsi que les réceptions associées
+             */
+            if ($blockerTransitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
                 //les commandes fournisseurs qui sont en cours passe a blocked si le composant passe a blocked
                 $compo = $object->getId();
                 $componentItemRepository = $this->entityManager->getRepository(ComponentItem::class);
@@ -169,10 +225,16 @@ class BlockerSubscriber implements EventSubscriberInterface
                 }
             }
         }
-        if ($object instanceof Product && $workflowName === 'blocker') {
+        /**
+         * Dans le cas du workflow blocker de Product
+         */
+        if ($object instanceof Product && $blockerWorkflowName === 'blocker') {
             $orders = $object->getProductOrders();
             $productstate = $object->getEmbState()->getState();
-            if ($transitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
+            /**
+             * Si le produit est bloqué, on bloque les ordres de fabrication associées
+             */
+            if ($blockerTransitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
                 if ($productstate === 'agreed' || $productstate === 'to_validate' || $productstate === 'warning') {
                     foreach ($orders as $order) {
                         $state = $order->getEmbState()->getState();
@@ -182,7 +244,10 @@ class BlockerSubscriber implements EventSubscriberInterface
                     }
                 }
             }
-            if ($transitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
+            /**
+             * Si le produit est débloqué, on débloque les ordres de fabrication associées
+             */
+            if ($blockerTransitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
                 if ($productstate === 'agreed' || $productstate === 'to_validate' || $productstate === 'warning') {
                     foreach ($orders as $order) {
                         $state = $order->getEmbState()->getState();
@@ -193,12 +258,17 @@ class BlockerSubscriber implements EventSubscriberInterface
                 }
             }
         }
-        if ($object instanceof Receipt && $workflowName === 'blocker') {
+        /**
+         * Dans le cas du workflow blocker de Receipt
+         */
+        if ($object instanceof Receipt && $blockerWorkflowName === 'blocker') {
             $checks = $object->getChecks();
             $state = $object->getEmbState()->getState();
             $block = $object->getEmbBlocker()->getState();
-
-            if ($transitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
+            /**
+             * Si la réception est bloquée, on bloque les contrôles associées
+             */
+            if ($blockerTransitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
                 if ($state === 'asked' || $state === 'to_validate') {
                     foreach ($checks as $check) {
                         $this->applyTransitionToWorkflow($check, 'check', 'reject', $this->workflowRegistry);
@@ -208,49 +278,97 @@ class BlockerSubscriber implements EventSubscriberInterface
         }
     }
 
+    /**
+     * Cette méthode permet de gérer les transitions du workflow closer des entités SellingOrder, SellingOrderItem, ManufacturingOrder
+     * @param Event $event
+     * @return void
+     */
     public function onWorkflowCloserTransition(Event $event): void
     {
         $object = $event->getSubject();
-        $transition = $event->getTransition();
-        $workflowName = $event->getWorkflowName();
-        $before = $transition->getFroms()[0];
-        $after = $transition->getTos()[0];
-        $transitionName = $transition->getName();
+        $closerTransition = $event->getTransition();
+        $closerWorkflowName = $event->getWorkflowName();
+        $before = $closerTransition->getFroms()[0];
+        $after = $closerTransition->getTos()[0];
+        $closerTransitionName = $closerTransition->getName();
 
-        if ($object instanceof Order && $workflowName === 'closer') {
-            if ($transitionName === 'close' && $before === 'enabled' && $after === 'closed') {
+        /**
+         * Dans le cas du workflow closer de Order
+         */
+        if ($object instanceof Order && $closerWorkflowName === 'closer') {
+            /**
+             * Si une commande est désactivée, on désactive les items de commande associées
+             */
+            if ($closerTransitionName === 'close' && $before === 'enabled' && $after === 'closed') {
                 $this->updateWorkflowState($object->getSellingOrderItems(), 'closer', 'unlock', $this->workflowRegistry);
                 $this->updateWorkflowState($object->getSellingOrderItems(), 'closer', 'close', $this->workflowRegistry);
             }
-            if ($transitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
+            /**
+             * Si la commande est débloquée, on débloque les items de commande associées
+             */
+            if ($closerTransitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
                 $this->updateWorkflowState($object->getSellingOrderItems(), 'closer', 'unlock', $this->workflowRegistry);
             }
-            if ($transitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
+            /**
+             * Si la commande est bloquée, on bloque les items de commande associées
+             */
+            if ($closerTransitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
                 $sellingorderitems = $object->getSellingOrderItems();
                 foreach ($sellingorderitems as $sellingorderitem) {
                     $sellitem = $sellingorderitem->getState();
-                    if ($sellitem === 'to-validate' || $sellitem === 'agreed' || $sellitem === 'partially_delivered') {
+                    if ($sellitem === 'draft' || $sellitem === 'agreed' || $sellitem === 'partially_delivered') {
                         $this->applyTransitionToWorkflow($sellingorderitem, 'closer', 'block', $this->workflowRegistry);
                     }
                 }
             }
         }
-        if ($object instanceof Item && $workflowName === 'closer') {
-            if ($transitionName === 'close' && $before === 'enabled' && $after === 'closed') {
+        /**
+         * Dans le cas du workflow closer de Item
+         */
+        if ($object instanceof Item && $closerWorkflowName === 'closer') {
+            /**
+             * Si un item est désactivé, on désactive les expéditions associées
+             */
+            if ($closerTransitionName === 'close' && $before === 'enabled' && $after === 'closed') {
                 // mettre a jours le blocker workflow associée a Expedition
                 $this->updateWorkflowState($object->getExpeditions(), 'blocker', 'unlock', $this->workflowRegistry);
                 $this->updateWorkflowState($object->getExpeditions(), 'blocker', 'disable', $this->workflowRegistry);
             }
-            if ($transitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
+
+            /**
+             * Si l'item est débloqué, on débloque les expéditions associées
+             */
+            if ($closerTransitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
                 $this->updateWorkflowState($object->getExpeditions(), 'blocker', 'unlock', $this->workflowRegistry);
             }
+            /**
+             * Si l'item est bloqué, on bloque les expéditions associées
+             */
+            if ($closerTransitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
+                $expeditions = $object->getExpeditions();
+                foreach ($expeditions as $expedition) {
+                    $state = $expedition->getEmbState()->getState();
+                    if ($state === 'draft' || $state === 'to_send' ) {
+                        $this->applyTransitionToWorkflow($expedition, 'blocker', 'block', $this->workflowRegistry);
+                    }
+                }
+            }
         }
-        if ($object instanceof PurchaseOrder && $workflowName === 'closer') {
-            if ($transitionName === 'close' && $before === 'enabled' && $after === 'closed') {
+        /**
+         * Dans le cas du workflow closer de PurchaseOrder
+         */
+        if ($object instanceof PurchaseOrder && $closerWorkflowName === 'closer') {
+            /**
+             * Si une commande fournisseur est désactivée, on désactive les items de commande fournisseur associées
+             */
+            if ($closerTransitionName === 'close' && $before === 'enabled' && $after === 'closed') {
                 $this->updateWorkflowState($object->getItems(), 'purchase_order_item_closer', 'unlock', $this->workflowRegistry);
                 $this->updateWorkflowState($object->getItems(), 'purchase_order_item_closer', 'close', $this->workflowRegistry);
             }
-            if ($transitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
+            /**
+             * Si la commande fournisseur est débloquée, on débloque les items de commande fournisseur associées
+             */
+            if ($closerTransitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
                 $purchaseItems = $object->getItems();
                 foreach ($purchaseItems as $purchaseItem) {
                     $state = $purchaseItem->getState();
@@ -259,7 +377,10 @@ class BlockerSubscriber implements EventSubscriberInterface
                     }
                 }
             }
-            if ($transitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
+            /**
+             * Si la commande fournisseur est bloquée, on bloque les items de commande fournisseur associées
+             */
+            if ($closerTransitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
                 $purchaseItems = $object->getItems();
                 foreach ($purchaseItems as $purchaseItem) {
                     $state = $purchaseItem->getState();
@@ -269,10 +390,16 @@ class BlockerSubscriber implements EventSubscriberInterface
                 }
             }
         }
-        if ($object instanceof ManufacturingOrder && $workflowName === 'closer') {
+        /**
+         * Dans le cas du workflow closer de ManufacturingOrder
+         */
+        if ($object instanceof ManufacturingOrder && $closerWorkflowName === 'closer') {
             $operations = $object->getOperationOrders();
             $manufacturingstate = $object->getEmbState()->getState();
-            if ($transitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
+            /**
+             * Si l'ordre de fabrication est bloqué, on bloque les opérations associées, ainsi que les préparations de composant associées
+             */
+            if ($closerTransitionName === 'block' && $before === 'enabled' && $after === 'blocked') {
                 if ($manufacturingstate === 'agreed' || $manufacturingstate === 'asked') {
                     foreach ($operations as $operation) {
                         $state_operation = $operation->getEmbState()->getState();
@@ -289,7 +416,10 @@ class BlockerSubscriber implements EventSubscriberInterface
                    }
                 }
             }
-            if ($transitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
+            /**
+             * Si l'ordre de fabrication est débloqué, on débloque les opérations associées, ainsi que les préparations de composant associées
+             */
+            if ($closerTransitionName === 'unlock' && $before === 'blocked' && $after === 'enabled') {
                 if ($manufacturingstate === 'agreed' || $manufacturingstate === 'asked') {
                     foreach ($operations as $operation) {
                         $state = $operation->getEmbState()->getState();
@@ -297,10 +427,22 @@ class BlockerSubscriber implements EventSubscriberInterface
                             $this->applyTransitionToWorkflow($operation, 'closer', 'unlock', $this->workflowRegistry);
                         }
                     }
+                    $preparations = $object->getPreparationOrders();
+                    foreach ($preparations as $preparation) {
+                        $state_preparation = $preparation->getEmbState()->getState();
+                        if ($state_preparation === 'draft' || $state_preparation === 'agreed') {
+                            $this->applyTransitionToWorkflow($preparation, 'blocker', 'unlock', $this->workflowRegistry);
+                        }
+                    }
                 }
             }
         }
     }
+    /**
+     * Cette méthode permet de gérer les transitions du workflow purchase_order_item_closer de PurchaseOrderItem
+     * @param Event $event
+     * @return void
+     */
     public function onWorkflowPurchaseOrderItemCloserTransition(Event $event): void
     {
         $object = $event->getSubject();
@@ -309,18 +451,18 @@ class BlockerSubscriber implements EventSubscriberInterface
         $before = $transition->getFroms()[0];
         $after = $transition->getTos()[0];
         $transitionName = $transition->getName();
+        /**
+         * Dans le cas du workflow purchase_order_item_closer de PurchaseOrderItem
+         */
         if ($object instanceof PurchaseOrderItem && $workflowName === 'purchase_order_item_closer') {
+            /**
+             * Si un item de commande fournisseur est désactivé, on désactive les réceptions associées
+             */
             if ($transitionName === 'close' && $before === 'enabled' && $after === 'closed') {
                 $this->updateWorkflowState($object->getReceipts(), 'blocker', 'unlock', $this->workflowRegistry);
                 $this->updateWorkflowState($object->getReceipts(), 'blocker', 'disable', $this->workflowRegistry);
             }
         }
-    }
-    public function handleBlockerTransition()
-    {
-        // Code to handle the blocker transition event
-        // For simplicity, we'll just return a message
-        return 'Handling blocker transition event';
     }
 
     public function applyTransitionToWorkflow($object, $workflowName, $transitionName, $workflowRegistry): void
@@ -344,7 +486,6 @@ class BlockerSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'onWorkflowBlockerTransition' => 'handleBlockerTransition',
             'workflow.blocker.transition' => 'onWorkflowBlockerTransition',
             'workflow.closer.transition' => 'onWorkflowCloserTransition',
             'workflow.purchase_order_item_closer.transition' => 'onWorkflowPurchaseOrderItemCloserTransition'
