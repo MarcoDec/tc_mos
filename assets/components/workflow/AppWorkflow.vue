@@ -1,5 +1,5 @@
 <script setup>
-import {computed, defineComponent, defineProps, ref} from 'vue'
+import {computed, defineComponent, defineEmits, defineProps, ref} from 'vue'
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import AppDropdown from "./AppDropdown.vue";
 
@@ -20,6 +20,7 @@ defineComponent({
         AppDropdown
     }
 })
+const emit = defineEmits(['apply-transition'])
 const currentAction = ref({})
 currentAction.value = props.defaultAction
 const stateIcons = {
@@ -90,7 +91,7 @@ const stateColors = {
     to_validate: '#FFC107',
     // eslint-disable-next-line camelcase
     under_maintenance: '#FF9800',
-    warning: '#FFEB3B'
+    warning: '#FF9800'
 }
 const transitionIcons = {
     accept: 'check',
@@ -184,10 +185,10 @@ function performAction(action) {
     currentAction.value = action
 }
 function launchTransition() {
-    console.log('Lancement de la transition', currentAction.value)
-}
-function isBlockerOrCloser(workflowName) {
-    return workflowName === 'blocker' || workflowName === 'closer'
+    const confirmation = window.confirm(`Lancer la transition ${currentAction.value}?`)
+    if (confirmation) {
+        emit('apply-transition', {transition: currentAction.value, workflowName: props.workflowName})
+    }
 }
 function getBackgroundColor(workflowName) {
     const workflowColors = {
@@ -205,6 +206,7 @@ function getWorkflowTitle(workflowName) {
     };
     return workflowTitles[workflowName] || workflowTitles.default;
 }
+const isDisabled = props.possibleActions.length === 0
 </script>
 
 <template>
@@ -223,7 +225,7 @@ function getWorkflowTitle(workflowName) {
                     :default-action="defaultAction"
                     @action-selected="performAction"/>
             </span>
-            <button class="btn btn-success" :title="`Lance la transition ${currentAction}`" @click="launchTransition">
+            <button :disabled="isDisabled" class="btn btn-success" :title="`Lance la transition ${currentAction}`" @click="launchTransition">
                 <FontAwesomeIcon icon="chevron-right"/>
             </button>
         </div>

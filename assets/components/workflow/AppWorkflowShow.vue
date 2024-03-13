@@ -1,14 +1,17 @@
 <script setup>
     import AppWorkflow from './AppWorkflow.vue'
-    import {computed, ref} from 'vue'
+    import {computed, ref, watchEffect} from 'vue'
     import api from "../../api";
     const props = defineProps({
         itemIri: {default: null, required: true, type: String},
         workflowToShow: {default:()=>[], required: true, type: Array}
     })
     const workflowData = ref([])
+    // Assurez-vous que cette méthode est appelée chaque fois que l'IRI de l'item change.
+    watchEffect(() => {
+        getItemWorkflowInformationFromAPI()
+    })
     function getItemWorkflowInformationFromAPI() {
-        //appelle l'api '/api/workflows/can' et passe dans le body l'iri de l'item
         const formData ={
             iri: props.itemIri
         }
@@ -24,13 +27,28 @@
         return ''
     }
     getItemWorkflowInformationFromAPI()
-
+    function applyTransition(data) {
+        const formData = {
+            iri: props.itemIri,
+            transition: data.transition,
+            workflowName: data.workflowName
+        }
+        api(`/api/workflows/apply`, 'POST', formData).then(response => {
+            console.log(response)
+            window.location.reload()
+        })
+    }
 </script>
 
 <template>
     <div class="d-flex flex-row">
         <div v-for="workflow in filteredWorkflowData" :key="`wf_${workflow.workflowName}`" style="margin-left: 10px; max-width: 300px">
-            <AppWorkflow :possible-actions="workflow.can" :current-state="workflow.currentState" :default-action="getDefaultAction(workflow)" :workflow-name="workflow.workflowName"/>
+            <AppWorkflow
+                :possible-actions="workflow.can"
+                :current-state="workflow.currentState"
+                :default-action="getDefaultAction(workflow)"
+                :workflow-name="workflow.workflowName"
+                @apply-transition="applyTransition"/>
         </div>
     </div>
 </template>
