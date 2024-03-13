@@ -9,7 +9,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 
 use App\Entity\Embeddable\Closer;
-use App\Entity\Embeddable\ComponentManufacturingOperationState;
+use App\Entity\Embeddable\Manufacturing\Operation\State;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
@@ -76,13 +76,13 @@ use App\Entity\Production\Manufacturing\OperationEmployee;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => [...ComponentManufacturingOperationState::TRANSITIONS, ...Closer::TRANSITIONS], 'type' => 'string']
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Closer::TRANSITIONS], 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['component_manufacturing_operation', 'closer'], 'type' => 'string']
+                            'schema' => ['enum' => ['manufacturing_operation', 'closer'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
@@ -135,7 +135,7 @@ class Operation extends Entity implements MeasuredInterface {
         ORM\Embedded,
         Serializer\Groups(['read:manufacturing-operation' , 'read:operation-employee:collection'])
     ]
-    private ComponentManufacturingOperationState $embState;
+    private State $embState;
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
@@ -150,6 +150,8 @@ class Operation extends Entity implements MeasuredInterface {
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?PrimaryOperation $operation = null;
+
+    /** @var Collection<int, Employee> */
     #[
         ApiProperty(description: 'Opérateurs'),
         ORM\OneToMany(mappedBy: "operation", targetEntity: OperationEmployee::class),
@@ -158,7 +160,7 @@ class Operation extends Entity implements MeasuredInterface {
 
     #[
         ApiProperty(description: 'Commande'),
-        ORM\ManyToOne,
+        ORM\ManyToOne(inversedBy:'operationOrders'),
         Serializer\Groups(['read:production-quality', 'read:manufacturing-operation', 'write:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?Order $order = null;
@@ -201,7 +203,7 @@ class Operation extends Entity implements MeasuredInterface {
     public function __construct() {
         $this->actualQuantity = new Measure();
         $this->embBlocker = new Closer();
-        $this->embState = new ComponentManufacturingOperationState();
+        $this->embState = new State();
         $this->operationEmployees = new ArrayCollection();
         $this->quantityProduced = new Measure();
     }
@@ -219,7 +221,7 @@ class Operation extends Entity implements MeasuredInterface {
         return $this->embBlocker;
     }
 
-    final public function getEmbState(): ComponentManufacturingOperationState {
+    final public function getEmbState(): State {
         return $this->embState;
     }
 
@@ -287,7 +289,7 @@ class Operation extends Entity implements MeasuredInterface {
         return $this;
     }
 
-    final public function setEmbState(ComponentManufacturingOperationState $embState): self {
+    final public function setEmbState(State $embState): self {
         $this->embState = $embState;
         return $this;
     }

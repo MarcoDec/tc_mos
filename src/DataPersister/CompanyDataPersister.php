@@ -19,9 +19,10 @@ final class CompanyDataPersister implements ContextAwareDataPersisterInterface {
 
     /**
      * @param CompanyInterface $data
-     * @param mixed[]          $context
+     * @param array $context
+     * @return CompanyInterface
      */
-    public function persist($data, array $context = []) {
+    public function persist($data, array $context = []): CompanyInterface {
         $this->em->persist($data->setCompany($this->getCompany()));
         $this->em->flush();
         return $data;

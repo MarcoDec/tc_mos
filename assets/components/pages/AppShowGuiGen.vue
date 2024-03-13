@@ -1,5 +1,5 @@
 <script setup>
-import {computed, nextTick, onBeforeUnmount, onMounted, onUpdated, ref} from 'vue'
+    import {computed, nextTick, onBeforeUnmount, onMounted, onUpdated, ref} from 'vue'
 
     const gui = ref(null)
     const guiHeader = ref(null)
@@ -31,24 +31,33 @@ import {computed, nextTick, onBeforeUnmount, onMounted, onUpdated, ref} from 'vu
         ys: 0 // position y souris 'screen'
     })
     const guiTopStyleComputed = computed(() => {
+        if (guiTopStyle.value) return {
+            'min-height': guiTopStyle.value['min-height'],
+            'max-height': guiTopStyle.value['max-height'],
+            height: guiTopStyle.value.height
+        }
         return {
-            'min-height': guiTopStyle.value ? guiTopStyle.value['min-height']: 0,
-            'max-height': guiTopStyle.value ? guiTopStyle.value['max-height']:0,
-            'height': guiTopStyle.value ? guiTopStyle.value.height:0
+            'min-height': 0,
+            'max-height': 0,
+            height: 0
         }
     })
     const guiBottomStyleComputed = computed(() => {
+        if (guiBottomStyle.value) return {
+            'min-height': guiBottomStyle.value['min-height'],
+            'max-height': guiBottomStyle.value['max-height'],
+            height: guiBottomStyle.value.height
+        }
         return {
-            'min-height': guiBottomStyle.value ? guiBottomStyle.value['min-height']:0,
-            'max-height': guiBottomStyle.value ? guiBottomStyle.value['max-height']:0,
-            'height': guiBottomStyle.value ? guiBottomStyle.value.height:0
+            'min-height': 0,
+            'max-height': 0,
+            height: 0
         }
     })
-const guiHeaderComputed = computed(() => {
-  return {
-    'height': guiHeader.value ? guiHeader.value.getBoundingClientRect().height : 0
-  }
-})
+    const guiHeaderComputed = computed(() => {
+        if (guiHeader.value) return {height: guiHeader.value.getBoundingClientRect().height}
+        return {height: 0}
+    })
     function handleMouseMove(event) {
         if (event.pageX === null && event.clientX !== null) {
             const eventDoc = event.target && event.target.ownerDocument || document
@@ -123,7 +132,7 @@ const guiHeaderComputed = computed(() => {
         document.addEventListener('mousemove', handleMouseMove)
     })
     onUpdated(() => {
-            onWindowResize()
+        onWindowResize()
     })
     onBeforeUnmount(() => {
         window.removeEventListener('resize', onWindowResize)

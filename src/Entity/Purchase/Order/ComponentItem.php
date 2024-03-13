@@ -17,9 +17,6 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 
 
-/**
- * @template-extends Item<Component>  ApiFilter(filterClass: SearchFilter::class, properties: ['confirmedDate' => 'partial', 'requestedDate' => 'partial', 'confirmedQuantity' => 'partial', 'requestedQuantity' => 'partial']),
- */
 #[
     ApiResource(
         description: 'Ligne de commande',
@@ -57,12 +54,16 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\Entity(repositoryClass: ComponentItemRepository::class)
 ]
+/**
+ * Item de commande fournisseur de type composant
+ * @template-extends Item<Component>
+ */
 class ComponentItem extends Item {
 
     #[
         ApiProperty(description: 'Composant', example: '/api/components/1'),
         ORM\JoinColumn(name: 'component_id'),
-        ORM\ManyToOne(targetEntity: Component::class, fetch: 'EAGER'),
+        ORM\ManyToOne(targetEntity: Component::class, fetch: 'EAGER', inversedBy: "componentItems"),
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $item;

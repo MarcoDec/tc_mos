@@ -43,7 +43,7 @@
     //endregion
     //region initialisation des éléments pour le tableau de liste
     const tabFields = [
-        { label: 'ID', name: 'id', trie: true, type: 'text', filter: true, width: 50},
+        {label: 'ID', name: 'id', trie: true, type: 'text', filter: true, width: 50},
         {
             label: 'Nom', name: 'name', trie: true, type: 'text'
         },

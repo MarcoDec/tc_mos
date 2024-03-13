@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from 'vue'
+    import {onMounted, ref} from 'vue'
     import useEngineGroups from '../../../../../../stores/production/engine/groups/engineGroups'
     import useFetchCriteria from '../../../../../../stores/fetch-criteria/fetchCriteria'
     import {
@@ -59,7 +59,7 @@ import {onMounted, ref} from 'vue'
             brand: fetchEngineStore.engine.brand,
             //code: fetchEngineStore.engine.code,
             entryDate: fetchEngineStore.engine.entryDate ? fetchEngineStore.engine.entryDate.substring(0, 10) : null,
-            group: fetchEngineStore.engine.group  ? fetchEngineStore.engine.group['@id'] : null,
+            group: fetchEngineStore.engine.group ? fetchEngineStore.engine.group['@id'] : null,
             manufacturerEngine: fetchEngineStore.engine.manufacturerEngine ? fetchEngineStore.engine.manufacturerEngine['@id'] : null,
             maxOperator: fetchEngineStore.engine.maxOperator,
             name: fetchEngineStore.engine.name,
@@ -68,7 +68,7 @@ import {onMounted, ref} from 'vue'
             zone: fetchEngineStore.engine.zone ? fetchEngineStore.engine.zone['@id'] : null
         }
         // console.log('localData', localData.value)
-        key.value ++
+        key.value++
     })
     //endregion
     //region définition des champs du formulaire
@@ -130,9 +130,9 @@ import {onMounted, ref} from 'vue'
 <template>
     <AppCardShow
         id="addGeneralites"
+        :key="key"
         :fields="generalFields"
         :component-attribute="localData"
-        :key="key"
         @update:model-value="updateField"
         @update="updateGeneral"/>
 </template>

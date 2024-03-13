@@ -19,7 +19,7 @@ use App\Doctrine\DBAL\Types\Hr\Employee\SituationType;
 use App\Entity\Api\Token;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Blocker;
-use App\Entity\Embeddable\EmployeeEngineState;
+use App\Entity\Embeddable\Hr\Employee\State;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Attachment\EmployeeAttachment;
@@ -156,13 +156,13 @@ use App\Filter\CustomGetterFilter;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => [...EmployeeEngineState::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['employee_engine', 'blocker'], 'type' => 'string']
+                            'schema' => ['enum' => ['employee', 'blocker'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
@@ -268,7 +268,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         ORM\Embedded,
         Serializer\Groups(['read:employee', 'read:employee:collection', 'read:user'])
     ]
-    private EmployeeEngineState $embState;
+    private State $embState;
 
     #[
         ApiProperty(description: 'Date d\'arrivée', example: '2021-01-12'),
@@ -422,7 +422,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         $this->embBlocker = new Blocker();
         $this->embRoles = new Roles();
         $this->attachments = new ArrayCollection();
-        $this->embState = new EmployeeEngineState();
+        $this->embState = new State();
         $this->address = new Address();
         $this->clockings = new ArrayCollection();
         $this->operationEmployees = new ArrayCollection();
@@ -513,7 +513,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->embRoles;
     }
 
-    final public function getEmbState(): EmployeeEngineState {
+    final public function getEmbState(): State {
         return $this->embState;
     }
 
@@ -695,7 +695,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
-    final public function setEmbState(EmployeeEngineState $embState): self {
+    final public function setEmbState(State $embState): self {
         $this->embState = $embState;
         return $this;
     }

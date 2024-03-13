@@ -22,6 +22,7 @@ use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
 use App\Entity\Selling\Customer\Attachment\CustomerAttachment;
+use App\Entity\Selling\Order\Order;
 use App\Entity\Traits\FileTrait;
 use App\Filter\SetFilter;
 use App\Validator as AppAssert;
@@ -312,6 +313,11 @@ class Customer extends Entity implements FileEntity {
     ]
     private WebPortal $qualityPortal;
 
+    #[
+        ORM\OneToMany(targetEntity: Order::class, mappedBy: 'customer')
+    ]
+    private Collection $sellingOrders;
+
     /**
      * @return Collection
      */
@@ -366,6 +372,8 @@ class Customer extends Entity implements FileEntity {
         $this->embState = new State();
         $this->monthlyOutstanding = new Measure();
         $this->outstandingMax = new Measure();
+        $this->sellingOrders = new ArrayCollection();
+
     }
 
     final public function addAdministeredBy(Company $administeredBy): self {
@@ -580,6 +588,22 @@ class Customer extends Entity implements FileEntity {
     public function setLogisticPortal(WebPortal $logisticPortal): self
     {
         $this->logisticPortal = $logisticPortal;
+
+        return $this;
+    }
+    public function getSellingOrders(): Collection {
+
+        return $this->sellingOrders;
+
+    }
+
+
+    final public function setSellingOrders(Collection $sellingOrders): self {
+        $this->sellingOrders = $sellingOrders;
+
+        foreach ($sellingOrders as $sellingOrder) {
+            $sellingOrder->setCustomer($this);
+        }
 
         return $this;
     }
