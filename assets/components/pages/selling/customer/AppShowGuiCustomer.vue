@@ -10,7 +10,7 @@
     import AppBtn from '../../../AppBtn.vue'
     import AppImg from '../../../AppImg.vue'
     import AppShowCustomerTabGeneral from './tabs/AppShowCustomerTabGeneral.vue'
-    import AppWorkflowShow from "../../../workflow/AppWorkflowShow.vue";
+    import AppWorkflowShow from '../../../workflow/AppWorkflowShow.vue'
 
     const route = useRoute()
     const idCustomer = Number(route.params.id_customer)
@@ -62,7 +62,7 @@
                         <AppSuspense>
                             <AppWorkflowShow :workflow-to-show="['customer', 'blocker']" :item-iri="iriCustomer"/>
                         </AppSuspense>
-                        <span style="margin-left: auto;">
+                        <span class="ml-auto">
                             <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
                             <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
                         </span>

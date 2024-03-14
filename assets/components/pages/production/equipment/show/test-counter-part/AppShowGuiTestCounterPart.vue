@@ -11,7 +11,7 @@
     // import AppShowComponentTabGeneral from '../../../../purchase/component/show/left/AppShowComponentTabGeneral.vue';
     import AppSuspense from '../../../../../AppSuspense.vue'
     import AppShowCounterPartTabGeneral from './AppShowCounterPartTabGeneral.vue'
-    import AppWorkflowShow from "../../../../../workflow/AppWorkflowShow.vue";
+    import AppWorkflowShow from '../../../../../workflow/AppWorkflowShow.vue'
     // import AppComponentShowInlist from '../../../../purchase/component/show/AppComponentShowInlist.vue';
     // import AppComponentFormShow from '../../../../purchase/component/show/AppComponentFormShow.vue';
 
@@ -86,7 +86,7 @@
                         <AppSuspense>
                             <AppWorkflowShow :workflow-to-show="['engine', 'blocker']" :item-iri="iriEngine"/>
                         </AppSuspense>
-                        <span style="margin-left:auto;">
+                        <span class="ml-auto">
                             <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
                             <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
                         </span>

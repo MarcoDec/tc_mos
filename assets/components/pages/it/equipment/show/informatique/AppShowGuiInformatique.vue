@@ -9,7 +9,7 @@
     import AppShowInformatiqueTabGeneral from './AppShowInformatiqueTabGeneral.vue'
     import AppInformatiqueFormShow from './AppInformatiqueFormShow.vue'
     import {useInformatiqueStore} from '../../../../../../stores/it/equipment/informatique/informatique'
-    import AppWorkflowShow from "../../../../../workflow/AppWorkflowShow.vue";
+    import AppWorkflowShow from '../../../../../workflow/AppWorkflowShow.vue'
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
@@ -82,10 +82,10 @@
                         <AppSuspense>
                             <AppWorkflowShow :workflow-to-show="['engine', 'blocker']" :item-iri="iriEngine"/>
                         </AppSuspense>
-                    <!--    <span class="btn-float-right">-->
-                    <!--        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>-->
-                    <!--        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>-->
-                    <!--    </span>-->
+                        <!--    <span class="btn-float-right">-->
+                        <!--        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>-->
+                        <!--        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>-->
+                        <!--    </span>-->
                     </div>
                 </div>
                 <div class="d-flex flex-row">

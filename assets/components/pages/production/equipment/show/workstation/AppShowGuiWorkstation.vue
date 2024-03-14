@@ -7,8 +7,8 @@
     import {onBeforeMount, ref} from 'vue'
     import AppImg from '../../../../../AppImg.vue'
     import AppShowWorkstationTabGeneral from './tabs/AppShowWorkstationTabGeneral.vue'
-    import AppSuspense from "../../../../../AppSuspense.vue";
-    import AppWorkflowShow from "../../../../../workflow/AppWorkflowShow.vue";
+    import AppSuspense from '../../../../../AppSuspense.vue'
+    import AppWorkflowShow from '../../../../../workflow/AppWorkflowShow.vue'
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)

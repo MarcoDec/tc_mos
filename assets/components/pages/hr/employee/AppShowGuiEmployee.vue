@@ -10,7 +10,7 @@
     import AppBtn from '../../../AppBtn.vue'
     import {onBeforeMount, ref} from 'vue'
     import AppShowEmployeeTabGeneral from './tabs/AppShowEmployeeTabGeneral.vue'
-    import AppWorkflowShow from "../../../workflow/AppWorkflowShow.vue";
+    import AppWorkflowShow from '../../../workflow/AppWorkflowShow.vue'
 
     const route = useRoute()
     const idEmployee = Number(route.params.id_employee)
@@ -82,7 +82,7 @@
                         <AppSuspense>
                             <AppWorkflowShow :workflow-to-show="['employee', 'blocker']" :item-iri="iriEmployee"/>
                         </AppSuspense>
-                        <span style="margin-left:auto;">
+                        <span class="ml-auto">
                             <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
                             <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
                         </span>

@@ -7,8 +7,8 @@
     import {useGenEngineStore} from '../../../../../../stores/production/engine/generic/engines'
     import AppShowInfraTabGeneral from './tabs/AppShowInfraTabGeneral.vue'
     import AppInfraFormShow from './AppInfraFormShow.vue'
-    import AppSuspense from "../../../../../AppSuspense.vue";
-    import AppWorkflowShow from "../../../../../workflow/AppWorkflowShow.vue";
+    import AppSuspense from '../../../../../AppSuspense.vue'
+    import AppWorkflowShow from '../../../../../workflow/AppWorkflowShow.vue'
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
@@ -89,10 +89,10 @@
                         <AppSuspense>
                             <AppWorkflowShow :workflow-to-show="['engine', 'blocker']" :item-iri="iriEngine"/>
                         </AppSuspense>
-                    <!--                    <span class="btn-float-right">-->
-                    <!--                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>-->
-                    <!--                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>-->
-                    <!--                    </span>-->
+                        <!--                    <span class="btn-float-right">-->
+                        <!--                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>-->
+                        <!--                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>-->
+                        <!--                    </span>-->
                     </div>
                 </div>
                 <div class="d-flex flex-row">

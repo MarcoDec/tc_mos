@@ -10,11 +10,16 @@
 
     const selectedName = ref(props.defaultAction)
     const selectedIcon = computed(() => {
-        return props.actions.find(action => action.name === selectedName.value)?props.actions.find(action => action.name === selectedName.value).icon:'eye'
+        if (props.actions.find(action => action.name === selectedName.value))
+            return props.actions.find(action => action.name === selectedName.value).icon
+        return 'eye'
     })
     const selectedColor = computed(() => {
-        return props.actions.find(action => action.name === selectedName.value)?props.actions.find(action => action.name === selectedName.value).color:'#FFFFFF'
+        if (props.actions.find(action => action.name === selectedName.value))
+            return props.actions.find(action => action.name === selectedName.value).color
+        return '#FFFFFF'
     })
+
     function toggleDropdown() {
         isOpen.value = !isOpen.value
     }

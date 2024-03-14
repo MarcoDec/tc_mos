@@ -10,8 +10,8 @@
     import {useRoute} from 'vue-router'
     import AppComponentShowInlist from './AppComponentShowInlist.vue'
     import AppShowComponentTabGeneral from './left/AppShowComponentTabGeneral.vue'
-    import AppSuspense from "../../../../AppSuspense.vue";
-    import AppWorkflowShow from "../../../../workflow/AppWorkflowShow.vue";
+    import AppSuspense from '../../../../AppSuspense.vue'
+    import AppWorkflowShow from '../../../../workflow/AppWorkflowShow.vue'
 
     //region définition des constantes
     const route = useRoute()
@@ -81,15 +81,15 @@
                     <div class="d-flex flex-row">
                         <div>
                             <FontAwesomeIcon icon="puzzle-piece"/>
-                            <b style="margin-left:10px;">{{ useFetchComponentStore.component.code }}</b>: {{ useFetchComponentStore.component.name }}
+                            <b>{{ useFetchComponentStore.component.code }}</b>: {{ useFetchComponentStore.component.name }}
                         </div>
                         <AppSuspense>
                             <AppWorkflowShow :workflow-to-show="['component', 'blocker']" :item-iri="iriComponent"/>
                         </AppSuspense>
-                        <span style="margin-left: auto">
-                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
-                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
-                    </span>
+                        <span class="ml-auto">
+                            <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
+                            <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
+                        </span>
                     </div>
                 </div>
                 <div class="d-flex flex-row">

@@ -12,7 +12,7 @@
     // import AppComponentShowInlist from '../../../../purchase/component/show/AppComponentShowInlist.vue';
     // import AppComponentFormShow from '../../../../purchase/component/show/AppComponentFormShow.vue';
     import AppShowToolTabGeneral from './AppShowToolTabGeneral.vue'
-    import AppWorkflowShow from "../../../../../workflow/AppWorkflowShow.vue";
+    import AppWorkflowShow from '../../../../../workflow/AppWorkflowShow.vue'
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
@@ -87,10 +87,10 @@
                         <AppSuspense>
                             <AppWorkflowShow :workflow-to-show="['engine', 'blocker']" :item-iri="iriEngine"/>
                         </AppSuspense>
-                        <span style="margin-left:auto;">
-                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
-                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
-                    </span>
+                        <span class="ml-auto">
+                            <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
+                            <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
+                        </span>
                     </div>
                 </div>
                 <div class="d-flex flex-row">

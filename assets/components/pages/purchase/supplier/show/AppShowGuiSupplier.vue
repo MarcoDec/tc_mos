@@ -10,8 +10,7 @@
     import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
     import {useRoute} from 'vue-router'
     import AppSupplierShowTabGeneral from './tabs/AppSupplierShowTabGeneral.vue'
-    import AppWorkflow from "../../../../workflow/AppWorkflow.vue";
-    import AppWorkflowShow from "../../../../workflow/AppWorkflowShow.vue";
+    import AppWorkflowShow from '../../../../workflow/AppWorkflowShow.vue'
 
     const isFullScreen = ref(false)
 
@@ -66,12 +65,12 @@
                     <div class="d-flex flex-row">
                         <div>
                             <FontAwesomeIcon icon="user-tie"/>
-                            <b style="margin-left:10px;">{{ fetchSupplierStore.supplier.id }}</b>: {{ fetchSupplierStore.supplier.name }}
+                            <b>{{ fetchSupplierStore.supplier.id }}</b>: {{ fetchSupplierStore.supplier.name }}
                         </div>
                         <AppSuspense>
                             <AppWorkflowShow :workflow-to-show="['supplier', 'blocker']" :item-iri="iriSupplier"/>
                         </AppSuspense>
-                        <span style="margin-left: auto">
+                        <span class="ml-auto">
                             <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
                             <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
                         </span>
