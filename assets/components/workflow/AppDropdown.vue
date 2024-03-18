@@ -46,6 +46,7 @@
                 :key="action.id"
                 class="dropdown-item"
                 :style="{color: action.color}"
+                :title="action.name"
                 @click="selectAction(action)">
                 <FontAwesomeIcon :icon="action.icon"/>
                 <span>{{ action.name }}</span>
@@ -66,7 +67,7 @@
         align-items: center;
         gap: 10px;
         background-color: #f0f0f0;
-        padding: 10px;
+        padding: 5px;
         border-radius: 5px;
     }
 

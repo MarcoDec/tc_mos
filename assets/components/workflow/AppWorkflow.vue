@@ -198,34 +198,35 @@
         }
         return workflowColors[workflowName] || workflowColors.default
     }
-    function getWorkflowTitle(workflowName) {
-        const workflowTitles = {
-            blocker: 'Bloqueur',
-            closer: 'Clôture',
-            default: 'Statut'
-        }
-        return workflowTitles[workflowName] || workflowTitles.default
-    }
+    // function getWorkflowTitle(workflowName) {
+    //     const workflowTitles = {
+    //         blocker: 'Bloqueur',
+    //         closer: 'Clôture',
+    //         default: 'Statut'
+    //     }
+    //     return workflowTitles[workflowName] || workflowTitles.default
+    // }
     const isDisabled = props.possibleActions.length === 0
 </script>
 
 <template>
     <div class="workflow-container border-1" :style="{backgroundColor: getBackgroundColor(workflowName)}">
-        <div class="workflow-title">
-            {{ getWorkflowTitle(workflowName) }}
-        </div>
+        <!--        <div class="workflow-title">-->
+        <!--            {{ getWorkflowTitle(workflowName) }}-->
+        <!--        </div>-->
         <div class="workflow-component">
             <span class="current-state" :style="{color: currentStateColor()}">
-                <FontAwesomeIcon :icon="currentStateIcon()"/>
+                <FontAwesomeIcon class="m-5px" :icon="currentStateIcon()"/>
                 <span v-if="showStateName">{{ currentStateName() }}</span>
             </span>
-            <span class="dropdown-container">
+            <span v-if="dropdownActions.length > 0" class="dropdown-container">
                 <AppDropdown
                     :actions="dropdownActions"
                     :default-action="defaultAction"
+                    :small="true"
                     @action-selected="performAction"/>
             </span>
-            <button :disabled="isDisabled" class="btn btn-success" :title="`Lance la transition ${currentAction}`" @click="launchTransition">
+            <button v-if="dropdownActions.length > 0" :disabled="isDisabled" class="btn btn-success btn-sm" :title="`Lance la transition ${currentAction}`" @click="launchTransition">
                 <FontAwesomeIcon icon="chevron-right"/>
             </button>
         </div>
@@ -238,7 +239,8 @@
     flex-direction: column;
     align-items: center;
     font-size: small;
-    padding: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 .workflow-title {
     width: 100%;
@@ -250,13 +252,16 @@
 .workflow-component {
     display: flex;
     align-items: center;
+    font-size: xx-small
 }
 .current-state{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     background-color: rgba(255, 255, 255, 0.5);
     border-radius: 5px;
     border: 1px solid lightgray;
+    align-items: center;
+    padding-right: 5px;
 }
 .current-state i, .actions i {
     /* Styles des icônes */
@@ -271,5 +276,14 @@
 .border-1 {
     //border: 1px solid #000;
     border-radius: 10px;
+}
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.6rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+}
+.m-5px {
+    margin: 5px;
 }
 </style>

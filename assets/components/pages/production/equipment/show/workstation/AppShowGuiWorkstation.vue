@@ -73,7 +73,7 @@
         <AppShowGuiGen>
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <div class="d-flex flex-row">
+                    <div class="d-flex flex-row row-center">
                         <div>
                             <button class="text-dark mr-10" title="Retour à la liste des stations de travail" @click="goBack">
                                 <FontAwesomeIcon icon="desktop"/> Station de travail
@@ -122,6 +122,9 @@
 <style>
 .border-dark {
     border-bottom: 1px solid grey;
+}
+.row-center {
+    align-items: center;
 }
 </style>
 
