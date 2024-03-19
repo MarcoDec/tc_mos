@@ -11,7 +11,6 @@
     onMounted(async () => {
         listDisplayed.fetch()
         listDisplayed.showProduct()
-
         loaded.value = true
     })
     onUnmounted(async () => {

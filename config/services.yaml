@@ -180,3 +180,11 @@ services:
     autoconfigure: false
     tags: [ 'api_platform.filter' ]
     arguments: [ '@doctrine' ]
+
+  App\EventSubscriber\CacheUpdateSubscriber:
+    arguments:
+      $redis: '@snc_redis.default'
+      $cacheKeyStocks: 'api_needs_stocks_p'
+      $cacheKeyCreationDate: 'api_needs_creation_date'
+    tags:
+      - { name: 'doctrine.event_subscriber', connection: 'default' }

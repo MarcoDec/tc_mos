@@ -21,28 +21,33 @@ export default defineStore('needs', {
         },
         async showComponent() {
             const needs = await this.components.component
-            const len = Object.keys(needs).length
+            if (needs && typeof needs === 'object') {
+                const entries = Object.entries(needs);
+                const len = Object.keys(needs).length
 
-            for (let i = 0; i < 5 && i < len; i++) {
-                const [componentId, need] = needs[i]
+            for (let i = 0; i < 15 && i < len; i++) {
+                const [componentId, need] = entries[i]
                 this.displayed[componentId] = need
 
                 delete this.needsComponent[componentId]
             }
             this.page++
+            }
         },
         async showProduct() {
-            const needs = await this.items.products
-            const len = Object.keys(needs).length
-
-            for (let i = 0; i < 15 && i < len; i++) {
-                const [productId, need] = needs[i]
-                this.displayed[productId] = need
-
-                delete this.needsProduct[productId]
+            const needs = await this.items.products;
+            if (needs && typeof needs === 'object') {
+                const entries = Object.entries(needs);
+                const len = entries.length;
+                
+                for (let i = 0; i < 15 && i < len; i++) {
+                    const [productId, need] = entries[i];
+                    this.displayed[productId] = need;
+                    delete this.needsProduct[productId];
+                }
+                this.page++;
             }
-            this.page++
-        }
+        }        
     },
     getters: {
         chartsComp(state) {

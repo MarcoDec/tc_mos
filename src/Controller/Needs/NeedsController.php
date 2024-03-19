@@ -24,6 +24,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Repository\Purchase\Order\ItemRepository as PurchaseItemRepository;
 use App\Repository\Manufacturing\Product\ManufacturingProductItemRepository;
 use App\Repository\Selling\Customer\ProductRepository as ProductCustomerRepository;
+use App\Entity\Logistics\Stock\ProductStock;
+use App\Entity\Selling\Order\ProductItem;
+use App\Entity\Logistics\Stock\ComponentStock;
+use App\Entity\Production\Manufacturing\Order as ManufacturingOrder;
+
 
 /**
  * @ApiResource(
@@ -57,6 +62,7 @@ class NeedsController extends AbstractController
     private ComponentRepository $componentRepository;
     private ComponentStockRepository $componentStockRepository;
     private MeasureManager $measureManager;
+    private $redisCacheSubscriber;
 
     public function __construct(
         private readonly EntityManagerInterface $em,
@@ -91,29 +97,97 @@ class NeedsController extends AbstractController
     public function index(): JsonResponse
     {
         // Créer une instance de Predis\Client pour se connecter à Redis
-        $redisClient = new Client([
+        $redisClient = new \Predis\Client([
             'scheme' => 'tcp',
-            'host' => 'redis', // Nom du conteneur Redis dans Docker
+            'host' => 'redis',
             'port' => 6379,
         ]);
+        
         // Créer une instance de RedisAdapter en passant l'instance de Predis\Client
         $redisAdapter = new RedisAdapter($redisClient);
         $cache = new TagAwareAdapter($redisAdapter);
-        $cacheKey = 'api_needs_products_data';
-    
-        // Vérifie si les données sont en cache
-        $cacheItem = $cache->getItem($cacheKey);
-        if (!$cacheItem->isHit()) {
-            // Les données ne sont pas en cache, donc on les génère et on les met en cache
-            $products = $this->productRepository->findByEmbBlockerAndEmbState();
-            $productcustomers = $this->productCustomerRepository->findAll();
-            $sellingItems = $this->productItemRepository->findByEmbBlockerAndEmbState();
-            $manufacturingOrders = $this->manufacturingProductItemRepository->findByEmbBlockerAndEmbState();
+
+        // Clés pour les caches de productChartsData, products, productFamilies et customers
+        $cacheKeyProducts = 'api_needs_products';
+        $cacheKeymanufacturingOrders = 'api_needs_manufacturing_orders_p';
+        $cacheKeyProductChartsData = 'api_needs_productChartsData';
+        $cacheKeySelling = 'api_needs_selling_order_item_p';
+        $cacheKeyStocks = 'api_needs_stocks_p';
+        $cacheKeyCreationDate = 'api_needs_creation_date';
+        $cacheCreationDates = [];
+
+        $cacheItemCreationDate = $cache->getItem($cacheKeyCreationDate);
+        if (!$cacheItemCreationDate->isHit()) {
+            // Initialise les dates de création si elles ne sont pas déjà enregistrées dans le cache
+            $cacheCreationDates = [
+                $cacheKeyStocks => null,
+                $cacheKeySelling => null,
+                $cacheKeymanufacturingOrders => null
+            ];
+        } else {
+            // Récupère les dates de création du cache
+            $cacheCreationDates = $cacheItemCreationDate->get();
+        }
+        
+        // Vérifie si les données stocks sont en cache
+        $cacheItemStocks = $cache->getItem($cacheKeyStocks);
+        if (!$cacheItemStocks->isHit()) {
+            // Les données stocks ne sont pas en cache, donc on les génère et on les met en cache
             $stocks = $this->productStockRepository->findAll();
+            $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
+            $cacheItemStocks->set($stocks);
+            $cache->save($cacheItemStocks);
+            $cacheCreationDates[$cacheKeyStocks] = $cacheItemCreationDate->get();
+        }else {
+            /** @var ProductStock $stocks */
+            $stocks = $cacheItemStocks->get();
+        }
+        
+        // Vérifie si les données de vente sont en cache
+        $cacheItemSelling = $cache->getItem($cacheKeySelling);
+        if (!$cacheItemSelling->isHit()) {
+            // Les données de vente ne sont pas en cache, donc on les génère et on les met en cache
+            $sellingItems = $this->productItemRepository->findByEmbBlockerAndEmbState();
+            $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
+            $cacheItemSelling->set($sellingItems);
+            $cache->save($cacheItemSelling);
+            $cacheCreationDates[$cacheKeySelling] = $cacheItemCreationDate->get();
+        }else {
+            /** @var ProductItem $sellingItems */
+            $sellingItems = $cacheItemSelling->get();
+        }
+        
+        // Vérifie si les données de fabrication sont en cache
+        $cacheItemManufacturing = $cache->getItem($cacheKeymanufacturingOrders);
+        if (!$cacheItemManufacturing->isHit()) {
+            // Les données de fabrication ne sont pas en cache, donc on les génère et on les met en cache
+            $manufacturingOrders = $this->manufacturingProductItemRepository->findByEmbBlockerAndEmbState();
+            $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
+            $cacheItemManufacturing->set($manufacturingOrders);
+            $cache->save($cacheItemManufacturing);
+            $cacheCreationDates[$cacheKeymanufacturingOrders] = $cacheItemCreationDate->get();
+        }else {
+            /** @var ManufacturingOrder $manufacturingOrders */
+            $manufacturingOrders = $cacheItemManufacturing->get();
+        }
+        // Enregistre les dates de création dans le cache
+        $cacheItemCreationDate->set($cacheCreationDates);
+        $cache->save($cacheItemCreationDate);        
+
+        // Vérifie si les données productChartsData sont en cache
+        $cacheItemProductChartsData = $cache->getItem($cacheKeyProductChartsData);
+        if (!$cacheItemProductChartsData->isHit()) {
+
             $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks);
-            $productFamilies = $this->getProductFamilies($products);
-            $customersData = $this->generateCustomersData($productcustomers);
-    
+
+            $cacheItemProductChartsData->set($productChartsData);
+            $cache->save($cacheItemProductChartsData);
+        } else {
+            // Les données productChartsData sont en cache, on les récupère
+            $productChartsData = $cacheItemProductChartsData->get();
+        }
+
+            $products = $this->productRepository->findByEmbBlockerAndEmbState();
             $productsData = [];
             foreach ($products as $prod) {
                 $productId = $prod->getId();
@@ -121,22 +195,21 @@ class NeedsController extends AbstractController
                 $this->updateStockMinimumForProduct($productChartsData, $productId, $minStock);
                 $productsData[$productId] = $this->generateProductData($prod, $productChartsData, $stocks);
             }
-    
-            $productChartsData = $this->finalizeProductChartsData($productChartsData);
-    
-            // Mettre les données en cache pour 1 heure
-            $cacheItem->set([
+
+            // Récupère les dates de création du cache
+            $cacheCreationDates = $cache->getItem($cacheKeyCreationDate)->get();
+
+            $productcustomers = $this->productCustomerRepository->findAll();
+            $productFamilies = $this->getProductFamilies($products);
+            $customersData = $this->generateCustomersData($productcustomers);
+
+            // Renvoie les données mises en cache
+            return new JsonResponse([
                 'productChartsData' => $productChartsData,
-                'productFamilies' => $productFamilies,
                 'products' => $productsData,
+                'productFamilies' => $productFamilies,
                 'customers' => $customersData,
             ]);
-            $cacheItem->expiresAfter(3600); // 1 heure
-            $cache->save($cacheItem);
-        }
-    
-        // Renvoie les données mises en cache
-        return new JsonResponse($cacheItem->get());
     }
 
     /**
@@ -144,12 +217,78 @@ class NeedsController extends AbstractController
      */
     public function getComponents(): JsonResponse
     {
+        // Créer une instance de Predis\Client pour se connecter à Redis
+        $redisClient = new \Predis\Client([
+            'scheme' => 'tcp',
+            'host' => 'redis',
+            'port' => 6379,
+        ]);
+        // Créer une instance de RedisAdapter en passant l'instance de Predis\Client
+        $redisAdapter = new RedisAdapter($redisClient);
+        $cache = new TagAwareAdapter($redisAdapter);
+
+        $cacheKeyProductChartsData = 'api_needs_productChartsData';
+        $cacheKeyStocks = 'api_needs_stocks_p';
+        $cacheKeyStockComponents = 'api_needs_stock_components';
+        $cacheKeySelling = 'api_needs_selling_order_item_p';
+        $cacheKeymanufacturingOrders = 'api_needs_manufacturing_orders_p';
         $products = $this->productRepository->findByEmbBlockerAndEmbState();
-        $sellingItems = $this->productItemRepository->findByEmbBlockerAndEmbState();
-        $manufacturingOrders = $this->manufacturingProductItemRepository->findByEmbBlockerAndEmbState();
-        $stocks = $this->productStockRepository->findAll();
-        $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks);
-        $filteredStocks = $this->componentStockRepository->findStocksByCriteria();
+        // Vérifie si les données stocks sont en cache
+        $cacheItemStocks = $cache->getItem($cacheKeyStocks);
+        if (!$cacheItemStocks->isHit()) {
+            // Les données stocks ne sont pas en cache, donc on les génère et on les met en cache
+            $stocks = $this->productStockRepository->findAll();
+    
+            $cacheItemStocks->set($stocks);
+            $cache->save($cacheItemStocks);
+        } else {
+            // Les données stocks sont en cache, on les récupère
+            /** @var ProductStock $stock */
+            $stocks = $cacheItemStocks->get();
+        }
+        // Vérifie si les données stocks sont en cache
+        $cacheItemSelling = $cache->getItem($cacheKeySelling);
+        if (!$cacheItemSelling->isHit()) {
+            $sellingItems = $this->productItemRepository->findByEmbBlockerAndEmbState();
+            $cacheItemSelling->set($sellingItems);
+            $cache->save($cacheItemSelling);
+        } else {
+            // Les données stocks sont en cache, on les récupère
+            $sellingItems = $cacheItemSelling->get();
+        }
+        $cacheItemManufacturing = $cache->getItem($cacheKeymanufacturingOrders);
+        if (!$cacheItemManufacturing->isHit()) {
+            $manufacturingOrders = $this->manufacturingProductItemRepository->findByEmbBlockerAndEmbState();
+            $cacheItemManufacturing->set($manufacturingOrders);
+            $cache->save($cacheItemManufacturing);
+        } else {
+            // Les données stocks sont en cache, on les récupère
+            $manufacturingOrders = $cacheItemManufacturing->get();
+        }
+
+        // Vérifie si les données productChartsData sont en cache
+        $cacheItemProductChartsData = $cache->getItem($cacheKeyProductChartsData);
+        if (!$cacheItemProductChartsData->isHit()) {
+            // Les données productChartsData ne sont pas en cache, donc on les génère et on les met en cache
+            $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks);
+            $cacheItemProductChartsData->set($productChartsData);
+            $cache->save($cacheItemProductChartsData);
+        } else {
+            // Les données productChartsData sont en cache, on les récupère
+            $productChartsData = $cacheItemProductChartsData->get();
+        }
+
+        $cacheItemStockComponent = $cache->getItem($cacheKeyStockComponents);
+        if (!$cacheItemStockComponent->isHit()) {
+            $filteredStocks = $this->componentStockRepository->findStocksByCriteria();
+            $cacheItemStockComponent->set($filteredStocks);
+            $cache->save($cacheItemStockComponent);
+        } else {
+            // Les données productChartsData sont en cache, on les récupère
+            /** @var ComponentStock $filteredStocks*/
+            $filteredStocks = $cacheItemProductChartsData->get();
+        }
+
         $purchaseItems = $this->purchaseItemRepository->findByEmbBlockerAndEmbState();
 
         $invertedMatrix = [];
