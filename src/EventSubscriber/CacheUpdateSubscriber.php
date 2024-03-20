@@ -10,18 +10,30 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Selling\Order\ProductItem;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
 use App\Entity\Logistics\Stock\ProductStock;
+use App\Entity\Production\Manufacturing\Order as ManufacturingOrder;
+use App\Entity\Project\Product\Product;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
+
 
 class CacheUpdateSubscriber implements EventSubscriber
 {
     private Client $redis;
     private string $cacheKeyStocks;
+    private string $cacheKeySelling;
+    private string $cacheKeymanufacturingOrders;
+    private string $cacheKeyProducts;
     private string $cacheKeyCreationDate;
+    private EntityManagerInterface $entityManager;
 
-    public function __construct(Client $redis, string $cacheKeyStocks, string $cacheKeyCreationDate)
+
+    public function __construct(Client $redis,EntityManagerInterface $entityManager, string $cacheKeyStocks, string $cacheKeySelling, string $cacheKeymanufacturingOrders, string $cacheKeyProducts, string $cacheKeyCreationDate)
     {
         $this->redis = $redis;
+        $this->entityManager = $entityManager;
         $this->cacheKeyStocks = $cacheKeyStocks;
+        $this->cacheKeySelling = $cacheKeySelling;
+        $this->cacheKeymanufacturingOrders = $cacheKeymanufacturingOrders;
+        $this->cacheKeyProducts = $cacheKeyProducts;
         $this->cacheKeyCreationDate = $cacheKeyCreationDate;
     }
 
@@ -46,11 +58,29 @@ class CacheUpdateSubscriber implements EventSubscriber
     private function updateCache(LifecycleEventArgs $args)
     {
         $entity = $args->getObject();
+        $changeSet = $this->entityManager->getUnitOfWork()->getEntityChangeSet($entity);
+
         if ($entity instanceof ProductStock) {
-            $this->updateCreationDateCache($this->cacheKeyStocks);
+            if (isset($changeSet['quantity.value']) || isset($changeSet['quantity.code']) || isset($changeSet['warehouse']) || isset($changeSet['item']) ) {
+                $this->updateCreationDateCache($this->cacheKeyStocks);
+            }
+        }
+        if ($entity instanceof ProductItem) {
+            if (isset($changeSet['confirmedQuantity.value']) || isset($changeSet['confirmedQuantity.code']) || isset($changeSet['order']) /*|| isset($changeSet['confirmedDate'])*/ ) {
+            $this->updateCreationDateCache($this->cacheKeySelling);
+            }
+        }
+        if ($entity instanceof ManufacturingOrder) {
+            if (isset($changeSet['product']) || isset($changeSet['quantityRequested.value']) || isset($changeSet['quantityRequested.code']) /*|| isset($changeSet['manufacturingDate'])*/ ) {
+            $this->updateCreationDateCache($this->cacheKeymanufacturingOrders);
+            }
+        }
+        if ($entity instanceof Product) {
+            if (isset($changeSet['minStock.value']) || isset($changeSet['minStock.code']) || isset($changeSet['family'])) {
+            $this->updateCreationDateCache($this->cacheKeyProducts);
         }
     }
-
+}
     private function updateCreationDateCache(string $cacheKey)
     {
         // Récupérer la valeur actuelle de la clé api_needs_creation_date
@@ -72,5 +102,4 @@ class CacheUpdateSubscriber implements EventSubscriber
         // Stockez la nouvelle valeur dans Redis
         $this->redis->set($this->cacheKeyCreationDate, $newCacheItemCreationDate);
     }
-    
 }
