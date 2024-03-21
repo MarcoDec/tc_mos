@@ -181,6 +181,12 @@ services:
     tags: [ 'api_platform.filter' ]
     arguments: [ '@doctrine' ]
 
+  App\Service\RedisService:
+    arguments:
+      $scheme: '%env(REDIS_SCHEME)%'
+      $host: '%env(REDIS_HOST)%'
+      $port: '%env(int:REDIS_PORT)%'
+
   App\EventSubscriber\CacheUpdateSubscriber:
     arguments:
       $redis: '@snc_redis.default'

@@ -8,7 +8,6 @@ use Doctrine\ORM\Events;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Selling\Order\ProductItem;
-use Doctrine\ORM\Event\PostUpdateEventArgs;
 use App\Entity\Logistics\Stock\ProductStock;
 use App\Entity\Production\Manufacturing\Order as ManufacturingOrder;
 use App\Entity\Project\Product\Product;
@@ -66,17 +65,17 @@ class CacheUpdateSubscriber implements EventSubscriber
             }
         }
         if ($entity instanceof ProductItem) {
-            if (isset($changeSet['confirmedQuantity.value']) || isset($changeSet['confirmedQuantity.code']) || isset($changeSet['order']) /*|| isset($changeSet['confirmedDate'])*/ ) {
+            if (isset($changeSet['confirmedQuantity.value']) || isset($changeSet['confirmedQuantity.code']) || isset($changeSet['order']) || isset($changeSet['confirmedDate']) ) {
             $this->updateCreationDateCache($this->cacheKeySelling);
             }
         }
         if ($entity instanceof ManufacturingOrder) {
-            if (isset($changeSet['product']) || isset($changeSet['quantityRequested.value']) || isset($changeSet['quantityRequested.code']) /*|| isset($changeSet['manufacturingDate'])*/ ) {
+            if (isset($changeSet['product']) || isset($changeSet['quantityRequested.value']) || isset($changeSet['quantityRequested.code']) || isset($changeSet['manufacturingDate']) ) {
             $this->updateCreationDateCache($this->cacheKeymanufacturingOrders);
             }
         }
         if ($entity instanceof Product) {
-            if (isset($changeSet['minStock.value']) || isset($changeSet['minStock.code']) || isset($changeSet['family'])) {
+            if (isset($changeSet['minStock.value']) || isset($changeSet['minStock.code'])) {
             $this->updateCreationDateCache($this->cacheKeyProducts);
         }
     }
@@ -95,6 +94,9 @@ class CacheUpdateSubscriber implements EventSubscriber
             // Sinon, convertir l'objet désérialisé en tableau associatif
             $cacheCreationDates = (array) $unserializedData;
         }
+        // Supprimer la clé 'metadata' du tableau si elle existe
+        unset($cacheCreationDates['metadata']);
+
         // Mettre à jour la valeur de la clé spécifiée si elle existe
         $cacheCreationDates['value'][$cacheKey] = date('Y-m-d H:i:s');
     
