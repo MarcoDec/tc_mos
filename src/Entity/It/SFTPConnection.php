@@ -2,7 +2,10 @@
 
 namespace App\Entity\It;
 
-class SFTPConnection
+use Exception;
+use Traversable;
+
+class SFTPConnection implements \IteratorAggregate
 {
     private $connection;
     private $sftp;
@@ -45,5 +48,31 @@ class SFTPConnection
     public function renameFile($remote_file, $new_remote_file) {
         $sftp = $this->sftp;
         return ssh2_sftp_rename($sftp, $remote_file, $new_remote_file);
+    }
+    public function getFiles($remote_dir)
+    {
+        $sftp = $this->sftp;
+        $files = [];
+        $handle = opendir("ssh2.sftp://$sftp$remote_dir");
+        while (($file = readdir($handle)) !== false) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+            $files[] = $file;
+        }
+        closedir($handle);
+
+        return $files;
+    }
+    /**
+     * Retrieve an external iterator
+     * @link https://php.net/manual/en/iteratoraggregate.getiterator.php
+     * @return Traversable<TKey, TValue>|TValue[] An instance of an object implementing <b>Iterator</b> or
+     * <b>Traversable</b>
+     * @throws Exception on failure.
+     */
+    public function getIterator(): Traversable
+    {
+        return new \ArrayIterator($this->getFiles());
     }
 }
