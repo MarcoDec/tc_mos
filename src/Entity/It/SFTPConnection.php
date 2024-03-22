@@ -2,7 +2,11 @@
 
 namespace App\Entity\It;
 
+use ArrayIterator;
 use Exception;
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Traversable;
 
 class SFTPConnection implements \IteratorAggregate
@@ -10,6 +14,9 @@ class SFTPConnection implements \IteratorAggregate
     private $connection;
     private $sftp;
 
+    /**
+     * @throws Exception
+     */
     public function __construct($host, $port=22)
     {
         $this->connection = @ssh2_connect($host, $port);
@@ -31,10 +38,13 @@ class SFTPConnection implements \IteratorAggregate
             throw new Exception("Could not initialize SFTP subsystem.");
     }
 
+    /**
+     * @throws Exception
+     */
     public function uploadFile($local_file, $remote_file): void
     {
         $sftp = $this->sftp;
-        $stream = @fopen("ssh2.sftp://$sftp$remote_file", 'w');
+        $stream = @fopen("ssh2.sftp://".intval($sftp)."$remote_file", 'r');
 
         if (! $stream)
             throw new Exception("Could not open file: $remote_file");
@@ -57,7 +67,7 @@ class SFTPConnection implements \IteratorAggregate
     {
         $sftp = $this->sftp;
         $files = [];
-        $handle = opendir("ssh2.sftp://$sftp" . ltrim($remote_dir, '/'));
+        $handle = opendir("ssh2.sftp://".$sftp.$remote_dir);
         while (($file = readdir($handle)) !== false) {
             if ($file === '.' || $file === '..') {
                 continue;
@@ -73,11 +83,36 @@ class SFTPConnection implements \IteratorAggregate
      * Retrieve an external iterator
      * @link https://php.net/manual/en/iteratoraggregate.getiterator.php
      * @param string $remote_dir
-     * @return Traversable An instance of an object implementing <b>Iterator</b> or
+     * @return ArrayIterator|Traversable An instance of an object implementing <b>Iterator</b> or
      * <b>Traversable</b>
      */
-    public function getIterator(string $remote_dir = '/'): Traversable
+    public function getIterator(string $remote_dir = '/'): ArrayIterator|Traversable
     {
-        return new \ArrayIterator($this->getFiles($remote_dir));
+        $sftp = $this->sftp;
+        $directory = "ssh2.sftp://".intval($sftp).$remote_dir;
+        $files = [];
+
+        if ($handle = opendir($directory)) {
+            while (false !== ($file = readdir($handle))) {
+                if ($file != "." && $file != "..") {
+                    // Ici, vous pouvez ajouter une logique supplémentaire si nécessaire,
+                    // par exemple, vérifier si $file est un dossier ou un fichier, etc.
+                    $files[] = $file;
+                }
+            }
+            closedir($handle);
+        } else {
+            // Gérer l'erreur d'ouverture du répertoire, si nécessaire
+        }
+
+        return new ArrayIterator($files);
+    }
+
+    public function __destruct()
+    {
+        if ($this->connection) {
+            @ssh2_exec($this->connection, 'exit');
+            @ssh2_disconnect($this->connection);
+        }
     }
 }
