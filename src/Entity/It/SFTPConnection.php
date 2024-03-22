@@ -57,7 +57,7 @@ class SFTPConnection implements \IteratorAggregate
     {
         $sftp = $this->sftp;
         $files = [];
-        $handle = opendir("ssh2.sftp://$sftp$remote_dir");
+        $handle = opendir("ssh2.sftp://$sftp" . ltrim($remote_dir, '/'));
         while (($file = readdir($handle)) !== false) {
             if ($file === '.' || $file === '..') {
                 continue;
