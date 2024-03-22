@@ -5,7 +5,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class NewFileDetectedEvent extends Event
 {
-    private $fileName;
+    private string $fileName;
 
     public function __construct(string $fileName)
     {

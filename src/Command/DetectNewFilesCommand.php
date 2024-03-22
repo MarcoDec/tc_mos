@@ -2,13 +2,14 @@
 namespace App\Command;
 
 use App\Service\NewFileDetector;
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class DetectNewFilesCommand extends Command
 {
-    private $detector;
+    private NewFileDetector $detector;
 
     protected static $defaultName = 'app:detect-new-files';
 
@@ -18,16 +19,36 @@ class DetectNewFilesCommand extends Command
         $this->detector = $detector;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Detect new files in the remote directory.');
     }
 
+    /**
+     * @throws Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->detector->detectNewFiles('/test/orders/old');
-        $output->writeln('New files detected.');
+        $directories = [
+            '/test/orders/old'//,
+//            '/path/to/remote/directory2',
+//            '/path/to/remote/directory3',
+        ];
 
-        return Command::SUCCESS;
+        $newFilesDetected = false;
+
+        foreach ($directories as $directory) {
+            $newFiles = $this->detector->detectNewFiles($directory);
+            if (!empty($newFiles)) {
+                $newFilesDetected = true;
+                $output->writeln(sprintf('New files detected in %s: %s', $directory, implode(', ', $newFiles)));
+            }
+        }
+
+        if (!$newFilesDetected) {
+            $output->writeln('No new files detected.');
+        }
+
+        return $newFilesDetected ? 1 : 0;
     }
 }

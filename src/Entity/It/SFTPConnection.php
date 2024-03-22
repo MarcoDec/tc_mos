@@ -17,7 +17,10 @@ class SFTPConnection implements \IteratorAggregate
             throw new Exception("Could not connect to $host on port $port.");
     }
 
-    public function login($username, $password)
+    /**
+     * @throws Exception
+     */
+    public function login($username, $password): void
     {
         if (! @ssh2_auth_password($this->connection, $username, $password))
             throw new Exception("Could not authenticate with username $username " .
@@ -28,7 +31,7 @@ class SFTPConnection implements \IteratorAggregate
             throw new Exception("Could not initialize SFTP subsystem.");
     }
 
-    public function uploadFile($local_file, $remote_file)
+    public function uploadFile($local_file, $remote_file): void
     {
         $sftp = $this->sftp;
         $stream = @fopen("ssh2.sftp://$sftp$remote_file", 'w');
@@ -45,11 +48,12 @@ class SFTPConnection implements \IteratorAggregate
 
         @fclose($stream);
     }
-    public function renameFile($remote_file, $new_remote_file) {
+    public function renameFile($remote_file, $new_remote_file): bool
+    {
         $sftp = $this->sftp;
         return ssh2_sftp_rename($sftp, $remote_file, $new_remote_file);
     }
-    public function getFiles($remote_dir)
+    public function getFiles($remote_dir): array
     {
         $sftp = $this->sftp;
         $files = [];
@@ -64,15 +68,16 @@ class SFTPConnection implements \IteratorAggregate
 
         return $files;
     }
+
     /**
      * Retrieve an external iterator
      * @link https://php.net/manual/en/iteratoraggregate.getiterator.php
-     * @return Traversable<TKey, TValue>|TValue[] An instance of an object implementing <b>Iterator</b> or
+     * @param string $remote_dir
+     * @return Traversable An instance of an object implementing <b>Iterator</b> or
      * <b>Traversable</b>
-     * @throws Exception on failure.
      */
-    public function getIterator(): Traversable
+    public function getIterator(string $remote_dir = '/'): Traversable
     {
-        return new \ArrayIterator($this->getFiles());
+        return new \ArrayIterator($this->getFiles($remote_dir));
     }
 }

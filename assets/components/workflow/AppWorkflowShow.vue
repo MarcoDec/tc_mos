@@ -47,7 +47,7 @@
         <div v-for="workflow in filteredWorkflowData" :key="`wf_${workflow.workflowName}`" class="wf-item">
             <AppWorkflow
                 :possible-actions="workflow.can"
-                :current-state="workflow.currentState"
+                :current-state="workflow.currentState.toString()"
                 :default-action="getDefaultAction(workflow)"
                 :workflow-name="workflow.workflowName"
                 @apply-transition="applyTransition"/>

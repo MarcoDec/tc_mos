@@ -185,9 +185,10 @@ services:
     arguments:
       $host: '%env(SFTP_HOST)%'
       $port: '%env(SFTP_PORT)%'
+
   App\Service\NewFileDetector:
     arguments:
-      $sftpClient: '@App\Service\SFTPConnection'
+      $sftp: '@App\Entity\It\SFTPConnection'
       $dispatcher: '@event_dispatcher'
 
   App\EventListener\It\NewFileEventListener:
