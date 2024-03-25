@@ -28,6 +28,8 @@ use App\Entity\Selling\Order\ProductItem;
 use App\Entity\Logistics\Stock\ComponentStock;
 use App\Entity\Production\Manufacturing\Order as ManufacturingOrder;
 use App\Service\RedisService;
+use App\EventSubscriber\CacheUpdateSubscriber;
+use Doctrine\Common\Collections\Expr\Value;
 
 /**
  * @ApiResource(
@@ -62,6 +64,7 @@ class NeedsController extends AbstractController
     private ComponentStockRepository $componentStockRepository;
     private MeasureManager $measureManager;
     private RedisService $redisService;
+    private CacheUpdateSubscriber $cacheUpdateSubscriber;
 
     public function __construct(
         private readonly EntityManagerInterface $em,
@@ -77,6 +80,7 @@ class NeedsController extends AbstractController
         MeasureManager $measureManager,
         private LoggerInterface $logger,
         RedisService $redisService,
+        CacheUpdateSubscriber $cacheUpdateSubscriber,
 
     ) {
         $this->productItemRepository = $productItemRepository;
@@ -90,6 +94,7 @@ class NeedsController extends AbstractController
         $this->componentStockRepository = $componentStockRepository;
         $this->measureManager = $measureManager;
         $this->redisService = $redisService;
+        $this->cacheUpdateSubscriber = $cacheUpdateSubscriber;
     }
 
     /**
@@ -109,22 +114,22 @@ class NeedsController extends AbstractController
         $cacheKeySelling = 'api_needs_selling_order_item_p';
         $cacheKeymanufacturingOrders = 'api_needs_manufacturing_orders_p';
         $cacheKeyProducts = 'api_needs_products';
-       // $cacheCreationDates = [];
         $cacheItemCreationDate = $cache->getItem($cacheKeyCreationDate);
         $cacheCreationDates = $cacheItemCreationDate->get();
-        $cacheCreationDates = unserialize($cacheCreationDates);
+
+      //  $cacheCreationDates = unserialize($cacheCreationDates);
         // Vérifie si les données de fabrication sont en cache
         $cacheproducts = $cache->getItem($cacheKeyProducts);
         if (!$cacheproducts->isHit()) {
         $products = $this->productRepository->findByEmbBlockerAndEmbState();
-        $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
         $cacheproducts->set($products);
         $cache->save($cacheproducts);
+        $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
         $cacheCreationDates[$cacheKeyProducts] = $cacheItemCreationDate->get();
+        
         }else {
             /** @var Product $products */
             $products = $cacheproducts->get();
-            $cacheItemCreationDate = $cache->getItem($cacheKeyCreationDate);
         }        
         $productcustomers = $this->productCustomerRepository->findAll();
 
@@ -133,11 +138,11 @@ class NeedsController extends AbstractController
         if (!$cacheItemSelling->isHit()) {
             // Les données de vente ne sont pas en cache, donc on les génère et on les met en cache
             $sellingItems = $this->productItemRepository->findByEmbBlockerAndEmbState();
-            $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
             $cacheItemSelling->set($sellingItems);
             $cache->save($cacheItemSelling);
+            $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
             $cacheCreationDates[$cacheKeySelling] = $cacheItemCreationDate->get();
-
+            
         }else {
             /** @var ProductItem $sellingItems */
             $sellingItems = $cacheItemSelling->get();
@@ -147,10 +152,11 @@ class NeedsController extends AbstractController
         if (!$cacheItemManufacturing->isHit()) {
             // Les données de fabrication ne sont pas en cache, donc on les génère et on les met en cache
             $manufacturingOrders = $this->manufacturingProductItemRepository->findByEmbBlockerAndEmbState();
-            $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
             $cacheItemManufacturing->set($manufacturingOrders);
             $cache->save($cacheItemManufacturing);
+            $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
             $cacheCreationDates[$cacheKeymanufacturingOrders] = $cacheItemCreationDate->get();
+            
         }else {
             /** @var ManufacturingOrder $manufacturingOrders */
             $manufacturingOrders = $cacheItemManufacturing->get();
@@ -160,10 +166,12 @@ class NeedsController extends AbstractController
         if (!$cacheProductStocks->isHit()) {
             // Les données stocks ne sont pas en cache, donc on les génère et on les met en cache
             $stocks = $this->productStockRepository->findAll();
-            $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
             $cacheProductStocks->set($stocks);
             $cache->save($cacheProductStocks);
+           // if (!$cacheCreationDates->isHit()) {
+            $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
             $cacheCreationDates[$cacheKeyStocks] = $cacheItemCreationDate->get();
+           // }
         }else {
             /** @var ProductStock $stocks */
             $stocks = $cacheProductStocks->get();
@@ -179,11 +187,26 @@ class NeedsController extends AbstractController
             $productsData[$productId] = $this->generateProductData($prod, $productChartsData, $stocks);
         }
         $productChartsData = $this->finalizeProductChartsData($productChartsData);
-        // Enregistre les dates de création dans le cache
-        if($cacheCreationDates !== false){
-         $cacheItemCreationDate->set($cacheCreationDates);
-         $cache->save($cacheItemCreationDate);  
+        dump('3',$cacheItemCreationDate);
+        dump('4',$cacheCreationDates);
+        dump($cacheItemCreationDate->isHit());
+        dump($cacheItemCreationDate->getMetadata() );
+
+       if($cacheItemCreationDate->isHit() === false) {
+       if($cacheItemCreationDate->getMetadata() === []) {
+        $cacheItemCreationDate->set($cacheCreationDates);
+        $value = $cacheItemCreationDate->get();
+        dump('5',$cacheItemCreationDate->get());
+        if (is_array($value) && count($value) === 4) {
+            // Le tableau a 4 éléments
+            dump('Le tableau a 4 éléments');
+            $cache->save($cacheItemCreationDate);  
+        } else {
+            // Le tableau n'a pas 4 éléments
+            dump('Le tableau n\'a pas 4 éléments');
         }
+        }
+    }
         // Récupère les dates de création du cache
         $cacheCreationDates = $cache->getItem($cacheKeyCreationDate)->get();
         return new JsonResponse([
@@ -212,25 +235,20 @@ class NeedsController extends AbstractController
         $cacheKeymanufacturingOrders = 'api_needs_manufacturing_orders_p';
         $cacheKeyProducts = 'api_needs_products';
 
-        $cacheCreationDates = [];
         $cacheItemCreationDate = $cache->getItem($cacheKeyCreationDate);
-        if (!$cacheItemCreationDate->isHit()) {
-            // Initialise les dates de création si elles ne sont pas déjà enregistrées dans le cache
-            $cacheCreationDates = [
-            $cacheKeyProducts => null,
-            $cacheKeyStocks => null,
-            $cacheKeySelling => null,
-            $cacheKeymanufacturingOrders => null
-            ];
-        } else {
-             // Récupère les dates de création du cache
-             $cacheCreationDates = $cacheItemCreationDate->get();
-         }
+        dump('1',$cacheItemCreationDate );
+        $cacheCreationDates = $cacheItemCreationDate->get();
+       // $cacheCreationDates = unserialize($cacheCreationDates);
+        dump('2',$cacheItemCreationDate );
+
         // Vérifie si les données de fabrication sont en cache
         $cacheproducts = $cache->getItem($cacheKeyProducts);
         if (!$cacheproducts->isHit()) {
         $products = $this->productRepository->findByEmbBlockerAndEmbState();
+        dump('3',$cacheItemCreationDate );
         $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
+        dump('4',$cacheItemCreationDate );
+
         $cacheproducts->set($products);
         $cache->save($cacheproducts);
         $cacheCreationDates[$cacheKeyProducts] = $cacheItemCreationDate->get();

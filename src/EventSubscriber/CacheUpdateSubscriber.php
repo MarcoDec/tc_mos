@@ -60,12 +60,13 @@ class CacheUpdateSubscriber implements EventSubscriber
         $changeSet = $this->entityManager->getUnitOfWork()->getEntityChangeSet($entity);
 
         if ($entity instanceof ProductStock) {
-            if (isset($changeSet['quantity.value']) || isset($changeSet['quantity.code']) || isset($changeSet['warehouse']) || isset($changeSet['item']) ) {
+            if (isset($changeSet['quantity.value']) || isset($changeSet['quantity.code'])  ) {
                 $this->updateCreationDateCache($this->cacheKeyStocks);
+                $this->updateStockValueCache($entity);
             }
         }
         if ($entity instanceof ProductItem) {
-            if (isset($changeSet['confirmedQuantity.value']) || isset($changeSet['confirmedQuantity.code']) || isset($changeSet['order']) || isset($changeSet['confirmedDate']) ) {
+            if (isset($changeSet['confirmedQuantity.value']) || isset($changeSet['confirmedQuantity.code']) || isset($changeSet['confirmedDate']) ) {
             $this->updateCreationDateCache($this->cacheKeySelling);
             }
         }
@@ -80,7 +81,7 @@ class CacheUpdateSubscriber implements EventSubscriber
         }
     }
 }
-    private function updateCreationDateCache(string $cacheKey)
+    public function updateCreationDateCache(string $cacheKey)
     {
         // Récupérer la valeur actuelle de la clé api_needs_creation_date
         $cacheItemCreationDate = $this->redis->get($this->cacheKeyCreationDate);
@@ -96,12 +97,46 @@ class CacheUpdateSubscriber implements EventSubscriber
         }
         // Supprimer la clé 'metadata' du tableau si elle existe
         unset($cacheCreationDates['metadata']);
-
         // Mettre à jour la valeur de la clé spécifiée si elle existe
-        $cacheCreationDates['value'][$cacheKey] = date('Y-m-d H:i:s');
-    
-        $newCacheItemCreationDate = serialize($cacheCreationDates);
+        if (isset($cacheCreationDates['value'][$cacheKey])) {
+            $cacheCreationDates['value'][$cacheKey] = date('Y-m-d H:i:s');
+        }
         // Stockez la nouvelle valeur dans Redis
-        $this->redis->set($this->cacheKeyCreationDate, $newCacheItemCreationDate);
+        $this->redis->set($this->cacheKeyCreationDate, serialize($cacheCreationDates));
+        return $cacheCreationDates;
+
     }
+    private function updateStockValueCache(ProductStock $productStock)
+    {
+        // Récupérer la valeur actuelle de la clé api_needs_stocks_p
+        $cacheItemStocks = $this->redis->get($this->cacheKeyStocks);
+        // Désérialiser la valeur, en vérifiant si c'est null
+        $cachedStocks = unserialize($cacheItemStocks);
+        // Vérifier si la désérialisation a réussi
+        if ($cachedStocks === false) {
+            // Si la désérialisation a échoué, initialiser un tableau vide
+            $cachedStocks = [];
+        } else {
+        // Sinon, convertir l'objet désérialisé en tableau associatif
+        $cachedStocks = (array) $cachedStocks;
+    }
+    // Supprimer la clé 'metadata' du tableau si elle existe
+    unset($cachedStocks['metadata']);
+
+    if (isset($cachedStocks)) {
+        foreach ($cachedStocks['value'] as $stock) {
+            if ( $stock->getId() === $productStock->getId()) {
+            // Mettre à jour la valeur de quantity.value pour l'élément correspondant
+            $stock->getQuantity()->setValue($productStock->getQuantity()->getValue());
+            $stock->getQuantity()->setCode($productStock->getQuantity()->getCode());
+
+            break; // Sortir de la boucle une fois la mise à jour effectuée                 
+            }
+        }
+    }
+        // Stockez la nouvelle valeur dans Redis après sérialisation
+        $this->redis->set($this->cacheKeyStocks, serialize($cachedStocks));
+    }
+    
+    
 }
