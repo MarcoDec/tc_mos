@@ -39,12 +39,12 @@ class Desadv extends Entity implements FileEntity
     private string $json;
     #[
         ApiProperty(description: 'Mode EDI', example: 'test'),
-        ORM\Column(type: 'string', length: 255, name: 'edi_mode')
+        ORM\Column(name: 'edi_mode', type: 'string', length: 255)
     ]
     private string $ediMode;
     #[
         ApiProperty(description: 'ID GP|AN du fournisseur', example: '1'),
-        ORM\Column(type: 'integer', name: 'supplier_id')
+        ORM\Column(name: 'supplier_id', type: 'integer')
     ]
     private ?int $supplierOldId;
 

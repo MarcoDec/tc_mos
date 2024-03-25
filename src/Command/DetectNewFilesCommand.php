@@ -44,6 +44,10 @@ class DetectNewFilesCommand extends Command
             if (!empty($newFiles)) {
                 $newFilesDetected = true;
                 $output->writeln(sprintf('New files detected in %s: %s', $directory, implode(', ', $newFiles)));
+                // On récupère le contenu des fichiers
+                foreach ($newFiles as $newFile) {
+                    $jsonContent = $this->detector->getFileContent($directory . $newFile);
+                }
             }
         }
 

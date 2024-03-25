@@ -108,6 +108,19 @@ class SFTPConnection implements \IteratorAggregate
         return new ArrayIterator($files);
     }
 
+    public function getFileContent(string $filename):string {
+        $sftp = $this->sftp;
+        $stream = @fopen("ssh2.sftp://".intval($sftp).$filename, 'r');
+        if (! $stream)
+            throw new Exception("Could not open file: $filename");
+
+        $size = filesize("ssh2.sftp://".intval($sftp).$filename);
+        $content = @fread($stream, $size);
+        @fclose($stream);
+        return $content;
+
+    }
+
     public function __destruct()
     {
         if ($this->connection) {

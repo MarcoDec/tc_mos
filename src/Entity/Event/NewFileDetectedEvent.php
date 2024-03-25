@@ -6,6 +6,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 class NewFileDetectedEvent extends Event
 {
     private string $fileName;
+    private string $jsonContent;
 
     public function __construct(string $fileName)
     {
@@ -16,4 +17,15 @@ class NewFileDetectedEvent extends Event
     {
         return $this->fileName;
     }
+
+    public function getJsonContent(): string
+    {
+        return $this->jsonContent;
+    }
+
+    public function setJsonContent(string $jsonContent): void
+    {
+        $this->jsonContent = $jsonContent;
+    }
+
 }

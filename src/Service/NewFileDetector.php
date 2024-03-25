@@ -77,4 +77,12 @@ class NewFileDetector
         $filename = "/TConcept-GPAO/edi/$path.txt";
         return realpath(__DIR__.'/../../..').$filename;
     }
+
+    /**
+     * @throws Exception
+     */
+    public function getFileContent(string $filename): string
+    {
+        return $this->sftp->getFileContent($filename);
+    }
 }
