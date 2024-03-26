@@ -30,7 +30,7 @@ use App\Entity\Production\Manufacturing\Order as ManufacturingOrder;
 use App\Service\RedisService;
 use App\EventSubscriber\CacheUpdateSubscriber;
 use Doctrine\Common\Collections\Expr\Value;
-
+use App\Entity\Purchase\Order\Item as PurchaseItem;
 /**
  * @ApiResource(
  *     collectionOperations={
@@ -234,21 +234,18 @@ class NeedsController extends AbstractController
         $cacheKeySelling = 'api_needs_selling_order_item_p';
         $cacheKeymanufacturingOrders = 'api_needs_manufacturing_orders_p';
         $cacheKeyProducts = 'api_needs_products';
+        $cachekeyNomenclature = 'api_needs_nomenclatures';
+        $cachekeyComponentStock = 'api_needs_stock_c';
+        $cachekeyPurchaseItem = 'api_needs_purchase_item';
 
         $cacheItemCreationDate = $cache->getItem($cacheKeyCreationDate);
         dump('1',$cacheItemCreationDate );
         $cacheCreationDates = $cacheItemCreationDate->get();
-       // $cacheCreationDates = unserialize($cacheCreationDates);
-        dump('2',$cacheItemCreationDate );
-
         // Vérifie si les données de fabrication sont en cache
         $cacheproducts = $cache->getItem($cacheKeyProducts);
         if (!$cacheproducts->isHit()) {
         $products = $this->productRepository->findByEmbBlockerAndEmbState();
-        dump('3',$cacheItemCreationDate );
         $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
-        dump('4',$cacheItemCreationDate );
-
         $cacheproducts->set($products);
         $cache->save($cacheproducts);
         $cacheCreationDates[$cacheKeyProducts] = $cacheItemCreationDate->get();
@@ -288,15 +285,28 @@ class NeedsController extends AbstractController
             /** @var ManufacturingOrder $manufacturingOrders */
             $manufacturingOrders = $cacheItemManufacturing->get();
         }
-        // Enregistre les dates de création dans le cache
-        $cacheItemCreationDate->set($cacheCreationDates);
-        $cache->save($cacheItemCreationDate);        
-        // Récupère les dates de création du cache
-        $cacheCreationDates = $cache->getItem($cacheKeyCreationDate)->get();
 
         $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks);
+
+        $cacheComponentStock = $cache->getItem($cachekeyComponentStock);
+        if (!$cacheComponentStock->isHit()) {
         $filteredStocks = $this->componentStockRepository->findStocksByCriteria();
+        $cacheComponentStock->set($filteredStocks);
+        $cache->save($cacheComponentStock);
+        } else {
+        /** @var ComponentStock $filteredStocks */
+        $filteredStocks = $cacheComponentStock->get();
+        }
+
+        $cachePurchaseItem = $cache->getItem($cachekeyPurchaseItem);
+        if (!$cacheComponentStock->isHit()) {
         $purchaseItems = $this->purchaseItemRepository->findByEmbBlockerAndEmbState();
+        $cachePurchaseItem->set($purchaseItems);
+        $cache->save($cachePurchaseItem);
+        } else {
+        /** @var PurchaseItem $filteredStocks */
+        $purchaseItems = $cachePurchaseItem->get();
+        }
 
         $invertedMatrix = [];
 
@@ -455,6 +465,26 @@ class NeedsController extends AbstractController
             ];
             $uniqueDates = [];
         }
+
+        // Enregistre les dates de création dans le cache
+        if($cacheItemCreationDate->isHit() === false) {
+            if($cacheItemCreationDate->getMetadata() === []) {
+                $cacheItemCreationDate->set($cacheCreationDates);
+                $value = $cacheItemCreationDate->get();
+                dump('5',$cacheItemCreationDate->get());
+                if (is_array($value) && count($value) === 4) {
+                    // Le tableau a 4 éléments
+                    dump('Le tableau a 4 éléments');
+                    $cache->save($cacheItemCreationDate);  
+                } else {
+                    // Le tableau n'a pas 4 éléments
+                    dump('Le tableau n\'a pas 4 éléments');
+                }
+                }
+            }     
+        // Récupère les dates de création du cache
+        $cacheCreationDates = $cache->getItem($cacheKeyCreationDate)->get();
+
         return new JsonResponse([
             'componentChartData' => $componentChartData,
             'component' => $componentfield

@@ -62,22 +62,27 @@ class CacheUpdateSubscriber implements EventSubscriber
         if ($entity instanceof ProductStock) {
             if (isset($changeSet['quantity.value']) || isset($changeSet['quantity.code'])  ) {
                 $this->updateCreationDateCache($this->cacheKeyStocks);
-                $this->updateStockValueCache($entity);
+               $this->updateCacheValue($this->cacheKeyStocks, $entity, ['quantity']);
+
             }
         }
         if ($entity instanceof ProductItem) {
             if (isset($changeSet['confirmedQuantity.value']) || isset($changeSet['confirmedQuantity.code']) || isset($changeSet['confirmedDate']) ) {
             $this->updateCreationDateCache($this->cacheKeySelling);
+           $this->updateCacheValue($this->cacheKeySelling, $entity, ['confirmedQuantity', 'confirmedDate']);
+
             }
         }
         if ($entity instanceof ManufacturingOrder) {
             if (isset($changeSet['product']) || isset($changeSet['quantityRequested.value']) || isset($changeSet['quantityRequested.code']) || isset($changeSet['manufacturingDate']) ) {
             $this->updateCreationDateCache($this->cacheKeymanufacturingOrders);
+            $this->updateCacheValue($this->cacheKeymanufacturingOrders, $entity, ['product','quantityRequested', 'manufacturingDate']);
             }
         }
         if ($entity instanceof Product) {
             if (isset($changeSet['minStock.value']) || isset($changeSet['minStock.code'])) {
             $this->updateCreationDateCache($this->cacheKeyProducts);
+            $this->updateCacheValue($this->cacheKeyProducts, $entity, ['minStock']);
         }
     }
 }
@@ -106,37 +111,45 @@ class CacheUpdateSubscriber implements EventSubscriber
         return $cacheCreationDates;
 
     }
-    private function updateStockValueCache(ProductStock $productStock)
+
+    private function updateCacheValue(string $cacheKey, $entity, array $propertiesToUpdate)
     {
-        // Récupérer la valeur actuelle de la clé api_needs_stocks_p
-        $cacheItemStocks = $this->redis->get($this->cacheKeyStocks);
+        // Récupérer la valeur actuelle de la clé de cache
+        $cacheItem = $this->redis->get($cacheKey);
         // Désérialiser la valeur, en vérifiant si c'est null
-        $cachedStocks = unserialize($cacheItemStocks);
+        $cachedData = unserialize($cacheItem);
         // Vérifier si la désérialisation a réussi
-        if ($cachedStocks === false) {
+        if ($cachedData === false) {
             // Si la désérialisation a échoué, initialiser un tableau vide
-            $cachedStocks = [];
+            $cachedData = [];
         } else {
-        // Sinon, convertir l'objet désérialisé en tableau associatif
-        $cachedStocks = (array) $cachedStocks;
-    }
-    // Supprimer la clé 'metadata' du tableau si elle existe
-    unset($cachedStocks['metadata']);
+            // Sinon, convertir l'objet désérialisé en tableau associatif
+            $cachedData = (array) $cachedData;
+        }
+        // Supprimer la clé 'metadata' du tableau si elle existe
+        unset($cachedData['metadata']);
 
-    if (isset($cachedStocks)) {
-        foreach ($cachedStocks['value'] as $stock) {
-            if ( $stock->getId() === $productStock->getId()) {
-            // Mettre à jour la valeur de quantity.value pour l'élément correspondant
-            $stock->getQuantity()->setValue($productStock->getQuantity()->getValue());
-            $stock->getQuantity()->setCode($productStock->getQuantity()->getCode());
+        if (isset($cachedData)) {
+            foreach ($cachedData['value'] as $item) {
+                if ($item->getId() === $entity->getId()) {
+                    dump($item);
+                    // Mettre à jour les propriétés spécifiées de l'entité
+                    foreach ($propertiesToUpdate as $property) {
+                        $setter = 'set' . ucfirst($property);
+                        if (method_exists($item, $setter)) {
+                            $value = $entity->{'get' . ucfirst($property)}();
+                            $item->$setter($value);
+                        }
+                    }
+                    dump($item);
 
-            break; // Sortir de la boucle une fois la mise à jour effectuée                 
+                    break; // Sortir de la boucle une fois la mise à jour effectuée
+                }
             }
         }
-    }
+
         // Stockez la nouvelle valeur dans Redis après sérialisation
-        $this->redis->set($this->cacheKeyStocks, serialize($cachedStocks));
+        $this->redis->set($cacheKey, serialize($cachedData));
     }
-    
-    
+
 }
