@@ -12,14 +12,29 @@ export default function useRow(row, table) {
             },
             initUpdate(fields) {
                 this.updated = {}
-                for (const field of fields.fields)
+                for (const field of fields.fields) {
                     set(this.updated, field.name, get(this, field.name))
+                }
             },
             async remove() {
                 await api(this.url, 'DELETE')
                 this.dispose()
             },
             async update() {
+                // console.info('update', this.table.fields, this)
+                for (const field of this.table.fields) {
+                    if (field.type === 'multiselect-fetch') {
+                        // console.info('field', field)
+                        const currentValue = get(this.updated, field.name)
+                        // console.info( 'valeur', currentValue)
+                        // console.info(currentValue,currentValue.length > 0)
+                        if (field.max === 1 && typeof currentValue === 'object' && currentValue.length > 0) {
+                            // console.info('update this.updated')
+                            set(this.updated, field.name, get(this.updated, field.name)[0])
+                            // console.info('updated', this.updated)
+                        }
+                    }
+                }
                 initialState = await api(this.url, 'PATCH', this.updated)
                 this.$reset()
             }

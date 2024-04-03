@@ -3,10 +3,7 @@
     import InlistAddForm from '../../../../form-cardable/inlist-add-form/InlistAddForm.vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import {computed, ref, onErrorCaptured} from 'vue'
-    import {getOptions} from '../../../../../utils'
-    import {useComponentListStore} from '../../../../../stores/purchase/component/components'
     import {useNomenclatureStore} from '../../../../../stores/project/product/nomenclatures'
-    import {useProductStore} from '../../../../../stores/project/product/products'
     import {useRoute} from 'vue-router'
     import useOptions from '../../../../../stores/option/options'
 
@@ -33,12 +30,6 @@
     await nomenclatureStore.fetchAll(nomenclatureFetchCriteria.getFetchCriteria)
     itemsTable.value = nomenclatureStore.nomenclatures
 
-    const productsOptions = ref([])
-    const productStore = useProductStore()
-    const productFormFetchCriteria = useFetchCriteria('productForms')
-    productFormFetchCriteria.addFilter('pagination', 'false')
-    await productStore.fetchAll(productFormFetchCriteria.getFetchCriteria)
-    productsOptions.value = getOptions(productStore.products, 'code')
     const addProductItem = ref({
         quantity: {
             code: '/api/units/1',
@@ -57,21 +48,13 @@
         mandated: false,
         product: `/api/products/${idProduct}`
     })
+
     const addComponentItem = ref({
         quantity: {
             code: '/api/units/1',
             value: 1
         },
         component: [],
-        mandated: false,
-        product: `/api/products/${idProduct}`
-    })
-    const addEquivalentItem = ref({
-        quantity: {
-            code: '/api/units/1',
-            value: 1
-        },
-        componentEquivalent: [],
         mandated: false,
         product: `/api/products/${idProduct}`
     })
@@ -84,16 +67,31 @@
         mandated: false,
         product: `/api/products/${idProduct}`
     })
+
+    const addEquivalentItem = ref({
+        quantity: {
+            code: '/api/units/1',
+            value: 1
+        },
+        componentEquivalent: [],
+        mandated: false,
+        product: `/api/products/${idProduct}`
+    })
+    const updateEquivalentItem = ref({
+        quantity: {
+            code: '/api/units/1',
+            value: 1
+        },
+        component: [],
+        mandated: false,
+        product: `/api/products/${idProduct}`,
+        equivalent: []
+    })
+
     const AddProductForm = ref(false)
     const addProductFormField = ref([])
     const ProductUpdateForm = ref(false)
     const updateProductFormField = ref([])
-
-    const componentsOptions = ref([])
-    const componentStore = useComponentListStore()
-    const componentFormFetchCriteria = useFetchCriteria('componentForms')
-    await componentStore.fetchAll(componentFormFetchCriteria.getFetchCriteria)
-    componentsOptions.value = getOptions(componentStore.components, 'code')
 
     const AddComponentForm = ref(false)
     const addComponentFormField = ref([])
@@ -102,6 +100,8 @@
 
     const AddEquivalentForm = ref(false)
     const addEquivalentFormField = ref([])
+    const EquivalentUpdateForm = ref(false)
+    const updateEquivalentFormField = ref([])
 
     tabFields.value = [
         {
@@ -124,6 +124,15 @@
             name: 'component',
             type: 'multiselect-fetch',
             api: '/api/components',
+            filteredProperty: 'code',
+            min: true,
+            max: 1
+        },
+        {
+            label: 'Groupe Equivalence',
+            name: 'equivalent',
+            type: 'multiselect-fetch',
+            api: '/api/component-equivalents',
             filteredProperty: 'code',
             min: true,
             max: 1
@@ -164,7 +173,6 @@
         {
             label: 'Sous-produit',
             name: 'subProduct',
-            //options: productsOptions.value,
             type: 'multiselect-fetch',
             api: '/api/products',
             filteredProperty: 'code',
@@ -203,7 +211,6 @@
         {
             label: 'Sous-produit',
             name: 'subProduct',
-            //options: productsOptions.value,
             type: 'multiselect-fetch',
             api: '/api/products',
             filteredProperty: 'code',
@@ -234,6 +241,7 @@
             type: 'measure'
         }
     ]
+
     addComponentFormField.value = [
         {
             label: 'Mandat',
@@ -243,7 +251,6 @@
         {
             label: 'Composant',
             name: 'component',
-            //options: productsOptions.value,
             type: 'multiselect-fetch',
             api: '/api/components',
             filteredProperty: 'code',
@@ -282,7 +289,6 @@
         {
             label: 'Composant',
             name: 'component',
-            //options: productsOptions.value,
             type: 'multiselect-fetch',
             api: '/api/components',
             filteredProperty: 'code',
@@ -313,6 +319,7 @@
             type: 'measure'
         }
     ]
+
     addEquivalentFormField.value = [
         {
             label: 'Mandat',
@@ -322,7 +329,6 @@
         {
             label: 'Equivalent',
             name: 'equivalent',
-            //options: productsOptions.value,
             type: 'multiselect-fetch',
             api: '/api/component-equivalents',
             filteredProperty: 'code',
@@ -352,7 +358,46 @@
             type: 'measure'
         }
     ]
-    const min = computed(() => AddComponentForm.value || AddProductForm.value || ProductUpdateForm.value || ComponentUpdateForm.value || AddEquivalentForm.value)
+    updateEquivalentFormField.value = [
+        {
+            label: 'Mandat',
+            name: 'mandated',
+            type: 'boolean'
+        },
+        {
+            label: 'Equivalent',
+            name: 'equivalent',
+            type: 'multiselect-fetch',
+            api: '/api/component-equivalents',
+            filteredProperty: 'code',
+            max: 1
+        },
+        {
+            label: 'Quantité',
+            name: 'quantity',
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'code',
+                    options: {
+                        label: value =>
+                            optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                        options: optionsUnit.value
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'value',
+                    type: 'number',
+                    step: 1
+                }
+            },
+            type: 'measure'
+        }
+    ]
+
+    const min = computed(() => AddComponentForm.value || ComponentUpdateForm.value || AddProductForm.value || ProductUpdateForm.value || AddEquivalentForm.value || EquivalentUpdateForm.value)
     const col1 = computed(() => {
         if (min.value) return 5
         return 12
@@ -363,38 +408,53 @@
     }
     function ajouteProduit() {
         AddProductForm.value = !AddProductForm.value
-        AddComponentForm.value = false
         ProductUpdateForm.value = false
+
+        AddComponentForm.value = false
         ComponentUpdateForm.value = false
+
         AddEquivalentForm.value = false
+        EquivalentUpdateForm.value = false
     }
     function ajouteComposant() {
-        AddComponentForm.value = !AddComponentForm.value
         AddProductForm.value = false
         ProductUpdateForm.value = false
+
+        AddComponentForm.value = !AddComponentForm.value
         ComponentUpdateForm.value = false
+
         AddEquivalentForm.value = false
+        EquivalentUpdateForm.value = false
     }
     function ajouteEquivalent() {
-        AddEquivalentForm.value = !AddEquivalentForm.value
-        AddComponentForm.value = false
         AddProductForm.value = false
         ProductUpdateForm.value = false
+
+        AddComponentForm.value = false
         ComponentUpdateForm.value = false
+
+        AddEquivalentForm.value = !AddEquivalentForm.value
+        EquivalentUpdateForm.value = false
     }
     function cancelAddForm() {
-        AddComponentForm.value = false
         AddProductForm.value = false
         ProductUpdateForm.value = false
+
+        AddComponentForm.value = false
         ComponentUpdateForm.value = false
+
         AddEquivalentForm.value = false
+        EquivalentUpdateForm.value = false
     }
     async function onAddSubmit() {
-        AddComponentForm.value = false
         AddProductForm.value = false
         ProductUpdateForm.value = false
+
+        AddComponentForm.value = false
         ComponentUpdateForm.value = false
+
         AddEquivalentForm.value = false
+        EquivalentUpdateForm.value = false
         await refresh()
     }
     isLoaded.value = true
@@ -408,6 +468,7 @@
         nomenclatureFetchCriteria.resetAllFilter()
         if (data.subProduct) nomenclatureFetchCriteria.addFilter('subProduct', data.subProduct[0])
         if (data.component) nomenclatureFetchCriteria.addFilter('component', data.component[0])
+        if (data.equivalent) nomenclatureFetchCriteria.addFilter('equivalent', data.equivalent[0])
         if (typeof data.mandated !== 'undefined') nomenclatureFetchCriteria.addFilter('mandated', data.mandated)
         if (data.quantity && data.quantity.code) nomenclatureFetchCriteria.addFilter('quantity.code', optionsUnit.value.label(data.quantity.code))
         if (data.quantity && data.quantity.value) nomenclatureFetchCriteria.addFilter('quantity.value', data.quantity.value)
@@ -416,16 +477,21 @@
     }
     async function updateItem(item) {
         isLoaded.value = false
-        if (item.component === null) {
+        if (item.component === null && item.equivalent === null) {
             // affichage formulaire update Sous-Produit
             updateProductItem.value = {...updateProductItem.value, ...item}
             updateProductItem.value.subProduct = [item.subProduct['@id']]
             ProductUpdateForm.value = true
-        } else {
+        } else if (item.subProduct === null && item.equivalent === null) {
             // affichage formulaire update Composant
             updateComponentItem.value = {...updateComponentItem.value, ...item}
             updateComponentItem.value.component = [item.component['@id']]
             ComponentUpdateForm.value = true
+        } else if (item.subProduct === null && item.component === null) {
+            // affichage formulaire update Groupe d'équivalence
+            updateEquivalentItem.value = {...updateEquivalentItem.value, ...item}
+            updateEquivalentItem.value.equivalent = [item.equivalent['@id']]
+            EquivalentUpdateForm.value = true
         }
         await refresh()
         isLoaded.value = true
@@ -444,19 +510,26 @@
         console.log('trierAlphabet', data)
     }
     const error = ref(null)
+
     const addProductKey = ref(0)
-    const addComponentKey = ref(0)
-    const addEquivalentKey = ref(0)
     const updateProductKey = ref(0)
+
+    const addComponentKey = ref(0)
     const updateComponentKey = ref(0)
+
+    const addEquivalentKey = ref(0)
+    const updateEquivalentKey = ref(0)
     function errorCaptured(err, instance, info) {
         error.value = err
         console.debug('Une erreur a été capturée:', err, instance, info)
         addProductKey.value++
-        addComponentKey.value++
-        addEquivalentKey.value++
         updateProductKey.value++
+
+        addComponentKey.value++
         updateComponentKey.value++
+
+        addEquivalentKey.value++
+        updateEquivalentKey.value++
         // Vous pouvez gérer l'erreur comme vous le souhaitez ici
         return false // Renvoie false pour éviter que l'erreur ne soit propagée plus haut.
     }
@@ -539,14 +612,12 @@
                             id="addEquivalent"
                             :key="`addEquivalent${addEquivalentKey}`"
                             api-method="POST"
-                            api-url="/api/component-equivalents"
+                            api-url="/api/nomenclatures"
                             form="addEquivalentForm"
                             :fields="addEquivalentFormField"
                             :model-value="addEquivalentItem"
                             @cancel="cancelAddForm"
-                            @submitted="onAddSubmit">
-                            InlistAddForm adapté pour les équivalences
-                        </InlistAddForm>
+                            @submitted="onAddSubmit"/>
                         <InlistAddForm
                             v-if="isLoaded && ProductUpdateForm"
                             id="updateProduct"
@@ -557,6 +628,17 @@
                             form="updateProductForm"
                             :fields="updateProductFormField"
                             :model-value="updateProductItem"
+                            @cancel="cancelAddForm"
+                            @submitted="onAddSubmit"/>
+                        <InlistAddForm
+                            v-if="isLoaded && EquivalentUpdateForm"
+                            id="updateEquivalent"
+                            api-method="PATCH"
+                            api-url=""
+                            card-title="Modifier la composition en groupe d'équivalence"
+                            form="updateEquivalentForm"
+                            :fields="updateEquivalentFormField"
+                            :model-value="updateEquivalentItem"
                             @cancel="cancelAddForm"
                             @submitted="onAddSubmit"/>
                         <InlistAddForm

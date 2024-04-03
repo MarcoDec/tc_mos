@@ -1,20 +1,20 @@
 <script setup>
     import AppFormFieldset from './AppFormFieldset.vue'
     import AppFormGroupJS from './AppFormGroupJS'
-    import {computed} from 'vue'
+    import {computed, defineEmits, defineProps} from 'vue'
     // import AppFormFieldset from './AppFormFieldset.vue'
 
     const emit = defineEmits(['update:modelValue', 'input'])
     const props = defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},
-        modelValue: {default: null}
+        modelValue: {default: null, type: Object},
+        newField: {default: null, required: false, type: Object}
     })
-
     const componentType = computed(() => {
         switch (props.field.mode) {
-            // case 'tab':
-            //     return 'AppFormTabs'
+            case 'tab':
+                return 'AppFormTabs'
             case 'fieldset':
                 return AppFormFieldset
             default:
@@ -33,6 +33,7 @@
         :form="form"
         :name="field.name"
         :model-value="modelValue"
+        :new-field="newField"
         :values="modelValue"
         @update:model-value="input">
         <slot/>

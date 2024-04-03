@@ -37,6 +37,7 @@
 
     async function logout() {
         send('logout')
+        user.clear()
         await user.logout()
         await router.push({name: 'login'})
     }
@@ -44,16 +45,15 @@
 
 <template>
     <div class="text-white">
-        <ul class="me-auto navbar-nav">
+        <ul class="align-items-center d-flex flex-row ms-auto mt-0 navbar-nav">
             <span class="user">
-                <AppNavbarItem id="user" class="navbar-text" icon="user-circle" :title="user.name">
+                <AppNavbarItem id="user" class="m-0 navbar-text p-0" icon="user-circle" :title="user.name">
                     <div v-for="tz in timezones" :key="tz.country" class="timelink">
                         <AppNavbarLinkTime :timezone="tz.timezone" :country="tz.country"/>
                     </div>
                 </AppNavbarItem>
             </span>
-
-            <AppOverlay :spinner="state.matches('loading')" class="navbar-text" tag="span">
+            <AppOverlay :spinner="state.matches('loading')" class="navbar-text p-0" tag="span">
                 <AppBtn
                     :disabled="state.matches('loading')"
                     icon="sign-out-alt"

@@ -44,6 +44,24 @@
       },
       "symfony/validator": {
         "Symfony\\Component\\Validator\\Context\\ExecutionContext: $translator & $translationDomain to public": "./patches/symfony/validator/Context/ExecutionContext.patch"
+      },
+      "api-platform/core": {
+        "ApiPlatform RequestDataCollector patch": "./patches/api-platform/core/src/Bridge/Symfony/Bundle/DataCollector/RequestDataCollector-reset-method.patch",
+        "ApiPlatform ItemNormalizer patch": "./patches/api-platform/core/src/JsonLd/Serializer/ItemNormalizer-context-argument.patch",
+        "ApiPlatform AbstractItemNormalizer patch": "./patches/api-platform/core/src/Serializer/AbstractItemNormalizer-context-argument.patch",
+        "ApiPlatform OpenApiNormalizer patch": "patches/api-platform/core/src/OpenApi/Serializer/OpenApiNormalizer-context-argument.patch",
+        "ApiPlatform ApiGatewayNormalizer patch": "patches/api-platform/core/src/Swagger/Serializer/ApiGatewayNormalizer-context-argument.patch",
+        "ApiPlatform AbstractConstraintViolationListNormalize patch": "patches/api-platform/core/src/Serializer/AbstractConstraintViolationListNormalizer-context-argument.patch",
+        "ApiPlatform (Hydra) ErrorNormalizer patch": "patches/api-platform/core/src/Hydra/Serializer/ErrorNormalizer-context-argument.patch",
+        "ApiPlatform PartialCollectionViewNormalizer patch": "patches/api-platform/core/src/Hydra/Serializer/PartialCollectionViewNormalizer-context-argument.patch",
+        "ApiPlatform CollectionFiltersNormalizer patch": "patches/api-platform/core/src/Hydra/Serializer/CollectionFiltersNormalizer-context-argument.patch",
+        "ApiPlatform (Problem) ErrorNormalizer patch": "patches/api-platform/core/src/Problem/Serializer/ErrorNormalizer-context-argument.patch",
+        "ApiPlatform CollectionNormalizer patch": "patches/api-platform/core/src/Hydra/Serializer/CollectionNormalizer-context-argument.patch",
+        "ApiPlatform DocumentationNormalizer patch": "patches/api-platform/core/src/Swagger/Serializer/DocumentationNormalizer-context-argument.patch",
+        "ApiPLatform IntegerDenormalizer patch": "patches/api-platform/core/src/Identifier/Normalizer/IntegerDenormalizer-context-argument.patch",
+        "ApiPlatform JsonSchemaGenerateCommand patch": "patches/api-platform/core/src/JsonSchema/Command/JsonSchemaGenerateCommand-context-argument.patch",
+        "ApiPlatform OpenApiCommand patch": "patches/api-platform/core/src/Bridge/Symfony/Bundle/Command/OpenApiCommand-context-argument.patch",
+        "ApiPlatform SwaggerCommand patch": "patches/api-platform/core/src/Bridge/Symfony/Bundle/Command/SwaggerCommand.patch"
       }
     },
     "symfony": {
@@ -65,6 +83,7 @@
     "ext-iconv": "*",
     "ext-intl": "*",
     "ext-pdo_mysql": "*",
+    "ext-ssh2": "*",
     "ext-zip": "*",
     "api-platform/core": "2.6.8",
     "cweagans/composer-patches": "^1.7.2",
@@ -83,8 +102,10 @@
     "symfony/expression-language": "6.1.*",
     "symfony/flex": "^2.2.3",
     "symfony/framework-bundle": "6.1.*",
+    "symfony/google-mailer": "6.1.*",
     "symfony/http-client": "6.1.*",
     "symfony/intl": "6.1.*",
+    "symfony/mailer": "6.1.*",
     "symfony/mime": "6.1.*",
     "symfony/monolog-bundle": "^3.8.0",
     "symfony/property-info": "6.1.*",
@@ -97,8 +118,7 @@
     "symfony/validator": "6.1.*",
     "symfony/workflow": "6.1.*",
     "symfony/yaml": "6.1.*",
-    "voku/html-min": "^4.5.0",
-    "ext-ssh2": "*"
+    "voku/html-min": "^4.5.0"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.12.0",

@@ -319,8 +319,7 @@ export const useCustomerListFactureStore = defineStore('customerListFacture', {
                 dateEcheance: dtEcheance,
                 forceTVA: item.forceVat,
                 note: item.notes,
-                msgTVA: item.vatMessage.name,
-
+                msgTVA: item.vatMessage === null ? null : item.vatMessage.name,
                 prixHT: `${item.exclTax.value} ${item.exclTax.code}`,
                 prixTTC: `${item.inclTax.value} ${item.inclTax.code}`,
                 tva: `${item.vat.value} ${item.vat.code}`

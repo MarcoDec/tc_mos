@@ -109,5 +109,15 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Définition des Types de compétence'
         }
+    },
+    {
+        component: () => import('../components/pages/hr/employee/AppEmployeeListPage.vue'),
+        meta: {requiresAuth: true},
+        name: 'employee-list',
+        path: '/employee-list',
+        props: {
+            icon: 'user-tag',
+            title: 'Liste des employés'
+        }
     }
 ]

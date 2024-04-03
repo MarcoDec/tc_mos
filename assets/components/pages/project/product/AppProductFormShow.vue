@@ -1,6 +1,5 @@
 <script setup>
     import AppShowProductTabAdmin from './tabs/AppShowProductTabAdmin.vue'
-    import AppShowProductTabGeneral from './tabs/AppShowProductTabGeneral.vue'
     import AppShowProductTabLogistic from './tabs/AppShowProductTabLogistic.vue'
     import AppShowProductTabPrice from './tabs/AppShowProductTabPrice.vue'
     import AppShowProductTabProduction from './tabs/AppShowProductTabProduction.vue'
@@ -25,15 +24,8 @@
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab
-            id="gui-start-main"
-            active
-            title="Généralités"
-            icon="pencil"
-            tabs="gui-start">
-            <AppSuspense><AppShowProductTabGeneral/></AppSuspense>
-        </AppTab>
-        <AppTab
             id="gui-start-files"
+            active
             title="Fichiers"
             icon="laptop"
             tabs="gui-start">

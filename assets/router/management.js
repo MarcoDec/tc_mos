@@ -47,20 +47,49 @@ export default [
             apiBaseRoute: 'printers',
             disableRemove: true,
             fields: [
-                {create: false, label: 'Nom', name: 'name', search: false, sort: false, update: false},
-                {create: false, label: 'IP', name: 'ip', search: false, sort: false, update: false},
+                {create: true, label: 'Nom', name: 'name', search: true, sort: true, update: true},
+                {create: true, label: 'IP', name: 'ip', search: true, sort: true, update: true},
                 {
-                    create: false,
+                    create: true,
                     hideLabelValue: true,
                     label: 'Couleur',
                     name: 'color',
                     options: [{text: '#00cc00', value: 'green'}, {text: '#ffff33', value: 'yellow'}],
                     search: false,
-                    sort: false,
+                    sort: true,
                     type: 'color',
-                    update: false
+                    update: true
                 },
-                {create: false, label: 'Compagnie', name: 'company.name', search: false, sort: false, update: false}
+                {
+                    create: true,
+                    label: 'Compagnie',
+                    name: 'company',
+                    options: {base: 'companies'},
+                    search: true,
+                    sort: false,
+                    type: 'select',
+                    update: true
+                },
+                {
+                    create: true,
+                    label: 'Largeur Max Etiquette',
+                    name: 'maxLabelWidth',
+                    search: true,
+                    sort: true,
+                    step: 0.1,
+                    type: 'number',
+                    update: true
+                },
+                {
+                    create: true,
+                    label: 'Hauteur Max Etiquette',
+                    name: 'maxLabelHeight',
+                    search: true,
+                    sort: true,
+                    step: 0.1,
+                    type: 'number',
+                    update: true
+                }
             ],
             icon: 'print',
             sort: readonly({label: 'Nom', name: 'name'}),
@@ -194,5 +223,27 @@ export default [
         meta: {title: 'Détails des Dépenses et Ventes — T-Concept GPAO'},
         name: 'suivi_depenses_ventes_show',
         path: '/suivi-depenses-ventes/show/:id'
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Gestion des devises'},
+        name: 'currencies',
+        path: '/currencies',
+        props: {
+            apiBaseRoute: 'currencies',
+            disableAdd: true,
+            disableRemove: true,
+            fields: [
+                {label: 'Nom', name: 'code', create: true, update: false, search: true, sort: true},
+                {label: 'Description', name: 'name', create: true, update: false, search: true, sort: true},
+                {label: 'Symbol', name: 'symbol', create: true, update: false, search: true, sort: true},
+                {label: 'Activé/Desactivé', name: 'active', type: 'boolean', create: true, update: true, search: true, sort: false},
+                {label: 'Devise parente', name: 'parent', type: 'select', options: {base: 'currencies'}, create: true, update: false, search: true, sort: false},
+                {label: 'Ratio / parent', name: 'base', type: 'number', step: 0.01, create: true, update: false, search: true, sort: true}
+            ],
+            icon: 'comments-dollar',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Gestion des devises'
+        }
     }
 ]

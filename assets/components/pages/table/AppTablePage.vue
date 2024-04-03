@@ -45,10 +45,13 @@
     //endregion
     store.apiBaseRoute = props.apiBaseRoute
     store.apiTypedRoutes = props.apiTypedRoutes
+    //region Gestion de la route de visualisation => enableShow
     if (props.enableShow) {
         store.enableShow = true
         store.showRouteName = `${route.name}/show`
     }
+    //endregion
+    store.fields = props.fields
     await store.fetch()
 
     const storedFields = useFields(route.name, props.fields)
@@ -60,6 +63,26 @@
     })
     function show(data) {
         router.push({name: props.showRouteName, params: {id: data}})
+    }
+    function gotoFirstPage() {
+        store.page = 1
+        store.fetch()
+    }
+    function gotoPreviousPage() {
+        if (store.page > 1) {
+            store.page--
+            store.fetch()
+        }
+    }
+    function gotoNextPage() {
+        if (store.page < store.totalItems / store.perPage) {
+            store.page++
+            store.fetch()
+        }
+    }
+    function gotoLastPage() {
+        store.page = Math.ceil(store.totalItems / store.perPage)
+        store.fetch()
     }
 </script>
 
@@ -85,4 +108,25 @@
             </template>
         </AppTable>
     </AppOverlay>
+    <div class="d-flex flex-row justify-content-center">
+        <Fa v-if="store.hydraId !== store.hydraFirst " :brand="false" class="m-2 primary-hover zoom-hover" icon="backward-fast" @click="gotoFirstPage"/>
+        <Fa v-if="store.hydraId !== store.hydraFirst " :brand="false" class="m-2 primary-hover zoom-hover" icon="backward-step" @click="gotoPreviousPage"/>
+        <div class="pb-0 pt-1">
+            Page {{ store.page }}/{{ store.lastPage }}
+        </div>
+        <Fa v-if="store.hydraId !== store.hydraLast" :brand="false" class="m-2 primary-hover zoom-hover" icon="forward-step" @click="gotoNextPage"/>
+        <Fa v-if="store.hydraId !== store.hydraLast" :brand="false" class="m-2 primary-hover zoom-hover" icon="forward-fast" @click="gotoLastPage"/>
+    </div>
 </template>
+
+<style>
+    .shadow-hover:hover {
+        box-shadow: 0 0 10px 0 black;
+    }
+    .zoom-hover:hover {
+        transform: scale(1.2);
+    }
+    .primary-hover:hover {
+        color: blue;
+    }
+</style>

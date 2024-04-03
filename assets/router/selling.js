@@ -31,9 +31,20 @@ export default [
         }
     },
     {
+<<<<<<< HEAD
         component: () => import('./pages/customer/AppCustomerOrders.vue'),
         meta: {requiresAuth: true},
         name: 'customer-order-show',
         path: '/customerorder/show/:id'
+=======
+        component: () => import('../components/pages/selling/customer/AppCustomerListPage.vue'),
+        meta: {requiresAuth: true},
+        name: 'customer-list',
+        path: '/customer-list',
+        props: {
+            icon: 'user-tie',
+            title: 'Liste des clients'
+        }
+>>>>>>> develop
     }
 ]

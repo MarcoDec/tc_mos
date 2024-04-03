@@ -25,8 +25,11 @@
 <template>
     <AppSuspense>
         <AppShowGuiGen>
-            <template #gui-header>
-                <div class="bg-white">
+            <template #gui-header="{size}">
+                {{ size }}
+            </template>
+            <template #gui-left>
+                <div class="row">
                     <h1>
                         <button class="text-dark" @click="goBack">
                             <Fa :icon="icon"/>
@@ -34,8 +37,6 @@
                         {{ title }} - {{ storeWarehouse.warehouse.name }}
                     </h1>
                 </div>
-            </template>
-            <template #gui-left>
                 <AppSuspense><AppWarehouseFormShow/></AppSuspense>
             </template>
             <template #gui-right>

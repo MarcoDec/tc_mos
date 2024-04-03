@@ -1,6 +1,6 @@
 import AppShowGui from '../components/pages/AppShowGui.vue'
-import AppShowGuiComponent from '../components/pages/purchase/component/AppShowGuiComponent.vue'
-import AppShowGuiSupplier from '../components/pages/purchase/supplier/AppShowGuiSupplier.vue'
+import AppShowGuiComponent from '../components/pages/purchase/component/show/AppShowGuiComponent.vue'
+import AppShowGuiSupplier from '../components/pages/purchase/supplier/show/AppShowGuiSupplier.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTreePageAttribute from '../components/pages/tree/AppTreePageAttribute.vue'
 import AppTreePageSuspense from '../components/pages/tree/AppTreePageSuspense.vue'
@@ -123,6 +123,28 @@ export default [
             readFilter: '?pagination=false&type=purchase',
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Paramètres'
+        }
+    },
+    {
+        component: () => import('../components/pages/purchase/component/list/AppComponentPage.vue'),
+        meta: {requiresAuth: true},
+        name: 'component-list',
+        path: '/component-list'
+    },
+    // {
+    //     component: () => import('./pages/supplier/AppSupplierPage.vue'),
+    //     meta: {requiresAuth: true},
+    //     name: 'supplier-list',
+    //     path: '/supplier-list'
+    // },
+    {
+        component: () => import('../components/pages/purchase/supplier/list/AppSupplierListPage.vue'),
+        meta: {requiresAuth: true},
+        name: 'supplier-list',
+        path: '/supplier-list',
+        props: {
+            icon: 'user-tag',
+            title: 'Liste des Fournisseurs'
         }
     }
 ]

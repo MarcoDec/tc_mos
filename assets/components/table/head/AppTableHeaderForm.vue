@@ -1,6 +1,6 @@
 <script setup>
     import AppBtnJS from '../../AppBtnJS'
-    import {computed} from 'vue'
+    import {computed, ref} from 'vue'
 
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
@@ -24,27 +24,32 @@
     const form = computed(() => `${props.id}-form`)
     const fullReverseLabel = computed(() => `Basculer en mode ${props.reverseLabel}`)
     const lowerLabel = computed(() => props.label.toLowerCase())
-
+    const localData = ref(props.modelValue)
     function input(v) {
         if (props.store.isCompanyFiltered) {
             const newV = {...v, company: props.store.company}
+            localData.value = newV
             emit('update:modelValue', newV)
-        } else emit('update:modelValue', v)
+        } else {
+            localData.value = v
+            emit('update:modelValue', v)
+        }
     }
     function reverse() {
         props.send(props.reverseMode)
+    }
+    function localSubmit() {
+        props.submit()
     }
 </script>
 
 <template>
     <tr :id="id">
-        <td class="text-center">
+        <td class="text-center" width="120">
             <template v-if="canReverse">
-                <Fa :icon="icon"/>
+                <!-- <Fa :icon="icon"/>-->
                 <AppBtnJS v-if="!disableAdd" :icon="reverseIcon" :label="fullReverseLabel" @click="reverse"/>
             </template>
-        </td>
-        <td class="text-center">
             <slot
                 :fields="fields"
                 :form="form"
@@ -52,10 +57,10 @@
                 :label="label"
                 :send="send"
                 :store="store"
-                :submit="submit"
+                :submit="localSubmit"
                 :variant="variant"
                 name="form">
-                <AppForm :id="form" class="d-inline m-0 p-0" @submit="submit">
+                <AppForm :id="form" class="d-inline m-0 p-0" @submit="localSubmit">
                     <AppBtnJS :icon="icon" :label="label" :variant="variant" type="submit"/>
                 </AppForm>
             </slot>
@@ -69,7 +74,7 @@
             :form="form"
             :label="lowerLabel"
             :mode="mode"
-            :model-value="modelValue"
+            :model-value="localData"
             :store="store"
             :violations="violations"
             @update:model-value="input">

@@ -27,6 +27,10 @@ export const useNomenclatureStore = defineStore('nomenclatures', {
                         toLoad[item.component] = true
                         myData[index] = 'component'
                     }
+                    if (item.equivalent !== null) {
+                        toLoad[item.equivalent] = true
+                        myData[index] = 'equivalent'
+                    }
                 })
                 //console.log(Object.keys(toLoad))
                 Object.keys(toLoad).forEach(iri => {

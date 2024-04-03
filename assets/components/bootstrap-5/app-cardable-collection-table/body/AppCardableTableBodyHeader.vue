@@ -33,10 +33,7 @@
 
 <template>
     <tr class="header">
-        <th scope="row" class="">
-            <Fa icon="filter"/>
-        </th>
-        <td>
+        <td class="px100">
             <button class="btngris" @click="search">
                 <Fa icon="search"/>
             </button>
@@ -45,9 +42,9 @@
             </button>
         </td>
 
-        <td v-for="field in tabFields" :key="field.name">
+        <td v-for="field in tabFields" :key="field.name" :style="{width: field.width ? `${field.width}px` : null}">
             <template v-if="field.filter !== false">
-                <AppInputGuesser v-if="!field.searchDisabled" :id="field.name" v-model="inputValues[field.name]" :form="form" :field="field" @update:model-value="onUpdateModelValue($event, field.name)"/>
+                <AppInputGuesser v-if="!field.searchDisabled" :id="field.name" v-model="inputValues[field.name]" :form="form" :field="field" @update:model-value="onUpdateModelValue($event, field.name)" @keyup.enter="search"/>
             </template>
             <template v-else>
                 {{ inputValues[field.name] }}
@@ -57,6 +54,12 @@
 </template>
 
 <style scoped>
+    .px50{
+        width: 50px;
+    }
+    .px100{
+        width: 100px;
+    }
     .header{
         background-color: #c5c5c5 ;
     }

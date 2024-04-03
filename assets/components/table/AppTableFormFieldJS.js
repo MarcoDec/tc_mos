@@ -16,7 +16,7 @@ function AppTableFormFieldJS(props, context) {
             'onUpdate:modelValue': input
         }
         if (props.violation)
-            inputAttrs['class'] = 'is-invalid'
+            inputAttrs.class = 'is-invalid'
         return inputAttrs
     })
     watch(() => props.modelValue, newValue => {
@@ -24,8 +24,8 @@ function AppTableFormFieldJS(props, context) {
     })
     return () => {
         function inputSlot(inputAttrs) {
-            return typeof context.slots['default'] === 'function'
-                ? context.slots['default'](inputAttrs)
+            return typeof context.slots.default === 'function'
+                ? context.slots.default(inputAttrs)
                 : h(resolveComponent('AppInputGuesserJS'), inputAttrs)
         }
         const children = []

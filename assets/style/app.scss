@@ -21,6 +21,12 @@ $dropdown-success: #57ec57 !default;
   --ms-font-size: $input-font-size-sm;
 }
 
+.font-small{
+  font-size: small;
+}
+.font-xsmall{
+  font-size: x-small;
+}
 @each $color, $value in $grays {
   .bg-gray-#{$color} {
     background-color: $value;
@@ -109,4 +115,80 @@ $dropdown-success: #57ec57 !default;
 }
 .icon-mode .nav-link-text  {
   display: none;
+}
+
+.btn-float-right {
+  float: right;
+}
+
+.width30 {
+  width: 30%;
+}
+.width70 {
+  width: 70%;
+  max-width: 70% !important;
+}
+.width100 {
+  width: 100%;
+  max-width: 100% !important;
+}
+
+
+.full-visible-width {
+  min-width:calc(100vw - 50px);
+  max-width:calc(100vw - 50px);
+  width:calc(100vw - 50px);
+  padding: 1px;
+  display: inline-block;
+}
+.full-screen {
+  position: fixed;
+  top: 10px;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000; /* Assurez-vous que c'est au-dessus des autres éléments */
+  background-color: white; /* ou toute autre couleur de fond souhaitée */
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .toPrint, .toPrint * {
+    visibility: visible;
+  }
+
+  .toPrint {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
+
+.selected-detail {
+  background-color: #46e046 !important;
+  color: white !important;
+  border: 1px solid #46e046;
+}
+
+.image-enlarged {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000; /* Assurez-vous qu'elle est au-dessus des autres éléments */
+  width: auto; /* ou toute autre taille souhaitée */
+  max-width: 80vw !important;
+  max-height: 80vh !important;
+  background-color: #6c757d;
+  cursor: zoom-out;
+}
+
+.mr-10 {
+  margin-right:10px;
+}
+.ml-auto {
+  margin-left: auto;
 }
