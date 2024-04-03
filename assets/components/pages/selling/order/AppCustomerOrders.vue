@@ -1,6 +1,6 @@
 <script setup>
     import AppCustomerOrderShow from './AppCustomerOrderShow.vue'
-    import AppSuspense from '../../../components/AppSuspense.vue'
+    import AppSuspense from '../../../AppSuspense.vue'
 </script>
 
 <template>
