@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Logistics\Label\Carton;
+use App\Entity\Project\Product\Product;
 use Doctrine\ORM\EntityManagerInterface;
 
 class LabelCartonManager
@@ -63,6 +64,11 @@ class LabelCartonManager
 ^FO230,850^A0R,40,50^FDQUANTITE:^FS
 ^FO80,900^A0R,100,100^FD<QUANTITE>^FS
 
+^FO290,710,^GD75,45,5,B,R^FS
+^FO365,710^GB5,85,3^FS
+^FO290,750,^GD75,45,5,B,L^FS
+^FO290,700,^GE105,105,3,B,^FS
+<LOGO ICONE>
 ^XZ}$
 ZPL;
     $zpl = str_replace('<DESTINATAIRE>', $carton->getCustomerAddressName(), $zpl);
@@ -74,6 +80,20 @@ ZPL;
     $zpl = str_replace('<REFERENCE PRODUIT>', $carton->getProductReference().'/'.$carton->getProductIndice(), $zpl);
     $zpl = str_replace('<QUANTITE>', $carton->getQuantity(), $zpl);
     $zpl = str_replace('<CODEBARRE>', $carton->getProductReference().'/'.$carton->getProductIndice().'/'.$carton->getBatchnumber(), $zpl);
+
+    // On récupère le produit associé au carton grâce à sa référence et son indice
+    /** @var Product $product */
+    $product = $this->em->getRepository(Product::class)->findOneBy(
+        ['ref' => $carton->getProductReference(),
+            'indice' => $carton->getProductIndice()]
+    );
+    $logo = match ($product->getLabelLogo()) {
+        1 => '^FO320,810^ADR,25,10^FDR^FS',
+        2 => '^FO320,810^ADR,25,10^FDR^FS
+^FO370,810^ADR,25,10^FDS^FS',
+        default => '',
+    };
+    $zpl = str_replace('<LOGO ICONE>', $logo, $zpl);
 
     return $zpl;
     }

@@ -60,7 +60,7 @@
         {
             label: 'Client',
             name: 'customer',
-            trie: true,
+            trie: false,
             type: 'multiselect-fetch',
             api: '/api/customers',
             filteredProperty: 'name',
@@ -103,12 +103,14 @@
     }
 
     async function search(inputValues) {
+        console.log('search', inputValues)
         customerOrderListCriteria.resetAllFilter()
         customerOrderListCriteria.addFilter('company', currentCompany)
-        if (inputValues.name) customerOrderListCriteria.addFilter('ref', inputValues.name)
+        if (inputValues.ref) customerOrderListCriteria.addFilter('ref', inputValues.ref)
         if (inputValues.id) customerOrderListCriteria.addFilter('id', inputValues.id)
         if (inputValues.state) customerOrderListCriteria.addFilter('embState.state[]', inputValues.state)
-        // if (inputValues.customer customerOrderListCriteria.addFilter('customer[]', inputValues.customer[0])
+        if (inputValues.state) customerOrderListCriteria.addFilter('embBlocker.state[]', inputValues.closer)
+        if (inputValues.customer) customerOrderListCriteria.addFilter('customer', inputValues.customer)
         await storeCustomerOrderList.fetch(customerOrderListCriteria.getFetchCriteria)
     }
     async function cancelSearch() {

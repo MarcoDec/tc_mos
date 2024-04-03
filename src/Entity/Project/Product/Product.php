@@ -330,6 +330,13 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
     private ?string $kind = KindType::TYPE_PROTOTYPE;
 
     #[
+        ApiProperty(description: 'Type de Logo', required: false, example: 0),
+        ORM\Column(type: 'smallint', options: ['default' => 0]),
+        Serializer\Groups(['read:product', 'write:product', 'write:product:main'])
+    ]
+    private int $labelLogo = 0;
+
+    #[
         ApiProperty(description: 'Gestion cuivre', required: false, example: true),
         ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:product', 'write:product', 'write:product:main'])
@@ -1021,4 +1028,16 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
         $this->filePath = $filePath;
         return $this;
     }
+
+    public function getLabelLogo(): int
+    {
+        return $this->labelLogo;
+    }
+
+    public function setLabelLogo(int $labelLogo): self
+    {
+        $this->labelLogo = $labelLogo;
+        return $this;
+    }
+
 }

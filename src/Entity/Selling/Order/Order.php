@@ -20,10 +20,18 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Filter\SetFilter;
+use App\Filter\RelationFilter;
 
 #[
+    ApiFilter(OrderFilter::class, properties: ['id', 'ref', 'createdAt', 'updatedAt']),
+    ApiFilter(SearchFilter::class, properties: ['id' => 'exact', 'ref' => 'partial', 'createdAt' => 'exact', 'updatedAt' => 'exact']),
+    ApiFilter(RelationFilter::class, properties: ['billedTo', 'company', 'customer', 'destination']),
     ApiResource(
-        description: 'Commande',
+        description: 'Commande Client',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [

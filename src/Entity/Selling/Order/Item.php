@@ -29,8 +29,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  * @template-extends BaseItem<I, Order>
  */
 #[
+    ApiFilter(filterClass: SearchFilter::class, properties: ['id' => 'exact', 'item.id' => 'exact', 'order.id' => 'exact', 'ref' => 'partial', 'embState.state' => 'exact', 'confirmedDate' => 'exact', 'confirmedQuantity.value' => 'exact', 'confirmedQuantity.code' => 'exact', 'requestedDate' => 'exact', 'requestedQuantity.value' => 'exact', 'requestedQuantity.code' => 'exact', 'notes' => 'partial']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['item.id', 'order', 'ref', 'embState.state', 'confirmedDate', 'confirmedQuantity.value', 'confirmedQuantity.code', 'requestedDate', 'requestedQuantity.value', 'requestedQuantity.code', 'notes']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['item.id', 'ref', 'embState.state', 'confirmedDate', 'confirmedQuantity.value', 'requestedDate', 'requestedQuantity.value', 'notes']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['id', 'item.id', 'ref', 'embState.state', 'confirmedDate', 'confirmedQuantity.value', 'requestedDate', 'requestedQuantity.value', 'notes']),
 
     ApiResource(
         description: 'Ligne de commande',
