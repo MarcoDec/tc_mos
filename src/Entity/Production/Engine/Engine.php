@@ -11,7 +11,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Doctrine\DBAL\Types\Production\Engine\EngineType;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Blocker;
-use App\Entity\Embeddable\EmployeeEngineState;
+use App\Entity\Embeddable\Production\Engine\State;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
@@ -19,7 +19,11 @@ use App\Entity\Interfaces\FileEntity;
 use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\Attachment\EngineAttachment;
 use App\Entity\Production\Engine\CounterPart\CounterPart;
+use App\Entity\Production\Engine\Infra\Infra;
+use App\Entity\Production\Engine\Machine\Machine;
 use App\Entity\Production\Engine\Manufacturer\Engine as ManufacturerEngine;
+use App\Entity\Production\Engine\Informatique\Informatique;
+use App\Entity\Production\Engine\SparePart\SparePart;
 use App\Entity\Production\Engine\Tool\Tool;
 use App\Entity\Production\Engine\Workstation\Workstation;
 use App\Entity\Traits\BarCodeTrait;
@@ -34,10 +38,10 @@ use App\Filter\DiscriminatorFilter;
 #[
     ApiFilter(filterClass: DiscriminatorFilter::class),
     // ApiFilter(CustomGetterFilter::class, properties: ['getterFilter' => ['fields' => ['group']]]),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['brand'=>'partial', 'code'=> 'partial', 'name' => 'partial', 'serialNumber' => 'partial', 'zone.company', 'group' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['brand'=>'partial', 'code'=> 'partial', 'name' => 'partial', 'serialNumber' => 'partial', 'zone.company', 'group' => 'partial', 'id' => 'partial']),
     ApiFilter(filterClass: DateFilter::class, properties: ['entryDate']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['group', 'zone', 'manufacturerEngine']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['brand', 'code', 'entryDate', 'manufacturerEngine.name', 'name', 'serialNumber']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['brand', 'code', 'entryDate', 'manufacturerEngine.name', 'name', 'serialNumber', 'id']),
     //ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
         description: 'Équipement',
@@ -98,13 +102,13 @@ use App\Filter\DiscriminatorFilter;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => [...EmployeeEngineState::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['employee_engine', 'blocker'], 'type' => 'string']
+                            'schema' => ['enum' => ['engine', 'blocker'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
@@ -140,7 +144,11 @@ abstract class Engine extends Entity implements BarCodeInterface, FileEntity {
     final public const TYPES = [
         EngineType::TYPE_COUNTER_PART => CounterPart::class,
         EngineType::TYPE_TOOL => Tool::class,
-        EngineType::TYPE_WORKSTATION => Workstation::class
+        EngineType::TYPE_WORKSTATION => Workstation::class,
+        EngineType::TYPE_MACHINE => Machine::class,
+        EngineType::TYPE_SPARE_PART => SparePart::class,
+        EngineType::TYPE_INFRA => Infra::class,
+        EngineType::TYPE_INFORMATIQUE => Informatique::class
     ];
 
     #[ORM\OneToMany(mappedBy: 'engine', targetEntity: EngineAttachment::class)]
@@ -229,7 +237,7 @@ abstract class Engine extends Entity implements BarCodeInterface, FileEntity {
         ORM\Embedded,
         Serializer\Groups(['read:engine','read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
-    private EmployeeEngineState $embState;
+    private State $embState;
 
     #[
         ApiProperty(description: 'Modele de machine', readableLink: true, example: '/api/manufacturer-engines/15'),
@@ -255,7 +263,7 @@ abstract class Engine extends Entity implements BarCodeInterface, FileEntity {
 
     public function __construct() {
         $this->embBlocker = new Blocker();
-        $this->embState = new EmployeeEngineState();
+        $this->embState = new State();
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -278,7 +286,7 @@ abstract class Engine extends Entity implements BarCodeInterface, FileEntity {
         return $this->embBlocker;
     }
 
-    final public function getEmbState(): EmployeeEngineState {
+    final public function getEmbState(): State {
         return $this->embState;
     }
 
@@ -334,7 +342,7 @@ abstract class Engine extends Entity implements BarCodeInterface, FileEntity {
         return $this;
     }
 
-    final public function setEmbState(EmployeeEngineState $embState): self {
+    final public function setEmbState(State $embState): self {
         $this->embState = $embState;
         return $this;
     }

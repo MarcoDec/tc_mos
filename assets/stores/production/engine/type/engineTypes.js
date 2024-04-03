@@ -9,7 +9,11 @@ export const useEngineTypeStore = defineStore('engine-types', {
         engineTypes: [
             {text: 'counter-part', value: 'counter-part'},
             {text: 'tool', value: 'tool'},
-            {text: 'workstation', value: 'workstation'}
+            {text: 'workstation', value: 'workstation'},
+            {text: 'machine', value: 'machine'},
+            {text: 'spare-part', value: 'spare-part'},
+            {text: 'infra', value: 'infra'},
+            {text: 'informatique', value: 'informatique'}
         ]
     })
 })

@@ -21,6 +21,7 @@ use App\Entity\Interfaces\FileEntity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
+use App\Entity\Production\Manufacturing\Order;
 use App\Entity\Project\Product\Attachment\ProductAttachment;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Selling\ProductReference;
@@ -41,11 +42,11 @@ use App\Entity\Selling\Customer\Product as ProductCustomer;
 
 #[
     ApiFilter(filterClass: DateFilter::class, properties: ['endOfLife']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'index', 'kind', 'name']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'index', 'kind', 'name', 'id']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial', 'price.code' => 'partial', 'price.value' => 'partial',
-        'index' => 'partial', 'forecastVolume.code' => 'partial', 'forecastVolume.value' => 'partial', 'kind' => 'partial'
+        'index' => 'partial', 'forecastVolume.code' => 'partial', 'forecastVolume.value' => 'partial', 'kind' => 'partial', 'id' => 'partial'
     ]),
     ApiResource(
         description: 'Produit',
@@ -469,6 +470,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
     ]
     private Measure $weight;
 
+    #[
+        ORM\OneToMany(targetEntity: Order::class, mappedBy: 'product')
+    ]
+    private DoctrineCollection $productorders;
+
     public function __construct() {
         $this->autoDuration = new Measure();
         $this->children = new ArrayCollection();
@@ -490,6 +496,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
         $this->transfertPriceSupplies = new Measure();
         $this->transfertPriceWork = new Measure();
         $this->weight = new Measure();
+        $this->productorders = new ArrayCollection();
         $this->productCustomers = new ArrayCollection();
     }
 
@@ -528,6 +535,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
 
     final public function getBlocker(): string {
         return $this->embBlocker->getState();
+    }
+
+    public function getProductOrders(): DoctrineCollection {
+        return $this->productorders;
     }
 
     /**

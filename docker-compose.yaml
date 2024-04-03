@@ -59,6 +59,7 @@ services:
       - ./var:/var/www/html/TConcept-GPAO/var:delegated
       - ./vendor:/var/www/html/TConcept-GPAO/vendor:delegated
       - ./docker/php/client.conf:/etc/cups/client.conf
+      - ./edi:/var/www/html/TConcept-GPAO/edi:delegated
     environment:
       - CUPS_SERVER=cups:631
 #      - CUPS_SERVER=cups.newgp.localhost:631

@@ -38,6 +38,7 @@
             return {text, value}
         }))
     const fields = computed(() => [
+        {label: 'ID', name: 'id', trie: true, type: 'text', width: 50, filter: true},
         {
             label: 'Img',
             name: 'filePath',
@@ -134,6 +135,7 @@
         if (inputValues.code) componentListCriteria.addFilter('code', inputValues.code)
         if (inputValues.index) componentListCriteria.addFilter('index', inputValues.index)
         if (inputValues.name) componentListCriteria.addFilter('name', inputValues.name)
+        if (inputValues.id) componentListCriteria.addFilter('id', inputValues.id)
         if (inputValues.family) componentListCriteria.addFilter('family', inputValues.family)
         if (inputValues.state) componentListCriteria.addFilter('embState.state[]', inputValues.state)
         await StoreComponents.fetch(componentListCriteria.getFetchCriteria)

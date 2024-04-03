@@ -26,3 +26,6 @@ node_modules
 .vscode
 /public/build
 /public/build/entrypoints.json
+/public/uploads
+/edi/_.txt
+/edi/_test_orders_old.txt

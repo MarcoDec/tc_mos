@@ -22,6 +22,7 @@ use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
 use App\Entity\Selling\Customer\Attachment\CustomerAttachment;
+use App\Entity\Selling\Order\Order;
 use App\Entity\Traits\FileTrait;
 use App\Filter\SetFilter;
 use App\Validator as AppAssert;
@@ -32,9 +33,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial', 'id' => 'exact']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state', 'address.zipCode']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'address.zipCode', 'address.city', 'copper.index.value']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'address.zipCode', 'address.city', 'copper.index.value', 'id']),
     ApiResource(
         description: 'Client',
         collectionOperations: [
@@ -312,6 +313,11 @@ class Customer extends Entity implements FileEntity {
     ]
     private WebPortal $qualityPortal;
 
+    #[
+        ORM\OneToMany(targetEntity: Order::class, mappedBy: 'customer')
+    ]
+    private Collection $sellingOrders;
+
     /**
      * @return Collection
      */
@@ -366,6 +372,8 @@ class Customer extends Entity implements FileEntity {
         $this->embState = new State();
         $this->monthlyOutstanding = new Measure();
         $this->outstandingMax = new Measure();
+        $this->sellingOrders = new ArrayCollection();
+
     }
 
     final public function addAdministeredBy(Company $administeredBy): self {
@@ -580,6 +588,22 @@ class Customer extends Entity implements FileEntity {
     public function setLogisticPortal(WebPortal $logisticPortal): self
     {
         $this->logisticPortal = $logisticPortal;
+
+        return $this;
+    }
+    public function getSellingOrders(): Collection {
+
+        return $this->sellingOrders;
+
+    }
+
+
+    final public function setSellingOrders(Collection $sellingOrders): self {
+        $this->sellingOrders = $sellingOrders;
+
+        foreach ($sellingOrders as $sellingOrder) {
+            $sellingOrder->setCustomer($this);
+        }
 
         return $this;
     }

@@ -10,9 +10,11 @@
     import AppBtn from '../../../AppBtn.vue'
     import {onBeforeMount, ref} from 'vue'
     import AppShowEmployeeTabGeneral from './tabs/AppShowEmployeeTabGeneral.vue'
+    import AppWorkflowShow from '../../../workflow/AppWorkflowShow.vue'
 
     const route = useRoute()
     const idEmployee = Number(route.params.id_employee)
+    const iriEmployee = ref('')
     const fetchEmployeeStore = useEmployeeStore()
     const beforeMountDataLoaded = ref(false)
     const modeDetail = ref(true)
@@ -29,25 +31,24 @@
         modeDetail.value = false
     }
 
-    onBeforeMount(() => {
+    function updateStores() {
         const promises = []
         // console.log('onBeforeMount')
         promises.push(fetchEmployeeStore.fetchOne(idEmployee))
         promises.push(fetchEmployeeStore.fetchAll())
         promises.push(fetchEmployeeStore.fetchTeams())
         Promise.all(promises).then(() => {
+            // console.debug('employee', fetchEmployeeStore.employee)
+            iriEmployee.value = fetchEmployeeStore.employee['@id']
             beforeMountDataLoaded.value = true
         })
+    }
+
+    onBeforeMount(() => {
+        updateStores()
     })
     const onUpdated = () => {
-        // console.log('onUpdated')
-        const promises = []
-        promises.push(fetchEmployeeStore.fetchOne(idEmployee))
-        promises.push(fetchEmployeeStore.fetchAll())
-        promises.push(fetchEmployeeStore.fetchTeams())
-        Promise.all(promises).then(() => {
-            beforeMountDataLoaded.value = true
-        })
+        updateStores()
     }
     const onImageUpdate = () => {
         window.location.reload()
@@ -70,14 +71,22 @@
         <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <button class="text-dark" @click="goBack">
-                        <FontAwesomeIcon icon="user-tag"/>
-                    </button>
-                    <b>Employee ({{ fetchEmployeeStore.employee.id }})</b>: {{ fetchEmployeeStore.employee.name }}
-                    <span class="btn-float-right">
-                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
-                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
-                    </span>
+                    <div class="d-flex flex-row">
+                        <div>
+                            <button class="text-dark" @click="goBack">
+                                <FontAwesomeIcon icon="user-tag"/>
+                            </button>
+                            <b>Employee
+                                <span v-if="fetchEmployeeStore.employee.matricule !== null">({{ fetchEmployeeStore.employee.matricule }})</span></b>: {{ fetchEmployeeStore.employee.name }}
+                        </div>
+                        <AppSuspense>
+                            <AppWorkflowShow :workflow-to-show="['employee', 'blocker']" :item-iri="iriEmployee"/>
+                        </AppSuspense>
+                        <span class="ml-auto">
+                            <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
+                            <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
+                        </span>
+                    </div>
                 </div>
                 <div class="d-flex flex-row">
                     <AppImg

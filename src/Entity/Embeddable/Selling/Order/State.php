@@ -14,7 +14,8 @@ class State extends AbstractState {
         self::TR_DELIVER,
         self::TR_PARTIALLY_DELIVER,
         self::TR_SUBMIT_VALIDATION,
-        self::TR_VALIDATE
+        self::TR_VALIDATE,
+        self::TR_PAY
     ];
 
     #[

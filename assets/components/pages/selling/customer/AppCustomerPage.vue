@@ -47,6 +47,7 @@
         {text: 'warning', value: 'warning'}
     ]
     const fields = computed(() => [
+        {label: 'ID', name: 'id', trie: true, type: 'text', width: 50, filter: true},
         {
             label: 'Img',
             name: 'filePath',
@@ -87,6 +88,7 @@
         customerListCriteria.resetAllFilter()
         customerListCriteria.addFilter('company', currentCompany)
         if (inputValues.name) customerListCriteria.addFilter('name', inputValues.name)
+        if (inputValues.id) customerListCriteria.addFilter('id', inputValues.id)
         if (inputValues.state) customerListCriteria.addFilter('embState.state[]', inputValues.state)
         if (inputValues['address.zipCode']) customerListCriteria.addFilter('address.zipCode', inputValues['address.zipCode'])
         await storeCustomersList.fetch(customerListCriteria.getFetchCriteria)

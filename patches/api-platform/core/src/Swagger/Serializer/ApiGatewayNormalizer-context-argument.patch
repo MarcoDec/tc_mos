@@ -1,0 +1,13 @@
+diff --git a/vendor/api-platform/core/src/Swagger/Serializer/ApiGatewayNormalizer.php b/patches/tmp/ApiGatewayNormalizer.php
+index c7ab80374..64dc52698 100644
+--- a/vendor/api-platform/core/src/Swagger/Serializer/ApiGatewayNormalizer.php
++++ b/patches/tmp/ApiGatewayNormalizer.php
+@@ -120,7 +120,7 @@ final class ApiGatewayNormalizer implements NormalizerInterface, CacheableSuppor
+     /**
+      * {@inheritdoc}
+      */
+-    public function supportsNormalization($data, $format = null): bool
++    public function supportsNormalization($data, $format = null, array $context = []): bool
+     {
+         return $this->documentationNormalizer->supportsNormalization($data, $format);
+     }

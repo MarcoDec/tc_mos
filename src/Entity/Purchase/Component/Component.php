@@ -11,15 +11,17 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Collection;
 use App\Controller\Purchase\Component\ComponentController;
 use App\Entity\Embeddable\Blocker;
-use App\Entity\Embeddable\ComponentManufacturingOperationState;
+use App\Entity\Embeddable\Purchase\Component\State;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\FileEntity;
 use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Logistics\Component\Preparation;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Attachment\ComponentAttachment;
+use App\Entity\Purchase\Order\ComponentItem;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Purchase\ComponentReference;
 use App\Entity\Traits\BarCodeTrait;
@@ -38,10 +40,10 @@ use App\Entity\Purchase\Supplier\Component as SupplierComponent;
 use App\Filter\SetFilter;
 
 #[
-    ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name', 'code']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name', 'code', 'id']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['index' => 'partial', 'name' => 'partial', 'code' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['index' => 'partial', 'name' => 'partial', 'code' => 'partial', 'id' => 'exact']),
     ApiResource(
         description: 'Composant',
         collectionOperations: [
@@ -167,7 +169,7 @@ use App\Filter\SetFilter;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => [...ComponentManufacturingOperationState::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
@@ -215,6 +217,10 @@ use App\Filter\SetFilter;
     ),
     ORM\Entity(repositoryClass: ComponentRepository::class)
 ]
+/**
+ * Composant
+ * @template-extends Entity<Component>
+ */
 class Component extends Entity implements BarCodeInterface, MeasuredInterface, FileEntity {
     use BarCodeTrait, FileTrait;
 
@@ -251,7 +257,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         ORM\Embedded,
         Serializer\Groups(['read:component', 'read:component:collection'])
     ]
-    private ComponentManufacturingOperationState $embState;
+    private State $embState;
 
     #[
         ApiProperty(description: 'Date de fin de vie', required: false, example: '2021-11-18'),
@@ -425,11 +431,23 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     ]
     private ?string $code='';
 
+    #[
+        ORM\OneToMany(mappedBy: 'component', targetEntity: Preparation::class, fetch: 'EAGER')
+    ]
+    private DoctrineCollection $preparationComponents;
+
+    #[
+        ApiProperty(description: 'Items de commande fournisseur associés', example: '[/api/purchase-order-items/1]'),
+        ORM\OneToMany(mappedBy: "item", targetEntity: ComponentItem::class),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    private DoctrineCollection $componentItems;
+
     public function __construct() {
         $this->attributes = new ArrayCollection();
         $this->copperWeight = new Measure();
         $this->embBlocker = new Blocker();
-        $this->embState = new ComponentManufacturingOperationState();
+        $this->embState = new State();
         $this->forecastVolume = new Measure();
         $this->minStock = new Measure();
         $this->references = new ArrayCollection();
@@ -437,13 +455,15 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         $this->weight = new Measure();
         $this->code = '';
         $this->code = $this->getCode();
+        $this->preparationComponents = new ArrayCollection();
+
     }
 
     public function __clone() {
         parent::__clone();
         $this->attributes = new ArrayCollection();
         $this->embBlocker = new Blocker();
-        $this->embState = new ComponentManufacturingOperationState();
+        $this->embState = new State();
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -511,7 +531,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         return $this->embBlocker;
     }
 
-    final public function getEmbState(): ComponentManufacturingOperationState {
+    final public function getEmbState(): State {
         return $this->embState;
     }
 
@@ -631,6 +651,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         return $this->supplierComponents;
     }
 
+    public function getPreparationComponents()
+    {
+        return $this->preparationComponents;
+    }
+
     final public function getUnit(): ?Unit {
         return $this->unit;
     }
@@ -685,7 +710,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         return $this;
     }
 
-    final public function setEmbState(ComponentManufacturingOperationState $embState): self {
+    final public function setEmbState(State $embState): self {
         $this->embState = $embState;
         return $this;
     }
@@ -825,4 +850,16 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     {
         $this->filePath = $filePath;
     }
+
+    public function getComponentItems(): DoctrineCollection
+    {
+        return $this->componentItems;
+    }
+
+    public function setComponentItems(DoctrineCollection $componentItems): void
+    {
+        $this->componentItems = $componentItems;
+    }
+
+
 }

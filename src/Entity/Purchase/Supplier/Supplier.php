@@ -38,9 +38,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\Purchase\Supplier\SupplierPatchController;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial', 'id' => 'exact', 'society.name' => 'partial', 'embState.state' => 'exact', 'embBlocker.state' => 'exact']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state', 'address.zipCode', 'address.city']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'address.zipCode', 'address.city']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'address.zipCode', 'address.city', 'id']),
     ApiResource(
         description: 'Fournisseur',
         collectionOperations: [
@@ -297,13 +297,14 @@ class Supplier extends Entity implements FileEntity {
 
     /** @var DoctrineCollection<int, Order> */
     #[
-        ORM\OneToMany(mappedBy: 'supplier', targetEntity: Order::class),
+        ORM\OneToMany(mappedBy: 'supplier', targetEntity: Order::class ),
         Serializer\Groups(['read:supplier:receipt'])
     ]
     private DoctrineCollection $orders;
 
     /** @var DoctrineCollection<int, SupplierReference> */
-    #[ORM\ManyToMany(targetEntity: SupplierReference::class, mappedBy: 'items')]
+    #[ORM\ManyToMany(targetEntity: SupplierReference::class, mappedBy: 'items', fetch:'EAGER')]
+   
     private DoctrineCollection $references;
 
     #[

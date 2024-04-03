@@ -11,11 +11,13 @@
     // import AppShowComponentTabGeneral from '../../../../purchase/component/show/left/AppShowComponentTabGeneral.vue';
     import AppSuspense from '../../../../../AppSuspense.vue'
     import AppShowCounterPartTabGeneral from './AppShowCounterPartTabGeneral.vue'
+    import AppWorkflowShow from '../../../../../workflow/AppWorkflowShow.vue'
     // import AppComponentShowInlist from '../../../../purchase/component/show/AppComponentShowInlist.vue';
     // import AppComponentFormShow from '../../../../purchase/component/show/AppComponentFormShow.vue';
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
+    const iriEngine = ref('')
     const fetchUnits = useOptions('units')
     const useFetchCounterPartStore = useCounterPartStore()
     const keyTitle = ref(0)
@@ -32,6 +34,7 @@
         promises.push(fetchUnits.fetchOp())
         promises.push(useFetchCounterPartStore.fetchOne(idEngine))
         Promise.all(promises).then(() => {
+            iriEngine.value = useFetchCounterPartStore.engine['@id']
             beforeMountDataLoaded.value = true
         })
     })
@@ -48,6 +51,7 @@
         promises.push(useFetchCounterPartStore.fetchOne(idEngine))
         promises.push(fetchUnits.fetchOp())
         Promise.all(promises).then(() => {
+            iriEngine.value = useFetchCounterPartStore.engine['@id']
             keyTitle.value++
         })
     }
@@ -63,7 +67,7 @@
 
     const router = useRouter()
     function goBack() {
-        router.push({name: 'engines'})
+        router.push({name: 'counter-parts'})
     }
 </script>
 
@@ -72,14 +76,21 @@
         <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <button class="text-dark" @click="goBack">
-                        <FontAwesomeIcon icon="oil-well"/>
-                    </button>
-                    <b>{{ useFetchCounterPartStore.engine.code }}</b>: {{ useFetchCounterPartStore.engine.name }}
-                    <span class="btn-float-right">
-                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
-                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
-                    </span>
+                    <div class="d-flex flex-row">
+                        <div>
+                            <button class="text-dark mr-10" title="Retour à la liste des contreparties de test" @click="goBack">
+                                <FontAwesomeIcon icon="flask"/> Contrepartie de test
+                            </button>
+                            <b>{{ useFetchCounterPartStore.engine.code }}</b>: {{ useFetchCounterPartStore.engine.name }}
+                        </div>
+                        <AppSuspense>
+                            <AppWorkflowShow :workflow-to-show="['engine', 'blocker']" :item-iri="iriEngine"/>
+                        </AppSuspense>
+                        <span class="ml-auto">
+                            <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
+                            <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
+                        </span>
+                    </div>
                 </div>
                 <div class="d-flex flex-row">
                     <AppImg

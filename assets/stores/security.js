@@ -87,6 +87,8 @@ function defineUserStore() {
             isHrReader: computed(() => isHrWriter.value || roles.value.includes('ROLE_HR_READER')),
             isHrWriter,
             isItAdmin: computed(() => roles.value.includes('ROLE_IT_ADMIN')),
+            isItReader: computed(() => roles.value.includes('ROLE_IT_READER')),
+            isItWriter: computed(() => roles.value.includes('ROLE_IT_WRITER')),
             isLogged: computed(() => id.value > 0),
             isLogisticsAdmin,
             isLogisticsReader: computed(() => isLogisticsWriter.value || roles.value.includes('ROLE_LOGISTICS_READER')),

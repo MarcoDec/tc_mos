@@ -57,16 +57,10 @@ export default function useFetchCriteria(id) {
                 this.page = 1
             },
             resetFilter(field) {
-                const filteredFilters = this.filters.filter(element => element.field === field)
-                filteredFilters.forEach(filter => {
-                    this.filters.remove(filter)
-                })
+                this.filters = this.filters.filter(filter => filter.field !== field)
             },
             resetSort(field) {
-                const filteredSorts = this.sorts.filter(element => element.field === field)
-                filteredSorts.forEach(sortElement => {
-                    this.sorts.remove(sortElement)
-                })
+                this.sorts = this.sorts.filter(sortElement => sortElement.field !== field)
             },
             reset() {
                 this.filters = []

@@ -180,3 +180,17 @@ services:
     autoconfigure: false
     tags: [ 'api_platform.filter' ]
     arguments: [ '@doctrine' ]
+
+  App\Entity\It\SFTPConnection:
+    arguments:
+      $host: '%env(SFTP_HOST)%'
+      $port: '%env(SFTP_PORT)%'
+
+  App\Service\NewFileDetector:
+    arguments:
+      $sftp: '@App\Entity\It\SFTPConnection'
+      $dispatcher: '@event_dispatcher'
+
+  App\EventListener\It\NewFileEventListener:
+    tags:
+      - { name: kernel.event_listener, event: App\Entity\Event\NewFileDetectedEvent }

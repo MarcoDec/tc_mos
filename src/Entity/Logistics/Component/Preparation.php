@@ -2,18 +2,24 @@
 
 namespace App\Entity\Logistics\Component;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Entity\Embeddable\Logistics\Component\State;
+use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Employee;
 use App\Entity\Logistics\Warehouse\Warehouse;
-use App\Entity\Production\Manufacturing\Order;
+use App\Entity\Production\Manufacturing\Order as ManufacturingOrder;
 use App\Entity\Purchase\Component\Component;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Embedded;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
     ApiResource(
@@ -30,10 +36,37 @@ use Symfony\Component\Serializer\Annotation\Groups;
                     'description' => 'Ajoute une demande de préparation de Composant',
                     'summary' => 'Ajoute une demande de préparation de Composant'
                 ]
-            ]
+                ]
         ],
         itemOperations: [
             'get' => NO_ITEM_GET_OPERATION,
+            'promote' => [
+                'controller' => PlaceholderAction::class,
+                'deserialize' => false,
+                'method' => 'PATCH',
+                'openapi_context' => [
+                    'description' => 'Transite la préparation à son prochain statut de workflow',
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['preparation','blocker'], 'type' => 'string']
+                        ]
+                    ],
+                    'requestBody' => null,
+                    'summary' => 'Transite le la préparation à son prochain statut de workflow'
+                ],
+                'path' => '/preparation/{id}/promote/{workflow}/to/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')',
+                'validate' => false
+            ],
             'patch',
             'delete'
         ],
@@ -60,14 +93,14 @@ class Preparation extends Entity {
 
      #[
          ApiProperty(description: 'Composant demandé'),
-         ManyToOne(targetEntity: Component::class),
+         ManyToOne(targetEntity: Component::class, inversedBy: 'preparationComponents'),
          Groups(['write:component-preparation', 'read:component-preparation'])
      ]
     private Component $component;
 
      #[
         ApiProperty(description: 'Date de la demande', example: '2023-05-31'),
-        Column(options: ['default' => 'CURRENT_TIMESTAMP'] ,type: 'datetime'),
+        Column(options: ['default' => 'CURRENT_TIMESTAMP'] ,type: 'datetime_immutable'),
         Groups(['write:component-preparation', 'read:component-preparation'])
      ]
     private \DateTimeImmutable $requestDate;
@@ -88,10 +121,10 @@ class Preparation extends Entity {
 
     #[
         ApiProperty(description: 'Ordre de fabrication associé à la demande', readableLink: false, example: '/api/manufacturing-orders/1'),
-        ManyToOne(targetEntity: Order::class),
+        ManyToOne(targetEntity: ManufacturingOrder::class, inversedBy: 'preparationOrders'),
         Groups(['write:component-preparation', 'read:component-preparation'])
     ]
-    private Order $ofnumber;
+    private ManufacturingOrder $ofnumber;
 
      #[
          ApiProperty(description: 'Priorité de la demande', example: '1'),
@@ -142,9 +175,23 @@ class Preparation extends Entity {
     ]
     private Warehouse $fromWarehouse;
 
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:component-preparation'])
+    ]
+    private Blocker $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:component-preparation'])
+    ]
+    private State $embState;
+
     public function __construct() {
         $this->sentQuantity = new Measure();
         $this->requestedQuantity = new Measure();
+        $this->embBlocker = new Blocker();
+        $this->embState = new State();
     }
 
     public function getAskedBy(): Employee
@@ -197,12 +244,12 @@ class Preparation extends Entity {
         $this->targetLocation = $targetLocation;
     }
 
-    public function getOfnumber(): Order
+    public function getOfnumber(): ManufacturingOrder
     {
         return $this->ofnumber;
     }
 
-    public function setOfnumber(Order $ofnumber): void
+    public function setOfnumber(ManufacturingOrder $ofnumber): void
     {
         $this->ofnumber = $ofnumber;
     }
@@ -242,6 +289,22 @@ class Preparation extends Entity {
         return $this->operator;
     }
 
+    final public function getEmbBlocker(): Blocker {
+        return $this->embBlocker;
+    }
+
+    final public function getEmbState(): State {
+        return $this->embState;
+    }
+
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
+    }
+
+    final public function getState(): string {
+        return $this->embState->getState();
+    }
+
     public function setOperator(Employee $operator): void
     {
         $this->operator = $operator;
@@ -277,4 +340,34 @@ class Preparation extends Entity {
         $this->fromWarehouse = $fromWarehouse;
     }
 
+        /**
+     * @return $this
+     */
+    final public function setEmbBlocker(Blocker $embBlocker): self {
+        $this->embBlocker = $embBlocker;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setEmbState(State $embState): self {
+        $this->embState = $embState;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
+    }
+    /**
+     * @return $this
+     */
+    final public function setState(string $state): self {
+        $this->embState->setState($state);
+        return $this;
+    }
 }

@@ -1,0 +1,13 @@
+diff --git a/vendor/api-platform/core/src/Hydra/Serializer/CollectionNormalizer.php b/patches/tmp/CollectionNormalizer.php
+index 2040f0332..c7f3590b2 100644
+--- a/vendor/api-platform/core/src/Hydra/Serializer/CollectionNormalizer.php
++++ b/patches/tmp/CollectionNormalizer.php
+@@ -59,7 +59,7 @@ final class CollectionNormalizer implements NormalizerInterface, NormalizerAware
+     /**
+      * {@inheritdoc}
+      */
+-    public function supportsNormalization($data, $format = null): bool
++    public function supportsNormalization($data, $format = null, array $context = []): bool
+     {
+         return self::FORMAT === $format && is_iterable($data);
+     }
