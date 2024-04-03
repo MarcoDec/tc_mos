@@ -40,7 +40,6 @@ final class MeasureValidator extends ConstraintValidator {
             $this->hydrator->hydrateUnit($value);
         }
         $unitValue = $value->getUnit();
-        #$this->logger->debug('MeasureValidator:units',[$unit->getCode(), $unitValue->getCode()]);
         if (!$unitValue->has($unit)) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ unit }}', (string) $this->getUnit()->getName())

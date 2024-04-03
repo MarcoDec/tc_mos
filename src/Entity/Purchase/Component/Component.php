@@ -31,7 +31,6 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
-use PHPUnit\TextUI\XmlConfiguration\File;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Purchase\Supplier\Component as SupplierComponent;
@@ -265,8 +264,8 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         ApiProperty(description: 'Famille', readableLink: false, required: true, example: '/api/component-families/1'),
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(targetEntity: Family::class, fetch: 'EAGER', inversedBy: 'components'),
-        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin'])
+        ORM\ManyToOne(targetEntity: Family::class, fetch: 'LAZY', inversedBy: 'components'),
+        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'read:stock'])
     ]
     private ?Family $family = null;
 
@@ -406,8 +405,8 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         Assert\NotBlank(groups: ['Component-create', 'Component-logistics']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(fetch:'LAZY'),
-        Serializer\Groups(['read:component:collection', 'create:component', 'read:component', 'write:component', 'write:component:logistics'])
+        ORM\ManyToOne(fetch:"LAZY"),
+        Serializer\Groups(['create:component', 'read:component'])
     ]
     private ?Unit $unit = null;
 

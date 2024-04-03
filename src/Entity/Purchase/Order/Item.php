@@ -229,9 +229,9 @@ abstract class Item extends BaseItem {
         return $this->getCompany()?->getChecks() ?? new Collection();
     }
 
-    final public function getCopperPrice(): Measure {
+    /*final public function getCopperPrice(): Measure {
         return $this->copperPrice;
-    }
+    }*/
 
     final public function getEmbBlocker(): Closer {
         return $this->embBlocker;
@@ -407,4 +407,5 @@ abstract class Item extends BaseItem {
         $this->targetCompany = $targetCompany;
         return $this;
     }
+    
 }

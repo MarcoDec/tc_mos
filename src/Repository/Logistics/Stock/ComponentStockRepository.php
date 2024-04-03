@@ -22,8 +22,7 @@ final class ComponentStockRepository extends StockRepository {
 
         // Ajouter les conditions spécifiées
         $queryBuilder
-            ->andWhere('s.jail = :jail')
-            ->andWhere('s INSTANCE OF App\Entity\Logistics\Stock\ComponentStock')
+            ->Where('s.jail = :jail')
             ->andWhere('s.quantity.value > 0')
             ->setParameter('jail', 0);
 
