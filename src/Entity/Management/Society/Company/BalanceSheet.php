@@ -14,8 +14,13 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use App\Filter\RelationFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'currency']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['month' => 'exact', 'year' => 'exact']),
     ApiResource(
         collectionOperations: [
             'get' => [
@@ -89,7 +94,7 @@ class BalanceSheet extends Entity implements MeasuredInterface
     private ?Currency $currency;
 
     #[
-        ORM\ManyToOne(targetEntity: Company::class),
+        ORM\ManyToOne(targetEntity: Company::class, fetch: 'EAGER'),
         ORM\JoinColumn(nullable: false),
         ApiProperty(description: 'Entreprise', example: '/api/companies/1'),
         Serializer\Groups(['create:balance-sheet', 'read:balance-sheet', 'write:balance-sheet'])
@@ -102,7 +107,7 @@ class BalanceSheet extends Entity implements MeasuredInterface
     ]
     private ?Unit $unit = null;
 
-    #[ORM\OneToMany(mappedBy: 'balanceSheet', targetEntity: BalanceSheetItem::class)]
+    #[ORM\OneToMany(mappedBy: 'balanceSheet', targetEntity: BalanceSheetItem::class, fetch: 'LAZY', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $balanceSheetItems;
 
     public function __construct() {
@@ -175,6 +180,14 @@ class BalanceSheet extends Entity implements MeasuredInterface
     {
         return [$this->totalIncome, $this->totalExpense];
     }
+    public function getUnitMeasures(): array
+    {
+        return [];
+    }
+    public function getCurrencyMeasures(): array
+    {
+        return [$this->totalIncome, $this->totalExpense];
+    }
 
     public function getUnit(): ?Unit
     {
@@ -205,10 +218,14 @@ class BalanceSheet extends Entity implements MeasuredInterface
 
     public function refreshIncomeAndExpense() {
         //dump('refreshIncomeAndExpense');
-//        $totalIncome = $this->calculateTotalIncome();
-//        $totalExpense = $this->calculateTotalExpense();
-//        $this->setTotalIncome($totalIncome);
-//        $this->setTotalExpense($totalExpense);
+        $totalIncome = $this->calculateTotalIncome();
+        $totalExpense = $this->calculateTotalExpense();
+//        dump([
+//            'totalIncome' => $totalIncome->getValue(),
+//            'totalExpense' => $totalExpense->getValue()
+//        ]);
+        $this->setTotalIncome($totalIncome);
+        $this->setTotalExpense($totalExpense);
     }
     private function calculateTotalExpense(): Measure
     {
@@ -216,6 +233,7 @@ class BalanceSheet extends Entity implements MeasuredInterface
         $totalExpense->setUnit($this->getCurrency());
         foreach ($this->getBalanceSheetItems() as $item) {
             if ($item->isExpense()) {
+//                dump(['isExpense' => ['amount' => $item->getAmount(), 'vat' => $item->getVat()]]);
                 $totalExpense->add($item->getAmount());
                 $totalExpense->add($item->getVat());
             }
@@ -229,11 +247,11 @@ class BalanceSheet extends Entity implements MeasuredInterface
         /** @var BalanceSheetItem $item */
         foreach ($this->getBalanceSheetItems() as $item) {
             if ($item->isIncome()) {
-                dump('isIncome', $item->getAmount(), $item->getVat());
+//                dump('isIncome', $item->getAmount(), $item->getVat());
                 $totalIncome->add($item->getAmount());
                 $totalIncome->add($item->getVat());
             } else {
-                dump('isNotIncome', $item->getAmount(), $item->getVat());
+                //dump('isNotIncome', $item->getAmount(), $item->getVat());
             }
         }
         return $totalIncome;

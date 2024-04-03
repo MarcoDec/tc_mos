@@ -44,8 +44,6 @@ import {
     faCommentsDollar,
     faCubesStacked,
     faDatabase,
-    faDesktop,
-    faDownload,
     faEuroSign,
     faExclamationTriangle,
     faEye,
@@ -180,11 +178,7 @@ library.add(faCity)
 library.add(faClipboardCheck)
 library.add(faClipboardList)
 library.add(faClock)
-<<<<<<< HEAD
-library.add(faClipboard)
-=======
 library.add(faCogs)
->>>>>>> develop
 library.add(faCommentsDollar)
 library.add(faCubesStacked)
 library.add(faDatabase)

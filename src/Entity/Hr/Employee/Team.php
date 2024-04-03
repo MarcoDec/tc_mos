@@ -61,9 +61,9 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
             ]
         ],
-        attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
-        ],
+//        attributes: [
+//            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
+//        ],
         denormalizationContext: [
             'groups' => ['write:team'],
             'openapi_definition_name' => 'Team-write'

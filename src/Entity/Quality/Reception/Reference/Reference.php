@@ -259,6 +259,14 @@ abstract class Reference extends Entity implements MeasuredInterface {
     {
         return [$this->minValue, $this->maxValue];
     }
+    public function getUnitMeasures(): array
+    {
+        return [$this->minValue, $this->maxValue];
+    }
+    public function getCurrencyMeasures(): array
+    {
+        return [];
+    }
 
     public function getUnit(): ?Unit
     {

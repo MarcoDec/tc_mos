@@ -17,9 +17,11 @@ use App\Entity\Production\Engine\Workstation\Group as WorkstationGroup;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Filter\CustomGetterFilter;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['safetyDevice']),
+    ApiFilter(CustomGetterFilter::class, properties: ['getterFilter' => ['fields' => ['code', 'name']]]),
     ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'name']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
     ApiResource(
@@ -74,7 +76,11 @@ abstract class Group extends Entity {
     final public const TYPES = [
         EngineType::TYPE_COUNTER_PART => CounterPartGroup::class,
         EngineType::TYPE_TOOL => ToolGroup::class,
-        EngineType::TYPE_WORKSTATION => WorkstationGroup::class
+        EngineType::TYPE_WORKSTATION => WorkstationGroup::class,
+        EngineType::TYPE_MACHINE => Machine\Group::class,
+        EngineType::TYPE_INFRA => Infra\Group::class,
+        EngineType::TYPE_INFORMATIQUE => Informatique\Group::class,
+        EngineType::TYPE_SPARE_PART => SparePart\Group::class,
     ];
 
     #[
@@ -143,5 +149,12 @@ abstract class Group extends Entity {
     final public function setSafetyDevice(bool $safetyDevice): self {
         $this->safetyDevice = $safetyDevice;
         return $this;
+    }
+    #[
+        ApiProperty(description: 'Nom complet', example: 'MA-Machine'),
+        Serializer\Groups(['read:engine-group', 'read:engine-group:collection'])
+    ]
+    public function getGetterFilter(): string {
+        return $this->getCode().'-'.$this->getName();
     }
 }

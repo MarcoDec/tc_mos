@@ -2,15 +2,21 @@
 
 namespace App\Command;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Validator\Mapping\Factory\MetadataFactoryInterface;
-
+#[
+    AsCommand(
+        name: 'app:check-constraints',
+        description: 'Checks constraints for a given class.'
+    )
+]
 class CheckConstraintsCommand extends Command
 {
-    protected static $defaultName = 'app:check-constraints';
+//    protected static $defaultName = 'app:check-constraints';
 
     private MetadataFactoryInterface $metadataFactory;
 
@@ -26,7 +32,12 @@ class CheckConstraintsCommand extends Command
             ->addArgument('class', InputArgument::REQUIRED, 'The class to check.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     */
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $class = $input->getArgument('class');
 

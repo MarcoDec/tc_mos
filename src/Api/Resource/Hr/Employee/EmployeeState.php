@@ -7,7 +7,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ApiResource(
-    description: 'Statut d\'un employé',
+    description: 'Statut employé',
     collectionOperations: [
         'get' => [
             'openapi_context' => [
@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ],
     itemOperations: ['get' => NO_ITEM_GET_OPERATION],
     normalizationContext: [
-        'groups' => ['read:option'],
+        'groups' => ['read:employee-state'],
         'openapi_definition_name' => 'EmployeeState-read',
         'skip_null_values' => false
     ],
@@ -29,12 +29,12 @@ final class EmployeeState {
     public function __construct(private readonly string $id, private readonly string $text) {
     }
 
-    #[ApiProperty(identifier: true), Serializer\Groups(['read:option'])]
+    #[ApiProperty(identifier: true), Serializer\Groups(['read:employee-state'])]
     public function getId(): string {
         return $this->id;
     }
 
-    #[Serializer\Groups(['read:option'])]
+    #[Serializer\Groups(['read:employee-state'])]
     public function getText(): string {
         return $this->text;
     }

@@ -151,7 +151,7 @@ final class ItemReferenceComponentRepository extends ItemRepository {
         }
 
         $sqlCount .= $from .$where;
-        dump($sqlCount);
+//        dump($sqlCount);
         $queryCount = $this->_em->createNativeQuery($sqlCount, $rsmCount);
         $resultsCount = $queryCount->getResult();
         $countElement = $resultsCount[0]['count'];

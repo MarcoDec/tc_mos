@@ -178,6 +178,15 @@ class Nomenclature extends Entity implements MeasuredInterface {
         return [$this->quantity];
     }
 
+    public function getUnitMeasures(): array
+    {
+        return [$this->quantity];
+    }
+    public function getCurrencyMeasures(): array
+    {
+        return [];
+    }
+
     public function getUnit(): ?Unit
     {
         return $this->component ? $this->component->getUnit() : ($this->product ? $this->product->getUnit() : null);

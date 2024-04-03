@@ -164,6 +164,15 @@ class ComponentReferenceValue extends Entity implements MeasuredInterface {
         return [$this->section];
     }
 
+    public function getUnitMeasures(): array
+    {
+        return [$this->section];
+    }
+    public function getCurrencyMeasures(): array
+    {
+        return [];
+    }
+
     public function getUnit(): ?Unit
     {
         return null;

@@ -28,17 +28,17 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'deliveryTime' => 'partial',
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'deliveryTime' => 'partial', 'id' => 'exact',
         'deliveryTimeOpenDays' => 'partial', 'engineHourRate' => 'partial', 'generalMargin' => 'partial', 'handlingHourRate' => 'partial',
         'managementFees' => 'partial', 'numberOfTeamPerDay' => 'partial', 'workTimetable' => 'partial', 'currency.id' => 'exact'
     ]),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'workTimetable']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'workTimetable', 'id']),
     ApiResource(
         description: 'Compagnie',
         collectionOperations: [
             'get' => [
                 'normalization_context' => [
-                    'groups' => 'read:company:collection',
+                    'groups' => ['read:id', 'read:company:collection'],
                     'openapi_definition_name' => 'Company-collection',
                     'skip_null_values' => false
                 ],
@@ -102,9 +102,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                 'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ]
         ],
-        attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
-        ],
+//        attributes: [
+//            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
+//        ],
         denormalizationContext: [
             'groups' => ['write:address', 'write:company'],
             'openapi_definition_name' => 'Company-write'
@@ -188,7 +188,7 @@ class Company extends Entity {
         ApiProperty(description: 'Nom', example: 'Kaporingol'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:company', 'read:company:collection', 'read:printer', 'read:zone', 'write:company', 'write:company:admin'])
+        Serializer\Groups(['read:company', 'read:company:collection', 'read:zone', 'write:company', 'write:company:admin'])
     ]
     private ?string $name = null;
 

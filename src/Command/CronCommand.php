@@ -7,9 +7,11 @@ use App\Collection;
 use App\Entity\CronJob;
 use Doctrine\ORM\EntityManagerInterface;
 use ReflectionClass;
+use ReflectionException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LazyCommand;
+use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -48,6 +50,7 @@ final class CronCommand extends AbstractCommand {
 
     /**
      * @return array<string, array{command: Command, cron: CronJobAttribute}>
+     * @throws ReflectionException
      */
     private function getJobs(): array {
         return Collection::collect($this->getApplication()->all('gpao'))
@@ -74,6 +77,10 @@ final class CronCommand extends AbstractCommand {
             ->all();
     }
 
+    /**
+     * @throws ExceptionInterface
+     * @throws ReflectionException
+     */
     private function runJobs(OutputInterface $output): void {
         $entities = $this->getEntities();
         foreach ($this->getJobs() as $name => $job) {
@@ -87,6 +94,9 @@ final class CronCommand extends AbstractCommand {
         }
     }
 
+    /**
+     * @throws ReflectionException
+     */
     private function scan(): void {
         $entities = $this->getEntities();
         foreach ($this->getJobs() as $name => $job) {

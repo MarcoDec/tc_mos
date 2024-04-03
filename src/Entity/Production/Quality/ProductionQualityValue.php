@@ -223,6 +223,15 @@ class ProductionQualityValue extends Entity implements MeasuredInterface
     {
         return [$this->traction, $this->largeur, $this->hauteur, $this->section];
     }
+    public function getUnitMeasures(): array
+    {
+        return [$this->traction, $this->largeur, $this->hauteur, $this->section];
+    }
+
+    public function getCurrencyMeasures(): array
+    {
+        return [];
+    }
 
     public function getUnit(): ?Unit
     {

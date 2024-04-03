@@ -44,11 +44,11 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:component-attribute'],
+            'groups' => ['write:component-attribute', 'write:measure'],
             'openapi_definition_name' => 'ComponentAttribute-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:component-attribute'],
+            'groups' => ['read:id', 'read:component-attribute', 'read:measure'],
             'openapi_definition_name' => 'ComponentAttribute-read',
             'skip_null_values' => false
         ],
@@ -117,6 +117,14 @@ class ComponentAttribute extends Entity implements MeasuredInterface {
 
     final public function getMeasures(): array {
         return [$this->measure];
+    }
+    final public function getUnitMeasures(): array
+    {
+        return [$this->measure];
+    }
+    final public function getCurrencyMeasures(): array
+    {
+        return [];
     }
 
     final public function getType(): string {

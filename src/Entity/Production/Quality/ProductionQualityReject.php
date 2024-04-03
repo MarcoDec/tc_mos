@@ -127,6 +127,15 @@ class ProductionQualityReject extends Entity implements MeasuredInterface
     {
         return [$this->quantity];
     }
+    public function getUnitMeasures(): array
+    {
+        return [$this->quantity];
+    }
+
+    public function getCurrencyMeasures(): array
+    {
+        return [];
+    }
 
     public function getUnit(): ?Unit
     {

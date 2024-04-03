@@ -243,7 +243,14 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     public function getMeasures(): array {
         return [$this->quantity];
     }
-
+    public function getUnitMeasures(): array
+    {
+        return [$this->quantity];
+    }
+    public function getCurrencyMeasures(): array
+    {
+        return [];
+    }
     /**
      * @return Collection<int, Operation>
      */

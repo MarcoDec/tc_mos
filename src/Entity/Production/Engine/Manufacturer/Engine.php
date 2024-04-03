@@ -5,6 +5,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Entity;
 use App\Entity\Production\Engine\Attachment\ManufacturerEngineAttachment;
 use App\Entity\Production\Engine\Engine as Equipment;
+use App\Filter\CustomGetterFilter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -18,6 +19,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
     ApiFilter(OrderFilter::class, properties: ['code', 'manufacturer.name', 'name', 'partNumber', 'type']),
     ApiFilter(SearchFilter::class, properties: ['code' => 'partial', 'manufacturer.name' => 'partial', 'name' => 'partial', 'partNumber' => 'partial', 'type' => 'partial']),
     ApiFilter(RelationFilter::class, properties: ['manufacturer']),
+    ApiFilter(filterClass: CustomGetterFilter::class, properties: ['getterFilter' => ['fields' => ['code', 'id']]]),
     ApiResource(
         description: 'Équipement : fiche fabricant',
         collectionOperations: ['get', 'post'],
@@ -192,5 +194,11 @@ class Engine extends Entity {
         $this->type = $type;
         return $this;
     }
-
+    #[
+        ApiProperty(description: 'Désignation', example: 'Roosevelt Super'),
+        Serializer\Groups(['read:manufacturer-engine'])
+    ]
+    final public function getGetterFilter(): string {
+        return $this->getId().' '. $this->getCode();
+    }
 }

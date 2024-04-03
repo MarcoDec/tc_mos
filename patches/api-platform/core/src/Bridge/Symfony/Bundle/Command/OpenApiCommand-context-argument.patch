@@ -1,0 +1,24 @@
+diff --git a/vendor/api-platform/core/src/Bridge/Symfony/Bundle/Command/OpenApiCommand.php b/patches/tmp/ApiPlatform/OpenApiCommand.php
+index 68314d550..dba4d2640 100644
+--- a/vendor/api-platform/core/src/Bridge/Symfony/Bundle/Command/OpenApiCommand.php
++++ b/patches/tmp/ApiPlatform/OpenApiCommand.php
+@@ -15,6 +15,7 @@ namespace ApiPlatform\Core\Bridge\Symfony\Bundle\Command;
+ 
+ use ApiPlatform\Core\OpenApi\Factory\OpenApiFactoryInterface;
+ use Symfony\Component\Console\Command\Command;
++use Symfony\Component\Console\Attribute\AsCommand;
+ use Symfony\Component\Console\Input\ArrayInput;
+ use Symfony\Component\Console\Input\InputInterface;
+ use Symfony\Component\Console\Input\InputOption;
+@@ -27,9 +28,10 @@ use Symfony\Component\Yaml\Yaml;
+ /**
+  * Dumps Open API documentation.
+  */
++#[AsCommand(name: 'api:openapi:export', description: 'Dump the Open API documentation')]
+ final class OpenApiCommand extends Command
+ {
+-    protected static $defaultName = 'api:openapi:export';
++//    protected static $defaultName = 'api:openapi:export';
+ 
+     private $openApiFactory;
+     private $normalizer;

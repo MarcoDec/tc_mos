@@ -9,7 +9,8 @@ final class ProductStateType extends StateType {
         self::TYPE_STATE_AGREED,
         self::TYPE_STATE_DRAFT,
         self::TYPE_STATE_TO_VALIDATE,
-        self::TYPE_STATE_WARNING
+        self::TYPE_STATE_WARNING,
+        self::TYPE_STATE_CLOSED
     ];
 
     public function getName(): string {

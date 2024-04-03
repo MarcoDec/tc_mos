@@ -6,8 +6,6 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Collection;
 use App\Controller\Purchase\Order\ItemSupplierControler;
 use App\Doctrine\DBAL\Types\ItemType;
@@ -26,13 +24,12 @@ use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Quality\Reception\Check;
 use App\Filter\RelationFilter;
 use App\Filter\SetFilter;
-use App\Entity\Purchase\Order\Item;
 use App\Repository\Purchase\Order\ItemRepository;
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use App\Validator as AppAssert;
 
 /**
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
@@ -183,13 +180,25 @@ abstract class Item extends BaseItem {
 
     /** @var DoctrineCollection<int, Receipt<I>> */
     #[ORM\OneToMany(mappedBy: 'item', targetEntity: Receipt::class)]
+    
     private DoctrineCollection $receipts;
+
+    #[
+        ApiProperty(description: 'Quantité reçue', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        AppAssert\Measure,
+        ORM\Embedded,
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    protected Measure $receivedQuantity;
 
     public function __construct() {
         parent::__construct();
         $this->embBlocker = new Closer();
         $this->embState = new State();
         $this->receipts = new ArrayCollection();
+        $this->copperPrice = new Measure();
+        $this->price = new Measure();
+        $this->receivedQuantity = new Measure();
     }
 
     /**
@@ -208,7 +217,6 @@ abstract class Item extends BaseItem {
     final public function getBlocker(): string {
         return $this->embBlocker->getState();
     }
-
     /**
      * @return Collection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
      */
@@ -409,6 +417,17 @@ abstract class Item extends BaseItem {
      */
     final public function setTargetCompany(?Company $targetCompany): self {
         $this->targetCompany = $targetCompany;
+        return $this;
+    }
+
+    public function getReceivedQuantity(): Measure
+    {
+        return $this->receivedQuantity;
+    }
+
+    public function setReceivedQuantity(Measure $receivedQuantity): self
+    {
+        $this->receivedQuantity = $receivedQuantity;
         return $this;
     }
 }

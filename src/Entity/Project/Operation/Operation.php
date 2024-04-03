@@ -252,6 +252,14 @@ class Operation extends Entity implements MeasuredInterface {
     {
         return [$this->cadence, $this->time, $this->price];
     }
+    public function getUnitMeasures(): array
+    {
+        return [$this->cadence, $this->time];
+    }
+    public function getCurrencyMeasures(): array
+    {
+        return [$this->price];
+    }
 
     public function getUnit(): ?Unit
     {

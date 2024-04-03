@@ -22,7 +22,8 @@ class Measure {
         'read:product-customer',
         'read:operation-employee:collection',
         'read:reference', 'write:reference',
-        'read:production-quality-value', 'write:production-quality-value'
+        'read:production-quality-value', 'write:production-quality-value',
+        'read:manufacturing-order',
     ];
     #[
         ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true, options: ['collation' => 'utf8mb3_bin']),
@@ -52,9 +53,11 @@ class Measure {
     }
 
     final public function convert(AbstractUnit $unit, ?AbstractUnit $denominator = null): self {
-        $this->getSafeUnit()->assertSameAs($unit);
-        if ($this->getSafeUnit()->getCode() !== $unit->getCode()) {
-            $this->value *= $this->getSafeUnit()->getConvertorDistance($unit);
+        $safeUnit = $this->getSafeUnit();
+//        dump(['convert','unit'=>$unit, 'this'=>$this, 'denominator'=>$denominator]);
+        $safeUnit->assertSameAs($unit);
+        if ($safeUnit->getCode() !== $unit->getCode()) {
+            $this->value *= $safeUnit->getConvertorDistance($unit);
             $this->code = $unit->getCode();
             $this->unit = $unit;
         }
@@ -141,6 +144,7 @@ class Measure {
     private function convertToSame(self $measure): self {
         /** @var AbstractUnit $unit */
         $unit = $this->getSafeUnit()->getLess($measure->getSafeUnit());
+//        dump(['convertToSame','unit'=>$unit, 'this'=>$this, 'measure'=>$measure]);
         /** @var null|AbstractUnit $denominator */
         $denominator = $this->denominatorUnit !== null && $measure->denominatorUnit !== null
             ? $this->denominatorUnit->getLess($measure->denominatorUnit)
