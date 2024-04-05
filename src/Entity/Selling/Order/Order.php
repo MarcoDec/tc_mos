@@ -28,6 +28,7 @@ use App\Filter\RelationFilter;
 
 #[
     ApiFilter(OrderFilter::class, properties: ['id', 'ref', 'createdAt', 'updatedAt']),
+    ApiFilter(SetFilter::class, properties: ['embState.state', 'embBlocker.state']),
     ApiFilter(SearchFilter::class, properties: ['id' => 'exact', 'ref' => 'partial', 'createdAt' => 'exact', 'updatedAt' => 'exact']),
     ApiFilter(RelationFilter::class, properties: ['billedTo', 'company', 'customer', 'destination']),
     ApiResource(
