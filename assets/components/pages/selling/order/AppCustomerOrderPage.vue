@@ -71,19 +71,19 @@
             name: 'state',
             options: {
                 label: value =>
-                    optionsEtat.find(option => option.type === value)?.text ?? null,
+                    optionsEtat.find(option => option.value === value)?.text ?? null,
                 options: optionsEtat
             },
             trie: false,
             type: 'select',
-            width: 80
+            width: 120
         },
         {
             label: 'Etat Qualité',
             name: 'closer',
             options: {
                 label: value =>
-                    optionsCloser.find(option => option.type === value)?.text ?? null,
+                    optionsCloser.find(option => option.value === value)?.text ?? null,
                 options: optionsCloser
             },
             trie: false,
