@@ -6,9 +6,15 @@ export const useCustomerOrderStore = defineStore('customerOrder', {
         async fetch(filter='') {
             const response = await api(`/api/selling-orders${filter}`, 'GET')
             this.customerOrders = response['hydra:member']
+            this.customerOrders.forEach((order) => {
+                order.state = order.embState.state
+                order.closer = order.embBlocker.state
+            })
         },
         async fetchById(id) {
             this.customerOrder = await api(`/api/selling-orders/${id}`, 'GET')
+            this.customerOrder.state = this.customerOrder.embState.state
+            this.customerOrder.closer = this.customerOrder.embBlocker.state
         },
         async updateSellingOrder(payload) {
             await api(`/api/selling-orders/${payload.id}`, 'PATCH', payload.SellingOrder)
