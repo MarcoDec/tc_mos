@@ -1,6 +1,6 @@
 <script setup>
     import AppSuspense from '../../../AppSuspense.vue'
-    import AppCustomerOrderPage from "./AppCustomerOrderPage.vue";
+    import AppCustomerOrderPage from './AppCustomerOrderPage.vue'
 
     defineProps({
         icon: {required: true, type: String},

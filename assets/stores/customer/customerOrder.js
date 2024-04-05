@@ -3,10 +3,10 @@ import {defineStore} from 'pinia'
 
 export const useCustomerOrderStore = defineStore('customerOrder', {
     actions: {
-        async fetch(filter='') {
+        async fetch(filter = '') {
             const response = await api(`/api/selling-orders${filter}`, 'GET')
             this.customerOrders = response['hydra:member']
-            this.customerOrders.forEach((order) => {
+            this.customerOrders.forEach(order => {
                 order.state = order.embState.state
                 order.closer = order.embBlocker.state
             })
@@ -57,6 +57,6 @@ export const useCustomerOrderStore = defineStore('customerOrder', {
         nextPage: null,
         pagination: true,
         previousPage: null,
-        lastPage: null,
+        lastPage: null
     })
 })
