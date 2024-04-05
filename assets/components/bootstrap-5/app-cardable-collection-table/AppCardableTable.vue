@@ -20,7 +20,12 @@
         shouldSee: {required: false, default: true},
         title: {default: null, required: false, type: String}
     })
-    //console.log('props.fields', props.fields)
+    //Conversion des champs String en entier
+    const pageCurrent = computed(() => parseInt(props.currentPage))
+    const pageFirst = computed(() => parseInt(props.firstPage))
+    const pageLast = computed(() => parseInt(props.lastPage))
+    const pageNext = computed(() => parseInt(props.nextPage))
+    const pagePrevious = computed(() => parseInt(props.previousPage))
     const displayedFields = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
     const input = ref({})
     const emit = defineEmits(['deleted', 'getPage', 'update', 'trierAlphabet', 'update:modelValue', 'update:searchModelValue', 'search', 'cancelSearch'])
@@ -66,20 +71,20 @@
     </table>
     <nav v-if="pag" aria-label="Page navigation example">
         <ul class="pagination">
-            <li v-if="firstPage && firstPage < currentPage" class="page-item">
-                <a class="page-link" href="#" @click.prevent="getPage(firstPage)">1</a>
+            <li v-if="pageFirst && pageFirst < pageCurrent" class="page-item">
+                <a class="page-link" href="#" @click.prevent="getPage(pageFirst)">1</a>
             </li>
-            <li v-if="previousPage && previousPage < currentPage && previousPage > 1" class="page-item">
-                <a class="page-link" href="#" @click.prevent="getPage(previousPage)">... {{ previousPage }}</a>
+            <li v-if="pagePrevious && pagePrevious < pageCurrent && pagePrevious > 1" class="page-item">
+                <a class="page-link" href="#" @click.prevent="getPage(pagePrevious)">... {{ pagePrevious }}</a>
             </li>
             <li class="page-item">
-                <span class="bg-light page-link text-black"><b>Page {{ currentPage }}</b></span>
+                <span class="bg-light page-link text-black"><b>Page {{ pageCurrent }}</b></span>
             </li>
-            <li v-if="nextPage && nextPage > currentPage && nextPage < lastPage" class="page-item">
-                <a class="page-link" href="#" @click.prevent="getPage(nextPage)">{{ nextPage }} ...</a>
+            <li v-if="pageNext && pageNext > pageCurrent && pageNext < pageLast" class="page-item">
+                <a class="page-link" href="#" @click.prevent="getPage(pageNext)">{{ pageNext }} ...</a>
             </li>
-            <li v-if="lastPage && lastPage > currentPage" class="page-item">
-                <a class="page-link" href="#" @click.prevent="getPage(lastPage)">{{ lastPage }}</a>
+            <li v-if="pageLast && pageLast > pageCurrent" class="page-item">
+                <a class="page-link" href="#" @click.prevent="getPage(pageLast)">{{ pageLast }}</a>
             </li>
         </ul>
     </nav>
