@@ -3,6 +3,9 @@ import {defineStore} from 'pinia'
 
 export const useCustomerOrderStore = defineStore('customerOrder', {
     actions: {
+        async addCustomerOrder(payload) {
+            await api('/api/selling-orders', 'POST', payload)
+        },
         async fetch(filter = '') {
             const response = await api(`/api/selling-orders${filter}`, 'GET')
             this.customerOrders = response['hydra:member']

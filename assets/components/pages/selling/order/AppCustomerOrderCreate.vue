@@ -1,8 +1,8 @@
 <script setup>
     import {computed, defineEmits, defineProps, ref} from 'vue'
     import AppFormJS from '../../../form/AppFormJS.js'
-    // import useUser from '../../../../stores/security'
-
+    import useUser from '../../../../stores/security'
+    import {useCustomerOrderStore} from '../../../../stores/customer/customerOrder'
     defineProps({
         title: {required: true, type: String},
         target: {required: true, type: String},
@@ -10,14 +10,14 @@
     })
     const emits = defineEmits(['created'])
 
-    // const user = useUser()
-    // const storeCustomersList = useCustomersStore()
+    const user = useUser()
+    const storeCustomerOrder = useCustomerOrderStore()
 
     const violations = ref([])
     let success = []
     const isPopupVisible = ref(false)
     const isCreatedPopupVisible = ref(false)
-    // const currentCompany = user.company
+    const currentCompany = user.company
     const generalData = ref({})
 
     const optionsOrderFamily = [
@@ -97,7 +97,8 @@
             orderFamily: 'fixed',
             ref: '',
             destination: null,
-            contact: null
+            contact: null,
+            company: currentCompany
         }
     }
 
@@ -109,8 +110,8 @@
         if (typeof generalData.value.orderFamily !== 'undefined') {
             customerOrderData.value.orderFamily = generalData.value.orderFamily
         }
-        if (typeof comptabilityData.value.ref !== 'undefined') {
-            customerOrderData.value.ref = comptabilityData.value.ref
+        if (typeof generalData.value.ref !== 'undefined') {
+            customerOrderData.value.ref = generalData.value.ref
         }
         if (typeof generalData.value.destination !== 'undefined') {
             customerOrderData.value.destination = generalData.value.destination
@@ -119,14 +120,14 @@
             customerOrderData.value.contact = generalData.value.contact
         }
         try {
-            // await storeCustomersList.addCustomer(customerData.value)
+            await storeCustomerOrder.addCustomerOrder(customerOrderData.value)
             isPopupVisible.value = false
             isCreatedPopupVisible.value = true
             success = 'Commande crée'
-            emits('created')
             // Remise à zéro des données
             resetForm()
             violations.value = []
+            emits('created')
         } catch (error) {
             violations.value = error
             isPopupVisible.value = true
