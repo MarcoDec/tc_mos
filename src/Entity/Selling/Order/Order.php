@@ -163,6 +163,14 @@ class Order extends Entity {
     ]
     private ?string $kind = KindType::TYPE_PROTOTYPE;
 
+    const FAMILY_FREE = 'free'; // Commande libre (sans lien avec un produit)
+    const FAMILY_FIXED = 'fixed'; // Commande ferme (avec lien avec un produit) mais hors EDI
+    const FAMILY_FORECAST = 'forecast'; // Commande de prévisionnelle (avec lien avec un produit) mais hors EDI
+    const FAMILY_EDI_ORDERS = 'edi_orders'; // Commande ferme EDI (avec lien avec un produit)
+    const FAMILY_EDI_DELFOR = 'edi_delfor'; // Commande de prévisionnelle EDI (avec lien avec un produit)
+    const FAMILY_EDI_ORDCHG = 'edi_ordchg'; // Commande de changement de commande EDI (avec lien avec un produit)
+    private string $orderFamily = '';
+
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
         ORM\Column(type: 'string', nullable: true),

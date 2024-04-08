@@ -1,13 +1,13 @@
 <script setup>
     import {computed, onBeforeMount, onBeforeUpdate, ref} from 'vue'
     import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
-    import AppCustomerCreate from './AppCustomerOrderCreate.vue'
     import AppSuspense from '../../../AppSuspense.vue'
 
     import {useCustomerOrderStore} from '../../../../stores/customer/customerOrder'
     import useUser from '../../../../stores/security'
     import {Modal} from 'bootstrap'
     import {useRouter} from 'vue-router'
+    import AppCustomerOrderCreate from './AppCustomerOrderCreate.vue'
 
     defineProps({
         icon: {required: true, type: String},
@@ -158,7 +158,7 @@
         </div>
     </div>
     <div class="row">
-        <AppCustomerCreate ref="customerOrderCreateModal" :modal-id="modalId" title="Création nouvelle commande client" :target="target" @created="onCreatedNewCustomerOrder"/>
+        <AppCustomerOrderCreate ref="customerOrderCreateModal" :modal-id="modalId" title="Création nouvelle commande client" :target="target" @created="onCreatedNewCustomerOrder"/>
         <div class="col">
             <AppSuspense>
                 <AppCardableTable
