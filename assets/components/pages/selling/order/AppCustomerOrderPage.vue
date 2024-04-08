@@ -124,7 +124,6 @@
         await storeCustomerOrderList.fetch(customerOrderListCriteria.getFetchCriteria)
     }
     function onCreatedNewCustomerOrder() {
-        console.log("Détection création d'une nouvelle commande client")
         refreshTable()
         if (customerOrderCreateModal.value) {
             const modalElement = customerOrderCreateModal.value.$el

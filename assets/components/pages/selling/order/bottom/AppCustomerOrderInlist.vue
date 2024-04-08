@@ -1,21 +1,21 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useBlCustomerOrderItemsStore} from '../../../../stores/customer/blCustomerOrderItems'
-    import {useCustomerOrderItemsStore} from '../../../../stores/customer/customerOrderItems'
-    import {useFacturesCustomerOrderItemsStore} from '../../../../stores/customer/facturesCustomerOrderItems'
-    import {useOfCustomerOrderItemsStore} from '../../../../stores/customer/ofCustomerOrderItems'
+    import {useBlCustomerOrderItemsStore} from '../../../../../stores/customer/blCustomerOrderItems'
+    import {useCustomerOrderItemsStore} from '../../../../../stores/customer/customerOrderItems'
+    import {useFacturesCustomerOrderItemsStore} from '../../../../../stores/customer/facturesCustomerOrderItems'
+    import {useOfCustomerOrderItemsStore} from '../../../../../stores/customer/ofCustomerOrderItems'
     import {useRoute} from 'vue-router'
-    import useUnitsStore from '../../../../stores/unit/units'
-    import AppTab from '../../../../components/tab/AppTab.vue'
-    import AppTabs from '../../../../components/tab/AppTabs.vue'
-    import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
-    import useUser from '../../../../stores/security'
-    import AppSuspense from '../../../../components/AppSuspense.vue'
-    import useOptions from '../../../../stores/option/options'
-    import {useCustomerAddressStore} from '../../../../stores/customer/customerAddress'
-    import {useCustomerOrderStore} from '../../../../stores/customer/customerOrder'
-    import {useCurrenciesStore} from '../../../../stores/currency/currencies'
-    import {useCustomersStore} from '../../../../stores/customer/customers'
+    import useUnitsStore from '../../../../../stores/unit/units'
+    import AppTab from '../../../../../components/tab/AppTab.vue'
+    import AppTabs from '../../../../../components/tab/AppTabs.vue'
+    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
+    import useUser from '../../../../../stores/security'
+    import AppSuspense from '../../../../../components/AppSuspense.vue'
+    import useOptions from '../../../../../stores/option/options'
+    import {useCustomerAddressStore} from '../../../../../stores/customer/customerAddress'
+    import {useCustomerOrderStore} from '../../../../../stores/customer/customerOrder'
+    import {useCurrenciesStore} from '../../../../../stores/currency/currencies'
+    import {useCustomersStore} from '../../../../../stores/customer/customers'
 
     const route = useRoute()
     const id = Number(route.params.id)
@@ -124,77 +124,6 @@
             },
             type: 'select'
         }
-    ]
-    const fieldsCommande = [
-        {label: 'Produit', name: 'product', type: 'multiselect-fetch', api: '/api/products', filteredProperty: 'code', max: 1},
-        {label: 'Réf', name: 'ref', trie: true, type: 'text'},
-        {
-            label: 'Quantité souhaitée',
-            name: 'requestedQuantity',
-            filter: true,
-            min: true,
-            measure: {
-                code: {
-                    label: 'Code',
-                    name: 'requestedQuantity.code',
-                    options: {
-                        label: value =>
-                            optionsUnit.value.find(option => option.type === value)?.text ?? null,
-                        options: optionsUnit.value
-                    },
-                    type: 'select'
-                },
-                value: {
-                    label: 'Valeur',
-                    name: 'requestedQuantity.value',
-                    type: 'number',
-                    step: 0.1
-                }
-            },
-            trie: true,
-            type: 'measure'
-        },
-        {label: 'date de livraison souhaitée', name: 'requestedDate', trie: true, type: 'date'},
-        {
-            label: 'Quantité confirmée',
-            name: 'confirmedQuantity',
-            filter: true,
-            min: true,
-            measure: {
-                code: {
-                    label: 'Code',
-                    name: 'confirmedQuantity.code',
-                    options: {
-                        label: value =>
-                            optionsUnit.value.find(option => option.type === value)?.text ?? null,
-                        options: optionsUnit.value
-                    },
-                    type: 'select'
-                },
-                value: {
-                    label: 'Valeur',
-                    name: 'confirmedQuantity.value',
-                    type: 'number',
-                    step: 0.1
-                }
-            },
-            trie: true,
-            type: 'measure'
-        },
-        {label: 'Date de livraison confirmée', name: 'confirmedDate', trie: true, type: 'date'},
-        {
-            label: 'Etat',
-            name: 'state',
-            options: {
-                label: value =>
-                    stateOptions.find(option => option.type === value)?.text ?? null,
-                options: stateOptions
-            },
-            trie: true,
-            type: 'select'
-        },
-        {label: 'Description', name: 'notes', trie: true, type: 'text'}
-
     ]
     const OFfields = [
         {
@@ -353,41 +282,6 @@
         }
     ]
 
-    const fieldsGenerality = [
-        {
-            label: 'société',
-            name: 'company',
-            options: {
-                label: value =>
-                    companiesOptions.value.find(option => option.type === value)?.text ?? null,
-                options: companiesOptions.value
-            },
-            type: 'select'
-        },
-        {
-            label: 'client',
-            name: 'customer',
-            options: {
-                label: value =>
-                    customerOption.value.find(option => option.type === value)?.text ?? null,
-                options: customerOption.value
-            },
-            type: 'select'
-        },
-        {
-            label: 'type',
-            name: 'kind',
-            options: {
-                label: value =>
-                    kindOptions.find(option => option.type === value)?.text ?? null,
-                options: kindOptions
-            },
-            type: 'select'
-        },
-        {label: 'note', name: 'notes', type: 'text'},
-        {label: 'ref', name: 'ref', type: 'text'}
-    ]
-
     const fetchUser = useUser()
     const currentCompany = fetchUser.company
     const isSellingWriterOrAdmin = fetchUser.isSellingWriter || fetchUser.isSellingAdmin
@@ -417,50 +311,6 @@
     async function deletedCustomerOrders(idRemove) {
         await storeCustomerOrderItems.remove(idRemove)
         await refreshTableCustomerOrders()
-    }
-    async function getPageCustomerOrders(nPage) {
-        customerOrderCriteria.gotoPage(parseFloat(nPage))
-        await storeCustomerOrderItems.fetchAll(customerOrderCriteria.getFetchCriteria)
-    }
-    async function searchCustomerOrders(inputValues) {
-        customerOrderCriteria.resetAllFilter()
-        customerOrderCriteria.addFilter('company', currentCompany)
-        if (inputValues.ref) customerOrderCriteria.addFilter('ref', inputValues.ref)
-        if (inputValues.requestedQuantity) customerOrderCriteria.addFilter('requestedQuantity.value', inputValues.requestedQuantity.value)
-        if (inputValues.requestedQuantity) {
-            const requestedUnit = units.find(unit => unit['@id'] === inputValues.requestedQuantity.code)
-            customerOrderCriteria.addFilter('requestedQuantity.code', requestedUnit.code)
-        }
-        if (inputValues.requestedDate) customerOrderCriteria.addFilter('requestedDate', inputValues.requestedDate)
-        if (inputValues.confirmedQuantity) customerOrderCriteria.addFilter('confirmedQuantity.value', inputValues.confirmedQuantity.value)
-        if (inputValues.confirmedQuantity) {
-            const requestedUnit = units.find(unit => unit['@id'] === inputValues.confirmedQuantity.code)
-            customerOrderCriteria.addFilter('confirmedQuantity.code', requestedUnit.code)
-        }
-        if (inputValues.confirmedDate) customerOrderCriteria.addFilter('confirmedDate', inputValues.confirmedDate)
-        if (inputValues.state) customerOrderCriteria.addFilter('embState.state', inputValues.state)
-        if (inputValues.notes) customerOrderCriteria.addFilter('notes', inputValues.notes)
-        await storeCustomerOrderItems.fetchAll(customerOrderCriteria.getFetchCriteria)
-    }
-    async function cancelSearchCustomerOrders() {
-        customerOrderCriteria.resetAllFilter()
-        customerOrderCriteria.addFilter('company', currentCompany)
-        await storeCustomerOrderItems.fetchAll(customerOrderCriteria.getFetchCriteria)
-    }
-    async function trierAlphabetCustomerOrders(payload) {
-        if (payload.name === 'requestedQuantity') {
-            customerOrderCriteria.addSort('requestedQuantity.value', payload.direction)
-            await storeCustomerOrderItems.fetchAll(customerOrderCriteria.getFetchCriteria)
-        } else if (payload.name === 'confirmedQuantity') {
-            customerOrderCriteria.addSort('confirmedQuantity.value', payload.direction)
-            await storeCustomerOrderItems.fetchAll(customerOrderCriteria.getFetchCriteria)
-        } else if (payload.name === 'state') {
-            customerOrderCriteria.addSort('embState.state', payload.direction)
-            await storeCustomerOrderItems.fetchAll(customerOrderCriteria.getFetchCriteria)
-        } else {
-            customerOrderCriteria.addSort(payload.name, payload.direction)
-            await storeCustomerOrderItems.fetchAll(customerOrderCriteria.getFetchCriteria)
-        }
     }
 
     //ofCustomerOrderTable
@@ -668,56 +518,11 @@
         }
         await storeCustomerorder.updateSellingOrder(payload)
     }
-
-    //generality
-    const generalityData = {}
-    async function updateGeneralityData(data) {
-        generalityData.value = {
-            company: data.company,
-            customer: data.customer,
-            kind: data.kind,
-            notes: data.notes,
-            ref: data.ref
-        }
-    }
-    async function updateGeneralityCustomerOrder(){
-        const payload = {
-            id,
-            SellingOrder: {
-                company: generalityData.value.company,
-                customer: generalityData.value.customer,
-                kind: generalityData.value.kind,
-                notes: generalityData.value.notes,
-                ref: generalityData.value.ref
-            }
-        }
-        await storeCustomerorder.updateSellingOrder(payload)
-    }
 </script>
 
 <template>
     <AppTabs id="gui-form-create" class="display-block-important">
-        <AppTab id="gui-start-main" active icon="sitemap" title="Commande" tabs="gui-form-create">
-            <AppSuspense>
-                <AppCardableTable
-                    :current-page="storeCustomerOrderItems.currentPage"
-                    :fields="fieldsCommande"
-                    :first-page="storeCustomerOrderItems.firstPage"
-                    :items="customerOrderItems"
-                    :last-page="storeCustomerOrderItems.lastPage"
-                    :next-page="storeCustomerOrderItems.nextPage"
-                    :pag="storeCustomerOrderItems.pagination"
-                    :previous-page="storeCustomerOrderItems.previousPage"
-                    :user="roleuser"
-                    form="formCustomerOrdersTable"
-                    @deleted="deletedCustomerOrders"
-                    @get-page="getPageCustomerOrders"
-                    @trier-alphabet="trierAlphabetCustomerOrders"
-                    @search="searchCustomerOrders"
-                    @cancel-search="cancelSearchCustomerOrders"/>
-            </AppSuspense>
-        </AppTab>
-        <AppTab id="gui-start-files" icon="industry" title="OF" tabs="gui-form-create">
+        <AppTab id="gui-start-files" active icon="industry" title="OF" tabs="gui-form-create">
             <AppSuspense>
                 <AppCardableTable
                     :current-page="storeOfCustomerOrderItems.currentPage"
@@ -788,12 +593,6 @@
             <div class="alert alert-warning">
                 a définir
             </div>
-        </AppTab>
-        <AppTab id="gui-start-contacts" icon="clipboard" title="Généralités" tabs="gui-form-create">
-            <!-- <div class="alert alert-warning">
-                En cours de développement
-            </div> -->
-            <AppCardShow id="Généralité" :fields="fieldsGenerality" :component-attribute="generalityCustomer" @update:model-value="updateGeneralityData" @update="updateGeneralityCustomerOrder"/>
         </AppTab>
     </AppTabs>
 </template>
