@@ -132,10 +132,10 @@
             bootstrapModal.hide()
         }
     }
-    function onCustomerDetailsOpenRequest(customer) {
-        //console.log('onCustomerDetailsOpenRequest', customer)
+    function onCustomerOrderDetailsOpenRequest(customerOrder) {
+        //console.log('onCustomerDetailsOpenRequest', customerOrder)
         /* eslint-disable camelcase */
-        router.push({name: 'customer', params: {id_customer: customer.id}})
+        router.push({name: 'customer-order-show', params: {id: customerOrder.id}})
     }
 </script>
 
@@ -177,7 +177,7 @@
                     @get-page="getPage"
                     @trier-alphabet="trierAlphabet"
                     @search="search"
-                    @update="onCustomerDetailsOpenRequest"
+                    @update="onCustomerOrderDetailsOpenRequest"
                     @cancel-search="cancelSearch"/>
             </AppSuspense>
         </div>
