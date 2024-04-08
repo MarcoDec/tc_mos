@@ -12,6 +12,7 @@ use App\Entity\Embeddable\Selling\Order\State;
 use App\Entity\Entity;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Selling\Customer\BillingAddress;
+use App\Entity\Selling\Customer\Contact;
 use App\Entity\Selling\Customer\Customer;
 use App\Entity\Selling\Customer\DeliveryAddress;
 use App\Entity\Selling\Order\Item;
@@ -123,6 +124,13 @@ class Order extends Entity {
     private ?BillingAddress $billedTo = null;
 
     #[
+        ApiProperty(description: 'Contact', example: '/api/customer-contacts/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:order', 'write:order'])
+    ]
+    private ?Contact $contact = null;
+
+    #[
         ApiProperty(description: 'Company', example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:order', 'write:order'])
@@ -169,6 +177,11 @@ class Order extends Entity {
     const FAMILY_EDI_ORDERS = 'edi_orders'; // Commande ferme EDI (avec lien avec un produit)
     const FAMILY_EDI_DELFOR = 'edi_delfor'; // Commande de prévisionnelle EDI (avec lien avec un produit)
     const FAMILY_EDI_ORDCHG = 'edi_ordchg'; // Commande de changement de commande EDI (avec lien avec un produit)
+    #[
+        ApiProperty(description: 'Famille', example: 'fixed', openapiContext: ['enum' => [self::FAMILY_FREE, self::FAMILY_FIXED, self::FAMILY_FORECAST, self::FAMILY_EDI_ORDERS, self::FAMILY_EDI_DELFOR, self::FAMILY_EDI_ORDCHG]]),
+        ORM\Column(type: 'string', options: ['default' => self::FAMILY_FIXED]),
+        Serializer\Groups(['read:order', 'write:order'])
+    ]
     private string $orderFamily = '';
 
     #[
@@ -308,4 +321,25 @@ class Order extends Entity {
         $this->embState->setState($state);
         return $this;
     }
+
+    public function getContact(): ?Contact
+    {
+        return $this->contact;
+    }
+
+    public function setContact(?Contact $contact): void
+    {
+        $this->contact = $contact;
+    }
+
+    public function getOrderFamily(): string
+    {
+        return $this->orderFamily;
+    }
+
+    public function setOrderFamily(string $orderFamily): void
+    {
+        $this->orderFamily = $orderFamily;
+    }
+
 }
