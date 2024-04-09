@@ -17,19 +17,19 @@
             label: 'Désignation Etiquette Carton',
             type: 'text',
             required: true
-        },
-        {
-            name: 'customerAddressName',
-            label: 'DESTINATAIRE',
-            type: 'text',
-            required: true
-        },
-        {
-            name: 'manufacturer',
-            label: 'EXPEDITEUR',
-            type: 'text',
-            required: true
-        }
+        }//,
+        // {
+        //     name: 'customerAddressName',
+        //     label: 'DESTINATAIRE',
+        //     type: 'text',
+        //     required: true
+        // },
+        // {
+        //     name: 'manufacturer',
+        //     label: 'EXPEDITEUR',
+        //     type: 'text',
+        //     required: true
+        // }
         //,
         // {
         //     name: 'productDescription',
@@ -162,8 +162,9 @@
         v-for="(tcTemplate, index) in labeltemplatesTC"
         :key="index"
         class="icon-with-text"
-        :label="tcTemplate.labelName"
-        :text="`${tcTemplate.manufacturer}`"
+        :label="''"
+        :show-edit="false"
+        :text="tcTemplate.labelName"
         icon="box"
         icon-color="#A4683BFF"
         :offset="15"

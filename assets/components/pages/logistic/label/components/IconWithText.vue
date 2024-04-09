@@ -86,7 +86,7 @@
         padding: 3px;
         display: flex;
         flex-direction: row;
-        justify-content: space-around;
+        justify-content: flex-end;
         min-width: 100px;
         top: 90%; /* Centrer verticalement */
         //left: 50px; /* Centrer horizontalement */
@@ -95,7 +95,11 @@
     }
     .myButton:hover {
         //box-shadow: #212529 0px 0px 10px 0px;
-        font-size: 25px;
-        box-shadow: inset white 0px 0px 10px 0px;
+        font-size: 15px;
+        box-shadow: white 0px 0px 10px 0px;
+        cursor: crosshair;
+    }
+    .myButton {
+        box-shadow: white 0px 0px 10px 0px;
     }
 </style>
