@@ -1,110 +1,72 @@
+import api from '../../api'
 import { defineStore } from "pinia";
-import generateComponentSupplier from "./componentSupplier";
+import { useComponentSuppliersPricesStore } from "./componentSuppliersPrices";
 
-export default defineStore("componentSuppliers", {
+export const useComponentSuppliersStore = defineStore('componentSuppliers', {
   actions: {
     async fetch() {
-      const response = [
-        {
-          delai: 5,
-          delete: true,
-          id: 1,
-          indice: 1,
-          moq: 1,
-          name: "CAMION FR-MD",
-          poidsCu: "bbbbb",
-          prices: [
-            {
-              delete: false,
-              id: 1,
-              price: 1000,
-              quantite: 100,
-              ref: "afsfsfss",
-              update: true,
-              update2: false,
-            },
-            {
-              delete: false,
-              id: 2,
-              price: 1000,
-              quantite: 30,
-              ref: "azertsscssy",
-              update: true,
-              update2: false,
-            },
-          ],
-          proportion: "aaaaaa",
-          reference: "ccc",
-          update: true,
-          update2: false,
-        },
-        {
-          delai: 15,
-          delete: true,
-          id: 2,
-          indice: 2,
-          moq: 2,
-          name: "CAMION",
-          poidsCu: "aaaa",
-          prices: [
-            {
-              delete: false,
-              id: 1,
-              price: 100,
-              quantite: 50,
-              ref: "azerty",
-              update: true,
-              update2: false,
-            },
-            {
-              delete: false,
-              id: 2,
-              price: 100,
-              quantite: 50,
-              ref: "azerty",
-              update: true,
-              update2: false,
-            },
-            {
-              delete: false,
-              id: 3,
-              price: 100,
-              quantite: 50,
-              ref: "azerty",
-              update: true,
-              update2: false,
-            },
-            {
-              delete: false,
-              id: 4,
-              price: 100,
-              quantite: 50,
-              ref: "azerty",
-              update: true,
-              update2: false,
-            },
-          ],
-          proportion: "vvvvvv",
-          reference: "wwwww",
-          update: true,
-          update2: false,
-        },
-      ];
-      for (const price of response)
-        this.items.push(generateComponentSupplier(price, this));
+      const response = await api('/api/supplier-components', 'GET')
+      this.items = await response['hydra:member']
+      console.log('items', this.items)
     },
+    async fetchByComponent(idComponent){
+      const response = await api(`/api/supplier-components?component=${idComponent}`, 'GET')
+      this.items = await response['hydra:member']
+      console.log('response', response);
+
+    },
+    async fetchBySupplier(idSupplier){
+      const response = await api(`/api/supplier-components?supplier=${idSupplier}`, 'GET')
+      this.items = await response['hydra:member']
+    },
+    async fetchPricesById(id) {
+      const pricesStore = useComponentSuppliersPricesStore();
+      const prices = await pricesStore.fetchPricesByComponent(id);
+      return prices;
+    },
+    async fetchPricesForItems() {
+        const promises = this.items.map(async (item) => {
+          const prices = await this.fetchPricesById(item["@id"]);
+          return { ...item, prices };
+        })
+      const itemsWithPrices = await Promise.all(promises)
+      this.itemsPrices= itemsWithPrices
+      return itemsWithPrices;
+    } 
   },
   getters: {
-    rows: (state) => (fields) => {
-      let rows = [];
-      for (const item of state.items) {
-        rows = rows.concat(item.rows(fields));
+    componentSuppliersItems: state => state.itemsPrices.map(item => {
+      const componentSupplier = {
+          '@id': item['@id'],
+          proportion: item.proportion,
+          delai: {
+            code: item.deliveryTime.code,
+            value: item.deliveryTime.value
+          },
+          moq: {
+            code: item.moq.code,
+            value: item.moq.value
+          },
+          poidsCu:  {
+            code: item.copperWeight.code,
+            value: item.copperWeight.value
+          },
+          packaging:  {
+            code: item.packaging.code,
+            value: item.packaging.value
+          },
+          packagingKind: item.packagingKind,
+          incoterms: item.incoterms,
+          reference: item.code,
+          indice: item.index,
+          prices: item.prices
       }
-      rows.push(fields);
-      return rows;
-    },
+      return componentSupplier
+  })
+   
   },
   state: () => ({
     items: [],
+    itemsPrices: []
   }),
 });

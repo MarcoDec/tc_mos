@@ -2,6 +2,7 @@
 
 namespace App\Entity\Management;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -11,7 +12,6 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Filter\NumericFilter;
-use App\Repository\Management\InvoiceTimeDueRepository;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -30,6 +30,24 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Récupère les délais de paiement des factures',
                     'summary' => 'Récupère les délais de paiement des factures',
                 ]
+            ],
+            'options' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:invoice-time-due:option'],
+                    'openapi_definition_name' => 'InvoiceTimeDue-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les délais de paiement des factures pour les select',
+                    'summary' => 'Récupère les délais de paiement des factures pour les select',
+                ],
+                'order' => ['name' => 'asc'],
+                'pagination_enabled' => false,
+                'path' => '/invoice-time-dues/options',
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\') or is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
             ],
             'post' => [
                 'openapi_context' => [
@@ -67,16 +85,17 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:invoice-time-due', 'read:id'],
             'openapi_definition_name' => 'InvoiceTimeDue-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationEnabled: false
     ),
-    ORM\Entity(repositoryClass: InvoiceTimeDueRepository::class),
+    ORM\Entity,
     UniqueEntity(['days', 'daysAfterEndOfMonth', 'endOfMonth']),
     UniqueEntity('name')
 ]
 class InvoiceTimeDue extends Entity {
     #[
         ApiProperty(description: 'Jours ', example: 30),
-        Assert\Length(min: 0, max: 31),
+        Assert\Range(min: 0, max: 100),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
@@ -84,7 +103,7 @@ class InvoiceTimeDue extends Entity {
 
     #[
         ApiProperty(description: 'Jours après la fin du mois ', example: 0),
-        Assert\Length(min: 0, max: 31),
+        Assert\Range(min: 0, max: 100),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
@@ -100,7 +119,7 @@ class InvoiceTimeDue extends Entity {
     #[
         ApiProperty(description: 'Nom', required: true, example: '30 jours fin de mois'),
         ORM\Column(length: 40),
-        Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due']),
+        Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due', 'read:invoice-time-due:option']),
         Assert\Length(min: 3, max: 40),
         Assert\NotBlank
     ]

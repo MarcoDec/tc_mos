@@ -9,7 +9,7 @@ const props = defineProps({
   currentPage: { default: 1, type: Number },
   fields: { required: true, type: Object },
   id: { required: true, type: String },
- // items: { required: true, type: Object },
+  // items: { required: true, type: Object },
   pagination: { required: false, type: Boolean },
 });
 provide("create", props.create);
@@ -19,7 +19,7 @@ function update(item) {
   emit("update", item);
 }
 
-console.log("fields", props.fields);
+// console.log("fields", props.fields);
 </script>
 
 <template>

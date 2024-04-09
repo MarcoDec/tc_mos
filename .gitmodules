@@ -1,0 +1,6 @@
+[submodule "gpao-mobile"]
+	path = gpao-mobile
+	url = git@github.com:MarcoDec/gpao-mobile.git
+[submodule "TConcept-Clock"]
+	path = TConcept-Clock
+	url = git@github.com:MarcoDec/TConcept-Clock.git

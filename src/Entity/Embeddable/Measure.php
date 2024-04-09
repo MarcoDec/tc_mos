@@ -2,6 +2,7 @@
 
 namespace App\Entity\Embeddable;
 
+use App\Entity\Management\AbstractUnit;
 use App\Entity\Management\Unit;
 use Doctrine\ORM\Mapping as ORM;
 use LogicException;
@@ -9,91 +10,57 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\Embeddable]
 class Measure {
+    public const GROUPS=['read:measure', 'write:measure',
+        'read:balance-sheet', 'write:balance-sheet',
+        'write:customer',
+        'write:customer:accounting',
+        'write:customer:logistics',
+        'write:product',
+        'write:product:logistics',
+        'write:product:production',
+        'write:product:project',
+        'read:product-customer',
+        'read:operation-employee:collection',
+        'read:reference', 'write:reference',
+        'read:production-quality-value', 'write:production-quality-value',
+        'read:manufacturing-order',
+    ];
     #[
-        ORM\Column(length: 3, nullable: true),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true, options: ['collation' => 'utf8mb3_bin']),
+        Serializer\Groups(self::GROUPS)
     ]
     private ?string $code = null;
 
     #[
-        ORM\Column(length: 3, nullable: true),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true, options: ['collation' => 'utf8mb3_bin']),
+        Serializer\Groups(self::GROUPS)
     ]
     private ?string $denominator = null;
 
-    private ?Unit $denominatorUnit = null;
-    private ?Unit $unit = null;
+    private ?AbstractUnit $denominatorUnit = null;
+    private ?AbstractUnit $unit = null;
 
     #[
         ORM\Column(options: ['default' => 0]),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        Serializer\Groups(self::GROUPS)
     ]
     private float $value = 0;
 
     final public function add(self $measure): self {
-        if ($this->unit === null || $measure->unit === null) {
-            throw new LogicException('Unit not loaded.');
-        }
-        if (!$this->unit->has($measure->unit)) {
-            throw new LogicException("Units {$this->unit->getCode()} and {$measure->unit->getCode()} aren't on the same family.");
-        }
-        if (
-            ($this->denominator !== null && $this->denominatorUnit === null)
-            || ($measure->denominator !== null && $measure->denominatorUnit === null)
-        ) {
-            throw new LogicException('Unit not loaded.');
-        }
-        if ($this->denominatorUnit !== null && !$this->denominatorUnit->has($measure->denominatorUnit)) {
-            throw new LogicException("Units {$this->denominatorUnit->getCode()} and {$measure->denominatorUnit?->getCode()} aren't on the same family.");
-        }
-        if ($this->unit->isLessThan($measure->unit)) {
-            if ($this->denominatorUnit !== null && $measure->denominatorUnit !== null) {
-                if ($this->denominatorUnit->isLessThan($measure->denominatorUnit)) {
-                    $inverse = (new self())
-                        ->setCode($measure->denominator)
-                        ->setUnit($measure->denominatorUnit)
-                        ->setValue(1 / $measure->value)
-                        ->convert($this->denominatorUnit);
-                    $measure = (new self())
-                        ->setCode($measure->code)
-                        ->setDenominator($measure->denominator)
-                        ->setDenominatorUnit($measure->denominatorUnit)
-                        ->setUnit($measure->unit)
-                        ->setValue(1 / $inverse->value);
-                } else {
-                    $inverse = (new self())
-                        ->setCode($this->denominator)
-                        ->setUnit($this->denominatorUnit)
-                        ->setValue(1 / $this->value)
-                        ->convert($measure->denominatorUnit);
-                    $this
-                        ->setDenominator($inverse->code)
-                        ->setDenominatorUnit($inverse->unit)
-                        ->setValue(1 / $inverse->value);
-                }
-            }
-            $this->value = $this->value + $measure->convert($this->unit)->value;
-        } else {
-            $measure->add($this);
-            $this->code = $measure->code;
-            $this->denominator = $measure->denominator;
-            $this->denominatorUnit = $measure->denominatorUnit;
-            $this->unit = $measure->unit;
-            $this->value = $measure->value;
-        }
+        $measure = $this->convertToSame($measure);
+        $this->value = $this->value + $measure->value;
         return $this;
     }
 
-    final public function convert(Unit $unit, ?Unit $denominator = null): self {
-        if ($this->unit === null) {
-            throw new LogicException('Unit not loaded.');
+    final public function convert(AbstractUnit $unit, ?AbstractUnit $denominator = null): self {
+        $safeUnit = $this->getSafeUnit();
+//        dump(['convert','unit'=>$unit, 'this'=>$this, 'denominator'=>$denominator]);
+        $safeUnit->assertSameAs($unit);
+        if ($safeUnit->getCode() !== $unit->getCode()) {
+            $this->value *= $safeUnit->getConvertorDistance($unit);
+            $this->code = $unit->getCode();
+            $this->unit = $unit;
         }
-        if (!$this->unit->has($unit)) {
-            throw new LogicException("Units {$this->unit->getCode()} and {$unit->getCode()} aren't on the same family.");
-        }
-        $this->value *= $this->unit->getConvertorDistance($unit);
-        $this->code = $unit->getCode();
-        $this->unit = $unit;
 
         if ($denominator !== null) {
             if ($this->denominator === null) {
@@ -102,12 +69,12 @@ class Measure {
             if ($this->denominatorUnit === null) {
                 throw new LogicException('Unit not loaded.');
             }
-            if (!$this->denominatorUnit->has($denominator)) {
-                throw new LogicException("Units {$this->denominatorUnit->getCode()} and {$denominator->getCode()} aren't on the same family.");
+            $this->denominatorUnit->assertSameAs($denominator);
+            if ($this->denominatorUnit->getCode() !== $denominator->getCode()) {
+                $this->value *= 1 / $this->denominatorUnit->getConvertorDistance($denominator);
+                $this->denominator = $denominator->getCode();
+                $this->denominatorUnit = $denominator;
             }
-            $this->value *= 1 / $this->denominatorUnit->getConvertorDistance($denominator);
-            $this->denominator = $denominator->getCode();
-            $this->denominatorUnit = $denominator;
         }
         return $this;
     }
@@ -120,16 +87,29 @@ class Measure {
         return $this->denominator;
     }
 
-    final public function getDenominatorUnit(): ?Unit {
+    final public function getDenominatorUnit(): ?AbstractUnit {
         return $this->denominatorUnit;
     }
 
-    final public function getUnit(): ?Unit {
+    final public function getSafeUnit(): AbstractUnit {
+        if ($this->unit === null) {
+            throw new LogicException('Unit not loaded.');
+        }
+        return $this->unit;
+    }
+
+    final public function getUnit(): ?AbstractUnit {
         return $this->unit;
     }
 
     final public function getValue(): float {
         return $this->value;
+    }
+
+    final public function isGreaterThanOrEqual(self $measure): bool {
+        $clone = clone $this;
+        $measure = $clone->convertToSame($measure);
+        return $clone->value >= $measure->value;
     }
 
     final public function setCode(?string $code): self {
@@ -142,12 +122,12 @@ class Measure {
         return $this;
     }
 
-    final public function setDenominatorUnit(?Unit $denominatorUnit): self {
+    final public function setDenominatorUnit(?AbstractUnit $denominatorUnit): self {
         $this->denominatorUnit = $denominatorUnit;
         return $this;
     }
 
-    final public function setUnit(?Unit $unit): self {
+    final public function setUnit(?AbstractUnit $unit): self {
         $this->unit = $unit;
         return $this;
     }
@@ -159,5 +139,17 @@ class Measure {
 
     final public function substract(self $measure): self {
         return $this->add($measure->setValue(-$measure->value));
+    }
+
+    private function convertToSame(self $measure): self {
+        /** @var AbstractUnit $unit */
+        $unit = $this->getSafeUnit()->getLess($measure->getSafeUnit());
+//        dump(['convertToSame','unit'=>$unit, 'this'=>$this, 'measure'=>$measure]);
+        /** @var null|AbstractUnit $denominator */
+        $denominator = $this->denominatorUnit !== null && $measure->denominatorUnit !== null
+            ? $this->denominatorUnit->getLess($measure->denominatorUnit)
+            : null;
+        $this->convert($unit, $denominator);
+        return (clone $measure)->convert($unit, $denominator);
     }
 }

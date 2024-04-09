@@ -18,7 +18,8 @@ final class MeasureDenormalizer implements ContextAwareDenormalizerInterface, De
         $context[self::class] = true;
         /** @var Measure $measure */
         $measure = $this->denormalizer->denormalize($data, $type, $format, $context);
-        return $this->hydrator->hydrate($measure);
+        $measure = $this->hydrator->hydrateUnit($measure);
+        return $this->hydrator->hydrateCurrency($measure);
     }
 
     public function supportsDenormalization($data, string $type, ?string $format = null, array $context = []): bool {

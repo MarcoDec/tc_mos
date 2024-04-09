@@ -2,6 +2,7 @@
 
 namespace App\Entity\Management;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -10,8 +11,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\Serializer\Annotation as Serializer;
-
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 #[
+    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial', 'active' => 'exact', 'symbol' => 'partial', 'base' => 'partial']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'name', 'symbol', 'base']),
     ApiResource(
         description: 'Devises',
         collectionOperations: [
@@ -20,6 +25,23 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère les devises',
                     'summary' => 'Récupère les devises',
                 ]
+            ],
+            'options' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:currency:option'],
+                    'openapi_definition_name' => 'Currency-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les devises pour les select',
+                    'summary' => 'Récupère les devises pour les select',
+                ],
+                'order' => ['code' => 'asc'],
+                'pagination_enabled' => false,
+                'path' => '/currencies/options'
             ]
         ],
         itemOperations: [
@@ -32,9 +54,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'validate' => false
             ]
         ],
-        attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
-        ],
+//        attributes: [
+//            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+//        ],
         denormalizationContext: [
             'groups' => ['write:currency'],
             'openapi_definition_name' => 'Currency-write'
@@ -44,8 +66,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'Currency-read',
             'skip_null_values' => false
         ],
-        order: ['code' => 'asc'],
-        paginationEnabled: false
+        //order: ['code' => 'asc'],
+        paginationEnabled: true
     ),
     ORM\Entity(repositoryClass: CurrencyRepository::class)
 ]
@@ -56,7 +78,7 @@ class Currency extends AbstractUnit {
     #[
         ApiProperty(description: 'Code ', required: true, example: 'EUR'),
         ORM\Column(type: 'char', length: 3),
-        Serializer\Groups(['read:unit', 'write:unit'])
+        Serializer\Groups(['read:currency', 'read:unit', 'write:unit'])
     ]
     protected ?string $code = null;
 
@@ -67,7 +89,7 @@ class Currency extends AbstractUnit {
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
         Serializer\Groups(['read:currency'])
     ]
-    protected $parent;
+    protected ?AbstractUnit $parent;
 
     #[
         ApiProperty(description: 'Active', example: true),
@@ -90,6 +112,11 @@ class Currency extends AbstractUnit {
     ]
     final public function getSymbol(): ?string {
         return !empty($this->getCode()) ? Currencies::getSymbol($this->getCode()) : null;
+    }
+
+    #[Serializer\Groups(['read:currency:option'])]
+    final public function getText(): ?string {
+        return $this->getSymbol()??$this->getCode();
     }
 
     final public function isActive(): bool {

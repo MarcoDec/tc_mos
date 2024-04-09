@@ -24,13 +24,15 @@ abstract class Family extends Entity implements FileEntity {
     /** @var null|static */
     protected $parent;
 
+    protected ?string $filePath = null;
+
     #[
         ApiProperty(description: 'Code douanier', example: '8544300089'),
         Assert\Length(min: 4, max: 10),
         ORM\Column(length: 10, nullable: true),
-        Serializer\Groups(['read:family', 'write:family'])
+        Serializer\Groups(['read:family', 'write:family', 'read:product-family', 'read:component-family'])
     ]
-    private ?string $customsCode = null;
+    protected ?string $customsCode = null;
 
     #[Pure]
     public function __construct() {
@@ -55,8 +57,23 @@ abstract class Family extends Entity implements FileEntity {
         return $this->children;
     }
 
-    final public function getCustomsCode(): ?string {
+    public function getCustomsCode(): ?string {
         return $this->customsCode;
+    }
+
+    #[
+        ApiProperty(description: 'Nom complet', example: 'Faisceaux / Faisceaux 1'),
+        Serializer\Groups(['read:family', 'read:product-family', 'read:component-family'])
+    ]
+    final public function getFullName(): ?string {
+        if (empty($this->parent)) {
+            return $this->name;
+        }
+        $parent = $this->parent->getFullName();
+        if (empty($parent) && empty($this->name)) {
+            return null;
+        }
+        return "$parent/".($this->name ?? 'null');
     }
 
     final public function getName(): ?string {
@@ -96,5 +113,15 @@ abstract class Family extends Entity implements FileEntity {
     final public function setParent(?self $parent): self {
         $this->parent = $parent;
         return $this;
+    }
+    
+    public function getFilePath(): ?string
+    {
+        return $this->filePath;
+    }
+
+    public function setFilePath(?string $filePath): void
+    {
+        $this->filePath = $filePath;
     }
 }

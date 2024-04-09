@@ -1,0 +1,157 @@
+<script setup>
+    import {onMounted, ref} from 'vue'
+    import generateProduct from '../../../../../stores/project/product/product'
+    import {useProductStore} from '../../../../../stores/project/product/products'
+    import {useRoute} from 'vue-router'
+
+    const route = useRoute()
+    const idProduct = Number(route.params.id_product)
+    const fetchProductStore = useProductStore()
+    const projectFields = [
+        {label: 'Date Fin', name: 'getEndOfLife', type: 'date'},
+        {label: 'maxProto', name: 'maxProto', measure: {code: 'U', value: 'valeur'}}
+    ]
+    const localData = ref({})
+    onMounted(() => {
+        localData.value = fetchProductStore.product
+    })
+    // console.warn(localData.value)
+    async function updateProject() {
+        // console.log(localData.value)
+        const data = {
+            endOfLife: localData.value.endOfLife,
+            maxProto: {
+                code: localData.value.maxProto.code,
+                value: localData.value.maxProto.value
+            }
+        }
+        const item = generateProduct(localData.value)
+        await item.updateProject(data)
+        await fetchProductStore.fetchOne(idProduct)
+    }
+    function updateLocalData(item) {
+        // console.warn(item)
+        localData.value = item
+    }
+</script>
+
+<template>
+    <div>
+        <fieldset class="bg-light m-3 scheduler-border text-info" name="prix" disabled>
+            <legend data-v-c8d9e039="" class="scheduler-border">
+                Champs calculés
+            </legend>
+            <div class="mb-3 row">
+                <label
+                    class="col-form-label col-md-3 col-xs-12"
+                    for="manager-transfertPriceSupplies">
+                    Prix Transfer Fournisseur
+                </label>
+                <div class="col">
+                    <div id="manager-transfertPriceSupplies" class="input-group">
+                        <input
+                            id="manager-transfertPriceSupplies-value"
+                            autocomplete="off"
+                            class="form-control form-control-sm"
+                            form="manager"
+                            name="transfertPriceSupplies-value"
+                            :value="fetchProductStore.product.transfertPriceSupplies.value"
+                            type="text"/>
+                        <input
+                            id="manager-transfertPriceSupplies-code"
+                            autocomplete="off"
+                            class="form-control form-control-sm"
+                            form="manager"
+                            name="transfertPriceSupplies-code"
+                            :value="fetchProductStore.product.transfertPriceSupplies.code"
+                            type="text"/>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-md-3 col-xs-12" for="manager-transfertPriceWork">
+                    Prix Transfer Work
+                </label>
+                <div class="col">
+                    <div id="manager-transfertPriceWork" class="input-group">
+                        <input
+                            id="manager-transfertPriceWork-value"
+                            autocomplete="off"
+                            class="form-control form-control-sm"
+                            form="manager"
+                            name="transfertPriceWork-value"
+                            :value="fetchProductStore.product.transfertPriceWork.value"
+                            type="text"/>
+                        <input
+                            id="manager-transfertPriceWork-code"
+                            autocomplete="off"
+                            class="form-control form-control-sm"
+                            form="manager"
+                            name="transfertPriceWork-code"
+                            :value="fetchProductStore.product.transfertPriceWork.code"
+                            type="text"/>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-md-3 col-xs-12" for="manager-priceWithoutCopper">
+                    Prix Sans Cuivre
+                </label>
+                <div class="col">
+                    <div id="manager-priceWithoutCopper" class="input-group">
+                        <input
+                            id="manager-priceWithoutCopper-value"
+                            autocomplete="off"
+                            class="form-control form-control-sm"
+                            form="manager"
+                            name="priceWithoutCopper-value"
+                            :value="fetchProductStore.product.priceWithoutCopper.value"
+                            type="text"/>
+                        <input
+                            id="manager-priceWithoutCopper-code"
+                            autocomplete="off"
+                            class="form-control form-control-sm"
+                            form="manager"
+                            name="priceWithoutCopper-code"
+                            :value="fetchProductStore.product.priceWithoutCopper.code"
+                            type="text"/>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label
+                    class="col-form-label col-md-3 col-xs-12"
+                    for="manager-price">
+                    Prix
+                </label>
+                <div class="col">
+                    <div id="manager-price" class="input-group">
+                        <input
+                            id="manager-price-value"
+                            autocomplete="off"
+                            class="form-control form-control-sm"
+                            form="manager"
+                            name="price-value"
+                            :value="fetchProductStore.product.price.value"
+                            type="text"/>
+                        <input
+                            id="manager-price-code"
+                            autocomplete="off"
+                            class="form-control form-control-sm"
+                            form="manager"
+                            name="price-code"
+                            :value="fetchProductStore.product.price.code"
+                            type="text"/>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <AppCardShow
+            id="addProject"
+            :fields="projectFields"
+            :component-attribute="localData"
+            @update="updateProject"
+            @update:model-value="updateLocalData"/>
+    </div>
+</template>
+

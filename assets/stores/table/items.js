@@ -1,4 +1,4 @@
-import Api from '../../Api'
+import api from '../../api'
 import {defineStore} from 'pinia'
 import generateItem from './item'
 
@@ -17,39 +17,35 @@ export default function generateItems(iriType) {
         actions: {
             async create(fields, data, url = null) {
                 this.reset()
-                const response = await new Api(fields).fetch(url ?? this.iri, 'POST', data)
-                if (response.status === 422)
-                    throw response.content.violations
-                this.items.push(generateItem(this.iriType, response.content, this))
+                const response = await api(fields).fetchOne(url ?? this.iri, 'POST', data)
+                this.items.push(generateItem(this.iriType, response, this))
             },
             dispose() {
                 this.reset()
                 this.$dispose()
             },
-            async fetch(url = null) {
+            async fetchOne(url = null) {
                 this.resetItems()
-                const response = await new Api().fetch(url ?? this.iri, 'GET', this.fetchBody)
-                if (response.status === 200) {
-                    const view = response.content['hydra:view']
-                    this.first = extractPage(view, 'first')
-                    this.last = extractPage(view, 'last')
-                    this.next = extractPage(view, 'next')
-                    this.prev = extractPage(view, 'prev')
-                    this.total = response.content['hydra:totalItems']
-                    for (const item of response.content['hydra:member'])
-                        this.items.push(generateItem(this.iriType, item, this))
-                }
+                const response = await api.fetchOne(url ?? this.iri, 'GET', this.fetchBody)
+                const view = response['hydra:view']
+                this.first = extractPage(view, 'first')
+                this.last = extractPage(view, 'last')
+                this.next = extractPage(view, 'next')
+                this.prev = extractPage(view, 'prev')
+                this.total = response['hydra:totalItems']
+                for (const item of response['hydra:member'])
+                    this.items.push(generateItem(this.iriType, item, this))
                 if (this.current > this.pages) {
                     this.current = this.pages
                     if (this.current > 0)
-                        await this.fetch(url)
+                        await this.fetchOne(url)
                     else
                         this.current = 1
                 }
             },
             async goTo(index, url = null) {
                 this.current = index
-                await this.fetch(url)
+                await this.fetchOne(url)
             },
             remove(removed) {
                 this.items = this.items.filter(item => item['@id'] !== removed)
@@ -68,7 +64,7 @@ export default function generateItems(iriType) {
             },
             async resetSearch() {
                 this.search = {}
-                await this.fetch()
+                await this.fetchOne()
             },
             async sort(field) {
                 if (this.sorted === field.name)
@@ -78,7 +74,7 @@ export default function generateItems(iriType) {
                     this.sorted = field.name
                     this.sortName = field.sortName ?? field.name
                 }
-                await this.fetch()
+                await this.fetchOne()
             }
         },
         getters: {
