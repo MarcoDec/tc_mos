@@ -27,6 +27,7 @@
     const of = ref({})
     const products = ref({})
     const nbProduit = ref(0)
+    const manufacturer = ref('')
     const steps = ref([
         {id: 0, label: 'Choix GP/Antenne'},
         {id: 1, label: 'Opérateur'},
@@ -64,6 +65,7 @@
     }
     function getOf(ofData) {
         of.value = ofData
+        manufacturer.value = ofData.data.customer.id_soc_gest_customer === 2 ? 'MG2C' : 'TCONCEPT'
         currentStep.value += 1
     }
     function getProducts(productsData) {
@@ -256,31 +258,39 @@
         </div>
         <div class="carton-label container-fluid">
             <div class="row">
-                <div class="col-6">
+                <div class="col-12">
+                    <ul>
+                        <AppItemCarte label="BDD :" :value="originGP?'GP':'Antenne'"/>
+                    </ul>
+                </div>
+                <div class="col-5">
                     <ul>
                         <AppItemCarte
-                            label="Famille :">
+                            label="Famille">
                             <Fa
                                 v-if="modeleEtiquette.templateFamily === 'carton'"
                                 :brand="false"
                                 class="color-carton font-size-15px"
                                 icon="box-open"/>
+                            <span v-else>{{ modeleEtiquette.templateFamily }}</span>
                         </AppItemCarte>
-                        <AppItemCarte label="Format :" :value="modeleEtiquette.labelKind"/>
-                        <AppItemCarte label="Modèle :" :value="modeleEtiquette.labelName"/>
+                        <AppItemCarte label="Exp." :value="manufacturer"/>
+                        <AppItemCarte label="Matr." :value="productRefAndIndice"/>
+                        <AppItemCarte label="OF" :value="ofNumberAndIndice"/>
                     </ul>
                 </div>
-                <div class="col-6">
+                <div class="col-7">
                     <ul>
+                        <AppItemCarte label="Format :" :value="modeleEtiquette.labelKind"/>
+                        <AppItemCarte label="Dest. :" :value="of.data ? of.data.customerName : ''"/>
                         <AppItemCarte label="Opérateur :" :value="operateur.name"/>
-                        <AppItemCarte label="OF :" :value="ofNumberAndIndice"/>
                         <AppItemCarte label="Produit :" :value="productRefAndIndice"/>
                     </ul>
                 </div>
                 <div v-if="currentStep > 2" class="col-12">
-                    <AppItemCarte label="Nb Produit scannés :">
-                        <strong class="font-50px">{{ nbProduit }}/{{ of.data.productConditionnement }}</strong>
-                    </AppItemCarte>
+                    <span class="text-center font-50px fw-bold d-block">
+                        {{ nbProduit }}/{{ of.data.productConditionnement }}
+                    </span>
                 </div>
             </div>
         </div>
