@@ -17,14 +17,12 @@
             if (json === 'null') {
                 of.value = {status: false}
                 return false
-            } else {
-                of.value = {status: true, data: json}
-                return true
             }
-        } else {
-            console.error(`HTTP-Error: ${response.status}`)
-            return false
+            of.value = {status: true, data: json}
+            return true
         }
+        console.error(`HTTP-Error: ${response.status}`)
+        return false
     }
     async function getProduct(originGP, idProduct) {
         const baseUrl = originGP ? 'http://gp.tconcept.local/dist/api/product.php' : 'http://antenne.tconcept.local/dist/api/product.php'
@@ -34,23 +32,21 @@
             if (json === 'null') {
                 of.value = {status: false}
                 return false
-            } else {
-                of.value.data = {
-                    ...of.value.data,
-                    product: json,
-                    productRef: json.ref,
-                    productIndice: json.indice,
-                    productDescription: json.designation,
-                    productConditionnement: json.conditionnement,
-                    productLabelLogo: json.labelLogo,
-                    customerId: json.id_customer
-                }
-                return true
             }
-        } else {
-            console.error(`HTTP-Error: ${response.status}`)
-            return false
+            of.value.data = {
+                ...of.value.data,
+                product: json,
+                productRef: json.ref,
+                productIndice: json.indice,
+                productDescription: json.designation,
+                productConditionnement: json.conditionnement,
+                productLabelLogo: json.labelLogo,
+                customerId: json.id_customer
+            }
+            return true
         }
+        console.error(`HTTP-Error: ${response.status}`)
+        return false
     }
 
     async function getCustomer(originGP, idCustomer) {
@@ -61,19 +57,17 @@
             if (json === 'null') {
                 of.value = {status: false}
                 return false
-            } else {
-                of.value.data = {
-                    ...of.value.data,
-                    customer: json,
-                    customerName: json.nom
-                }
-                console.log('customer data chargées', of.value.data.customer)
-                return true
             }
-        } else {
-            console.error(`HTTP-Error: ${response.status}`)
-            return false
+            of.value.data = {
+                ...of.value.data,
+                customer: json,
+                customerName: json.nom
+            }
+            console.log('customer data chargées', of.value.data.customer)
+            return true
         }
+        console.error(`HTTP-Error: ${response.status}`)
+        return false
     }
 
     async function getOf() {
@@ -92,7 +86,7 @@
         const resultOFOK = await getOrdreDeFabrication(props.originGP, ofNumber, ofIndice)
         let error = false
         // On vérifie que l'OF récupéré est valide
-        if (resultOFOK && of.value.data.statut === "1" || ['1', '2', '5', '6', '7'].indexOf(of.value.data.id_orderfabricationstatus) > 0) {
+        if (resultOFOK && of.value.data.statut === '1' || ['1', '2', '5', '6', '7'].indexOf(of.value.data.id_orderfabricationstatus) > 0) {
             //erreur
             error = true
             console.error('L\'OF n\'est pas valide', of.value.data)
@@ -107,21 +101,18 @@
                 error = true
                 console.error('Il n\'y a pas de produit lié à l\'OF')
                 return false
-            } else {
-                // Si resultProductOK Ok alors on charge les données client
-                const resultCustomerOK = await getCustomer(props.originGP, of.value.data.customerId)
-                if (!resultCustomerOK) {
-                    //erreur
-                    error = true
-                    console.error('Il n\'y a pas de client lié au produit')
-                    return false
-                } else {
-                    // Si resultCustomerOK Ok alors on retourne true
-                    return true
-                }
             }
-
+            // Si resultProductOK Ok alors on charge les données client
+            const resultCustomerOK = await getCustomer(props.originGP, of.value.data.customerId)
+            if (!resultCustomerOK) {
+                //erreur
+                error = true
+                console.error('Il n\'y a pas de client lié au produit')
+                return false
+            }
+            return true
         }
+        return false
     }
     async function validate() {
         const result = await getOf()

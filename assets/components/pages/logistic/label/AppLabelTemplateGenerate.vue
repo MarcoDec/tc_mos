@@ -260,7 +260,7 @@
             <div class="row">
                 <div class="col-12">
                     <ul>
-                        <AppItemCarte label="BDD :" :value="originGP?'GP':'Antenne'"/>
+                        <AppItemCarte label="BDD :" :value="originGP ? 'GP' : 'Antenne'"/>
                     </ul>
                 </div>
                 <div class="col-5">

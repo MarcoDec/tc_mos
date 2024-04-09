@@ -162,7 +162,7 @@
         v-for="(tcTemplate, index) in labeltemplatesTC"
         :key="index"
         class="icon-with-text"
-        :label="''"
+        label=""
         :show-edit="false"
         :text="tcTemplate.labelName"
         icon="box"
