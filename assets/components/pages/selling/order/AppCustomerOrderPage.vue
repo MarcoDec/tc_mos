@@ -171,6 +171,7 @@
                     :pag="storeCustomerOrderList.pagination"
                     :previous-page="storeCustomerOrderList.previousPage"
                     :user="userRole"
+                    top-offset="48px"
                     form="formCustomerOrderCardableTable"
                     @deleted="deleted"
                     @get-page="getPage"

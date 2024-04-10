@@ -151,6 +151,7 @@
                     :pag="storeCustomersList.pagination"
                     :previous-page="storeCustomersList.previousPage"
                     :user="roleuser"
+                    top-offset="48px"
                     form="formCustomerCardableTable"
                     @deleted="deleted"
                     @get-page="getPage"

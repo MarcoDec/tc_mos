@@ -229,6 +229,7 @@
                     :pag="storeProductsList.pagination"
                     :previous-page="storeProductsList.previousPage"
                     :user="roleuser"
+                    top-offset="48px"
                     form="formProductCardableTable"
                     @cancel-search="cancelSearch"
                     @deleted="deleted"
