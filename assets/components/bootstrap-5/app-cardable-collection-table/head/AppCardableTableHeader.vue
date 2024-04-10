@@ -27,5 +27,27 @@
             </th>
             <AppCardableTableHeaderfieleds :fields="fields" @trier-alphabet="trierAlphabet"/>
         </tr>
+        <slot name="form"></slot>
     </thead>
 </template>
+
+<style scoped>
+    thead::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-color: white;
+        background-color: white; /* Ou toute autre couleur de fond souhaitée */
+        z-index: -1;
+    }
+    thead {
+        background-color: rgba(255, 255, 255, 1);
+        box-shadow: 0 2px 2px -1px white;
+        position: sticky;
+        top: 0;
+        border-color: white;
+    }
+</style>

@@ -60,9 +60,11 @@
             <template #title>
                 <slot name="title"/>
             </template>
+            <template #form>
+                <AppCardableTableBodyHeader :form="form" :fields="displayedFields" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch" @update:model-value="onUpdateSearchModelValue"/>
+            </template>
         </AppCardableTableHeader>
         <tbody>
-            <AppCardableTableBodyHeader :form="form" :fields="displayedFields" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch" @update:model-value="onUpdateSearchModelValue"/>
             <tr class="bg-dark">
                 <td colspan="20"/>
             </tr>
