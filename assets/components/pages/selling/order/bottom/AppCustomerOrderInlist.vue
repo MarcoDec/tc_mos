@@ -44,11 +44,6 @@
             const value = op.value
             return {text, value}
         }))
-    const stateOptions = [
-        {text: 'partially_delivered', value: 'partially_delivered'},
-        {text: 'delivered', value: 'delivered'},
-        {text: 'agreed', value: 'agreed'}
-    ]
     const currentPlaceOptions = [
         {text: 'rejected', value: 'rejected'},
         {text: 'asked', value: 'asked'},
@@ -66,12 +61,6 @@
         {text: 'partially_paid', value: 'partially_paid'},
         {text: 'paid', value: 'paid'}
     ]
-    const kindOptions = [
-        {text: 'El', value: 'El'},
-        {text: 'Prototype', value: 'Prototype'},
-        {text: 'Série', value: 'Série'},
-        {text: 'Pièce de rechange', value: 'Pièce de rechange'}
-    ]
     const storeCustomerorder = useCustomerOrderStore()
     await storeCustomerorder.fetchById(id)
     const customer = computed(() => storeCustomerorder.customer)
@@ -80,13 +69,6 @@
     }
     const billingAddressesCustomer = {
         AdresseFacturation: storeCustomerorder.customerOrder.billedTo
-    }
-    const generalityCustomer = {
-        company: storeCustomerorder.customerOrder.company['@id'],
-        customer: storeCustomerorder.customerOrder.customer,
-        kind: storeCustomerorder.customerOrder.kind,
-        notes: storeCustomerorder.customerOrder.notes,
-        ref: storeCustomerorder.customerOrder.ref
     }
 
     const storeCustomerAddress = useCustomerAddressStore()
@@ -100,7 +82,6 @@
 
     const storeCustomers = useCustomersStore()
     await storeCustomers.fetch()
-    const customerOption = computed(() => storeCustomers.customersOption)
     const BLfields = [
         {
             label: 'Adresse de livraison',
@@ -301,17 +282,11 @@
     await storeCustomerOrderItems.fetchAll(customerOrderCriteria.getFetchCriteria)
 
     customerOrderCriteria.addFilter('company', currentCompany)
-    const customerOrderItems = computed(() => storeCustomerOrderItems.itemsCustomerOrders)
 
     async function refreshTableCustomerOrders() {
         await storeCustomerOrderItems.fetchAll(customerOrderCriteria.getFetchCriteria)
     }
     await refreshTableCustomerOrders()
-
-    async function deletedCustomerOrders(idRemove) {
-        await storeCustomerOrderItems.remove(idRemove)
-        await refreshTableCustomerOrders()
-    }
 
     //ofCustomerOrderTable
     const storeOfCustomerOrderItems = useOfCustomerOrderItemsStore()

@@ -10,7 +10,7 @@
     import {useRoute, useRouter} from 'vue-router'
     import {computed, onBeforeMount, ref} from 'vue'
     import useOptions from '../../../../stores/option/options'
-    import AppCustomerOrderInlist from "./bottom/AppCustomerOrderInlist.vue";
+    import AppCustomerOrderInlist from './bottom/AppCustomerOrderInlist.vue'
 
     const route = useRoute()
     const router = useRouter()

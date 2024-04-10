@@ -1,11 +1,10 @@
 <script setup>
-    import AppSuspense from "../../../../AppSuspense.vue";
-    import {useCustomerOrderItemsStore} from "../../../../../stores/customer/customerOrderItems";
-    import useFetchCriteria from "../../../../../stores/fetch-criteria/fetchCriteria";
-    import useOptions from "../../../../../stores/option/options";
-    import {computed, ref} from "vue";
-    import useUser from "../../../../../stores/security";
-
+    import AppSuspense from '../../../../AppSuspense.vue'
+    import {useCustomerOrderItemsStore} from '../../../../../stores/customer/customerOrderItems'
+    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
+    import useOptions from '../../../../../stores/option/options'
+    import {computed, ref} from 'vue'
+    import useUser from '../../../../../stores/security'
 
     const fetchUser = useUser()
     const fetchUnitOptions = useOptions('units')
