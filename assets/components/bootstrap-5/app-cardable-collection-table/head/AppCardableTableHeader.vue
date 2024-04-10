@@ -5,7 +5,8 @@
 
     defineProps({
         fields: {required: true, type: Array},
-        title: {default: null, required: false, type: String}
+        title: {default: null, required: false, type: String},
+        topOffset: {default: '0px', type: String}
     })
     function trierAlphabet(payload) {
         emit('trierAlphabet', payload)
@@ -13,7 +14,7 @@
 </script>
 
 <template>
-    <thead class="table-dark">
+    <thead class="table-dark" :style="{ position: 'sticky', top: topOffset }">
         <tr v-if="title !== null">
             <td class="bg-secondary text-uppercase text-xl-center" :colspan="fields.length + 1">
                 <slot name="title">
@@ -46,8 +47,6 @@
     thead {
         background-color: rgba(255, 255, 255, 1);
         box-shadow: 0 2px 2px -1px white;
-        position: sticky;
-        top: 0;
         border-color: white;
     }
 </style>

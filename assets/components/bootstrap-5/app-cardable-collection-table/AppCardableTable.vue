@@ -18,7 +18,8 @@
         user: {required: true, type: String},
         shouldDelete: {required: false, default: true},
         shouldSee: {required: false, default: true},
-        title: {default: null, required: false, type: String}
+        title: {default: null, required: false, type: String},
+        topOffset: {default: '0px', type: String}
     })
     //Conversion des champs String en entier
     const pageCurrent = computed(() => parseInt(props.currentPage))
@@ -56,7 +57,7 @@
 
 <template>
     <table class="table table-bordered table-hover table-striped">
-        <AppCardableTableHeader :fields="displayedFields" :title="title" @trier-alphabet="trierAlphabet">
+        <AppCardableTableHeader :fields="displayedFields" :title="title" :top-offset="topOffset" @trier-alphabet="trierAlphabet">
             <template #title>
                 <slot name="title"/>
             </template>
@@ -65,9 +66,6 @@
             </template>
         </AppCardableTableHeader>
         <tbody>
-            <tr class="bg-dark">
-                <td colspan="20"/>
-            </tr>
             <AppCardableTableBodyItem :items="items" :fields="displayedFields" :current-page="currentPage" :pagine="pag" :should-delete="shouldDelete" :should-see="shouldSee" @update="update" @deleted="deleted"/>
         </tbody>
     </table>
