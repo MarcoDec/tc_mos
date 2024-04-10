@@ -165,12 +165,16 @@
             :pag="storeCustomerOrderItems.pagination"
             :previous-page="storeCustomerOrderItems.previousPage"
             :user="roleuser"
+            title=""
             form="formCustomerOrdersTable"
-            title="Items de la commande"
             @deleted="deletedCustomerOrderItem"
             @get-page="getPageCustomerOrders"
             @trier-alphabet="trierAlphabetCustomerOrders"
             @search="searchCustomerOrders"
-            @cancel-search="cancelSearchCustomerOrders"/>
+            @cancel-search="cancelSearchCustomerOrders">
+            <template #title>
+                Items de la commande <button class="btn btn-success btn-float-right">Ajouter</button>
+            </template>
+        </AppCardableTable>
     </AppSuspense>
 </template>
