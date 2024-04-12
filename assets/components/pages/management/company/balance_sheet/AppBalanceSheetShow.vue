@@ -10,6 +10,7 @@
     import AppTabs from '../../../../tab/AppTabs.vue'
     import AppBalanceSheetTabAchats from './AppBalanceSheetTabAchats.vue'
     import AppBalanceSheetTabVentes from './AppBalanceSheetTabVentes.vue'
+    import useOptions from '../../../../../stores/option/options'
     //region Récupération des données de route
     const route = useRoute()
     const idBalanceSheet = Number(route.params.id)
@@ -46,13 +47,52 @@
     })
     //endregion
     //region Définition des champs de formulaires et tableaux
+    const fetchOptionsCompany = useOptions('companies')
+    const fetchOptionsCurrency = useOptions('currencies')
+
+    const optionsCompany = ref({})
+    const optionsCurrency = ref({})
+    onBeforeMount(() => {
+        fetchOptionsCompany.fetchOp().then(() => {
+            optionsCompany.value = fetchOptionsCompany.options.map(op => {
+                const text = op.text
+                const value = op.value
+                return {text, value}
+            })
+        })
+        fetchOptionsCurrency.fetchOp().then(() => {
+            optionsCurrency.value = fetchOptionsCurrency.options.map(op => {
+                const text = op.text
+                const value = op.value
+                return {text, value}
+            })
+        })
+    })
     const router = useRouter()
-    const formFields = [
+    const formFields = computed(() => [
         {label: 'Mois', name: 'month', type: 'number', step: 1},
         {label: 'Année', name: 'year', type: 'number', step: 1},
-        {label: 'Company', name: 'company', options: {base: 'companies'}, type: 'select'},
-        {label: 'Devise', name: 'currency', options: {base: 'currencies'}, type: 'select'}
-    ]
+        {
+            label: 'Company',
+            name: 'company',
+            options: {
+                label: value =>
+                    optionsCompany.value.find(option => option.type === value)?.text ?? null,
+                options: optionsCompany.value
+            },
+            type: 'select'
+        },
+        {
+            label: 'Devise',
+            name: 'currency',
+            options: {
+                label: value =>
+                    optionsCurrency.value.find(option => option.type === value)?.text ?? null,
+                options: optionsCurrency.value
+            },
+            type: 'select'
+        }
+    ])
     //endregion
     //region Définition des variables et fonctions de formulaire
     const formKey = ref(0)
@@ -136,7 +176,7 @@
                 </div>
             </div>
         </div>
-        <AppTabs id="main_tabs" :icon-mode="true">
+        <AppTabs id="main_tabs">
             <AppTab
                 id="achats_tab"
                 active
