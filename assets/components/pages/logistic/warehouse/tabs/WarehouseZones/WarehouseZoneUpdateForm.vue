@@ -29,7 +29,7 @@
         localFormData.value = {
             name: currentZone.value.name
         }
-        console.log('currentZone name', currentZone.value.name)
+        //console.log('currentZone name', currentZone.value.name)
     })
     //region initialisation des champs pour le formulaire d'ajout d'un stock
     //region établissement de la liste des champs en computed

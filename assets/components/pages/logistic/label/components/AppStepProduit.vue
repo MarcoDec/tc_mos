@@ -7,7 +7,7 @@
         of: {default: () => ({}), required: true, type: Object},
         operateur: {default: () => ({}), required: true, type: Object}
     })
-    console.log('AppStepProduit', props)
+    //console.log('AppStepProduit', props)
     const checkResult = ref({
         class: '',
         text: '',
@@ -66,7 +66,7 @@
                 logoType: parseInt(props.of.data.productLabelLogo),
                 date: new Date().toISOString()
             }
-            console.log('dataTosend', dataTosend, props.modeleEtiquette)
+            //console.log('dataTosend', dataTosend, props.modeleEtiquette)
             const response = api('/api/label-cartons', 'post', dataTosend)
             // et récupérer le code ZPL
             response.then(data => {

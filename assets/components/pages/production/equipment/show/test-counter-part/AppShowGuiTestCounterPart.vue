@@ -30,7 +30,7 @@
 
     onBeforeMount(() => {
         const promises = []
-        console.log('onBeforeMount')
+        //console.log('onBeforeMount')
         promises.push(fetchUnits.fetchOp())
         promises.push(useFetchCounterPartStore.fetchOne(idEngine))
         Promise.all(promises).then(() => {

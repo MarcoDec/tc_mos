@@ -63,7 +63,7 @@
                 customer: json,
                 customerName: json.nom
             }
-            console.log('customer data chargées', of.value.data.customer)
+            //console.log('customer data chargées', of.value.data.customer)
             return true
         }
         console.error(`HTTP-Error: ${response.status}`)

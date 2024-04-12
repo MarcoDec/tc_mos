@@ -31,7 +31,7 @@
     }
 
     const screenDPI = calculateDPI()
-    console.log('DPI de l\'écran :', screenDPI)
+    //console.log('DPI de l\'écran :', screenDPI)
     //imprimantes locales : 203dpi => 8dpmm
     const dpiImprimante = 203
     const ratio = dpiImprimante / screenDPI
