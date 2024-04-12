@@ -7,6 +7,7 @@
     import useUser from '../../../../../stores/security'
 
     const fetchUser = useUser()
+    const currentCompany = fetchUser.company
     const fetchUnitOptions = useOptions('units')
     const customerOrderItemsCriteria = useFetchCriteria('customer-order-items-criteria')
 
@@ -31,7 +32,6 @@
 
     const fieldsCommande = [
         {label: 'Produit', name: 'product', type: 'multiselect-fetch', api: '/api/products', filteredProperty: 'code', max: 1},
-        {label: 'Réf', name: 'ref', trie: true, type: 'text'},
         {
             label: 'Quantité souhaitée',
             name: 'requestedQuantity',
@@ -56,9 +56,9 @@
                 }
             },
             trie: true,
-            type: 'measure'
+            type: 'measure',
+            width: 150
         },
-        {label: 'date de livraison souhaitée', name: 'requestedDate', trie: true, type: 'date'},
         {
             label: 'Quantité confirmée',
             name: 'confirmedQuantity',
@@ -83,9 +83,11 @@
                 }
             },
             trie: true,
-            type: 'measure'
+            type: 'measure',
+            width: 150
         },
-        {label: 'Date de livraison confirmée', name: 'confirmedDate', trie: true, type: 'date'},
+        {label: 'date de livraison souhaitée', name: 'requestedDate', trie: true, type: 'date', width: 80},
+        {label: 'Date de livraison confirmée', name: 'confirmedDate', trie: true, type: 'date', width: 80},
         {
             label: 'Etat',
             name: 'state',
@@ -97,6 +99,7 @@
             trie: true,
             type: 'select'
         },
+        {label: 'Référence item de commande', name: 'ref', trie: true, type: 'text'},
         {label: 'Description', name: 'notes', trie: true, type: 'text'}
     ]
     async function refreshTableCustomerOrders() {
@@ -112,8 +115,10 @@
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     }
     async function searchCustomerOrders(inputValues) {
+        console.log('inputValues', inputValues)
         customerOrderItemsCriteria.resetAllFilter()
         customerOrderItemsCriteria.addFilter('company', currentCompany)
+        if (inputValues.product) customerOrderItemsCriteria.addFilter('item', inputValues.product)
         if (inputValues.ref) customerOrderItemsCriteria.addFilter('ref', inputValues.ref)
         if (inputValues.requestedQuantity) customerOrderItemsCriteria.addFilter('requestedQuantity.value', inputValues.requestedQuantity.value)
         if (inputValues.requestedQuantity) {
