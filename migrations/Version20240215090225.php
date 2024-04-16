@@ -42,7 +42,10 @@ final class Version20240215090225 extends AbstractMigration implements Container
         }
 
         $destinationFolder = __DIR__ . '/../public/uploads/hr-employee-employee/';
-
+        //Si le dossier cible n'existe pas on le crée
+        if (!file_exists($destinationFolder)) {
+            mkdir($destinationFolder, 0777, true);
+        }
         foreach ($data as $item) {
             if ($item['id_employee'] !== null && $item['is_pic'] == '1') {
                 $oldId = $item['id_employee'];
