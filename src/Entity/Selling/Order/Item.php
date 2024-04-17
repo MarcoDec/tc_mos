@@ -20,6 +20,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Entity\Embeddable\Measure;
 
 
 /**
@@ -138,11 +139,19 @@ abstract class Item extends BaseItem {
     ]
     private Collection $expeditions;
 
+    #[
+        ApiProperty(description: 'Quantité a envoyé', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ORM\Embedded,
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    protected Measure $quantityToSent;
+
     public function __construct() {
         parent::__construct();
         $this->embBlocker = new Closer();
         $this->embState = new State();
         $this->expeditions = new ArrayCollection();
+        $this->quantityToSent = new Measure();
     }
     /*, 'read:expedition'*/
     #[
@@ -167,6 +176,10 @@ abstract class Item extends BaseItem {
 
     final public function getExpeditions(): Collection {
         return $this->expeditions;
+    }
+
+    final public function getQuantityToSent(): Measure {
+        return $this->quantityToSent;
     }
 
     #[
@@ -226,6 +239,14 @@ abstract class Item extends BaseItem {
         foreach ($expeditions as $expedition) {
             $expedition->setItem($this);
         }
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setQuantityToSent(Measure $quantityToSent): self {
+        $this->quantityToSent = $quantityToSent;
         return $this;
     }
 
