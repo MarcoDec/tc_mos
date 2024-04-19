@@ -27,7 +27,7 @@ class ManufacturingScheduleController
     * @throws \ReflectionException
     */
     public function __invoke(): JsonResponse{
-        dump('entrer');
+
         $products = $this->em->getRepository(Product::class)->findAll();
 
         $data = [];
@@ -52,7 +52,7 @@ class ManufacturingScheduleController
             $forecastVolumeValue = $forecastVolume->getValue();
             $threePercentValue = $forecastVolumeValue * 0.03;
             
-            foreach ($SellingItems as $SellingItem) {
+        foreach ($SellingItems as $SellingItem) {
 
                 $date = $SellingItem->getConfirmedDate();
                 $confirmedQuantity = $SellingItem->getConfirmedQuantity()->getValue();
@@ -60,23 +60,38 @@ class ManufacturingScheduleController
                 $weekNumber = $date->format('W');
                 $year = $date->format('Y');
                 $YearWeek = "$year$weekNumber";
-                if ($this->is_semaine_passee($date) === true) {
+                $embBlocker = $SellingItem->getEmbBlocker()->getState();
+                $embState = $SellingItem->getEmbState()->getState();
 
+            if($embBlocker === 'enabled' && !in_array($embState, ['delivered','billed','paid'])){
+
+                if ($this->is_semaine_passee($date) === true) {
                     $date_week = "RETARD" ;
-                   if (!isset($lateProductQuantities[$productId])) {
+                   if (!isset($confirmedProductQuantities[$productId])) {
+                        $confirmedProductQuantities[$productId] = 0;
+                    }
+                    $confirmedProductQuantities[$productId] += $confirmedQuantity;
+                    
+                   if (!isset($sentProductQuantities[$productId])) {
+                    $sentProductQuantities[$productId] = 0;
+                    }
+                    $sentProductQuantities[$productId] += $QuantitySent;
+
+                    if (!isset($lateProductQuantities[$productId])) {
                         $lateProductQuantities[$productId] = 0;
                     }
-                    $lateProductQuantities[$productId] += $confirmedQuantity;
+                    $lateProductQuantities[$productId] = $confirmedProductQuantities[$productId] - $sentProductQuantities[$productId];
                 }   
                 if($this->is_semaine_passee($date) === false) {
-                  $date_week = "PAS DE RETARD" ; 
 
-                 if (!isset($productsByYearWeek[$YearWeek])) {
-                    $productsByYearWeek[$YearWeek] = [];
-                }
-                $productsByYearWeek[$YearWeek][$productId] = ($productsByYearWeek[$YearWeek][$productId] ?? 0) + $confirmedQuantity;
-                }      
-            }
+                    $date_week = "PAS DE RETARD" ; 
+                    if (!isset($productsByYearWeek[$YearWeek])) {
+                        $productsByYearWeek[$YearWeek] = [];
+                    }
+                    $productsByYearWeek[$YearWeek][$productId] = ($productsByYearWeek[$YearWeek][$productId] ?? 0) + $confirmedQuantity;
+                }    
+            }  
+        }
 
             $data[] = [
                 'id' => $product->getId(),
