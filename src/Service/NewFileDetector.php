@@ -44,8 +44,8 @@ class NewFileDetector
         $newFiles = array_diff($currentFiles, $previousFiles);
         foreach ($newFiles as $newFile) {
             $output->writeln(sprintf('Nouveau fichier détecté: %s', $newFile));
-            $event = new NewFileDetectedEvent($newFile);
-            $this->dispatcher->dispatch($event);
+            //$event = new NewFileDetectedEvent($newFile);
+            //$this->dispatcher->dispatch($event);
         }
         $this->saveFileList($directory, $currentFiles);
         return $newFiles;

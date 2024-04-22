@@ -1,7 +1,9 @@
 <?php
 namespace App\Command;
 
+use App\Entity\It\Desadv;
 use App\Service\NewFileDetector;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -9,14 +11,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DetectNewFilesCommand extends Command
 {
-    private NewFileDetector $detector;
-
 //    protected static $defaultName = 'app:detect-new-files';
 
-    public function __construct(NewFileDetector $detector)
+    public function __construct(private readonly NewFileDetector $detector, private EntityManagerInterface $entityManager)
     {
         parent::__construct();
-        $this->detector = $detector;
     }
 
     protected function configure(): void
@@ -31,7 +30,7 @@ class DetectNewFilesCommand extends Command
     {
         $directories = [
             '/',
-            '/test/orders/old'//,
+            '/test/desadv'//,
 //            '/path/to/remote/directory2',
 //            '/path/to/remote/directory3',
         ];
@@ -46,7 +45,23 @@ class DetectNewFilesCommand extends Command
                 $output->writeln(sprintf('New files detected in %s: %s', $directory, implode(', ', $newFiles)));
                 // On récupère le contenu des fichiers
                 foreach ($newFiles as $newFile) {
-                    $jsonContent = $this->detector->getFileContent($directory . $newFile);
+                    $jsonContent = $this->detector->getFileContent($directory . "/" . $newFile);
+                    $jsonDecoded = json_decode($jsonContent, true);
+                    // On traite le contenu en fonction du répertoire d'origine
+                    // Si le nom du répertoire contient desadv, on traite le contenu comme un fichier DESADV
+                    if (str_contains($directory, 'desadv')) {
+                        //le traitement du fichier DESADV consiste à l'enregistrer dans la base de données
+                        $desadv = new Desadv();
+                        $desadv->setMessageDate(new \DateTime($jsonDecoded['generationDate']));
+                        $desadv->setRef($jsonDecoded['messageId']);
+                        $desadv->setJson($jsonContent);
+                        //si dans le dossier on trouve le mot test, on met le mode EDI à test
+                        $desadv->setEdiMode(str_contains($directory, 'test') ? 'test' : 'prod');
+                        $desadv->setSupplierOldId($jsonDecoded['supplierDetails']['ID']);
+                        //on enregistre le DESADV en base de données
+                        $this->entityManager->persist($desadv);
+                        $this->entityManager->flush();
+                    }
                 }
             }
         }
