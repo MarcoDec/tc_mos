@@ -9,14 +9,10 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class NewFileDetector
 {
-    private SFTPConnection $sftp;
     private bool $isLogged = false;
-    private EventDispatcherInterface $dispatcher;
 
-    public function __construct(SFTPConnection $sftp, EventDispatcherInterface $dispatcher)
+    public function __construct(private readonly SFTPConnection $sftp, private readonly EventDispatcherInterface $dispatcher)
     {
-        $this->sftp = $sftp;
-        $this->dispatcher = $dispatcher;
         $this->isLogged = false;
     }
 
