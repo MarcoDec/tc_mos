@@ -39,7 +39,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Entity\Quality\Reception\Reference\Selling\ProductReference;
-use App\Controller\Manufacturing\Schedule\ManufacturingScheduleController;
+use App\Controller\Production\Planning\Items\ProductionPlanningItemsController;
 
 #[
     ApiFilter(filterClass: DateFilter::class, properties: ['endOfLife']),
@@ -63,13 +63,13 @@ use App\Controller\Manufacturing\Schedule\ManufacturingScheduleController;
                     'summary' => 'Récupère les produits'
                 ]
             ],
-            'manufacturingSchedule' => [
+            'ProductionPlanningItems' => [
                 'method' => 'GET',
-                'path' => '/products/manufacturingSchedule',
-                'controller' => ManufacturingScheduleController::class,
+                'path' => '/products/ProductionPlanningItems',
+                'controller' => ProductionPlanningItemsController::class,
                 'read' => false, // Empêche la lecture de l'entité Product elle-même
                 'normalization_context' => [
-                    'groups' => ['manufacturingSchedule']
+                    'groups' => ['ProductionPlanningItems']
                 ]
             ],
             'post' => [

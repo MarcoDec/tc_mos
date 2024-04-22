@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Controller\Manufacturing\Schedule;
+namespace App\Controller\Production\Planning\Items;
 
 use DateTime;
 use DateTimeImmutable;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Project\Product\Product;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Logistics\Stock\ProductStock;
 use App\Entity\Selling\Order\ProductItem;
+use App\Entity\Logistics\Stock\ProductStock;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
@@ -16,7 +17,7 @@ use App\Repository\Selling\Order\ProductItemRepository;
 use App\Repository\Logistics\Stock\ProductStockRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ManufacturingScheduleController
+class ProductionPlanningItemsController
 {
     public function __construct(private EntityManagerInterface $em, private ProductRepository $productRepository, private ProductItemRepository $itemRepository, private ProductStockRepository $productStockRepository )
     {
@@ -26,7 +27,7 @@ class ManufacturingScheduleController
     * @return array
     * @throws \ReflectionException
     */
-    public function __invoke(): JsonResponse{
+    public function __invoke(): JsonResponse {
 
         $products = $this->em->getRepository(Product::class)->findAll();
 
@@ -92,43 +93,65 @@ class ManufacturingScheduleController
                 }    
             }  
         }
-
             $data[] = [
                 'id' => $product->getId(),
-                'lien'=> '',
                 'produit'=> $product->getCode(),
                 'indice' => $product->getIndex(),
                 'designation' => $product->getName(),
                 'compagnie' => $companyNames,
                 'client' => $formattedCustomerNames,
                 'stock' => $stockQuantity,
-                'temps chiffrage' => $tempsChiffrage->getValue() .'  unité  '.$tempsChiffrage->getCode(),
-                'temps atelier' => $tempsAtelier->getValue()  .'  unité  '.$tempsAtelier->getCode(),
-                'volu_previ'=> $forecastVolume->getValue(),
-                '3pc_volu_previ' => $threePercentValue,
+                'Temps Chiffrage' => [
+                    'code' => $tempsChiffrage->getCode(),
+                    'value' => $tempsChiffrage->getValue()
+                ],            
+                'temps atelier'=> [
+                    'code' =>$tempsAtelier->getCode(),
+                    'value' => $tempsAtelier->getValue()
+                ],
+                'volu_previ'=> [
+                    'code' =>$forecastVolume->getCode(),
+                    'value' => $forecastVolume->getValue()
+                ],
+                '3pc_volu_previ' => [
+                    'code' =>$forecastVolume->getCode(),
+                    'value' => $threePercentValue
+                ], 
                 'retard' => isset($lateProductQuantities[$product->getId()]) ? $lateProductQuantities[$product->getId()] : "",
-            ];
+                ];
         }
+
+        $dataItems = ['items' => $data];
 
         $allYearWeeks = array_keys($productsByYearWeek);
-
-        foreach ($data as &$productData) {
+        foreach ($dataItems['items'] as &$productData) {
             $productId = $productData['id'];
-            $productQuantities = [];
-        
-            // Parcourir tous les YearWeek
-            foreach ($allYearWeeks as $YearWeek) {
-                // Vérifier si le produit a une quantité pour ce YearWeek
-                if (isset($productsByYearWeek[$YearWeek][$productId])) {
-                    $productQuantities[$YearWeek] = $productsByYearWeek[$YearWeek][$productId];
+            
+            // Ajouter les quantités par semaine et par année directement dans $productData
+            foreach ($productsByYearWeek as $YearWeek => $productQuantities) {
+                if (isset($productQuantities[$productId])) {
+                    $productData[$YearWeek] = $productQuantities[$productId];
                 } else {
-                    $productQuantities[$YearWeek] = '';
+                    $productData[$YearWeek] = '';
                 }
             }
-            $productData['quantites_par_semaine_et_annee'] = $productQuantities;
+        }
+        foreach ($productData as $key => $value) {
+            if ($key === 'Temps Chiffrage' || $key === 'Temps atelier' || $key === 'volu_previ' || $key === '3pc_volu_previ') {
+                $type = 'Measure';
+            } else {
+                $type = gettype($value);
+            }
+            $dataFields[] = [
+                'label' => $key,
+                'name' => $key,
+                'type' => $type
+            ];
         }
         
-        return new JsonResponse($data);
+        $responseData = array_merge($dataItems, ['fields' => $dataFields]);
+
+        return new JsonResponse($responseData);
     }
 
    public function is_semaine_passee(DateTimeImmutable $date) {
