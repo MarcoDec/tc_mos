@@ -137,14 +137,30 @@ class ProductionPlanningItemsController
             }
         }
         foreach ($productData as $key => $value) {
-            if ($key === 'Temps Chiffrage' || $key === 'Temps atelier' || $key === 'volu_previ' || $key === '3pc_volu_previ') {
+            if ($key === 'Temps Chiffrage' || $key === 'Temps atelier' || $key === 'volu_previ' || $key === '3pc_volu_previ' || $key === 'retard') {
                 $type = 'Measure';
             } else {
                 $type = gettype($value);
             }
+            $key2 = $key;
+            if($key === 'client'){
+            $key2 = 'customer';
+            }
+            if($key === 'designation')
+            {
+            $key2 = 'name';
+            }
+            if($key === 'indice')
+            {
+            $key2 = 'index';
+            }
+            if($key === 'produit')
+            {
+            $key2 = 'code';
+            }
             $dataFields[] = [
                 'label' => $key,
-                'name' => $key,
+                'name' => $key2,
                 'type' => $type
             ];
         }

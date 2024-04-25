@@ -27,8 +27,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Controller\Manufacturing\Component\ItemManufacturingComponentController;
-
-
+use App\Controller\Manufacturing\Order\Needs\ManufacturingOrderNeedsController;
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['deliveryDate' => 'DESC']),
@@ -43,6 +42,33 @@ use App\Controller\Manufacturing\Component\ItemManufacturingComponentController;
                 'openapi_context' => [
                     'description' => 'Récupère les OF',
                     'summary' => 'Récupère les OF',
+                ]
+            ],
+            'collapseOnGoingLocalOfItems' => [
+                'method' => 'GET',
+                'path' => '/collapseOnGoingLocalOfItems',
+                'controller' => ManufacturingOrderNeedsController::class,
+                'read' => false,
+                'normalization_context' => [
+                    'groups' => ['collapseOnGoingLocalOfItems']
+                ]
+            ],
+            'collapseOfsToConfirmItems' => [
+                'method' => 'GET',
+                'path' => '/collapseOfsToConfirmItems',
+                'controller' => ManufacturingOrderNeedsController::class,
+                'read' => false,
+                'normalization_context' => [
+                    'groups' => ['collapseOfsToConfirmItems']
+                ]
+            ],
+            'collapseNewOfsItems' => [
+                'method' => 'GET',
+                'path' => '/collapseNewOfsItems',
+                'controller' => ManufacturingOrderNeedsController::class,
+                'read' => false,
+                'normalization_context' => [
+                    'groups' => ['collapseNewOfsItems']
                 ]
             ],
             'post' => [
@@ -204,7 +230,7 @@ class Order extends Entity implements BarCodeInterface {
 
     #[
         ApiProperty(description: 'Produit', readableLink: true, example: '/api/products/1'),
-        ORM\ManyToOne(inversedBy:'productorders'),
+        ORM\ManyToOne(fetch:"EAGER", inversedBy:'productorders'),
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?Product $product = null;

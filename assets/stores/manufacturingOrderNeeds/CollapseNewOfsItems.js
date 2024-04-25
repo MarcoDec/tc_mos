@@ -8,16 +8,16 @@ export const useCollapseNewOfsItemsStore = defineStore('collapseNewOfsItems', {
                     client: 'RENAULT',
                     cmde: '3/2019',
                     debutProd: '2018-12-31',
-                    etatInitialOF: 'confirmé',
+                    etatInitialOF: 'confirmé', // here 1
                     finProd: '2019-01-07',
                     id: 25,
-                    lancerOF: false,
-                    minDeLancement: 20,
-                    ofsAssocies: '',
+                    //lancerOF: false,  // here 2
+                    minDeLancement: 20,  // here 3
+                    ofsAssocies: '',  // here 4
                     produit: '1318808X',
-                    qteDemandee: 56,
-                    quantite: 20,
-                    quantiteMin: 30,
+                    qteDemandee: 56,  // here 5
+                    //quantite: 20,
+                    //quantiteMin: 30,  // here 6
                     siteDeProduction: 'auto'
                 },
                 {
