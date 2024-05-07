@@ -29,3 +29,4 @@ node_modules
 /public/uploads
 /edi/_.txt
 /edi/_test_orders_old.txt
+/edi/test_delfor/ORDERS_AN20231027101146-805.json
