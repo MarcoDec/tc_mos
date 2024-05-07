@@ -210,6 +210,26 @@ class Customer extends Entity implements FileEntity {
     private ?Currency $currency = null;
 
     #[
+        ApiProperty(description: 'Type EDI', example: 'webEDI / integratedEDI'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+    ]
+    private ?string $ediKind = null;
+
+    #[
+        ApiProperty(description: 'Maturité de définition EDI', example: 'test / production'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+    ]
+    private ?string $ediOrdersMaturity = null;
+
+    #[
+        ApiProperty(description: 'Type de commande EDI', example: 'ORDERS/DELFOR'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+    ]
+    private ?string $ediOrderType = null;
+    #[
         ORM\Embedded,
         Serializer\Groups(['read:customer', 'read:customer:collection'])
     ]
@@ -240,6 +260,20 @@ class Customer extends Entity implements FileEntity {
         Serializer\Groups(['read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private bool $invoiceByEmail = false;
+
+    #[
+        ApiProperty(description: 'Commandes EDI ASN', example: false),
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+    ]
+    private bool $isEdiAsn = false;
+
+    #[
+        ApiProperty(description: 'Commandes EDI', example: false),
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+    ]
+    private bool $isEdiOrders = false;
 
     #[
         ApiProperty(description: 'Langue', example: 'Français'),
@@ -317,6 +351,20 @@ class Customer extends Entity implements FileEntity {
         ORM\OneToMany(targetEntity: Order::class, mappedBy: 'customer')
     ]
     private Collection $sellingOrders;
+
+    #[
+        ApiProperty(description: 'URL webEDI', example: 'https://www.webedi.com'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+    ]
+    private ?string $webEdiUrl = null;
+
+    #[
+        ApiProperty(description: 'Informations de connexion webEDI', example: 'Lorem ipsum'),
+        ORM\Column(type: 'text', nullable: true),
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+    ]
+    private ?string $webEdiInfos = null;
 
     /**
      * @return Collection
@@ -618,4 +666,132 @@ class Customer extends Entity implements FileEntity {
     {
         $this->filePath = $filePath;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getEdiKind(): ?string
+    {
+        return $this->ediKind;
+    }
+
+    /**
+     * @param string|null $ediKind
+     * @return Customer
+     */
+    public function setEdiKind(?string $ediKind): Customer
+    {
+        $this->ediKind = $ediKind;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEdiOrdersMaturity(): ?string
+    {
+        return $this->ediOrdersMaturity;
+    }
+
+    /**
+     * @param string|null $ediOrdersMaturity
+     * @return Customer
+     */
+    public function setEdiOrdersMaturity(?string $ediOrdersMaturity): Customer
+    {
+        $this->ediOrdersMaturity = $ediOrdersMaturity;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEdiOrderType(): ?string
+    {
+        return $this->ediOrderType;
+    }
+
+    /**
+     * @param string|null $ediOrderType
+     * @return Customer
+     */
+    public function setEdiOrderType(?string $ediOrderType): Customer
+    {
+        $this->ediOrderType = $ediOrderType;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEdiAsn(): bool
+    {
+        return $this->isEdiAsn;
+    }
+
+    /**
+     * @param bool $isEdiAsn
+     * @return Customer
+     */
+    public function setIsEdiAsn(bool $isEdiAsn): Customer
+    {
+        $this->isEdiAsn = $isEdiAsn;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEdiOrders(): bool
+    {
+        return $this->isEdiOrders;
+    }
+
+    /**
+     * @param bool $isEdiOrders
+     * @return Customer
+     */
+    public function setIsEdiOrders(bool $isEdiOrders): Customer
+    {
+        $this->isEdiOrders = $isEdiOrders;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getWebEdiUrl(): ?string
+    {
+        return $this->webEdiUrl;
+    }
+
+    /**
+     * @param string|null $webEdiUrl
+     * @return Customer
+     */
+    public function setWebEdiUrl(?string $webEdiUrl): Customer
+    {
+        $this->webEdiUrl = $webEdiUrl;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getWebEdiInfos(): ?string
+    {
+        return $this->webEdiInfos;
+    }
+
+    /**
+     * @param string|null $webEdiInfos
+     * @return Customer
+     */
+    public function setWebEdiInfos(?string $webEdiInfos): Customer
+    {
+        $this->webEdiInfos = $webEdiInfos;
+        return $this;
+    }
+
+
 }
