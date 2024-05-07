@@ -14,7 +14,7 @@
 </script>
 
 <template>
-    <thead class="table-dark" :style="{ position: 'sticky', top: topOffset }">
+    <thead class="table-dark" :style="{top: topOffset}">
         <tr v-if="title !== null">
             <td class="bg-secondary text-uppercase text-xl-center" :colspan="fields.length + 1">
                 <slot name="title">
@@ -28,7 +28,7 @@
             </th>
             <AppCardableTableHeaderfieleds :fields="fields" @trier-alphabet="trierAlphabet"/>
         </tr>
-        <slot name="form"></slot>
+        <slot name="form"/>
     </thead>
 </template>
 
@@ -48,5 +48,6 @@
         background-color: rgba(255, 255, 255, 1);
         box-shadow: 0 2px 2px -1px white;
         border-color: white;
+        position: sticky;
     }
 </style>

@@ -178,7 +178,10 @@
             @search="searchCustomerOrders"
             @cancel-search="cancelSearchCustomerOrders">
             <template #title>
-                Items de la commande <button class="btn btn-success btn-float-right">Ajouter</button>
+                Items de la commande
+                <button class="btn btn-success btn-float-right">
+                    Ajouter
+                </button>
             </template>
         </AppCardableTable>
     </AppSuspense>
