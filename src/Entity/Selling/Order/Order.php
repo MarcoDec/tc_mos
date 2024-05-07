@@ -164,6 +164,13 @@ class Order extends Entity {
     private State $embState;
 
     #[
+        ApiProperty(description: 'Ouverte', example: true),
+        ORM\Column(type: 'boolean', options: ['default' => true]),
+        Serializer\Groups(['read:order', 'write:order'])
+    ]
+    private bool $isOpenOrder = true;
+
+    #[
         ApiProperty(description: 'Type', example: KindType::TYPE_PROTOTYPE, openapiContext: ['enum' => KindType::TYPES]),
         Assert\Choice(choices: KindType::TYPES),
         ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_PROTOTYPE]),
@@ -340,6 +347,24 @@ class Order extends Entity {
     public function setOrderFamily(string $orderFamily): void
     {
         $this->orderFamily = $orderFamily;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOpenOrder(): bool
+    {
+        return $this->isOpenOrder;
+    }
+
+    /**
+     * @param bool $isOpenOrder
+     * @return Order
+     */
+    public function setIsOpenOrder(bool $isOpenOrder): Order
+    {
+        $this->isOpenOrder = $isOpenOrder;
+        return $this;
     }
 
 }
