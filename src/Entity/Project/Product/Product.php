@@ -65,7 +65,7 @@ use App\Controller\Production\Planning\Items\ProductionPlanningItemsController;
             ],
             'ProductionPlanningItems' => [
                 'method' => 'GET',
-                'path' => '/products/ProductionPlanningItems',
+                'path' => '/manufacturingSchedule',
                 'controller' => ProductionPlanningItemsController::class,
                 'read' => false, // Empêche la lecture de l'entité Product elle-même
                 'normalization_context' => [

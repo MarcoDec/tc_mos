@@ -3082,6 +3082,12 @@ CREATE TABLE `manufacturing_order` (
     `quantity_requested_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
     `quantity_requested_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
     `quantity_requested_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `quantity_done_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `quantity_done_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `quantity_done_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `quantity_real_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `quantity_real_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `quantity_real_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_34010DB1979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
     CONSTRAINT `IDX_34010DB1E26A3063` FOREIGN KEY (`manufacturing_company_id`) REFERENCES `company` (`id`),
     CONSTRAINT `IDX_34010DB18D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `selling_order` (`id`),
@@ -3103,7 +3109,11 @@ INSERT INTO `manufacturing_order` (
     `product_id`,
     `ref`,
     `quantity_requested_code`,
-    `quantity_requested_value`
+    `quantity_requested_value`,
+    `quantity_done_code`,
+    `quantity_done_value`,
+    `quantity_real_code`,
+    `quantity_real_value`
 ) SELECT
     `orderfabrication`.`id`,
     `company`.`id`,
@@ -3119,14 +3129,22 @@ INSERT INTO `manufacturing_order` (
         ELSE 'asked'
     END,
     `orderfabrication`.`indice`,
-    `supplier`.`id`,
+    CASE
+        WHEN `supplier`.`id` = 5 THEN 4
+        WHEN `supplier`.`id` = 4 THEN 3
+        ELSE  1
+    END,
     `orderfabrication`.`date_fabrication`,
     `orderfabrication`.`info_public`,
     `selling_order`.`id`,
     `product`.`id`,
     `orderfabrication`.`ofnumber`,
     `unit`.`code`,
-    `orderfabrication`.`quantity`
+    `orderfabrication`.`quantity`,
+    `unit`.`code`,
+    `orderfabrication`.`quantity_done`,
+    `unit`.`code`,
+    `orderfabrication`.`quantity_real`
 FROM `orderfabrication`
 INNER JOIN `product` ON `orderfabrication`.`id_product` = `product`.`old_id`
 LEFT JOIN `unit` ON `product`.`unit_id` = `unit`.`id`

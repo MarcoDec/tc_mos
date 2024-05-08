@@ -30,7 +30,8 @@ class ProductionPlanningItemsController
     public function __invoke(): JsonResponse {
 
         $products = $this->em->getRepository(Product::class)->findAll();
-
+        $productsByYearWeek = [];
+        $dataFields = [];
         $data = [];
         foreach ($products as $product) {
             $productId = $product->getId();
@@ -65,7 +66,6 @@ class ProductionPlanningItemsController
                 $embState = $SellingItem->getEmbState()->getState();
 
             if($embBlocker === 'enabled' && !in_array($embState, ['delivered','billed','paid'])){
-
                 if ($this->is_semaine_passee($date) === true) {
                     $date_week = "RETARD" ;
                    if (!isset($confirmedProductQuantities[$productId])) {
@@ -84,8 +84,8 @@ class ProductionPlanningItemsController
                     $lateProductQuantities[$productId] = $confirmedProductQuantities[$productId] - $sentProductQuantities[$productId];
                 }   
                 if($this->is_semaine_passee($date) === false) {
-
-                    $date_week = "PAS DE RETARD" ; 
+                    $date_week = "PAS DE RETARD" ;
+                    dump($date_week);
                     if (!isset($productsByYearWeek[$YearWeek])) {
                         $productsByYearWeek[$YearWeek] = [];
                     }
@@ -101,32 +101,18 @@ class ProductionPlanningItemsController
                 'compagnie' => $companyNames,
                 'client' => $formattedCustomerNames,
                 'stock' => $stockQuantity,
-                'Temps Chiffrage' => [
-                    'code' => $tempsChiffrage->getCode(),
-                    'value' => $tempsChiffrage->getValue()
-                ],            
-                'temps atelier'=> [
-                    'code' =>$tempsAtelier->getCode(),
-                    'value' => $tempsAtelier->getValue()
-                ],
-                'volu_previ'=> [
-                    'code' =>$forecastVolume->getCode(),
-                    'value' => $forecastVolume->getValue()
-                ],
-                '3pc_volu_previ' => [
-                    'code' =>$forecastVolume->getCode(),
-                    'value' => $threePercentValue
-                ], 
+                'Temps Chiffrage' => $tempsChiffrage->getValue()." ".$tempsChiffrage->getCode(),         
+                'temps atelier'=>$tempsAtelier->getValue()." ".$tempsAtelier->getCode(),
+                'volu_previ'=>$forecastVolume->getValue()." ".$forecastVolume->getCode(),
+                '3pc_volu_previ' =>$threePercentValue." ".$forecastVolume->getCode(),
                 'retard' => isset($lateProductQuantities[$product->getId()]) ? $lateProductQuantities[$product->getId()] : "",
                 ];
         }
 
         $dataItems = ['items' => $data];
-
-        $allYearWeeks = array_keys($productsByYearWeek);
+        dump($productsByYearWeek);
         foreach ($dataItems['items'] as &$productData) {
             $productId = $productData['id'];
-            
             // Ajouter les quantités par semaine et par année directement dans $productData
             foreach ($productsByYearWeek as $YearWeek => $productQuantities) {
                 if (isset($productQuantities[$productId])) {
@@ -136,35 +122,14 @@ class ProductionPlanningItemsController
                 }
             }
         }
-        foreach ($productData as $key => $value) {
-            if ($key === 'Temps Chiffrage' || $key === 'Temps atelier' || $key === 'volu_previ' || $key === '3pc_volu_previ' || $key === 'retard') {
-                $type = 'Measure';
-            } else {
-                $type = gettype($value);
-            }
-            $key2 = $key;
-            if($key === 'client'){
-            $key2 = 'customer';
-            }
-            if($key === 'designation')
-            {
-            $key2 = 'name';
-            }
-            if($key === 'indice')
-            {
-            $key2 = 'index';
-            }
-            if($key === 'produit')
-            {
-            $key2 = 'code';
-            }
+        foreach ($productsByYearWeek as $key => $value) {
+            $type = 'integer';
             $dataFields[] = [
                 'label' => $key,
-                'name' => $key2,
+                'name' => $key,
                 'type' => $type
             ];
         }
-        
         $responseData = array_merge($dataItems, ['fields' => $dataFields]);
 
         return new JsonResponse($responseData);

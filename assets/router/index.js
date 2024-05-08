@@ -13,16 +13,6 @@ import selling from './selling'
 import useUser from '../stores/security'
 import it from './it'
 
-const optionsSiteDeProduction = [
-    {text: '', value: null},
-    {text: 'auto', value: 'auto'},
-    {text: 'TUNISIE CONCEPT', value: 'TunisieConcept'}
-]
-const optionsEtatInitialOFduction = [
-    {text: '', value: null},
-    {text: 'confirmé', value: 'confirmé'},
-    {text: 'brouillon', value: 'brouillon'}
-]
 const router = createRouter({
     history: createWebHistory(), routes: [
         {
@@ -32,30 +22,55 @@ const router = createRouter({
             path: '/manufacturingSchedule',
             props: {
                 fields: [
-
                     {
                         label: 'Produit',
                         name: 'produit',
-                        type: 'text'
+                        type: 'text',
+                        colWidth: '800px'
                     },
                     {
                         label: 'Ind.',
-                        name: 'ind',
+                        name: 'indice',
                         type: 'text'
                     },
                     {
-                        label: 'Client',
+                        label: 'design',
+                        name: 'designation',
+                        type: 'text'
+                    },
+                    {
+                        label: 'compagnie',
+                        name: 'compagnie',
+                        type: 'text'
+                    },
+                    {
+                        label: 'client',
                         name: 'client',
                         type: 'text'
                     },
                     {
-                        label: 'Stocks',
-                        name: 'stocks',
+                        label: 'Stock',
+                        name: 'stock',
+                        type: 'text'
+                    },
+                    {
+                        label: 'T-Chiffrage',
+                        name: 'Temps Chiffrage',
+                        type: 'text'
+                    },
+                    {
+                        label: 'T-Atelier',
+                        name: 'temps atelier',
+                        type: 'text'
+                    },
+                    {
+                        label: 'VP',
+                        name: 'volu_previ',
                         type: 'text'
                     },
                     {
                         label: '3%VP',
-                        name: 'vp',
+                        name: '3pc_volu_previ',
                         type: 'text'
                     },
                     {
@@ -81,19 +96,9 @@ const router = createRouter({
                         type: 'text'
                     },
                     {
-                        label: 'Produit',
-                        name: 'produit',
-                        type: 'text'
-                    },
-                    {
                         label: 'Cmde',
                         name: 'cmde',
                         type: 'text'
-                    },
-                    {
-                        label: 'OF',
-                        name: 'of',
-                        type: 'number'
                     },
                     {
                         label: 'Début Prod.',
@@ -101,14 +106,29 @@ const router = createRouter({
                         type: 'date'
                     },
                     {
-                        label: 'Fin Prod.',
-                        name: 'finProd',
-                        type: 'date'
+                        label: 'OF',
+                        name: 'of',
+                        type: 'number'
+                    },
+                    {
+                        label: 'Indice OF',
+                        name: 'Indice OF',
+                        type: 'number'
+                    },
+                    {
+                        label: 'Produit',
+                        name: 'produit',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Indice',
+                        name: 'Indice',
+                        type: 'number'
                     },
                     {
                         label: 'Quantité',
                         name: 'quantite',
-                        type: 'number'
+                        type: 'text'
                     },
                     {
                         label: 'Site de production',
@@ -116,37 +136,23 @@ const router = createRouter({
                         type: 'text'
                     },
                     {
-                        label: 'Quantité produite',
-                        name: 'quantiteProduite',
-                        type: 'number'
-                    },
-                    {
                         label: 'Confirmer OF',
                         name: 'confirmerOF',
                         type: 'boolean'
-                    }
+                    },
+
                 ],
                 fieldsCollapseOnGoingLocalOf: [
-
+                    
                     {
                         label: 'Client',
                         name: 'client',
                         type: 'text'
                     },
                     {
-                        label: 'Produit',
-                        name: 'produit',
-                        type: 'text'
-                    },
-                    {
                         label: 'Cmde',
                         name: 'cmde',
                         type: 'text'
-                    },
-                    {
-                        label: 'OF',
-                        name: 'of',
-                        type: 'number'
                     },
                     {
                         label: 'Début Prod.',
@@ -157,6 +163,16 @@ const router = createRouter({
                         label: 'Fin Prod.',
                         name: 'finProd',
                         type: 'date'
+                    },
+                    {
+                        label: 'Produit',
+                        name: 'produit',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Indice',
+                        name: 'Indice',
+                        type: 'number'
                     },
                     {
                         label: 'Quantité',
@@ -170,40 +186,35 @@ const router = createRouter({
                     },
                     {
                         label: 'Etat',
-                        name: 'etat',
+                        name: 'Etat',
                         type: 'text'
-                    }
+                    },
+                    {
+                        label: 'Site de production',
+                        name: 'siteDeProduction',
+                        type: 'text'
+                    },
+                    {
+                        label: 'OF',
+                        name: 'of',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Indice OF',
+                        name: 'Indice OF',
+                        type: 'number'
+                    },
+
                 ],
                 fieldsCollapsenewOfs: [
-
                     {
                         label: 'Client',
                         name: 'client',
                         type: 'text'
                     },
                     {
-                        label: 'Produit',
-                        name: 'produit',
-                        type: 'text'
-                    },
-                    {
                         label: 'Cmde',
                         name: 'cmde',
-                        type: 'text'
-                    },
-                    {
-                        label: 'Minimum de lancement',
-                        name: 'minDeLancement',
-                        type: 'number'
-                    },
-                    {
-                        label: 'Qté demandée',
-                        name: 'qteDemandee',
-                        type: 'number'
-                    },
-                    {
-                        label: 'OFs associés',
-                        name: 'ofsAssocies',
                         type: 'text'
                     },
                     {
@@ -217,6 +228,11 @@ const router = createRouter({
                         type: 'date'
                     },
                     {
+                        label: 'Produit',
+                        name: 'produit',
+                        type: 'text'
+                    },
+                    {
                         label: 'Quantité',
                         name: 'quantite',
                         type: 'text'
@@ -224,14 +240,17 @@ const router = createRouter({
                     {
                         label: 'Site de production',
                         name: 'siteDeProduction',
-                        options: {label: value => optionsSiteDeProduction.find(option => option.type === value)?.text ?? null, options: optionsSiteDeProduction},
-                        type: 'select'
+                        type: 'text'
                     },
                     {
                         label: 'Etat initial OF',
                         name: 'etatInitialOF',
-                        options: {label: value => optionsEtatInitialOFduction.find(option => option.type === value)?.text ?? null, options: optionsEtatInitialOFduction},
-                        type: 'select'
+                        type: 'text'
+                    },
+                    {
+                        label: 'Minimum de lancement',
+                        name: 'minDeLancement',
+                        type: 'number'
                     },
                     {
                         label: 'Lancer OF',
@@ -240,7 +259,7 @@ const router = createRouter({
                     }
                 ],
                 icon: 'table-list',
-                title: 'Calcul des besoins'
+                title: 'Calcul des besoins'   
             }
         },
         ...hr,

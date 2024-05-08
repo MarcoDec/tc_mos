@@ -2,25 +2,16 @@
 
 namespace App\Controller\Manufacturing\Order\Needs;
 
-use DateTime;
-use DateTimeImmutable;
-use App\Entity\Embeddable\Measure;
-use App\Entity\Project\Product\Product;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Production\Manufacturing\Order;
 use App\Repository\Selling\Order\OrderRepository;
-use App\Entity\Production\Manufacturing\Operation;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\Encoder\JsonEncode;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Repository\Manufacturing\Order\ManufacturingOrderRepository;
-use App\Repository\Manufacturing\Operation\ManufacturingOperationRepository;
-use App\Repository\Manufacturing\Component\ManufacturingComponentItemRepository;
 
 class ManufacturingOrderNeedsController
 {
-    public function __construct(private EntityManagerInterface $em, private ManufacturingOrderRepository $orderRepository, private ManufacturingOperationRepository $operationRepository, private OrderRepository $sellingOrderRepository )
+    public function __construct(private EntityManagerInterface $em, private ManufacturingOrderRepository $orderRepository, private OrderRepository $sellingOrderRepository )
     {
     }
 
@@ -44,11 +35,6 @@ class ManufacturingOrderNeedsController
 
     private function getOrderData(Order $manufacturingOrder): array
     {
-        $quantiteProduiteTotale = 0;
-        $manufacturingOperations = $this->operationRepository->findByOrderId($manufacturingOrder->getId());
-        foreach ($manufacturingOperations as $manufacturingOperation) {
-            $quantiteProduiteTotale += $manufacturingOperation->getQuantityProduced()->getValue();
-        }
         $selling = $manufacturingOrder->getOrder();
         $commande = $selling ? $selling->getRef() : '';
         $customerName = '';
@@ -64,41 +50,33 @@ class ManufacturingOrderNeedsController
             'client' => $customerName,
             'cmde' => $commande,
             'debutProd' => $manufacturingOrder->getManufacturingDate()->format('Y-m-d'),
-            'finProd' => $manufacturingOrder->getDeliveryDate()->format('Y-m-d'),
-            'id' => $manufacturingOrder->getId(),
-            'of' => $manufacturingOrder->getRef() . $manufacturingOrder->getIndex(),
             'produit' => $manufacturingOrder->getProduct()->getCode(),
-            'quantite' => [
-                'code' => $manufacturingOrder->getQuantityRequested()->getCode(),
-                'value' => $manufacturingOrder->getQuantityRequested()->getValue()
-            ],
-            'quantiteProduite' => $quantiteProduiteTotale,
-
+            'quantite' => $manufacturingOrder->getQuantityRequested()->getValue() ." ".$manufacturingOrder->getQuantityRequested()->getCode(),
         ];
 
         return $data;
     }
-
-    public function collapseOnGoingLocalOfItems(): JsonResponse
+    
+    public function collapseOfsToConfirmItems(): JsonResponse
     {
         $manufacturingOrders = $this->em->getRepository(Order::class)->findAll();
         $data = [];
         foreach ($manufacturingOrders as $manufacturingOrder) {
             if ($manufacturingOrder->getEmbState()->getState() === 'asked') {
                 $orderData = $this->getOrderData($manufacturingOrder);
-                $orderData['etat']=  [
-                    'EmbBlocker' => $manufacturingOrder->getEmbBlocker()->getState(),
-                    'EmbState' => $manufacturingOrder->getEmbState()->getState()
-                ];
-            $data[] = $orderData;
-
+                $manuCompany = $manufacturingOrder->getmanufacturingCompany();
+                $siteDeProduction = $manuCompany->getName();
+                $orderData['siteDeProduction'] = $siteDeProduction;
+                $orderData['of'] = $manufacturingOrder->getRef();
+                $orderData['Indice OF']= $manufacturingOrder->getIndex();
+                $orderData['Indice']= $manufacturingOrder->getProduct()->getIndex();
+                $data[] = $orderData;
             }
         }
-
         return new JsonResponse($data);
     }
 
-    public function collapseOfsToConfirmItems(): JsonResponse
+    public function collapseOnGoingLocalOfItems(): JsonResponse
     {
         $manufacturingOrders = $this->em->getRepository(Order::class)->findAll();
         $data = [];
@@ -107,7 +85,13 @@ class ManufacturingOrderNeedsController
                 $manuCompany = $manufacturingOrder->getmanufacturingCompany();
                 $siteDeProduction = $manuCompany->getName();
                 $orderData = $this->getOrderData($manufacturingOrder);
+                $orderData['quantiteProduite'] = $manufacturingOrder->getQuantityDone()->getValue() ." ".$manufacturingOrder->getQuantityDone()->getCode();
+                $orderData['Etat']= $manufacturingOrder->getEmbState()->getState();
                 $orderData['siteDeProduction'] = $siteDeProduction;
+                $orderData['of'] = $manufacturingOrder->getRef();
+                $orderData['Indice OF']= $manufacturingOrder->getIndex();
+                $orderData['Indice']= $manufacturingOrder->getProduct()->getIndex();
+                $orderData['finProd']=  $manufacturingOrder->getDeliveryDate()->format('Y-m-d');
                 $data[] = $orderData;
             }
         }
@@ -125,10 +109,8 @@ class ManufacturingOrderNeedsController
             $orderData = $this->getOrderData($manufacturingOrder);
             $orderData['siteDeProduction'] = $siteDeProduction;
             $orderData['etatInitialOF']= $manufacturingOrder->getEmbState()->getState();
-            $orderData['minDeLancement']=  [
-                'code' => $manufacturingOrder->getProduct()->getMinProd()->getCode(),
-                'value' => $manufacturingOrder->getProduct()->getMinProd()->getValue()
-            ];
+            $orderData['minDeLancement']= $manufacturingOrder->getProduct()->getMinProd()->getValue()." ".$manufacturingOrder->getProduct()->getMinProd()->getCode();
+            $orderData['finProd']=  $manufacturingOrder->getDeliveryDate()->format('Y-m-d');
             $data[] = $orderData;
         }
         return new JsonResponse($data);
