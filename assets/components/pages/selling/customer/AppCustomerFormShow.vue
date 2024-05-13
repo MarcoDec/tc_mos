@@ -14,6 +14,8 @@
     import {useRoute} from 'vue-router'
     import {useSocietyStore} from '../../../../stores/management/societies/societies'
     import {useInvoiceTimeDuesStore} from '../../../../stores/management/invoiceTimeDues'
+    import AppTab from "../../../tab/AppTab.vue";
+    import AppShowCustomerTabIt from "./tabs/AppShowCustomerTabIt.vue";
 
     const route = useRoute()
     const idCustomer = route.params.id_customer
@@ -112,6 +114,13 @@
             <AppSuspense>
                 <AppShowCustomerTabContact
                     :options-countries="optionsCountries"/>
+            </AppSuspense>
+        </AppTab>
+        <AppTab id="gui-IT" title="IT" tabs="gui-start" icon="laptop">
+            <AppSuspense>
+                <AppShowCustomerTabIt
+                    :data-customers="fetchCustomerStore.customer"
+                    :data-society="fetchSocietyStore.society"/>
             </AppSuspense>
         </AppTab>
     </AppTabs>

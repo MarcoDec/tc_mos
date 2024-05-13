@@ -9,6 +9,11 @@ export const useCustomerStore = defineStore('customers', {
             const item = generateCustomer(response, this)
             this.customer = item
             this.isLoaded = true
+        },
+        async update(data, process) {
+            const response = await api(`/api/customers/${this.customer.id}/${process}`, 'PATCH', data)
+            this.isLoaded = false
+            await this.fetchOne(this.customer.id)
         }
     },
     getters: {

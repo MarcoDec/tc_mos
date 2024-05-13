@@ -102,7 +102,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                         'name' => 'process',
                         'required' => true,
                         'schema' => [
-                            'enum' => ['accounting', 'admin', 'logistics', 'main', 'quality'],
+                            'enum' => ['accounting', 'admin', 'logistics', 'main', 'quality', 'it'],
                             'type' => 'string'
                         ]
                     ]],
@@ -212,7 +212,7 @@ class Customer extends Entity implements FileEntity {
     #[
         ApiProperty(description: 'Type EDI', example: 'webEDI / integratedEDI'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:it'])
     ]
     private ?string $ediKind = null;
 
@@ -271,7 +271,7 @@ class Customer extends Entity implements FileEntity {
     #[
         ApiProperty(description: 'Commandes EDI', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:it'])
     ]
     private bool $isEdiOrders = false;
 
@@ -737,6 +737,14 @@ class Customer extends Entity implements FileEntity {
     {
         $this->isEdiAsn = $isEdiAsn;
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsEdiOrders(): bool
+    {
+        return $this->isEdiOrders;
     }
 
     /**
