@@ -13,7 +13,7 @@
         title: {required: true, type: String}
     })
 
-    const modalId = computed(() => 'target')
+    const modalId = computed(() => 'customerCreateModal')
     const target = computed(() => `#${modalId.value}`)
     const customerCreateModal = ref(null)
 
