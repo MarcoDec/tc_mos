@@ -6,11 +6,17 @@
     import {computed, ref} from 'vue'
     import useUser from '../../../../../stores/security'
 
+    const props = defineProps({
+        order: {default: () => {}, required: true, type: Object}
+    })
     const fetchUser = useUser()
     const currentCompany = fetchUser.company
     const fetchUnitOptions = useOptions('units')
     const customerOrderItemsCriteria = useFetchCriteria('customer-order-items-criteria')
-
+    function addPermanentFilters() {
+        customerOrderItemsCriteria.addFilter('order', props.order['@id'])
+    }
+    addPermanentFilters()
     const isSellingWriterOrAdmin = fetchUser.isSellingWriter || fetchUser.isSellingAdmin
     const roleuser = ref(isSellingWriterOrAdmin ? 'writer' : 'reader')
     const storeCustomerOrderItems = useCustomerOrderItemsStore()
@@ -32,6 +38,7 @@
 
     const fieldsCommande = [
         {label: 'Produit', name: 'product', type: 'multiselect-fetch', api: '/api/products', filteredProperty: 'code', max: 1},
+        {label: 'Composant', name: 'component', type: 'multiselect-fetch', api: '/api/components', filteredProperty: 'code', max: 1},
         {
             label: 'Quantité souhaitée',
             name: 'requestedQuantity',
@@ -117,7 +124,7 @@
     async function searchCustomerOrders(inputValues) {
         console.log('inputValues', inputValues)
         customerOrderItemsCriteria.resetAllFilter()
-        customerOrderItemsCriteria.addFilter('company', currentCompany)
+        addPermanentFilters()
         if (inputValues.product) customerOrderItemsCriteria.addFilter('item', inputValues.product)
         if (inputValues.ref) customerOrderItemsCriteria.addFilter('ref', inputValues.ref)
         if (inputValues.requestedQuantity) customerOrderItemsCriteria.addFilter('requestedQuantity.value', inputValues.requestedQuantity.value)
@@ -138,7 +145,7 @@
     }
     async function cancelSearchCustomerOrders() {
         customerOrderItemsCriteria.resetAllFilter()
-        customerOrderItemsCriteria.addFilter('company', currentCompany)
+        addPermanentFilters()
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     }
     async function trierAlphabetCustomerOrders(payload) {

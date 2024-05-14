@@ -43,7 +43,7 @@ export default [
         path: '/customer-order/list',
         props: {
             icon: 'bullhorn',
-            title: 'Commandes de vente clients'
+            title: 'Commandes Clients'
         }
     },
     {

@@ -173,7 +173,7 @@
                 <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small">
                     <div class="full-visible-width">
                         <AppSuspense>
-                            <AppCustomerOrderShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100"/>
+                            <AppCustomerOrderShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100" :order="fetchCustomerOrderStore.customerOrder"/>
                             <AppCustomerOrderInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>
                         </AppSuspense>
                     </div>
