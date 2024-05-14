@@ -4,7 +4,7 @@
     import AppSuspense from '../../../AppSuspense.vue'
     import {useCustomerStore} from '../../../../stores/selling/customers/customers'
     import AppCustomerShowInlist from './bottom/AppCustomerShowInlist.vue'
-    import {useRoute} from 'vue-router'
+    import {useRoute, useRouter} from 'vue-router'
     import {onBeforeMount, ref} from 'vue'
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
     import AppBtn from '../../../AppBtn.vue'
@@ -13,6 +13,7 @@
     import AppWorkflowShow from '../../../workflow/AppWorkflowShow.vue'
 
     const route = useRoute()
+    const router = useRouter()
     const idCustomer = Number(route.params.id_customer)
     const iriCustomer = ref('')
     const fetchCustomerStore = useCustomerStore()
@@ -47,6 +48,9 @@
     const deactivateFullScreen = () => {
         isFullScreen.value = false
     }
+    function goToTheList() {
+        router.push({name: 'customer-list'})
+    }
 </script>
 
 <template>
@@ -56,7 +60,9 @@
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
                     <div class="d-flex flex-row">
                         <div>
-                            <FontAwesomeIcon icon="user-tie"/>
+                            <button class="text-dark" @click="goToTheList">
+                                <FontAwesomeIcon icon="user-tie"/>
+                            </button>
                             <b>{{ fetchCustomerStore.customer.id }}</b>: {{ fetchCustomerStore.customer.name }}
                         </div>
                         <AppSuspense>

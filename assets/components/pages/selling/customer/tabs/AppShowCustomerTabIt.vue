@@ -15,6 +15,7 @@
     console.log('Informations Client', props.dataCustomers)
     const fetchCustomerStore = useCustomerStore()
     const localData = ref({})
+    //region select Famille EDI
     const EDI_WEB = 'webEDI'
     const EDI_INTEGRATED = 'integratedEDI'
     const ediKindOptions = {
@@ -25,6 +26,29 @@
             {text: 'EDI intégré', value: EDI_INTEGRATED}
         ]
     }
+    //endregion
+    //region select Standard EDI
+        //ORDERS/DELFOR
+    const ediTypesOptions = {
+        options: [
+            {text: 'Non défini', value: null},
+            {text: 'ORDERS', value: 'ORDERS'},
+            {text: 'DELFOR', value: 'DELFOR'}
+        ]
+    }
+    //endregion
+    //region select progression EDI
+        //DEFINITION, VALIDATION, ACTIVE, DISABLED
+    const ediMaturityOptions = {
+        options: [
+            {text: 'Non défini', value: null},
+            {text: 'DEFINITION', value: 'DEFINITION'},
+            {text: 'VALIDATION', value: 'VALIDATION'},
+            {text: 'ACTIVE', value: 'ACTIVE'},
+            {text: 'DISABLED', value: 'DISABLED'}
+        ]
+    }
+    //endregion
     localData.value = {
         isEdiOrders: props.dataCustomers.isEdiOrders,
         ediKind: props.dataCustomers.ediKind
@@ -33,12 +57,12 @@
     const localWebEdiData = ref({})
     localWebEdiData.value = {
         webEdiUrl: props.dataCustomers.webEdiUrl,
-        webEdiInfo: props.dataCustomers.webEdiInfo,
-        ediOrdersType: props.dataCustomers.ediOrdersType,
+        webEdiInfos: props.dataCustomers.webEdiInfos,
+        ediOrderType: props.dataCustomers.ediOrderType,
     }
     const integratedEdiData = ref ({})
     integratedEdiData.value = {
-        ediOrdersType: props.dataCustomers.ediOrdersType,
+        ediOrderType: props.dataCustomers.ediOrderType,
         ediOrdersMaturity: props.dataCustomers.ediOrdersMaturity,
         isEdiAsn: props.dataCustomers.isEdiAsn
     }
@@ -51,13 +75,13 @@
     )
     const webEdiFields = [
         {label: 'Url WEB EDI', name: 'webEdiUrl', type: 'text'},
-        {label: 'Infos WEB EDI', name: 'webEdiInfo', type: 'textarea'},
-        {label: 'Standard EDI', name: 'ediOrdersType', type: 'text'}
+        {label: 'Infos WEB EDI', name: 'webEdiInfos', type: 'textarea'},
+        {label: 'Standard EDI', name: 'ediOrderType', type: 'text'}
     ]
     const integratedEdiFields = [
-        {label: 'Standard EDI', name: 'ediOrdersType', type: 'text'},
-        {label: 'Progression Définition EDI', name: 'ediOrdersMaturity', type: 'text'},
-        {label: 'Gestion ASN', name: 'isEdiAsn', type: 'boolean'}
+        {label: 'Standard EDI', name: 'ediOrderType', type: 'select', options: ediTypesOptions},
+        {label: 'Gestion ASN', name: 'isEdiAsn', type: 'boolean'},
+        {label: 'Progression Définition EDI', name: 'ediOrdersMaturity', type: 'select', options: ediMaturityOptions}
     ]
     async function updateEdiFields() {
         console.log('ediKind', localData.value.ediKind)
@@ -65,31 +89,27 @@
             isEdiOrders: localData.value.isEdiOrders,
             ediKind: localData.value.ediKind === null ? null : localData.value.ediKind
         }
-        // const itemSoc = generateSocieties(props.dataSociety)
-        // await itemSoc.update(data)
         await fetchCustomerStore.update(data, 'it')
         await fetchCustomerStore.fetchOne(props.dataCustomers.id)
     }
     async function updateWebEdiFields() {
         const data = {
-            webEdiUrl: localData.value.webEdiUrl,
-            webEdiInfo: localData.value.webEdiInfo,
-            ediOrdersType: localData.value.ediOrdersType
+            webEdiUrl: localWebEdiData.value.webEdiUrl,
+            webEdiInfos: localWebEdiData.value.webEdiInfos,
+            ediOrderType: localWebEdiData.value.ediOrderType
         }
         // const itemSoc = generateSocieties(props.dataSociety)
         // await itemSoc.update(data)
-        await fetchCustomerStore.update(data)
+        await fetchCustomerStore.update(data, 'selling')
         await fetchCustomerStore.fetchOne(props.dataCustomers.id)
     }
     async function updateIntegratedEdiFields() {
         const data = {
-            isEdiAsn: localData.value.isEdiAsn,
-            ediOrdersType: localData.value.ediOrdersType,
-            ediOrdersMaturity: localData.value.ediOrdersMaturity
+            isEdiAsn: integratedEdiData.value.isEdiAsn,
+            ediOrderType: integratedEdiData.value.ediOrderType,
+            ediOrdersMaturity: integratedEdiData.value.ediOrdersMaturity
         }
-        // const itemSoc = generateSocieties(props.dataSociety)
-        // await itemSoc.update(data)
-        await fetchCustomerStore.update(data)
+        await fetchCustomerStore.update(data, 'it')
         await fetchCustomerStore.fetchOne(props.dataCustomers.id)
     }
     function updateLocalData(value) {
@@ -99,7 +119,7 @@
         localWebEdiData.value = value
     }
     function updateLocalIntegratedEdiData(value) {
-        integratedEdiData.value
+        integratedEdiData.value = value
     }
     watch(() => localData.value, (newValue, oldValue) => {
         if (!newValue.isEdiOrders) {
@@ -115,13 +135,13 @@
     function onCancelWebEdi() {
         localWebEdiData.value = {
             webEdiUrl: props.dataCustomers.webEdiUrl,
-            webEdiInfo: props.dataCustomers.webEdiInfo,
-            ediOrdersType: props.dataCustomers.ediOrdersType,
+            webEdiInfos: props.dataCustomers.webEdiInfos,
+            ediOrderType: props.dataCustomers.ediOrderType,
         }
     }
     function onCancelIntegratedEdi() {
         integratedEdiData.value = {
-            ediOrdersType: props.dataCustomers.ediOrdersType,
+            ediOrderType: props.dataCustomers.ediOrderType,
             ediOrdersMaturity: props.dataCustomers.ediOrdersMaturity,
             isEdiAsn: props.dataCustomers.isEdiAsn
         }

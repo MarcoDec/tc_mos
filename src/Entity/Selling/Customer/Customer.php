@@ -102,7 +102,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                         'name' => 'process',
                         'required' => true,
                         'schema' => [
-                            'enum' => ['accounting', 'admin', 'logistics', 'main', 'quality', 'it'],
+                            'enum' => ['accounting', 'admin', 'logistics', 'main', 'quality', 'it', 'selling'],
                             'type' => 'string'
                         ]
                     ]],
@@ -219,14 +219,14 @@ class Customer extends Entity implements FileEntity {
     #[
         ApiProperty(description: 'Maturité de définition EDI', example: 'test / production'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:it'])
     ]
     private ?string $ediOrdersMaturity = null;
 
     #[
         ApiProperty(description: 'Type de commande EDI', example: 'ORDERS/DELFOR'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:it'])
     ]
     private ?string $ediOrderType = null;
     #[
@@ -264,7 +264,7 @@ class Customer extends Entity implements FileEntity {
     #[
         ApiProperty(description: 'Commandes EDI ASN', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:it'])
     ]
     private bool $isEdiAsn = false;
 
@@ -355,14 +355,14 @@ class Customer extends Entity implements FileEntity {
     #[
         ApiProperty(description: 'URL webEDI', example: 'https://www.webedi.com'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:selling'])
     ]
     private ?string $webEdiUrl = null;
 
     #[
         ApiProperty(description: 'Informations de connexion webEDI', example: 'Lorem ipsum'),
         ORM\Column(type: 'text', nullable: true),
-        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:selling'])
     ]
     private ?string $webEdiInfos = null;
 
@@ -728,7 +728,13 @@ class Customer extends Entity implements FileEntity {
     {
         return $this->isEdiAsn;
     }
-
+    /**
+     * @return bool
+     */
+    public function getIsEdiAsn(): bool
+    {
+        return $this->isEdiAsn;
+    }
     /**
      * @param bool $isEdiAsn
      * @return Customer
