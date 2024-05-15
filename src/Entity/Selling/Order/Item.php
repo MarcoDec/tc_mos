@@ -29,8 +29,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  * @template-extends BaseItem<I, Order>
  */
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['id' => 'exact', 'item.id' => 'exact', 'order.id' => 'exact', 'ref' => 'partial', 'embState.state' => 'exact', 'confirmedDate' => 'exact', 'confirmedQuantity.value' => 'exact', 'confirmedQuantity.code' => 'exact', 'requestedDate' => 'exact', 'requestedQuantity.value' => 'exact', 'requestedQuantity.code' => 'exact', 'notes' => 'partial']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['item', 'order', 'ref', 'embState.state', 'confirmedDate', 'confirmedQuantity.value', 'confirmedQuantity.code', 'requestedDate', 'requestedQuantity.value', 'requestedQuantity.code', 'notes']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['id' => 'exact', 'item.id' => 'exact', 'parentOrder.id' => 'exact', 'ref' => 'partial', 'embState.state' => 'exact', 'confirmedDate' => 'exact', 'confirmedQuantity.value' => 'exact', 'confirmedQuantity.code' => 'exact', 'requestedDate' => 'exact', 'requestedQuantity.value' => 'exact', 'requestedQuantity.code' => 'exact', 'notes' => 'partial']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['item', 'sellingOrder', 'ref', 'embState.state', 'confirmedDate', 'confirmedQuantity.value', 'confirmedQuantity.code', 'requestedDate', 'requestedQuantity.value', 'requestedQuantity.code', 'notes']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['id', 'item.id', 'ref', 'embState.state', 'confirmedDate', 'confirmedQuantity.value', 'requestedDate', 'requestedQuantity.value', 'notes']),
 
     ApiResource(
@@ -129,11 +129,11 @@ abstract class Item extends BaseItem {
     protected State $embState;
 
     #[
-        ApiProperty(description: 'Commande', readableLink: false, example: '/api/selling-orders/1'),
-        ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'sellingOrderItems', fetch: "EAGER"),
+        ApiProperty(description: 'Commande Client', readableLink: false, example: '/api/selling-orders/1'),
+        ORM\ManyToOne(targetEntity: Order::class, fetch: "EAGER", inversedBy: 'sellingOrderItems'),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    protected $order;
+    protected Order $sellingOrder;
 
     #[
         ApiProperty(description: 'Expéditions associées', example: '/api/expeditions/1'),
@@ -154,7 +154,7 @@ abstract class Item extends BaseItem {
         Serializer\Groups(['read:item','write:item'])
     ]
     final public function getCustomer(): ?Customer {
-        return $this->order->getCustomer();
+        return $this->sellingOrder->getCustomer();
     }
 
     final public function getBlocker(): string {

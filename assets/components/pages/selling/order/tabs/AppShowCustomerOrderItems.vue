@@ -149,19 +149,18 @@
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     }
     async function trierAlphabetCustomerOrders(payload) {
+        addPermanentFilters()
         if (payload.name === 'requestedQuantity') {
             customerOrderItemsCriteria.addSort('requestedQuantity.value', payload.direction)
-            await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
         } else if (payload.name === 'confirmedQuantity') {
             customerOrderItemsCriteria.addSort('confirmedQuantity.value', payload.direction)
-            await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
         } else if (payload.name === 'state') {
             customerOrderItemsCriteria.addSort('embState.state', payload.direction)
-            await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
         } else {
             customerOrderItemsCriteria.addSort(payload.name, payload.direction)
-            await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
         }
+        console.log('customerOrderItemsCriteria', customerOrderItemsCriteria.getFetchCriteria)
+        await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     }
 </script>
 
@@ -185,9 +184,12 @@
             @search="searchCustomerOrders"
             @cancel-search="cancelSearchCustomerOrders">
             <template #title>
-                Items de la commande
-                <button class="btn btn-success btn-float-right">
-                    Ajouter
+                <span style="height: 100%; padding: 10px;">Items de la commande {{ order.ref }}</span>
+                <button class="btn btn-success btn-float-right m-1">
+                    Ajouter Item en Ferme
+                </button>
+                <button class="btn btn-success btn-float-right m-1">
+                    Ajouter Item en Prévisionnel
                 </button>
             </template>
         </AppCardableTable>

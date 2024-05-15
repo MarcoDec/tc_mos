@@ -46,7 +46,7 @@ abstract class Item extends Entity implements MeasuredInterface {
     protected ?string $notes = null;
 
     /** @var null|O */
-    protected $order;
+    protected $parentOrder;
 
     #[
         ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
@@ -85,7 +85,7 @@ abstract class Item extends Entity implements MeasuredInterface {
     }
 
     final public function getCompany(): ?Company {
-        return $this->order?->getCompany();
+        return $this->parentOrder?->getCompany();
     }
 
     final public function getConfirmedDate(): ?DateTimeImmutable {
@@ -122,8 +122,8 @@ abstract class Item extends Entity implements MeasuredInterface {
     /**
      * @return null|O
      */
-    final public function getOrder() {
-        return $this->order;
+    final public function getParentOrder() {
+        return $this->parentOrder;
     }
 
     final public function getPrice(): Measure {
@@ -181,12 +181,12 @@ abstract class Item extends Entity implements MeasuredInterface {
     }
 
     /**
-     * @param null|O $order
+     * @param null|O $parentOrder
      *
      * @return $this
      */
-    final public function setOrder($order): self {
-        $this->order = $order;
+    final public function setParentOrder($parentOrder): self {
+        $this->parentOrder = $parentOrder;
         return $this;
     }
 
@@ -219,6 +219,13 @@ abstract class Item extends Entity implements MeasuredInterface {
      */
     final public function setRequestedQuantity(Measure $requestedQuantity): self {
         $this->requestedQuantity = $requestedQuantity;
+        return $this;
+    }
+    final protected function getOrder() {
+        return $this->parentOrder;
+    }
+    final protected function setOrder($order): self {
+        $this->parentOrder = $order;
         return $this;
     }
 }
