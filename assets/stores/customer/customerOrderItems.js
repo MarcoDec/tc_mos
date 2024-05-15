@@ -1,10 +1,21 @@
 import {defineStore} from 'pinia'
 import api from '../../api'
 
-const baseUrl = '/api/selling-order-items'
+const BaseUrl = '/api/selling-order-items'
+const BaseUrlProduct = '/api/selling-order-products'
+const BaseUrlComponent = '/api/selling-order-components'
 export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
     actions: {
         async fetchAll(filter = '') {
+          await this.fetchAll_gen(filter, BaseUrl)
+        },
+        async fetchAllProduct(filter = '') {
+            await this.fetchAll_gen(filter, BaseUrlProduct)
+        },
+        async fetchAllComponent(filter = '') {
+            await this.fetchAll_gen(filter, BaseUrlComponent)
+        },
+        async fetchAll_gen(filter = '', baseUrl) {
             this.isLoading = true
             const response = await api(`${baseUrl}${filter}`, 'GET')
             this.customerOrdersItems = response['hydra:member']

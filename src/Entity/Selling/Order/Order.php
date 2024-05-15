@@ -206,7 +206,7 @@ class Order extends Entity {
     private ?string $ref = null;
 
     #[
-        ORM\OneToMany(targetEntity: Item::class, mappedBy: 'order')
+        ORM\OneToMany(mappedBy: 'parentOrder', targetEntity: Item::class)
     ]
     private Collection $sellingOrderItems;
 

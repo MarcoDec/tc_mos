@@ -145,7 +145,7 @@ class Order extends Entity {
     private State $embState;
 
     /** @var Collection<int, Item<Component|Product>> */
-    #[ORM\OneToMany(mappedBy: 'order', targetEntity: Item::class, fetch: 'EAGER')]
+    #[ORM\OneToMany(mappedBy: 'parentOrder', targetEntity: Item::class, fetch: 'EAGER')]
     
     private Collection $items;
 

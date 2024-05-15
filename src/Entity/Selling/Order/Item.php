@@ -11,6 +11,8 @@ use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Selling\Order\Item\State;
+use App\Entity\Project\Product\Product;
+use App\Entity\Purchase\Component\Component;
 use App\Entity\Selling\Customer\Customer;
 use App\Entity\Item as BaseItem;
 use App\Entity\Production\Manufacturing\Expedition;
@@ -24,13 +26,13 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 
 /**
- * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
+ * @template I of Component|Product
  *
  * @template-extends BaseItem<I, Order>
  */
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['id' => 'exact', 'item.id' => 'exact', 'parentOrder.id' => 'exact', 'ref' => 'partial', 'embState.state' => 'exact', 'confirmedDate' => 'exact', 'confirmedQuantity.value' => 'exact', 'confirmedQuantity.code' => 'exact', 'requestedDate' => 'exact', 'requestedQuantity.value' => 'exact', 'requestedQuantity.code' => 'exact', 'notes' => 'partial']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['item', 'sellingOrder', 'ref', 'embState.state', 'confirmedDate', 'confirmedQuantity.value', 'confirmedQuantity.code', 'requestedDate', 'requestedQuantity.value', 'requestedQuantity.code', 'notes']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['item', 'parentOrder', 'ref', 'embState.state', 'confirmedDate', 'confirmedQuantity.value', 'confirmedQuantity.code', 'requestedDate', 'requestedQuantity.value', 'requestedQuantity.code', 'notes']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['id', 'item.id', 'ref', 'embState.state', 'confirmedDate', 'confirmedQuantity.value', 'requestedDate', 'requestedQuantity.value', 'notes']),
 
     ApiResource(
@@ -133,11 +135,11 @@ abstract class Item extends BaseItem {
         ORM\ManyToOne(targetEntity: Order::class, fetch: "EAGER", inversedBy: 'sellingOrderItems'),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    protected Order $sellingOrder;
+    protected $parentOrder;
 
     #[
         ApiProperty(description: 'Expéditions associées', example: '/api/expeditions/1'),
-        ORM\OneToMany(targetEntity: Expedition::class, mappedBy: 'item'),
+        ORM\OneToMany(mappedBy: 'item', targetEntity: Expedition::class),
         Serializer\Groups(['read:item'])
     ]
     private Collection $expeditions;
@@ -154,7 +156,7 @@ abstract class Item extends BaseItem {
         Serializer\Groups(['read:item','write:item'])
     ]
     final public function getCustomer(): ?Customer {
-        return $this->sellingOrder->getCustomer();
+        return $this->parentOrder->getCustomer();
     }
 
     final public function getBlocker(): string {

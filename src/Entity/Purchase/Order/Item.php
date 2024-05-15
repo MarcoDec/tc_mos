@@ -39,7 +39,7 @@ use App\Validator as AppAssert;
  *
  */
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['order']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['parentOrder']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state']),
     ApiResource(
         description: 'Ligne de commande',

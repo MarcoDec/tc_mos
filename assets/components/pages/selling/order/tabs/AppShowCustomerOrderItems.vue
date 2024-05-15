@@ -14,7 +14,7 @@
     const fetchUnitOptions = useOptions('units')
     const customerOrderItemsCriteria = useFetchCriteria('customer-order-items-criteria')
     function addPermanentFilters() {
-        customerOrderItemsCriteria.addFilter('order', props.order['@id'])
+        customerOrderItemsCriteria.addFilter('parentOrder', props.order['@id'])
     }
     addPermanentFilters()
     const isSellingWriterOrAdmin = fetchUser.isSellingWriter || fetchUser.isSellingAdmin
@@ -122,10 +122,11 @@
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     }
     async function searchCustomerOrders(inputValues) {
-        console.log('inputValues', inputValues)
+        // console.log('inputValues', inputValues)
         customerOrderItemsCriteria.resetAllFilter()
         addPermanentFilters()
         if (inputValues.product) customerOrderItemsCriteria.addFilter('item', inputValues.product)
+        if (inputValues.component) customerOrderItemsCriteria.addFilter('item', inputValues.component)
         if (inputValues.ref) customerOrderItemsCriteria.addFilter('ref', inputValues.ref)
         if (inputValues.requestedQuantity) customerOrderItemsCriteria.addFilter('requestedQuantity.value', inputValues.requestedQuantity.value)
         if (inputValues.requestedQuantity) {
@@ -141,6 +142,18 @@
         if (inputValues.confirmedDate) customerOrderItemsCriteria.addFilter('confirmedDate', inputValues.confirmedDate)
         if (inputValues.state) customerOrderItemsCriteria.addFilter('embState.state', inputValues.state)
         if (inputValues.notes) customerOrderItemsCriteria.addFilter('notes', inputValues.notes)
+        if (inputValues.product && !inputValues.component) {
+            await storeCustomerOrderItems.fetchAllProduct(customerOrderItemsCriteria.getFetchCriteria)
+            return
+        }
+        if (!inputValues.product && inputValues.component) {
+            await storeCustomerOrderItems.fetchAllComponent(customerOrderItemsCriteria.getFetchCriteria)
+            return
+        }
+        if (inputValues.product && inputValues.component) {
+            window.alert('Vous ne pouvez pas rechercher à la fois un produit et un composant')
+            return
+        }
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     }
     async function cancelSearchCustomerOrders() {
@@ -159,7 +172,7 @@
         } else {
             customerOrderItemsCriteria.addSort(payload.name, payload.direction)
         }
-        console.log('customerOrderItemsCriteria', customerOrderItemsCriteria.getFetchCriteria)
+        // console.log('customerOrderItemsCriteria', customerOrderItemsCriteria.getFetchCriteria)
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     }
 </script>
