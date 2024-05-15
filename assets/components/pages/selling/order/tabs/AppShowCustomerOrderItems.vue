@@ -5,6 +5,8 @@
     import useOptions from '../../../../../stores/option/options'
     import {computed, ref} from 'vue'
     import useUser from '../../../../../stores/security'
+    import AppModal from '../../../../modal/AppModal.vue'
+    import AppFormJS from '../../../../form/AppFormJS.js'
 
     const props = defineProps({
         order: {default: () => {}, required: true, type: Object}
@@ -175,10 +177,87 @@
         // console.log('customerOrderItemsCriteria', customerOrderItemsCriteria.getFetchCriteria)
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     }
+    const fieldsOrderItem = computed(() => [
+        {label: 'Produit', name: 'product', type: 'multiselect-fetch', api: '/api/products', filteredProperty: 'code', max: 1},
+        {label: 'Composant', name: 'component', type: 'multiselect-fetch', api: '/api/components', filteredProperty: 'code', max: 1},
+        {
+            label: 'Quantité souhaitée',
+            name: 'requestedQuantity',
+            filter: true,
+            min: true,
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'requestedQuantity.code',
+                    options: {
+                        label: value =>
+                            optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                        options: optionsUnit.value
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'requestedQuantity.value',
+                    type: 'number',
+                    step: 0.1
+                }
+            },
+            trie: true,
+            type: 'measure',
+            width: 150
+        },
+        {
+            label: 'Quantité confirmée',
+            name: 'confirmedQuantity',
+            filter: true,
+            min: true,
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'confirmedQuantity.code',
+                    options: {
+                        label: value =>
+                            optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                        options: optionsUnit.value
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'confirmedQuantity.value',
+                    type: 'number',
+                    step: 0.1
+                }
+            },
+            trie: true,
+            type: 'measure',
+            width: 150
+        },
+        {label: 'date de livraison souhaitée', name: 'requestedDate', trie: true, type: 'date', width: 80},
+        {label: 'Date de livraison confirmée', name: 'confirmedDate', trie: true, type: 'date', width: 80},
+        {
+            label: 'Etat',
+            name: 'state',
+            options: {
+                label: value =>
+                    stateOptions.find(option => option.type === value)?.text ?? null,
+                options: stateOptions
+            },
+            trie: true,
+            type: 'select'
+        }
+    ])
 </script>
 
 <template>
     <AppSuspense>
+        <AppModal id="modalAddNewOrderItem" class="four" title="Ajouter Item en Ferme">
+            <AppFormJS
+                id="formAddNewOrderItem"
+                :fields="fieldsOrderItem"
+            />
+        </AppModal>
         <AppCardableTable
             :current-page="storeCustomerOrderItems.currentPage"
             :fields="fieldsCommande"
@@ -189,7 +268,7 @@
             :pag="storeCustomerOrderItems.pagination"
             :previous-page="storeCustomerOrderItems.previousPage"
             :user="roleuser"
-            title=""
+            title
             form="formCustomerOrdersTable"
             @deleted="deletedCustomerOrderItem"
             @get-page="getPageCustomerOrders"
@@ -197,8 +276,8 @@
             @search="searchCustomerOrders"
             @cancel-search="cancelSearchCustomerOrders">
             <template #title>
-                <span style="height: 100%; padding: 10px;">Items de la commande {{ order.ref }}</span>
-                <button class="btn btn-success btn-float-right m-1">
+                <span>Items de la commande {{ order.ref }}</span>
+                <button class="btn btn-success btn-float-right m-1">s
                     Ajouter Item en Ferme
                 </button>
                 <button class="btn btn-success btn-float-right m-1">
