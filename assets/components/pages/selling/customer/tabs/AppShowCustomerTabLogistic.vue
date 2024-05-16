@@ -74,7 +74,7 @@
                 password: localData.value.getPassword,
                 url: localData.value.getUrl,
                 username: localData.value.getUsername
-            },
+            }
         }
         const item = generateCustomer(props.dataCustomers)
         await item.updateLogistic(data)

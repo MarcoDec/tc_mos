@@ -7,15 +7,15 @@ const BaseUrlComponent = '/api/selling-order-components'
 export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
     actions: {
         async fetchAll(filter = '') {
-          await this.fetchAll_gen(filter, BaseUrl)
+            await this.fetchAllGen(filter, BaseUrl)
         },
         async fetchAllProduct(filter = '') {
-            await this.fetchAll_gen(filter, BaseUrlProduct)
+            await this.fetchAllGen(filter, BaseUrlProduct)
         },
         async fetchAllComponent(filter = '') {
-            await this.fetchAll_gen(filter, BaseUrlComponent)
+            await this.fetchAllGen(filter, BaseUrlComponent)
         },
-        async fetchAll_gen(filter = '', baseUrl) {
+        async fetchAllGen(filter = '', baseUrl = BaseUrl) {
             this.isLoading = true
             const response = await api(`${baseUrl}${filter}`, 'GET')
             this.customerOrdersItems = response['hydra:member']

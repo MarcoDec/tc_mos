@@ -1,7 +1,7 @@
 <script setup>
     import AppShowCustomerOrderItems from './AppShowCustomerOrderItems.vue'
     defineProps({
-        order: {default: () => {}, required: true, type: Object}
+        order: {default: () => ({}), required: true, type: Object}
     })
 </script>
 

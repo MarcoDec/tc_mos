@@ -1,14 +1,13 @@
 <script setup>
     // import generateCustomer from '../../../../../stores/selling/customers/customer'
-    import generateSocieties from '../../../../../stores/management/societies/societie'
+    // import generateSocieties from '../../../../../stores/management/societies/societie'
     import {computed, ref, watch} from 'vue'
     import {useCustomerStore} from '../../../../../stores/selling/customers/customers'
     import useUser from '../../../../../stores/security'
-    import AppSuspense from "../../../../AppSuspense.vue";
+    import AppSuspense from '../../../../AppSuspense.vue'
 
     const props = defineProps({
-        dataCustomers: {required: true, type: Object},
-        dataSociety: {required: true, type: Object}
+        dataCustomers: {required: true, type: Object}
     })
     const user = useUser()
     const isItAdmin = user.isItAdmin
@@ -28,7 +27,7 @@
     }
     //endregion
     //region select Standard EDI
-        //ORDERS/DELFOR
+    //ORDERS/DELFOR
     const ediTypesOptions = {
         options: [
             {text: 'Non défini', value: null},
@@ -38,7 +37,7 @@
     }
     //endregion
     //region select progression EDI
-        //DEFINITION, VALIDATION, ACTIVE, DISABLED
+    //DEFINITION, VALIDATION, ACTIVE, DISABLED
     const ediMaturityOptions = {
         options: [
             {text: 'Non défini', value: null},
@@ -58,20 +57,23 @@
     localWebEdiData.value = {
         webEdiUrl: props.dataCustomers.webEdiUrl,
         webEdiInfos: props.dataCustomers.webEdiInfos,
-        ediOrderType: props.dataCustomers.ediOrderType,
+        ediOrderType: props.dataCustomers.ediOrderType
     }
-    const integratedEdiData = ref ({})
+    const integratedEdiData = ref({})
     integratedEdiData.value = {
         ediOrderType: props.dataCustomers.ediOrderType,
         ediOrdersMaturity: props.dataCustomers.ediOrdersMaturity,
         isEdiAsn: props.dataCustomers.isEdiAsn
     }
     const ediFields = computed(
-        () => localData.value.isEdiOrders ?
-            [
-                {label: 'Gestion EDI', name: 'isEdiOrders', type: 'boolean'},
-                {label: 'Famille d\'EDI', name: 'ediKind', type: 'select', options: ediKindOptions}
-            ] : [ {label: 'Gestion EDI', name: 'isEdiOrders', type: 'boolean'}]
+        () => {
+            if (localData.value.isEdiOrders)
+                return [
+                    {label: 'Gestion EDI', name: 'isEdiOrders', type: 'boolean'},
+                    {label: 'Famille d\'EDI', name: 'ediKind', type: 'select', options: ediKindOptions}
+                ]
+            return [{label: 'Gestion EDI', name: 'isEdiOrders', type: 'boolean'}]
+        }
     )
     const webEdiFields = [
         {label: 'Url WEB EDI', name: 'webEdiUrl', type: 'text'},
@@ -121,11 +123,11 @@
     function updateLocalIntegratedEdiData(value) {
         integratedEdiData.value = value
     }
-    watch(() => localData.value, (newValue, oldValue) => {
+    watch(() => localData.value, newValue => {
         if (!newValue.isEdiOrders) {
             localData.value.ediKind = null
         }
-    });
+    })
     function onCancelEdi(){
         localData.value = {
             isEdiOrders: props.dataCustomers.isEdiOrders,
@@ -136,7 +138,7 @@
         localWebEdiData.value = {
             webEdiUrl: props.dataCustomers.webEdiUrl,
             webEdiInfos: props.dataCustomers.webEdiInfos,
-            ediOrderType: props.dataCustomers.ediOrderType,
+            ediOrderType: props.dataCustomers.ediOrderType
         }
     }
     function onCancelIntegratedEdi() {
@@ -162,8 +164,8 @@
                 @update="updateEdiFields"
                 @update:model-value="updateLocalData"/>
             <AppCardShow
-                id="addWebEdi"
                 v-if="localData.isEdiOrders && localData.ediKind === EDI_WEB"
+                id="addWebEdi"
                 class="ediCard"
                 :enabled="isItAdmin"
                 :fields="webEdiFields"
@@ -173,8 +175,8 @@
                 @update="updateWebEdiFields"
                 @update:model-value="updateLocalWebEdiData"/>
             <AppCardShow
-                id="addIntegratedEdi"
                 v-if="localData.isEdiOrders && localData.ediKind === EDI_INTEGRATED"
+                id="addIntegratedEdi"
                 class="ediCard"
                 :enabled="isItAdmin"
                 :fields="integratedEdiFields"

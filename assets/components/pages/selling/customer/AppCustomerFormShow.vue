@@ -14,8 +14,8 @@
     import {useRoute} from 'vue-router'
     import {useSocietyStore} from '../../../../stores/management/societies/societies'
     import {useInvoiceTimeDuesStore} from '../../../../stores/management/invoiceTimeDues'
-    import AppTab from "../../../tab/AppTab.vue";
-    import AppShowCustomerTabIt from "./tabs/AppShowCustomerTabIt.vue";
+    import AppTab from '../../../tab/AppTab.vue'
+    import AppShowCustomerTabIt from './tabs/AppShowCustomerTabIt.vue'
 
     const route = useRoute()
     const idCustomer = route.params.id_customer

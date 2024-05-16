@@ -9,10 +9,10 @@
     import AppFormJS from '../../../../form/AppFormJS.js'
 
     const props = defineProps({
-        order: {default: () => {}, required: true, type: Object}
+        order: {default: () => ({}), required: true, type: Object}
     })
     const fetchUser = useUser()
-    const currentCompany = fetchUser.company
+    //const currentCompany = fetchUser.company
     const fetchUnitOptions = useOptions('units')
     const customerOrderItemsCriteria = useFetchCriteria('customer-order-items-criteria')
     function addPermanentFilters() {
@@ -255,8 +255,7 @@
         <AppModal id="modalAddNewOrderItem" class="four" title="Ajouter Item en Ferme">
             <AppFormJS
                 id="formAddNewOrderItem"
-                :fields="fieldsOrderItem"
-            />
+                :fields="fieldsOrderItem"/>
         </AppModal>
         <AppCardableTable
             :current-page="storeCustomerOrderItems.currentPage"
@@ -277,7 +276,7 @@
             @cancel-search="cancelSearchCustomerOrders">
             <template #title>
                 <span>Items de la commande {{ order.ref }}</span>
-                <button class="btn btn-success btn-float-right m-1">s
+                <button class="btn btn-success btn-float-right m-1">
                     Ajouter Item en Ferme
                 </button>
                 <button class="btn btn-success btn-float-right m-1">

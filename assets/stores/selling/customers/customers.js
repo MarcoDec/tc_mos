@@ -11,7 +11,7 @@ export const useCustomerStore = defineStore('customers', {
             this.isLoaded = true
         },
         async update(data, process) {
-            const response = await api(`/api/customers/${this.customer.id}/${process}`, 'PATCH', data)
+            await api(`/api/customers/${this.customer.id}/${process}`, 'PATCH', data)
             this.isLoaded = false
             await this.fetchOne(this.customer.id)
         }

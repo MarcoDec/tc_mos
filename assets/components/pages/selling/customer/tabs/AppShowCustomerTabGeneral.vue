@@ -80,7 +80,7 @@
         <div v-if="dataCustomers.isEdiOrders" class="ediType">
             Type d'EDI: {{ dataCustomers.ediKind }}
         </div>
-        <div v-else  class="ediType">
+        <div v-else class="ediType">
             EDI non géré
         </div>
         <div>

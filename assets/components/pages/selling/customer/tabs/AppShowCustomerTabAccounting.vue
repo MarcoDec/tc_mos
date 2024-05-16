@@ -89,7 +89,7 @@
     localPortalData.value = {
         url: props.dataCustomers.accountingPortal.url,
         username: props.dataCustomers.accountingPortal.username,
-        password: props.dataCustomers.accountingPortal.password,
+        password: props.dataCustomers.accountingPortal.password
     }
     const localData = ref({})
     localData.value = {
@@ -169,6 +169,7 @@
             @update:model-value="updateLocalPortalData"/>
     </div>
 </template>
+
 <style scoped>
     div.tabAccounting {
         display: flex;
