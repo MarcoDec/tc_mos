@@ -36,6 +36,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Persistence\Proxy;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Selling\Customer\Product as ProductCustomer;
@@ -235,14 +236,17 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
     private ?string $code = null;
 
     #[
-        ApiProperty(description: 'Temps auto chiffrage', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
+        ApiProperty(
+            description: 'Temps auto chiffrage',
+            openapiContext: ['$ref' => '#/components/schemas/Measure-duration']
+        ),
         ORM\Embedded
     ]
     private Measure $costingAutoDuration;
 
     #[
         ApiProperty(description: 'Temps manu chiffrage', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
-        ORM\Embedded
+        ORM\Embedded(Measure::class)
     ]
     private Measure $costingManualDuration;
 
@@ -482,6 +486,8 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
     ]
     private DoctrineCollection $productorders;
 
+    private bool $isConstructed = false;
+
     public function __construct() {
         $this->autoDuration = new Measure();
         $this->children = new ArrayCollection();
@@ -505,6 +511,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
         $this->weight = new Measure();
         $this->productorders = new ArrayCollection();
         $this->productCustomers = new ArrayCollection();
+        $this->isConstructed = true;
     }
 
     public function __clone() {
@@ -577,6 +584,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
     }
 
     final public function getCostingAutoDuration(): Measure {
+        if ($this instanceof Proxy && !$this->__isInitialized()) {
+            $this->__load();
+        }
+        if (!$this->isConstructed)
+            $this->costingManualDuration = new Measure();
         return $this->costingAutoDuration;
     }
 
@@ -656,18 +668,18 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
     final public function getUnitMeasures(): array
     {
         return [
-            $this->autoDuration,
-            $this->costingAutoDuration,
-            $this->costingManualDuration,
-            $this->forecastVolume,
-            $this->manualDuration,
-            $this->maxProto,
-            $this->minDelivery,
-            $this->minProd,
-            $this->minStock,
-            $this->packaging,
-            $this->productionDelay,
-            $this->weight
+            $this->getAutoDuration(),
+            $this->getCostingAutoDuration(),
+            $this->getCostingManualDuration(),
+            $this->getForecastVolume(),
+            $this->getManualDuration(),
+            $this->getMaxProto(),
+            $this->getMinDelivery(),
+            $this->getMinProd(),
+            $this->getMinStock(),
+            $this->getPackaging(),
+            $this->getProductionDelay(),
+            $this->getWeight()
         ];
     }
     final public function getCurrencyMeasures(): array
@@ -1039,5 +1051,4 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
         $this->labelLogo = $labelLogo;
         return $this;
     }
-
 }

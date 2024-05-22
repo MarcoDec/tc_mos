@@ -8,6 +8,7 @@
     import useUser from '../../../../../stores/security'
     import AppModal from '../../../../modal/AppModal.vue'
     import AppFormJS from '../../../../form/AppFormJS.js'
+    import {Modal} from "bootstrap";
 
     const props = defineProps({
         order: {default: () => ({}), required: true, type: Object}
@@ -163,6 +164,8 @@
         customerOrderItemsCriteria.resetAllFilter()
         addPermanentFilters()
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
+        //On réinitialise les données du formulaire
+        document.getElementById('formCustomerOrdersTable').reset()
     }
     async function trierAlphabetCustomerOrders(payload) {
         addPermanentFilters()
@@ -309,6 +312,8 @@
         localForecastData.value = value
         // console.log('localForecastData', localForecastData.value)
     }
+    const tableKey = ref(0)
+    const customerOrderItemForecastCreateModal = ref(null)
     function addForecastItem() {
         console.log('localForecastData', localForecastData.value)
         //On ajoute le champ parentOrder
@@ -322,7 +327,18 @@
         else localForecastData.value.item = localForecastData.value.component
         localForecastData.value.requestedQuantity.code = requestedUnit.text
         storeCustomerOrderItems.add(localForecastData.value)
+        //On ferme la modale
+        if (customerOrderItemForecastCreateModal.value) {
+            const modalElement = customerOrderItemForecastCreateModal.value.$el
+            const bootstrapModal = Modal.getInstance(modalElement)
+            bootstrapModal.hide()
+        }
+        //On réinitalise les données locales
+        localForecastData.value = {}
+        //On rafraichit les données du tableau
         refreshTableCustomerOrders()
+        //On rafraichit le formulaire
+        tableKey.value++
     }
 </script>
 
@@ -333,7 +349,7 @@
                 id="formAddNewOrderItem"
                 :fields="fieldsOrderItem"/>
         </AppModal>
-        <AppModal id="modalAddNewForecastItem" class="four" title="Ajouter Item en Prévisionnel">
+        <AppModal ref="customerOrderItemForecastCreateModal" id="modalAddNewForecastItem" class="four" title="Ajouter Item en Prévisionnel">
             <AppFormJS
                 id="formAddNewOrderItem"
                 :key="forecastFormKey"
@@ -344,6 +360,7 @@
                 @submit="addForecastItem"/>
         </AppModal>
         <AppCardableTable
+            :key="tableKey"
             :current-page="storeCustomerOrderItems.currentPage"
             :fields="fieldsCommande"
             :first-page="storeCustomerOrderItems.firstPage"

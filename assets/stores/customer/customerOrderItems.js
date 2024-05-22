@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia'
 import api from '../../api'
+import {unset} from "lodash/object";
 
 const BaseUrl = '/api/selling-order-items'
 const BaseUrlProduct = '/api/selling-order-products'
@@ -16,6 +17,7 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
             await this.fetchAllGen(filter, BaseUrlComponent)
         },
         async fetchAllGen(filter = '', baseUrl = BaseUrl) {
+            this.customerOrdersItems=[]
             this.isLoading = true
             const response = await api(`${baseUrl}${filter}`, 'GET')
             this.customerOrdersItems = response['hydra:member']
@@ -25,12 +27,16 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
                 const myData = []
                 const promises = []
                 const toLoad = []
+                // console.log('----------------Boucle sur les items------------------')
                 this.customerOrdersItems.forEach((item, index) => {
+                    // console.log('item', item)
+                    // console.log('index', index)
                     if (item.item['@id'] !== null) {
                         toLoad[item.item['@id']] = true
                         myData[index] = 'item'
                     }
                 })
+                // console.log('----------------Fin de la boucle sur les items------------------')
                 Object.keys(toLoad).forEach(iri => {
                     const newPromise = new Promise(resolve => {
                         resolve(api(iri, 'GET'))
@@ -38,9 +44,13 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
                     promises.push(newPromise)
                 })
                 Promise.allSettled(promises).then(result => {
+                    // console.log('result', result)
                     myData.forEach((aData, index) => {
                         const iri = this.customerOrdersItems[index][aData]['@id']
                         const indexOf = Object.keys(toLoad).indexOf(iri)
+                        // console.log('object keys', Object.keys(toLoad))
+                        // console.log('iri', iri)
+                        // console.log('indexOf', indexOf)
                         this.customerOrdersItems[index][aData] = result[indexOf].value
                     })
                 })
@@ -94,8 +104,16 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
                 ref: item.ref,
                 state: item.embState.state,
                 notes: item.notes,
-                product: item.item,
                 id: item.id
+            }
+            //Si item.item['@id`'] est de type composant /api/components/XXX alors on ajoute à newObject le composant
+            if (item.item['@id'].includes('components')) {
+                newObject.component = item.item
+                unset(newObject, 'product')
+            }
+            if (item.item['@id'].includes('products')) {
+                newObject.product = item.item
+                unset(newObject, 'component')
             }
             return newObject
         }),

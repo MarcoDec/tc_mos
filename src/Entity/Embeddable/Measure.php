@@ -46,6 +46,14 @@ class Measure {
     ]
     private float $value = 0;
 
+    public function __construct(float $value = 0, ?string $code = null, ?string $denominator = null) {
+        $this->value = $value;
+        $this->code = $code;
+        $this->denominator = $denominator;
+        $this->unit = null;
+        $this->denominatorUnit = null;
+    }
+
     final public function add(self $measure): self {
         $measure = $this->convertToSame($measure);
         $this->value = $this->value + $measure->value;

@@ -63,11 +63,13 @@ class ProductItem extends Item {
         ApiProperty(description: 'Produit', readableLink: true),
         ORM\JoinColumn(name: 'product_id'),
         ORM\ManyToOne(targetEntity: Product::class),
-        Serializer\Groups(['read:item', 'write:item', 'read:expedition'])
+        Serializer\Groups(['read:item', 'write:item', 'read:expedition']),
+        Serializer\MaxDepth(1)
     ]
     protected $item;
-    function getUnit(): ?Unit
+    public function __construct()
     {
-        return $this->item->getUnit();
+        parent::__construct();
+        $this->item = new Product();
     }
 }
