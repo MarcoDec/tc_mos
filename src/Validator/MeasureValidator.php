@@ -36,17 +36,17 @@ final class MeasureValidator extends ConstraintValidator {
         $test1 = ($unitValue === null);
         $test2 = ($codeValue === null);
         $test3 = ($valueValue == 0);
-        dump([
-            'value' => $value,
-            'unitValue' => $unitValue,
-            'codeValue' => $codeValue,
-            'valueValue' => $valueValue,
-            'test1' => $test1,
-            'test2' => $test2,
-            'test3' => $test3
-        ]);
+//        dump([
+//            'value' => $value,
+//            'unitValue' => $unitValue,
+//            'codeValue' => $codeValue,
+//            'valueValue' => $valueValue,
+//            'test1' => $test1,
+//            'test2' => $test2,
+//            'test3' => $test3
+//        ]);
         if (($unitValue === null) && ($codeValue === null) && ($valueValue == 0)) {
-            dump('return');
+//            dump('return');
             return;
         }
         if (!($value instanceof Measure)) {
@@ -56,7 +56,7 @@ final class MeasureValidator extends ConstraintValidator {
         if ($value->getUnit() === null) {
             $this->hydrator->hydrateUnit($value);
         }
-        if (!$unitValue->has($unit)) {
+        if (isset($unitValue) && !$unitValue->has($unit)) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ unit }}', (string) $this->getUnit()->getName())
                 ->addViolation();
@@ -76,7 +76,7 @@ final class MeasureValidator extends ConstraintValidator {
     private function getUnit(): Unit {
        $myObject=$this->getObject();
        $objectUnit = $myObject->getUnit();
-       dump(['myObject' => $myObject, 'objectUnit' => $objectUnit]);
+//       dump(['myObject' => $myObject, 'objectUnit' => $objectUnit]);
        //dump(["MeasureValidator::getUnit myObject" => $myObject, "getUnit"=> $myObject->getUnit()]);
         if (!empty($objectUnit)) {
             return $objectUnit;

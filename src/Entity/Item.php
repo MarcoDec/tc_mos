@@ -29,7 +29,7 @@ abstract class Item extends Entity implements MeasuredInterface {
 
     #[
         ApiProperty(description: 'Quantité confirmée', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
-        AppAssert\Measure,
+        //AppAssert\Measure,
         ORM\Embedded,
         Serializer\Groups(['read:item', 'write:item'])
     ]
