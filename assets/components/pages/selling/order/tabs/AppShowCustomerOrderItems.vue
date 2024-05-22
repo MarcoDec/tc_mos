@@ -283,11 +283,12 @@
     ])
     const localForecastData = ref({})
     function openAddOrderItemForm() {
+        console.log('initialisation du formulaire')
         //document.getElementById('modalAddNewOrderItem').style.display = 'block'
     }
     const forecastFormKey = ref(0)
     function updateForecastValue(value) {
-        if (value.product && value.product != localForecastData.value.product) {
+        if (value.product && value.product !== localForecastData.value.product) {
             api(value.product, 'GET').then(response => {
                 // console.log('produit sélectionné', response)
                 if (localForecastData.value.requestedQuantity) localForecastData.value.requestedQuantity.code = response.unit
@@ -296,7 +297,7 @@
                 // console.log(localForecastData.value)
             })
         }
-        if (value.component && value.component != localForecastData.value.component) {
+        if (value.component && value.component !== localForecastData.value.component) {
             api(value.component, 'GET').then(response => {
                 // console.log('composant sélectionné', response)
                 if (localForecastData.value.requestedQuantity) localForecastData.value.requestedQuantity.code = response.unit
@@ -340,8 +341,7 @@
                 :fields="fieldsOpenOrderItem"
                 submit-label="Ajouter"
                 @update:model-value="updateForecastValue"
-                @submit="addForecastItem"
-            />
+                @submit="addForecastItem"/>
         </AppModal>
         <AppCardableTable
             :current-page="storeCustomerOrderItems.currentPage"
