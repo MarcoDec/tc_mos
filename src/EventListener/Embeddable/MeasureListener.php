@@ -15,6 +15,7 @@ final class MeasureListener {
     public function postLoad(LifecycleEventArgs $event): void {
         $entity = $event->getObject();
         if ($entity instanceof MeasuredInterface) {
+            dump('MeasureListener:postLoad', $entity);
             $this->hydrator->hydrateIn($entity);
         }
         if ($entity instanceof Order) {
