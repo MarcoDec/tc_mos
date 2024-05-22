@@ -1,4 +1,5 @@
 <script setup>
+    import api from '../../../../../api'
     import AppSuspense from '../../../../AppSuspense.vue'
     import {useCustomerOrderItemsStore} from '../../../../../stores/customer/customerOrderItems'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
@@ -234,7 +235,7 @@
             type: 'measure',
             width: 150
         },
-        {label: 'date de livraison souhaitée', name: 'requestedDate', trie: true, type: 'date', width: 80},
+        {label: 'Date de livraison souhaitée', name: 'requestedDate', trie: true, type: 'date', width: 80},
         {label: 'Date de livraison confirmée', name: 'confirmedDate', trie: true, type: 'date', width: 80},
         {
             label: 'Etat',
@@ -248,6 +249,80 @@
             type: 'select'
         }
     ])
+    const fieldsOpenOrderItem = computed(() => [
+        {label: 'Produit', name: 'product', type: 'multiselect-fetch', api: '/api/products', filteredProperty: 'code', max: 1},
+        {label: 'Composant', name: 'component', type: 'multiselect-fetch', api: '/api/components', filteredProperty: 'code', max: 1},
+        {
+            label: 'Quantité souhaitée',
+            name: 'requestedQuantity',
+            filter: true,
+            min: true,
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'requestedQuantity.code',
+                    options: {
+                        label: value =>
+                            optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                        options: optionsUnit.value
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'requestedQuantity.value',
+                    type: 'number',
+                    step: 0.1
+                }
+            },
+            trie: true,
+            type: 'measure',
+            width: 150
+        },
+        {label: 'Date de livraison souhaitée', name: 'requestedDate', trie: true, type: 'date', width: 80}
+    ])
+    const localForecastData = ref({})
+    function openAddOrderItemForm() {
+        //document.getElementById('modalAddNewOrderItem').style.display = 'block'
+    }
+    const forecastFormKey = ref(0)
+    function updateForecastValue(value) {
+        if (value.product && value.product != localForecastData.value.product) {
+            api(value.product, 'GET').then(response => {
+                // console.log('produit sélectionné', response)
+                if (localForecastData.value.requestedQuantity) localForecastData.value.requestedQuantity.code = response.unit
+                else localForecastData.value.requestedQuantity = {code: response.unit}
+                forecastFormKey.value++
+                // console.log(localForecastData.value)
+            })
+        }
+        if (value.component && value.component != localForecastData.value.component) {
+            api(value.component, 'GET').then(response => {
+                // console.log('composant sélectionné', response)
+                if (localForecastData.value.requestedQuantity) localForecastData.value.requestedQuantity.code = response.unit
+                else localForecastData.value.requestedQuantity = {code: response.unit}
+                forecastFormKey.value++
+                // console.log(localForecastData.value)
+            })
+        }
+        localForecastData.value = value
+        // console.log('localForecastData', localForecastData.value)
+    }
+    function addForecastItem() {
+        console.log('localForecastData', localForecastData.value)
+        //On ajoute le champ parentOrder
+        localForecastData.value.parentOrder = props.order['@id']
+        //On ajoute le type d'item isForecast
+        localForecastData.value.isForecast = true
+        //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
+        const requestedUnit = optionsUnit.value.find(unit => unit.value === localForecastData.value.requestedQuantity.code)
+        //Si c'est un produit on positionne la clé item avec la valeur de la clé produit, sinon on positionne la clé item avec la valeur de la clé component
+        if (localForecastData.value.product) localForecastData.value.item = localForecastData.value.product
+        else localForecastData.value.item = localForecastData.value.component
+        localForecastData.value.requestedQuantity.code = requestedUnit.text
+        storeCustomerOrderItems.add(localForecastData.value)
+        refreshTableCustomerOrders()
+    }
 </script>
 
 <template>
@@ -256,6 +331,17 @@
             <AppFormJS
                 id="formAddNewOrderItem"
                 :fields="fieldsOrderItem"/>
+        </AppModal>
+        <AppModal id="modalAddNewForecastItem" class="four" title="Ajouter Item en Prévisionnel">
+            <AppFormJS
+                id="formAddNewOrderItem"
+                :key="forecastFormKey"
+                :model-value="localForecastData"
+                :fields="fieldsOpenOrderItem"
+                submit-label="Ajouter"
+                @update:model-value="updateForecastValue"
+                @submit="addForecastItem"
+            />
         </AppModal>
         <AppCardableTable
             :current-page="storeCustomerOrderItems.currentPage"
@@ -276,10 +362,16 @@
             @cancel-search="cancelSearchCustomerOrders">
             <template #title>
                 <span>Items de la commande {{ order.ref }}</span>
-                <button class="btn btn-success btn-float-right m-1">
+                <button
+                    class="btn btn-success btn-float-right m-1"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalAddNewOrderItem">
                     Ajouter Item en Ferme
                 </button>
-                <button class="btn btn-success btn-float-right m-1">
+                <button
+                    class="btn btn-success btn-float-right m-1"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalAddNewForecastItem">
                     Ajouter Item en Prévisionnel
                 </button>
             </template>
