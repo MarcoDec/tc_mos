@@ -142,7 +142,7 @@ abstract class Item extends Entity implements MeasuredInterface {
         return $this->requestedQuantity;
     }
 
-    final public function getUnit(): ?Unit {
+    public function getUnit(): ?Unit {
         return $this->item?->getUnit();
     }
 
