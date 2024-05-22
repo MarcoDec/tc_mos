@@ -85,7 +85,7 @@ function AppFormJS(props, context) {
                                 disabled: props.disabled,
                                 form: props.id,
                                 type: 'submit',
-                                'onClick': value => context.emit('submit'),
+                                onClick: () => context.emit('submit')
                             },
                             () => props.submitLabel
                         )
