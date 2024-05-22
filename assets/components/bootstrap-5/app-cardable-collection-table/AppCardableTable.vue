@@ -46,8 +46,8 @@
         emit('search', inputValues)
     }
     async function cancelSearch(inputValues) {
-        input.value = inputValues
-        emit('cancelSearch', inputValues)
+        input.value = {}
+        emit('cancelSearch')
     }
     function onUpdateSearchModelValue(data) {
         input.value[data.field] = data.event
