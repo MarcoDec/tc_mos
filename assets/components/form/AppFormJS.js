@@ -81,7 +81,12 @@ function AppFormJS(props, context) {
                         ? generateSlot()
                         : h(
                             resolveComponent('AppBtnJS'),
-                            {disabled: props.disabled, form: props.id, type: 'submit'},
+                            {
+                                disabled: props.disabled,
+                                form: props.id,
+                                type: 'submit',
+                                'onClick': value => context.emit('submit'),
+                            },
                             () => props.submitLabel
                         )
                 )
