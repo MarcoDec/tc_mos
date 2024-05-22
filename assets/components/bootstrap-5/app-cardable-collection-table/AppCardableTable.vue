@@ -78,7 +78,8 @@
                 <a class="page-link" href="#" @click.prevent="getPage(pagePrevious)">... {{ pagePrevious }}</a>
             </li>
             <li class="page-item">
-                <span class="bg-light page-link text-black"><b>Page {{ pageCurrent }}</b></span>
+                <span v-if="pageCurrent" class="bg-light page-link text-black"><b>Page {{ pageCurrent }}</b></span>
+                <span v-else class="bg-light page-link text-black"><b>Aucun élément trouvé</b></span>
             </li>
             <li v-if="pageNext && pageNext > pageCurrent && pageNext < pageLast" class="page-item">
                 <a class="page-link" href="#" @click.prevent="getPage(pageNext)">{{ pageNext }} ...</a>
