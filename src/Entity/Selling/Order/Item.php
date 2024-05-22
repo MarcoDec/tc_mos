@@ -131,6 +131,13 @@ abstract class Item extends BaseItem {
     protected State $embState;
 
     #[
+        ApiProperty(description: 'Estimation ?', example: false),
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    protected bool $isForecast = false;
+
+    #[
         ApiProperty(description: 'Commande Client', readableLink: false, example: '/api/selling-orders/1'),
         ORM\ManyToOne(targetEntity: Order::class, fetch: "EAGER", inversedBy: 'sellingOrderItems'),
         Serializer\Groups(['read:item', 'write:item'])
@@ -242,4 +249,23 @@ abstract class Item extends BaseItem {
         $this->embState->setState($state);
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function getIsForecast(): bool
+    {
+        return $this->isForecast;
+    }
+
+    /**
+     * @param bool $isForecast
+     * @return Item
+     */
+    public function setIsForecast(bool $isForecast): Item
+    {
+        $this->isForecast = $isForecast;
+        return $this;
+    }
+
 }
