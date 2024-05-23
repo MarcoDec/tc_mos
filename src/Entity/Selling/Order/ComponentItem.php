@@ -11,16 +11,12 @@ use App\Filter\RelationFilter;
 use App\Repository\Selling\Order\ComponentItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @template-extends Item<Component>
  */
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['item',  'sellingOrder.customer.id']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['sellingOrder.customer.id' => 'partial', 'ref' => 'partial', 'requestedQuantity.value' => 'partial', 'requestedQuantity.code' => 'partial', 'confirmedQuantity.code' => 'partial', 'confirmedQuantity.value' => 'partial', 'confirmedDate' => 'partial', 'requestedDate' => 'partial',
-    'sellingOrder.ref' => 'partial', 'embState.state' =>'partial', 'sellingOrder.kind' => 'partial', 'item.id'=> 'partial'
-    ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['item']),
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -58,16 +54,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 ]
 class ComponentItem extends Item {
     #[
-        ApiProperty(description: 'Composant', readableLink: true, fetchEager: true),
+        ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
         ORM\JoinColumn(name: 'component_id'),
         ORM\ManyToOne(targetEntity: Component::class),
-        Serializer\Groups(['read:item', 'write:item']),
-        Serializer\MaxDepth(1)
+        Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $item;
-    public function __construct()
-    {
-        parent::__construct();
-        $this->item = new Component();
-    }
 }

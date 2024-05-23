@@ -138,14 +138,14 @@ abstract class Item extends BaseItem {
     protected bool $isForecast = false;
 
     #[
-        ApiProperty(description: 'Commande Client', readableLink: false, example: '/api/selling-orders/1', fetchEager: false),
-        ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'sellingOrderItems'),
+        ApiProperty(description: 'Commande Client', readableLink: false, example: '/api/selling-orders/1'),
+        ORM\ManyToOne(targetEntity: Order::class, fetch: "EAGER", inversedBy: 'sellingOrderItems'),
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $parentOrder;
 
     #[
-        ApiProperty(description: 'Expéditions associées', example: '/api/expeditions/1', fetchEager: false),
+        ApiProperty(description: 'Expéditions associées', example: '/api/expeditions/1'),
         ORM\OneToMany(mappedBy: 'item', targetEntity: Expedition::class),
         Serializer\Groups(['read:item'])
     ]
@@ -156,7 +156,6 @@ abstract class Item extends BaseItem {
         $this->embBlocker = new Closer();
         $this->embState = new State();
         $this->expeditions = new ArrayCollection();
-        $this->parentOrder = new Order();
     }
     /*, 'read:expedition'*/
     #[
@@ -184,7 +183,7 @@ abstract class Item extends BaseItem {
     }
 
     #[
-        ApiProperty(description: 'Item commandé', readableLink: false, example: '/api/products/1'),
+        ApiProperty(description: 'Item', readableLink: false, example: '/api/selling-orders/1'),
         Serializer\Groups(['read:item'])
     ]
     final public function getItem() {

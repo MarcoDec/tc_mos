@@ -18,7 +18,3 @@ api_platform:
   swagger:
     versions: [ 3 ]
   title: TConcept-GPAO
-  eager_loading:
-    enabled: true
-    fetch_partial: true
-    max_joins: 30

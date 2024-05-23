@@ -6,16 +6,12 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Currency;
 use App\Entity\Management\Unit;
-use App\Entity\Project\Product\Product;
 use App\Repository\CurrencyRepository;
 use App\Repository\Management\UnitRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\Proxy;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Cache\CacheInterface;
-use Doctrine\Common\Util\ClassUtils;
 
 final class MeasureHydrator {
     public function __construct(
@@ -23,8 +19,7 @@ final class MeasureHydrator {
         private readonly UnitRepository     $unitRepo,
         private readonly CurrencyRepository $currencyRepo,
         private readonly RequestStack       $stack,
-        private LoggerInterface             $logger,
-        private EntityManagerInterface $entityManager
+        private LoggerInterface             $logger
     ) {
     }
 
@@ -46,13 +41,8 @@ final class MeasureHydrator {
     }
 
     public function hydrateIn(MeasuredInterface $entity): MeasuredInterface {
-        dump([
-            "entity" => $entity,
-            "entity class" => ClassUtils::getClass($entity)
-        ]);
-
+//        dump(["MeasureHydrator:hydrateIn Before" => $entity]);
         if ($this->isSafe()) {
-            $this->initializeEmbeddables($entity);
             foreach ($entity->getUnitMeasures() as $measure) {
                 $this->hydrateUnit($measure);
             }
@@ -60,16 +50,8 @@ final class MeasureHydrator {
                 $this->hydrateCurrency($measure);
             }
         }
+//        dump(["MeasureHydrator:hydrateIn After" => $entity]);
         return $entity;
-    }
-
-    private function initializeEmbeddables(MeasuredInterface $entity): void {
-        if ($entity instanceof Product) {
-            $product = $this->entityManager->find(Product::class, $entity->getId());
-            dump(['product' => $product]);
-            $embBlocker = $product->getEmbBlocker();
-            dump(['embBlocker' => $product]);
-        }
     }
 
     private function getUnit(?string $code): ?Unit {
