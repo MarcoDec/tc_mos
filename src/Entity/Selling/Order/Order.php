@@ -28,9 +28,9 @@ use App\Filter\SetFilter;
 use App\Filter\RelationFilter;
 
 #[
-    ApiFilter(OrderFilter::class, properties: ['id', 'ref', 'createdAt', 'updatedAt']),
+    ApiFilter(OrderFilter::class, properties: ['id', 'ref', 'createdAt', 'updatedAt', 'orderFamily']),
     ApiFilter(SetFilter::class, properties: ['embState.state', 'embBlocker.state']),
-    ApiFilter(SearchFilter::class, properties: ['id' => 'exact', 'ref' => 'partial', 'createdAt' => 'exact', 'updatedAt' => 'exact']),
+    ApiFilter(SearchFilter::class, properties: ['id' => 'exact', 'ref' => 'partial', 'createdAt' => 'exact', 'updatedAt' => 'exact', 'orderFamily' => 'partial']),
     ApiFilter(RelationFilter::class, properties: ['billedTo', 'company', 'customer', 'destination']),
     ApiResource(
         description: 'Commande Client',

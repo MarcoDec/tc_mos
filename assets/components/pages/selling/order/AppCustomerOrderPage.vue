@@ -67,6 +67,13 @@
             max: 1
         },
         {
+            label: 'Type de commande',
+            name: 'orderFamily',
+            width: 120,
+            type: 'text',
+            trie: true
+        },
+        {
             label: 'Etat',
             name: 'state',
             options: {
@@ -111,6 +118,7 @@
         if (inputValues.state) customerOrderListCriteria.addFilter('embState.state[]', inputValues.state)
         if (inputValues.closer) customerOrderListCriteria.addFilter('embBlocker.state[]', inputValues.closer)
         if (inputValues.customer) customerOrderListCriteria.addFilter('customer', inputValues.customer)
+        if (inputValues.orderFamily) customerOrderListCriteria.addFilter('orderFamily', inputValues.orderFamily)
         await storeCustomerOrderList.fetch(customerOrderListCriteria.getFetchCriteria)
     }
     async function cancelSearch() {
