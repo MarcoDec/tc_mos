@@ -120,7 +120,18 @@
             const idCustomer = order.value.customer
             const hasEdiCustomerOrders = await fetchCustomerOrderStore.hasActiveEdiOrders(idCustomer, order.value.id)
             if(hasEdiCustomerOrders){
-                alert('Il existe déjà une commande de type EDI pour ce client')
+                alert('Il existe déjà une commande de type EDI active pour ce client')
+                //On recharge la page
+                window.location.reload()
+                return
+            }
+        }
+        //On doit vérifier avant de valider les modifications si le type de commande est de type prévisionnelle qu'il n'en existe pas déjà une, auquel cas on ne peut pas modifier le type de commande
+        if(orderFamily === 'forecast' || orderFamily === 'edi_delfor'){
+            const idCustomer = order.value.customer
+            const hasForecastCustomerOrders = await fetchCustomerOrderStore.hasActiveForecastOrders(idCustomer, order.value.id)
+            if(hasForecastCustomerOrders){
+                alert('Il existe déjà une commande active de type prévisionnelle pour ce client')
                 //On recharge la page
                 window.location.reload()
                 return
