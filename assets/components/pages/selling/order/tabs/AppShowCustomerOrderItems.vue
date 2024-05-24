@@ -41,6 +41,7 @@
     ]
 
     const fieldsCommande = [
+        {label: 'Forecast', name: 'isForecast', type: 'boolean', width: 50},
         {label: 'Produit', name: 'product', type: 'multiselect-fetch', api: '/api/products', filteredProperty: 'code', max: 1},
         {label: 'Composant', name: 'component', type: 'multiselect-fetch', api: '/api/components', filteredProperty: 'code', max: 1},
         {

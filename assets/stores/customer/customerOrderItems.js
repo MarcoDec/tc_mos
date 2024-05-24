@@ -88,6 +88,7 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
                     code: item.confirmedQuantity.code,
                     value: item.confirmedQuantity.value
                 },
+                isForecast: item.isForecast,
                 requestedDate: item.requestedDate,
                 requestedQuantity: {
                     code: item.requestedQuantity.code,
