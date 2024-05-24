@@ -66,6 +66,29 @@ export const useCustomerOrderStore = defineStore('customerOrder', {
             }
             this.pagination = false
             return responseData
+        },
+        customerWithIntegratedEdi() {
+            // console.log(this.selectedCustomer)
+            if (this.selectedCustomer !== null && this.selectedCustomer.isEdiOrders && this.selectedCustomer.ediKind === 'integratedEDI') {
+                return true
+            }
+            return false
+        },
+        orderFamilyOptions() {
+            // const baseOptions = [{text: 'Libre', value: 'free'}]
+            const baseOptions = []
+            if (!this.customerWithIntegratedEdi()) {
+                baseOptions.push({text: 'Ferme', value: 'fixed'})
+                baseOptions.push({text: 'Prévisionnelle', value: 'forecast'})
+            } else {
+                if (this.selectedCustomer.ediOrderType === 'ORDERS') {
+                    baseOptions.push({text: 'Prévisionnelle', value: 'forecast'})
+                    baseOptions.push({text: 'Ferme (EDI ORDERS)', value: 'edi_orders'})
+                } else {
+                    baseOptions.push({text: 'Prévisionnelle (EDI DELFOR)', value: 'edi_delfor'})
+                }
+            }
+            return baseOptions
         }
     },
     getters: {
@@ -79,6 +102,7 @@ export const useCustomerOrderStore = defineStore('customerOrder', {
         nextPage: null,
         pagination: true,
         previousPage: null,
-        lastPage: null
+        lastPage: null,
+        selectedCustomer: {}
     })
 })

@@ -5,6 +5,7 @@
     import AppWorkflowShow from '../../../workflow/AppWorkflowShow.vue'
     import AppCustomerOrderShow from './tabs/AppCustomerOrderShow.vue'
     import AppBtn from '../../../AppBtn.vue'
+    import api from '../../../../api'
 
     import {useCustomerOrderStore} from '../../../../stores/customer/customerOrder'
     import {useRoute, useRouter} from 'vue-router'
@@ -39,13 +40,8 @@
         {text: 'Série', value: 'Série'},
         {text: 'Pièce de rechange', value: 'Pièce de rechange'}
     ]
-    const optionsOrderFamily = [
-        {text: 'Ferme', value: 'fixed'},
-        {text: 'Ferme (EDI ORDERS)', value: 'edi_orders'},
-        {text: 'Prévisionnelle', value: 'forecast'},
-        {text: 'Prévisionnelle (EDI DELFOR)', value: 'edi_delfor'},
-        {text: 'Libre', value: 'free'}
-    ]
+    const optionsOrderFamily = computed(() => fetchCustomerOrderStore.orderFamilyOptions())
+    console.log('optionsOrderFamily', optionsOrderFamily.value)
     const fieldsGenerality = computed(() => [
         {
             label: 'Compagnie *',
@@ -69,8 +65,8 @@
             label: 'Type de commande *',
             name: 'orderFamily',
             options: {
-                label: value => optionsOrderFamily.find(option => option.type === value)?.text ?? null,
-                options: optionsOrderFamily
+                label: value => optionsOrderFamily.value.find(option => option.type === value)?.text ?? null,
+                options: optionsOrderFamily.value
             },
             type: 'select'
         },
@@ -104,6 +100,10 @@
     const generalityData = ref({})
     const order = computed(() => fetchCustomerOrderStore.customerOrder)
     async function updateGeneralityData(data) {
+        //Si customer est défini, on le charge afin de pouvoir identifier le type de commande possible
+        if(data.customer){
+            fetchCustomerOrderStore.selectedCustomer = api(data.customer, 'GET')
+        }
         generalityData.value = {
             company: data.company['@id'],
             customer: data.customer,

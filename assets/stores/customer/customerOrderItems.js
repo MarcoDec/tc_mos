@@ -119,7 +119,6 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
         isSorter: state => field => field.name === state.sorted,
         order: state => (state.asc ? 'ascending' : 'descending'),
         pages: state => Math.ceil(state.total / 15)
-
     },
     state: () => ({
         asc: true,

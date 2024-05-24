@@ -3,6 +3,8 @@
     import AppFormJS from '../../../form/AppFormJS.js'
     import useUser from '../../../../stores/security'
     import {useCustomerOrderStore} from '../../../../stores/customer/customerOrder'
+    import api from '../../../../api'
+
     defineProps({
         title: {required: true, type: String},
         target: {required: true, type: String},
@@ -19,14 +21,16 @@
     const isCreatedPopupVisible = ref(false)
     const currentCompany = user.company
     const generalData = ref({})
-
-    const optionsOrderFamily = [
-        {text: 'Ferme', value: 'fixed'},
-        {text: 'Ferme (EDI ORDERS)', value: 'edi_orders'},
-        {text: 'Prévisionnelle', value: 'forecast'},
-        {text: 'Prévisionnelle (EDI DELFOR)', value: 'edi_delfor'},
-        {text: 'Libre', value: 'free'}
-    ]
+    const selectedCustomer = ref(null)
+    const customerWithIntegratedEdi = computed(() => {
+        if (selectedCustomer.value !== null && selectedCustomer.value.isEdiOrders && selectedCustomer.value.ediKind === 'integratedEDI') {
+            return true
+        }
+        return false
+    })
+    const optionsOrderFamily = computed(() =>{
+        return storeCustomerOrder.orderFamilyOptions()
+    })
     const fields = computed(() => [
         {
             label: 'Client *',
@@ -41,8 +45,8 @@
             label: 'Type de commande *',
             name: 'orderFamily',
             options: {
-                label: value => optionsOrderFamily.find(option => option.type === value)?.text ?? null,
-                options: optionsOrderFamily
+                label: value => optionsOrderFamily.value.find(option => option.type === value)?.text ?? null,
+                options: optionsOrderFamily.value
             },
             type: 'select'
         },
@@ -67,7 +71,7 @@
         }
     ])
 
-    function generalForm(value) {
+    async function generalForm(value) {
         const key = Object.keys(value)[0]
         if (Object.prototype.hasOwnProperty.call(generalData.value, key)) {
             if (typeof value[key] === 'object') {
@@ -85,10 +89,17 @@
         } else {
             generalData.value[key] = value[key]
         }
+        console.log('generalData', generalData.value)
+        if (key === 'customer') {
+            selectedCustomer.value = await api(value[key], 'GET')
+            storeCustomerOrder.selectedCustomer = await api(value[key], 'GET')
+            console.log('selectedCustomer', storeCustomerOrder.selectedCustomer)
+            console.log('customerWithIntegratedEdi', storeCustomerOrder.customerWithIntegratedEdi())
+            console.log('storeCustomerOrder.orderFamilyOptions', storeCustomerOrder.orderFamilyOptions())
+        }
     }
 
-    const customerOrderData = ref({
-    })
+    const customerOrderData = ref({})
 
     function resetForm() {
         generalData.value = {}
