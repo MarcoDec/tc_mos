@@ -29,6 +29,15 @@ export const useCustomerOrderStore = defineStore('customerOrder', {
             await api(`/api/selling-orders/${id}`, 'DELETE')
             await this.fetch()
         },
+        async hasActiveEdiOrders(iriCustomer, idOrder) {
+            const response = await api(`/api/selling-orders?customer=${iriCustomer}&deleted=false&pagination=false`, 'GET')
+            const results = response['hydra:member']
+            //Afin de permettre le changement de type edi de la commande en cours, on retire du tableau de résultat la commande courante
+            const resultsFiltered = results.filter(
+                anOrder => anOrder.id !== idOrder
+            )
+            return resultsFiltered.some(order => ['edi_orders', 'edi_delfor'].includes(order.orderFamily))
+        },
         updatePagination(response) {
             const responseData = response['hydra:member']
             let paginationView = {}

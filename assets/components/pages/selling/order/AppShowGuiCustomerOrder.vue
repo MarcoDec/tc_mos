@@ -114,6 +114,18 @@
         }
     }
     async function updateGeneralityCustomerOrder(){
+        //On doit vérifier avant de valider les modifications si le type de commande est de type EDI qu'il n'en existe pas déjà une, auquel cas on ne peut pas modifier le type de commande
+        const orderFamily = generalityData.value.orderFamily
+        if(orderFamily === 'edi_orders' || orderFamily === 'edi_delfor'){
+            const idCustomer = order.value.customer
+            const hasEdiCustomerOrders = await fetchCustomerOrderStore.hasActiveEdiOrders(idCustomer, order.value.id)
+            if(hasEdiCustomerOrders){
+                alert('Il existe déjà une commande de type EDI pour ce client')
+                //On recharge la page
+                window.location.reload()
+                return
+            }
+        }
         const payload = {
             id: idCustomerOrder,
             SellingOrder: {
