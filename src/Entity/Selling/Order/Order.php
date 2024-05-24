@@ -8,9 +8,12 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Project\Product\KindType;
 use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Selling\Order\State;
 use App\Entity\Entity;
+use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Society\Company\Company;
+use App\Entity\Management\Unit;
 use App\Entity\Selling\Customer\BillingAddress;
 use App\Entity\Selling\Customer\Contact;
 use App\Entity\Selling\Customer\Customer;
@@ -115,7 +118,7 @@ use App\Filter\RelationFilter;
     ORM\Entity,
     ORM\Table(name: 'selling_order')
 ]
-class Order extends Entity {
+class Order extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Destinataire de la commande', readableLink: false, example: '/api/billing-addresses/1'),
         ORM\ManyToOne,
@@ -209,6 +212,20 @@ class Order extends Entity {
         ORM\OneToMany(mappedBy: 'parentOrder', targetEntity: Item::class)
     ]
     private Collection $sellingOrderItems;
+
+    #[
+        ApiProperty(description: 'Total prix fixe', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
+        Serializer\Groups(['read:order', 'write:order'])
+    ]
+    private Measure $totalFixedPrice;
+
+    #[
+        ApiProperty(description: 'Total prix prévisionnel', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
+        Serializer\Groups(['read:order', 'write:order'])
+    ]
+    private Measure $totalForecastPrice;
 
     public function __construct() {
         $this->embBlocker = new Closer();
@@ -367,4 +384,52 @@ class Order extends Entity {
         return $this;
     }
 
+    public function getTotalFixedPrice(): Measure
+    {
+        return $this->totalFixedPrice;
+    }
+
+    public function setTotalFixedPrice(Measure $totalFixedPrice): void
+    {
+        $this->totalFixedPrice = $totalFixedPrice;
+    }
+
+    public function getTotalForecastPrice(): Measure
+    {
+        return $this->totalForecastPrice;
+    }
+
+    public function setTotalForecastPrice(Measure $totalForecastPrice): void
+    {
+        $this->totalForecastPrice = $totalForecastPrice;
+    }
+
+
+    public function getMeasures(): array
+    {
+        return [$this->totalFixedPrice, $this->totalForecastPrice];
+    }
+
+    public function getUnitMeasures(): array
+    {
+        return [];
+    }
+
+    public function getCurrencyMeasures(): array
+    {
+        return [$this->totalFixedPrice, $this->totalForecastPrice];
+    }
+
+    public function getUnit(): ?Unit
+    {
+        return null;
+    }
+    #[
+        ApiProperty(description: 'Total prix de vente', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        Serializer\Groups(['read:order'])
+    ]
+    public function getTotalSellingPrice(): Measure
+    {
+        return $this->totalFixedPrice->add($this->totalForecastPrice);
+    }
 }
