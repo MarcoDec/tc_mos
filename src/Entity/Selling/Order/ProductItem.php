@@ -20,9 +20,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 #[   
     ApiFilter(filterClass: RelationFilter::class, properties: ['item',  'sellingOrder.customer.id']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['sellingOrder.customer.id' => 'partial', 'ref' => 'partial', 'requestedQuantity.value' => 'partial', 'requestedQuantity.code' => 'partial', 'confirmedQuantity.code' => 'partial', 'confirmedQuantity.value' => 'partial', 'confirmedDate' => 'partial', 'requestedDate' => 'partial',
-    'sellingOrder.ref' => 'partial', 'embState.state' =>'partial', 'sellingOrder.kind' => 'partial', 'item.id'=> 'partial'
-]),
-
+        'sellingOrder.ref' => 'partial', 'embState.state' =>'partial', 'sellingOrder.kind' => 'partial', 'item.id'=> 'partial'
+    ]),
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -38,7 +37,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                     'description' => 'Récupère les lignes',
                     'summary' => 'Récupère les lignes',
                 ],
-                'path' => '/selling-order-products',
+                'path' => '/selling-order-item-products',
             ]
         ],
         itemOperations: ['get' => NO_ITEM_GET_OPERATION],
