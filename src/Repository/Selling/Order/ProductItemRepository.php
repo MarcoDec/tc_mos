@@ -18,6 +18,7 @@ use App\Filter\RelationFilter;
  * @method null|ProductItem find($id, $lockMode = null, $lockVersion = null)
  * @method null|ProductItem findOneBy(array $criteria, ?array $orderBy = null)
  * @method ProductItem[]    findAll()
+ * @method ProductItem[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 final class ProductItemRepository extends ItemRepository {
     public function __construct(ManagerRegistry $registry) {
@@ -70,13 +71,13 @@ final class ProductItemRepository extends ItemRepository {
             ->leftJoin('item.unit', 'u', Join::WITH, 'u.deleted = FALSE');
     }
 
-    /**
-     * @return ComponentItem[]
-     */
-    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array {
-        /** @phpstan-ignore-next-line */
-        return $this->createByQueryBuilder($criteria, $orderBy, $limit, $offset)->getQuery()->getResult();
-    }
+//    /**
+//     * @return ComponentItem[]
+//     */
+//    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array {
+//        /** @phpstan-ignore-next-line */
+//        return $this->createByQueryBuilder($criteria, $orderBy, $limit, $offset)->getQuery()->getResult();
+//    }
 
     public function findOneByCheck(int $id): ?ComponentItem {
         $query = $this->createCheckQueryBuilder($id)->getQuery();

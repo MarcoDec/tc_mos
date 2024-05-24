@@ -249,13 +249,13 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:component', 'read:component:collection'])
+        Serializer\Groups(['read:item', 'read:component', 'read:component:collection'])
     ]
     private Blocker $embBlocker;
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:component', 'read:component:collection'])
+        Serializer\Groups(['read:item', 'read:component', 'read:component:collection'])
     ]
     private State $embState;
 
@@ -296,7 +296,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         Assert\Length(max: 5, groups: ['Component-admin', 'Component-clone']),
         Assert\NotBlank(groups: ['Component-admin', 'Component-clone']),
         ORM\Column(name: '`index`', length: 5, nullable: false, options: ['default' => '0']),
-        Serializer\Groups(['read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone'])
+        Serializer\Groups(['read:item', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone'])
     ]
     private string $index = '0';
 
@@ -335,7 +335,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         ApiProperty(description: 'Nom', required: true, example: '2702 SCOTCH ADHESIF PVC T2 19MMX33M NOIR'),
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\Column,
-        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone', 'read:stock', 'read:component-preparation'])
+        Serializer\Groups(['read:item', 'create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone', 'read:stock', 'read:component-preparation'])
     ]
     private ?string $name = null;
 
@@ -427,17 +427,19 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     #[
         ApiProperty(description: 'Référence interne', required: true, example: 'FIX-1'),
         ORM\Column,
-        Serializer\Groups(['read:component', 'read:component:collection', 'read:stock', 'read:item', 'read:component-preparation'])
+        Serializer\Groups(['read:item', 'read:component', 'read:component:collection', 'read:stock', 'read:item', 'read:component-preparation'])
     ]
     private ?string $code='';
 
     #[
-        ORM\OneToMany(mappedBy: 'component', targetEntity: Preparation::class, fetch: 'EAGER')
+        ApiProperty(description: 'Préparations', required: false, fetchEager: true),
+        ORM\OneToMany(mappedBy: 'component', targetEntity: Preparation::class, fetch: 'EAGER'),
+        Serializer\MaxDepth(1)
     ]
     private DoctrineCollection $preparationComponents;
 
     #[
-        ApiProperty(description: 'Items de commande fournisseur associés', example: '[/api/purchase-order-items/1]'),
+        ApiProperty(description: 'Items de commande fournisseur associés', example: '[/api/purchase-order-items/1]', fetchEager: false),
         ORM\OneToMany(mappedBy: "item", targetEntity: ComponentItem::class),
         Serializer\Groups(['read:item', 'write:item'])
     ]
