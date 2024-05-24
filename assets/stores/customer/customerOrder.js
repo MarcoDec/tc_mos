@@ -23,7 +23,7 @@ export const useCustomerOrderStore = defineStore('customerOrder', {
         async updateSellingOrder(payload) {
             console.log(payload)
             await api(`/api/selling-orders/${payload.id}`, 'PATCH', payload.SellingOrder)
-            await this.fetch()
+            await this.fetchById(payload.id)
         },
         async remove(id) {
             await api(`/api/selling-orders/${id}`, 'DELETE')

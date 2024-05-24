@@ -116,7 +116,7 @@
     async function refreshTableCustomerOrders() {
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     }
-    await refreshTableCustomerOrders()
+    //await refreshTableCustomerOrders()
     async function deletedCustomerOrderItem(idRemove) {
         await storeCustomerOrderItems.remove(idRemove)
         await refreshTableCustomerOrders()
@@ -340,6 +340,7 @@
         //On rafraichit le formulaire
         tableKey.value++
     }
+    const fixedFamilies = ['fixed', 'edi_orders', 'free']
 </script>
 
 <template>
@@ -349,7 +350,7 @@
                 id="formAddNewOrderItem"
                 :fields="fieldsOrderItem"/>
         </AppModal>
-        <AppModal ref="customerOrderItemForecastCreateModal" id="modalAddNewForecastItem" class="four" title="Ajouter Item en Prévisionnel">
+        <AppModal v-if="!fixedFamilies.includes(order.orderFamily)" ref="customerOrderItemForecastCreateModal" id="modalAddNewForecastItem" class="four" title="Ajouter Item en Prévisionnel">
             <AppFormJS
                 id="formAddNewOrderItem"
                 :key="forecastFormKey"
@@ -378,7 +379,7 @@
             @search="searchCustomerOrders"
             @cancel-search="cancelSearchCustomerOrders">
             <template #title>
-                <span>Items de la commande {{ order.ref }}</span>
+                <span>Items de commande {{ order.ref }}</span>
                 <button
                     class="btn btn-success btn-float-right m-1"
                     data-bs-toggle="modal"
@@ -386,10 +387,11 @@
                     Ajouter Item en Ferme
                 </button>
                 <button
+                    v-if="!fixedFamilies.includes(order.orderFamily)"
                     class="btn btn-success btn-float-right m-1"
                     data-bs-toggle="modal"
                     data-bs-target="#modalAddNewForecastItem">
-                    Ajouter Item en Prévisionnel
+                    Ajouter Item en Prévisionnel {{order.orderFamily}}
                 </button>
             </template>
         </AppCardableTable>

@@ -102,6 +102,7 @@
         isFullScreen.value = false
     }
     const generalityData = ref({})
+    const order = computed(() => fetchCustomerOrderStore.customerOrder)
     async function updateGeneralityData(data) {
         generalityData.value = {
             company: data.company['@id'],
@@ -125,6 +126,7 @@
             }
         }
         await fetchCustomerOrderStore.updateSellingOrder(payload)
+        keyTabs.value++
     }
     const generalityKey = ref(0)
     onBeforeMount(() => {
@@ -173,7 +175,7 @@
                 <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small">
                     <div class="full-visible-width">
                         <AppSuspense>
-                            <AppCustomerOrderShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100" :order="fetchCustomerOrderStore.customerOrder"/>
+                            <AppCustomerOrderShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100" :order="order"/>
                             <AppCustomerOrderInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>
                         </AppSuspense>
                     </div>
