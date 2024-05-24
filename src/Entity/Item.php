@@ -49,7 +49,7 @@ abstract class Item extends Entity implements MeasuredInterface {
     protected $parentOrder;
 
     #[
-        ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ApiProperty(description: 'Prix unitaire item', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
         Serializer\Groups(['read:item', 'write:item'])
     ]

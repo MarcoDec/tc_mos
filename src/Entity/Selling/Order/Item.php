@@ -10,12 +10,15 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Selling\Order\Item\State;
+use App\Entity\Management\Currency;
 use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
 use App\Entity\Selling\Customer\Customer;
 use App\Entity\Item as BaseItem;
 use App\Entity\Production\Manufacturing\Expedition;
+use App\Entity\Selling\Customer\Price;
 use App\Filter\RelationFilter;
 use App\Repository\Selling\Order\ItemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -151,6 +154,20 @@ abstract class Item extends BaseItem {
     ]
     private Collection $expeditions;
 
+    #[
+        ApiProperty(description: 'Quantité expédiée', fetchEager: false),
+        ORM\Embedded(class: Measure::class),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    private Measure $sentQuantity;
+
+    #[
+        ApiProperty(description: 'Prix total de l\'item', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    private Measure $totalItemPrice;
+
     public function __construct() {
         parent::__construct();
         $this->embBlocker = new Closer();
@@ -267,6 +284,34 @@ abstract class Item extends BaseItem {
     {
         $this->isForecast = $isForecast;
         return $this;
+    }
+
+    public function getSentQuantity(): Measure
+    {
+        return $this->sentQuantity;
+    }
+
+    public function setSentQuantity(Measure $sentQuantity): void
+    {
+        $this->sentQuantity = $sentQuantity;
+    }
+    #[
+        ApiProperty(description: 'Quantité restante à envoyer', readableLink: false),
+        Serializer\Groups(['read:item'])
+    ]
+    public function getQuantityToBeSent(): Measure
+    {
+        return $this->getRequestedQuantity()->substract($this->sentQuantity);
+    }
+
+    public function getTotalItemPrice(): Measure
+    {
+        return $this->totalItemPrice;
+    }
+
+    public function setTotalItemPrice(Measure $totalItemPrice): void
+    {
+        $this->totalItemPrice = $totalItemPrice;
     }
 
 }
