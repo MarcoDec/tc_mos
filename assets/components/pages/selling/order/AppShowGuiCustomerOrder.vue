@@ -41,7 +41,7 @@
         {text: 'Pièce de rechange', value: 'Pièce de rechange'}
     ]
     const optionsOrderFamily = computed(() => fetchCustomerOrderStore.orderFamilyOptions())
-    console.log('optionsOrderFamily', optionsOrderFamily.value)
+    //console.log('optionsOrderFamily', optionsOrderFamily.value)
     const fieldsGenerality = computed(() => [
         {
             label: 'Compagnie *',

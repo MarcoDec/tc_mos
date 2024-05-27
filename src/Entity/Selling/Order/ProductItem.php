@@ -36,6 +36,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                 'openapi_context' => [
                     'description' => 'Récupère les lignes',
                     'summary' => 'Récupère les lignes',
+                    'tags' => ['SellingOrderItem']
                 ],
                 'path' => '/selling-order-item-products',
             ]

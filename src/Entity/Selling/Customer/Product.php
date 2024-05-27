@@ -6,6 +6,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Unit;
@@ -69,6 +70,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
     ORM\Table(name: 'product_customer')
 ]
 class Product extends Entity {
+    //region properties
     /** @var Collection<int, Company> */
     #[
         ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
@@ -80,7 +82,7 @@ class Product extends Entity {
     #[
         ApiProperty(description: 'Client', readableLink: true),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
+        ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'productCustomers'),
         Serializer\Groups(['read:product-customer', 'write:product-customer', 'read:manufacturing-order', 'read:expedition', 'read:nomenclature'])
     ]
     private ?Customer $customer;
@@ -93,10 +95,18 @@ class Product extends Entity {
     ]
     private ?TechnicalSheet $product;
 
+    #[
+        ApiProperty(description: 'Prix', readableLink: false, example: '/api/customer-product-prices/1'),
+        ORM\OneToMany(mappedBy: 'product', targetEntity: Price::class, cascade: ['persist', 'remove']),
+        Serializer\Groups(['read:product-customer', 'write:product-customer'])
+    ]
+    private Collection $productPrices;
+    //endregion
     public function __construct() {
         $this->administeredBy = new ArrayCollection();
+        $this->productPrices = new ArrayCollection();
     }
-
+    //region getters & setters
     final public function addAdministeredBy(Company $administeredBy): self {
         if (!$this->administeredBy->contains($administeredBy)) {
             $this->administeredBy->add($administeredBy);
@@ -141,4 +151,43 @@ class Product extends Entity {
         $this->product = $product;
         return $this;
     }
+
+    public function getProductPrices(): Collection
+    {
+        return $this->productPrices;
+    }
+
+    public function setProductPrices(Collection $productPrices): void
+    {
+        $this->productPrices = $productPrices;
+    }
+
+    // On récupère le meilleur prix associé au produit en fonction de la quantité passée en paramètre
+    public function getBestPrice(Measure $quantity): ?Price {
+        $bestPrice = new Measure();
+        $bestPrice->setValue(0);
+        $bestPrice->setCode('EUR');
+        $possiblePrices = [];
+        /** @var Price $price */
+        foreach ($this->productPrices as $price) {
+            if ($quantity->isGreaterThanOrEqual($price->getQuantity())) {
+                $possiblePrices [] = $price;
+            }
+        }
+        /** @var Price $price */
+        foreach ($possiblePrices as $price) {
+            // Si le prix à une valeur supérieure à zéro et que le meilleur prix est à zéro alors on le prend
+            if ($price->getPrice()->getValue() > 0 && $bestPrice->getValue() === 0) {
+                $bestPrice = $price->getPrice();
+            } else {
+                // Si le prix est inférieur au meilleur prix alors on le prend
+                if ($price->getPrice()->isGreaterThanOrEqual($bestPrice->getValue())) {
+                    $bestPrice = $price->getPrice();
+                }
+            }
+        }
+        return $bestPrice;
+    }
+
+    //endregion
 }

@@ -158,6 +158,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Customer extends Entity implements FileEntity {
     use FileTrait;
+    //region propriétés
     #[
         ApiProperty(description: 'Portail de gestion'),
         ORM\Embedded,
@@ -348,7 +349,13 @@ class Customer extends Entity implements FileEntity {
     private WebPortal $qualityPortal;
 
     #[
-        ORM\OneToMany(targetEntity: Order::class, mappedBy: 'customer')
+        ApiProperty(description: 'Grilles Produits', readableLink: false, example: '/api/customer-products/1'),
+        ORM\OneToMany(mappedBy: 'customer', targetEntity: Product::class)
+        ]
+    private Collection $productCustomers;
+
+    #[
+        ORM\OneToMany(mappedBy: 'customer', targetEntity: Order::class)
     ]
     private Collection $sellingOrders;
 
@@ -366,41 +373,6 @@ class Customer extends Entity implements FileEntity {
     ]
     private ?string $webEdiInfos = null;
 
-    /**
-     * @return Collection
-     */
-    public function getAttachments(): Collection
-    {
-        return $this->attachments;
-    }
-
-    /**
-     * @param Collection $attachments
-     * @return Customer
-     */
-    public function setAttachments(Collection $attachments): Customer
-    {
-        $this->attachments = $attachments;
-        return $this;
-    }
-
-    /**
-     * @return WebPortal
-     */
-    public function getQualityPortal(): WebPortal
-    {
-        return $this->qualityPortal;
-    }
-
-    /**
-     * @param WebPortal $qualityPortal
-     * @return Customer
-     */
-    public function setQualityPortal(WebPortal $qualityPortal): Customer
-    {
-        $this->qualityPortal = $qualityPortal;
-        return $this;
-    }
     #[
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/1'),
         Assert\NotNull,
@@ -409,7 +381,7 @@ class Customer extends Entity implements FileEntity {
         Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:admin'])
     ]
     private ?Society $society = null;
-
+    //endregion
     public function __construct() {
         $this->accountingPortal = new WebPortal();
         $this->address = new Address();
@@ -421,9 +393,9 @@ class Customer extends Entity implements FileEntity {
         $this->monthlyOutstanding = new Measure();
         $this->outstandingMax = new Measure();
         $this->sellingOrders = new ArrayCollection();
-
+        $this->productCustomers = new ArrayCollection();
     }
-
+    //region getters et setters
     final public function addAdministeredBy(Company $administeredBy): self {
         if (!$this->administeredBy->contains($administeredBy)) {
             $this->administeredBy->add($administeredBy);
@@ -807,5 +779,49 @@ class Customer extends Entity implements FileEntity {
         return $this;
     }
 
+    /**
+     * @return Collection
+     */
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
 
+    /**
+     * @param Collection $attachments
+     * @return Customer
+     */
+    public function setAttachments(Collection $attachments): Customer
+    {
+        $this->attachments = $attachments;
+        return $this;
+    }
+
+    /**
+     * @return WebPortal
+     */
+    public function getQualityPortal(): WebPortal
+    {
+        return $this->qualityPortal;
+    }
+
+    /**
+     * @param WebPortal $qualityPortal
+     * @return Customer
+     */
+    public function setQualityPortal(WebPortal $qualityPortal): Customer
+    {
+        $this->qualityPortal = $qualityPortal;
+        return $this;
+    }
+    public function getProductCustomers(): Collection
+    {
+        return $this->productCustomers;
+    }
+
+    public function setProductCustomers(Collection $productCustomers): void
+    {
+        $this->productCustomers = $productCustomers;
+    }
+    //endregion
 }

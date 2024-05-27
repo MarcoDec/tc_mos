@@ -66,6 +66,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Table(name: 'customer_product_price')
 ]
 class Price extends Entity implements MeasuredInterface {
+    //region properties
     #[
         ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
@@ -75,7 +76,7 @@ class Price extends Entity implements MeasuredInterface {
 
     #[
         ApiProperty(description: 'Produit', readableLink: false, example: '/api/customer-products/1'),
-        ORM\ManyToOne,
+        ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'productPrices'),
         Serializer\Groups(['read:price', 'write:price'])
     ]
     private ?Product $product = null;
@@ -87,12 +88,12 @@ class Price extends Entity implements MeasuredInterface {
         Serializer\Groups(['read:price', 'write:price'])
     ]
     private Measure $quantity;
-
+    //endregion
     public function __construct() {
         $this->price = new Measure();
         $this->quantity = new Measure();
     }
-
+    //region getters & setters
     final public function getMeasures(): array {
         return [$this->price, $this->quantity];
     }
@@ -136,4 +137,5 @@ class Price extends Entity implements MeasuredInterface {
         $this->quantity = $quantity;
         return $this;
     }
+    //endregion
 }

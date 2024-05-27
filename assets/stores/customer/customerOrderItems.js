@@ -3,8 +3,8 @@ import api from '../../api'
 import {unset} from 'lodash/object'
 
 const BaseUrl = '/api/selling-order-items'
-const BaseUrlProduct = '/api/selling-order-products'
-const BaseUrlComponent = '/api/selling-order-components'
+const BaseUrlProduct = '/api/selling-order-item-products'
+const BaseUrlComponent = '/api/selling-order-item-components'
 export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
     actions: {
         async fetchAll(filter = '') {
@@ -20,7 +20,9 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
             this.customerOrdersItems=[]
             this.isLoading = true
             const response = await api(`${baseUrl}${filter}`, 'GET')
+            console.log(response)
             this.customerOrdersItems = response['hydra:member']
+            console.log(this.customerOrdersItems)
             this.pagination = true
             if (response['hydra:totalItems'] > 0) {
                 //On récupère toutes les références produits et composants afin de précharger leurs codes
@@ -89,6 +91,7 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
                     value: item.confirmedQuantity.value
                 },
                 isForecast: item.isForecast,
+                price: item.price,
                 requestedDate: item.requestedDate,
                 requestedQuantity: {
                     code: item.requestedQuantity.code,

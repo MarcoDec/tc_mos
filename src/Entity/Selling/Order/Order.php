@@ -432,4 +432,23 @@ class Order extends Entity implements MeasuredInterface {
     {
         return $this->totalFixedPrice->add($this->totalForecastPrice);
     }
+    public function updateTotalSellingPrice(): void
+    {
+        $totalFixedPrice = new Measure();
+        $totalFixedPrice->setCode($this->customer->getCurrency()->getCode());
+        $totalFixedPrice->setValue(0);
+        $totalForecastPrice = new Measure();
+        $totalForecastPrice->setCode($this->customer->getCurrency()->getCode());
+        $totalForecastPrice->setValue(0);
+        /** @var Item $item */
+        foreach ($this->getSellingOrderItems() as $item) {
+            if ($item->getIsForecast()) {
+                $totalForecastPrice->add($item->getTotalItemPrice());
+            } else {
+                $totalFixedPrice->add($item->getTotalItemPrice());
+            }
+        }
+        $this->setTotalFixedPrice($totalFixedPrice);
+        $this->setTotalForecastPrice($totalForecastPrice);
+    }
 }

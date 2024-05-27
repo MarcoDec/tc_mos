@@ -112,6 +112,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
     ORM\Table(name: 'selling_order_item')
 ]
 abstract class Item extends BaseItem {
+    //region properties
     final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
 
     #[
@@ -167,6 +168,7 @@ abstract class Item extends BaseItem {
         Serializer\Groups(['read:item', 'write:item'])
     ]
     private Measure $totalItemPrice;
+    //endregion
 
     public function __construct() {
         parent::__construct();
@@ -174,7 +176,10 @@ abstract class Item extends BaseItem {
         $this->embState = new State();
         $this->expeditions = new ArrayCollection();
         $this->parentOrder = new Order();
+        $this->sentQuantity = new Measure();
+        $this->totalItemPrice = new Measure();
     }
+    //region getters & setters
     /*, 'read:expedition'*/
     #[
         ApiProperty(description: 'Client'),
@@ -313,5 +318,5 @@ abstract class Item extends BaseItem {
     {
         $this->totalItemPrice = $totalItemPrice;
     }
-
+    //endregion
 }

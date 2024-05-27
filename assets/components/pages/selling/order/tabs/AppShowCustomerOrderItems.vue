@@ -101,6 +101,28 @@
         {label: 'date de livraison souhaitée', name: 'requestedDate', trie: true, type: 'date', width: 80},
         {label: 'Date de livraison confirmée', name: 'confirmedDate', trie: true, type: 'date', width: 80},
         {
+            label: 'Prix Unitaire',
+            name: 'price',
+            trie: false,
+            type: 'measure',
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'price.code',
+                    options: {
+                        label: value => 'test',
+                        options: []
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'price.value',
+                    type: 'number',
+                    step: 0.01
+                }
+            },},
+        {
             label: 'Etat',
             name: 'state',
             options: {
