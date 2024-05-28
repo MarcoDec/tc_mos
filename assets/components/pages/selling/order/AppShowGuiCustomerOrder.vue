@@ -9,7 +9,7 @@
 
     import {useCustomerOrderStore} from '../../../../stores/customer/customerOrder'
     import {useRoute, useRouter} from 'vue-router'
-    import {computed, onBeforeMount, ref} from 'vue'
+    import {computed, onBeforeMount, onBeforeUpdate, ref} from 'vue'
     import useOptions from '../../../../stores/option/options'
     import AppCustomerOrderInlist from './bottom/AppCustomerOrderInlist.vue'
 
@@ -102,8 +102,11 @@
     async function updateGeneralityData(data) {
         //Si customer est défini, on le charge afin de pouvoir identifier le type de commande possible
         if (data.customer){
-            fetchCustomerOrderStore.selectedCustomer = api(data.customer, 'GET')
+            // console.log('client non encore défini => chargement')
+            fetchCustomerOrderStore.selectedCustomer = await api(data.customer, 'GET')
+            // console.log('client chargé', fetchCustomerOrderStore.selectedCustomer)
         }
+        console.log('data', data)
         generalityData.value = {
             company: data.company['@id'],
             customer: data.customer,
@@ -112,6 +115,7 @@
             ref: data.ref,
             orderFamily: data.orderFamily
         }
+        // console.log('generalityData', generalityData.value)
     }
     async function updateGeneralityCustomerOrder(){
         //On doit vérifier avant de valider les modifications si le type de commande est de type EDI qu'il n'en existe pas déjà une, auquel cas on ne peut pas modifier le type de commande
@@ -152,16 +156,28 @@
         keyTabs.value++
     }
     const generalityKey = ref(0)
-    onBeforeMount(() => {
+    onBeforeMount(async () => {
         // console.log('onBeforeMount')
         fetchCompaniesOptions.fetchOp()
-        fetchCustomerOrderStore.fetchById(idCustomerOrder).then(() => {
+        fetchCustomerOrderStore.fetchById(idCustomerOrder).then(async () => {
             // console.log('customerOrder', fetchCustomerOrderStore.customerOrder)
             iriCustomerOrder.value = fetchCustomerOrderStore.customerOrder['@id']
-            updateGeneralityData(fetchCustomerOrderStore.customerOrder)
+            // console.log('avant onBEforeMount:updateGeneralityData')
+            await updateGeneralityData(fetchCustomerOrderStore.customerOrder)
             generalityKey.value++
+            // console.log('après onBEforeMount:updateGeneralityData', generalityKey.value)
             beforeMountDataLoaded.value = true
         })
+    })
+    onBeforeUpdate( async () => {
+        // console.log('onBeforeUpdate')
+        if (iriCustomerOrder.value !== fetchCustomerOrderStore.customerOrder['@id']) {
+            iriCustomerOrder.value = fetchCustomerOrderStore.customerOrder['@id']
+            // console.log('avant onBeforeUpdate:updateGeneralityData')
+            await updateGeneralityData(fetchCustomerOrderStore.customerOrder)
+            generalityKey.value++
+            // console.log('après onBeforeUpdate:updateGeneralityData', generalityKey.value)
+        }
     })
     function goToTheList() {
         router.push({name: 'customer-order-list'})
@@ -190,8 +206,8 @@
                         </span>
                     </div>
                 </div>
-                <div class="row">
-                    <AppCardShow id="Generality" :key="generalityKey" :fields="fieldsGenerality" :component-attribute="generalityData" title="Informations générales de la commande" @update:model-value="updateGeneralityData" @update="updateGeneralityCustomerOrder"/>
+                <div :key="generalityKey" class="row">
+                    <AppCardShow id="Generality" :fields="fieldsGenerality" :component-attribute="generalityData" title="Informations générales de la commande" @update:model-value="updateGeneralityData" @update="updateGeneralityCustomerOrder"/>
                 </div>
             </template>
             <template #gui-bottom>

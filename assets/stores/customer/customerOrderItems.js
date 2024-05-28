@@ -20,9 +20,9 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
             this.customerOrdersItems = []
             this.isLoading = true
             const response = await api(`${baseUrl}${filter}`, 'GET')
-            console.log(response)
+            // console.log(response)
             this.customerOrdersItems = response['hydra:member']
-            console.log(this.customerOrdersItems)
+            // console.log(this.customerOrdersItems)
             this.pagination = true
             if (response['hydra:totalItems'] > 0) {
                 //On récupère toutes les références produits et composants afin de précharger leurs codes
