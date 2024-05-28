@@ -45,7 +45,7 @@ export const useCustomerOrderStore = defineStore('customerOrder', {
             const resultsFiltered = results.filter(
                 anOrder => anOrder.id !== idOrder
             )
-            return resultsFiltered.some(order => ['forecast','edi_delfor'].includes(order.orderFamily))
+            return resultsFiltered.some(order => ['forecast', 'edi_delfor'].includes(order.orderFamily))
         },
         updatePagination(response) {
             const responseData = response['hydra:member']
@@ -80,13 +80,13 @@ export const useCustomerOrderStore = defineStore('customerOrder', {
             if (!this.customerWithIntegratedEdi()) {
                 baseOptions.push({text: 'Ferme', value: 'fixed'})
                 baseOptions.push({text: 'Prévisionnelle', value: 'forecast'})
+                return baseOptions
+            }
+            if (this.selectedCustomer.ediOrderType === 'ORDERS') {
+                baseOptions.push({text: 'Prévisionnelle', value: 'forecast'})
+                baseOptions.push({text: 'Ferme (EDI ORDERS)', value: 'edi_orders'})
             } else {
-                if (this.selectedCustomer.ediOrderType === 'ORDERS') {
-                    baseOptions.push({text: 'Prévisionnelle', value: 'forecast'})
-                    baseOptions.push({text: 'Ferme (EDI ORDERS)', value: 'edi_orders'})
-                } else {
-                    baseOptions.push({text: 'Prévisionnelle (EDI DELFOR)', value: 'edi_delfor'})
-                }
+                baseOptions.push({text: 'Prévisionnelle (EDI DELFOR)', value: 'edi_delfor'})
             }
             return baseOptions
         }

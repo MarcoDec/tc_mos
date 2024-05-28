@@ -121,7 +121,8 @@
                     type: 'number',
                     step: 0.01
                 }
-            },},
+            }
+        },
         {
             label: 'Etat',
             name: 'state',
@@ -373,7 +374,12 @@
                 id="formAddNewOrderItem"
                 :fields="fieldsOrderItem"/>
         </AppModal>
-        <AppModal v-if="!fixedFamilies.includes(order.orderFamily)" ref="customerOrderItemForecastCreateModal" id="modalAddNewForecastItem" class="four" title="Ajouter Item en Prévisionnel">
+        <AppModal
+            v-if="!fixedFamilies.includes(order.orderFamily)"
+            id="modalAddNewForecastItem"
+            ref="customerOrderItemForecastCreateModal"
+            class="four"
+            title="Ajouter Item en Prévisionnel">
             <AppFormJS
                 id="formAddNewOrderItem"
                 :key="forecastFormKey"
@@ -414,7 +420,7 @@
                     class="btn btn-success btn-float-right m-1"
                     data-bs-toggle="modal"
                     data-bs-target="#modalAddNewForecastItem">
-                    Ajouter Item en Prévisionnel {{order.orderFamily}}
+                    Ajouter Item en Prévisionnel {{ order.orderFamily }}
                 </button>
             </template>
         </AppCardableTable>

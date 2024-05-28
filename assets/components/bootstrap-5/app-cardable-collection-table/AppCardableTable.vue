@@ -45,7 +45,7 @@
     function search(inputValues) {
         emit('search', inputValues)
     }
-    async function cancelSearch(inputValues) {
+    async function cancelSearch() {
         input.value = {}
         emit('cancelSearch')
     }

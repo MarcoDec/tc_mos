@@ -101,7 +101,7 @@
     const order = computed(() => fetchCustomerOrderStore.customerOrder)
     async function updateGeneralityData(data) {
         //Si customer est défini, on le charge afin de pouvoir identifier le type de commande possible
-        if(data.customer){
+        if (data.customer){
             fetchCustomerOrderStore.selectedCustomer = api(data.customer, 'GET')
         }
         generalityData.value = {
@@ -116,10 +116,10 @@
     async function updateGeneralityCustomerOrder(){
         //On doit vérifier avant de valider les modifications si le type de commande est de type EDI qu'il n'en existe pas déjà une, auquel cas on ne peut pas modifier le type de commande
         const orderFamily = generalityData.value.orderFamily
-        if(orderFamily === 'edi_orders' || orderFamily === 'edi_delfor'){
+        if (orderFamily === 'edi_orders' || orderFamily === 'edi_delfor'){
             const idCustomer = order.value.customer
             const hasEdiCustomerOrders = await fetchCustomerOrderStore.hasActiveEdiOrders(idCustomer, order.value.id)
-            if(hasEdiCustomerOrders){
+            if (hasEdiCustomerOrders){
                 alert('Il existe déjà une commande de type EDI active pour ce client')
                 //On recharge la page
                 window.location.reload()
@@ -127,10 +127,10 @@
             }
         }
         //On doit vérifier avant de valider les modifications si le type de commande est de type prévisionnelle qu'il n'en existe pas déjà une, auquel cas on ne peut pas modifier le type de commande
-        if(orderFamily === 'forecast' || orderFamily === 'edi_delfor'){
+        if (orderFamily === 'forecast' || orderFamily === 'edi_delfor'){
             const idCustomer = order.value.customer
             const hasForecastCustomerOrders = await fetchCustomerOrderStore.hasActiveForecastOrders(idCustomer, order.value.id)
-            if(hasForecastCustomerOrders){
+            if (hasForecastCustomerOrders){
                 alert('Il existe déjà une commande active de type prévisionnelle pour ce client')
                 //On recharge la page
                 window.location.reload()

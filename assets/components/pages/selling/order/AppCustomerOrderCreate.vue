@@ -22,13 +22,8 @@
     const currentCompany = user.company
     const generalData = ref({})
     const selectedCustomer = ref(null)
-    const customerWithIntegratedEdi = computed(() => {
-        if (selectedCustomer.value !== null && selectedCustomer.value.isEdiOrders && selectedCustomer.value.ediKind === 'integratedEDI') {
-            return true
-        }
-        return false
-    })
-    const optionsOrderFamily = computed(() =>{
+    const optionsOrderFamily = computed(() => {
+        //TODO
         return storeCustomerOrder.orderFamilyOptions()
     })
     const fields = computed(() => [

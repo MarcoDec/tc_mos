@@ -17,7 +17,7 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
             await this.fetchAllGen(filter, BaseUrlComponent)
         },
         async fetchAllGen(filter = '', baseUrl = BaseUrl) {
-            this.customerOrdersItems=[]
+            this.customerOrdersItems = []
             this.isLoading = true
             const response = await api(`${baseUrl}${filter}`, 'GET')
             console.log(response)
