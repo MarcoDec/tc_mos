@@ -9,7 +9,7 @@ use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['customer']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['customer', 'name' => 'partial']),
     ApiResource(
         description: 'Adresse de livraison',
         collectionOperations: [

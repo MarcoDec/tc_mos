@@ -149,4 +149,12 @@ abstract class Contact extends Entity {
         $this->surname = $surname;
         return $this;
     }
+    #[
+        ApiProperty(description: 'Nom complet', example: 'Matthieu Henri'),
+        Serializer\Groups(['read:contact']),
+        Serializer\SerializedName('fullName')
+    ]
+    final public function getFullName(): string {
+        return $this->name . ' ' . $this->surname;
+    }
 }

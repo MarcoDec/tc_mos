@@ -26,45 +26,61 @@
         //TODO
         return storeCustomerOrder.orderFamilyOptions()
     })
-    const fields = computed(() => [
-        {
-            label: 'Client *',
-            name: 'customer',
-            type: 'multiselect-fetch',
-            api: '/api/customers',
-            filteredProperty: 'name',
-            min: true,
-            max: 1
-        },
-        {
-            label: 'Type de commande *',
-            name: 'orderFamily',
-            options: {
-                label: value => optionsOrderFamily.value.find(option => option.type === value)?.text ?? null,
-                options: optionsOrderFamily.value
-            },
-            type: 'select'
-        },
-        {label: 'Référence*', name: 'ref', type: 'text'},
-        {
-            label: 'Adresse de livraison Client *',
-            name: 'destination',
-            type: 'multiselect-fetch',
-            api: '/api/delivery-addresses',
-            filteredProperty: 'name',
-            min: true,
-            max: 1
-        },
-        {
-            label: 'Contact Client',
-            name: 'contact',
-            type: 'multiselect-fetch',
-            api: '/api/customers-contacts',
-            filteredProperty: 'name',
-            min: true,
-            max: 1
+
+    const fields = computed(() => {
+        let addresseFilter = null
+        let contactFilter = null
+        if (typeof generalData.value.customer !== 'undefined') {
+            // on peut alors filtrer les types de commandes, les adresses de livraison et les contacts du client
+            // Le filtre des commandes se fait dans le store
+            // Le filtre des adresses de livraison et des contacts se fait ici via les paramètres du multiselect-fetch
+            addresseFilter = {field: 'customer', value: generalData.value.customer}
+            //addresseFilter = '&customer='+generalData.value.customer
+            contactFilter = {field: 'society', value: generalData.value.customer}
+            //contactFilter = '&society='+generalData.value.customer
         }
-    ])
+        return [
+            {
+                label: 'Client *',
+                name: 'customer',
+                type: 'multiselect-fetch',
+                api: '/api/customers',
+                filteredProperty: 'name',
+                min: true,
+                max: 1
+            },
+            {
+                label: 'Type de commande *',
+                name: 'orderFamily',
+                options: {
+                    label: value => optionsOrderFamily.value.find(option => option.type === value)?.text ?? null,
+                    options: optionsOrderFamily.value
+                },
+                type: 'select'
+            },
+            {label: 'Référence*', name: 'ref', type: 'text'},
+            {
+                label: 'Adresse de livraison Client *',
+                name: 'destination',
+                type: 'multiselect-fetch',
+                api: '/api/delivery-addresses',
+                filteredProperty: 'name',
+                permanentFilters: [addresseFilter],
+                min: true,
+                max: 1
+            },
+            {
+                label: 'Contact Client',
+                name: 'contact',
+                type: 'multiselect-fetch',
+                api: '/api/customer-contacts',
+                filteredProperty: 'fullName',
+                permanentFilters: [contactFilter],
+                min: true,
+                max: 1
+            }
+        ]
+    })
 
     async function generalForm(value) {
         const key = Object.keys(value)[0]
@@ -84,13 +100,13 @@
         } else {
             generalData.value[key] = value[key]
         }
-        console.log('generalData', generalData.value)
+        // console.log('generalData', generalData.value)
         if (key === 'customer') {
             selectedCustomer.value = await api(value[key], 'GET')
             storeCustomerOrder.selectedCustomer = await api(value[key], 'GET')
-            console.log('selectedCustomer', storeCustomerOrder.selectedCustomer)
-            console.log('customerWithIntegratedEdi', storeCustomerOrder.customerWithIntegratedEdi())
-            console.log('storeCustomerOrder.orderFamilyOptions', storeCustomerOrder.orderFamilyOptions())
+            // console.log('selectedCustomer', storeCustomerOrder.selectedCustomer)
+            // console.log('customerWithIntegratedEdi', storeCustomerOrder.customerWithIntegratedEdi())
+            // console.log('storeCustomerOrder.orderFamilyOptions', storeCustomerOrder.orderFamilyOptions())
         }
     }
 
