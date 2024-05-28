@@ -35,9 +35,7 @@
             // Le filtre des commandes se fait dans le store
             // Le filtre des adresses de livraison et des contacts se fait ici via les paramètres du multiselect-fetch
             addresseFilter = {field: 'customer', value: generalData.value.customer}
-            //addresseFilter = '&customer='+generalData.value.customer
             contactFilter = {field: 'society', value: generalData.value.customer}
-            //contactFilter = '&society='+generalData.value.customer
         }
         return [
             {
@@ -100,13 +98,9 @@
         } else {
             generalData.value[key] = value[key]
         }
-        // console.log('generalData', generalData.value)
         if (key === 'customer') {
             selectedCustomer.value = await api(value[key], 'GET')
-            storeCustomerOrder.selectedCustomer = await api(value[key], 'GET')
-            // console.log('selectedCustomer', storeCustomerOrder.selectedCustomer)
-            // console.log('customerWithIntegratedEdi', storeCustomerOrder.customerWithIntegratedEdi())
-            // console.log('storeCustomerOrder.orderFamilyOptions', storeCustomerOrder.orderFamilyOptions())
+            storeCustomerOrder.selectedCustomer = selectedCustomer.value
         }
     }
 
@@ -142,6 +136,8 @@
                     window.alert('Il existe déjà une commandes DELFOR active pour ce client. Il est interdit d\'en avoir 2 actives.')
                     return
                 }
+                // On force la propriété kind en 'Série'
+                customerOrderData.value.kind = 'Série'
             }
         } else {
             window.alert('Veuillez sélectionner un type de commande')
