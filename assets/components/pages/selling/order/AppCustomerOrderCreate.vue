@@ -112,12 +112,33 @@
     async function customerFormCreate(){
         if (typeof generalData.value.customer !== 'undefined') {
             customerOrderData.value.customer = generalData.value.customer
+        } else {
+            window.alert('Veuillez sélectionner un client')
+            return
         }
         if (typeof generalData.value.orderFamily !== 'undefined') {
             customerOrderData.value.orderFamily = generalData.value.orderFamily
+            //Si orderFamily est de type DELFOR et qu'il en existe déjà en base associé au client alors il faut bloquer l'enregistrement et afficher un message d'erreur
+            if (customerOrderData.value.orderFamily === 'edi_delfor') {
+                const response = await api('/api/selling-orders?orderFamily=edi_delfor&deleted=false&customer='+customerOrderData.value.customer, 'GET')
+                console.log('response commandes DELFOR', response)
+                if (response['hydra:totalItems']>0) {
+                    window.alert('Il existe déjà une commandes DELFOR active pour ce client. Il est interdit d\'en avoir 2 actives.')
+                    return
+                }
+            }
+        } else {
+            window.alert('Veuillez sélectionner un type de commande')
+            return
         }
         if (typeof generalData.value.ref !== 'undefined') {
             customerOrderData.value.ref = generalData.value.ref
+            //Si une commande client avec cette référence existe déjà alors il faut bloquer l'enregistrement et afficher un message d'erreur
+            const response = await api('/api/selling-orders?ref='+customerOrderData.value.ref+'&deleted=false&customer='+customerOrderData.value.customer, 'GET')
+            if (response['hydra:totalItems']>0) {
+                window.alert('Il existe déjà une commande client avec cette référence pour ce client. Veuillez en choisir une autre.')
+                return
+            }
         }
         if (typeof generalData.value.destination !== 'undefined') {
             customerOrderData.value.destination = generalData.value.destination

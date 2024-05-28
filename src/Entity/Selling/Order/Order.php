@@ -231,6 +231,8 @@ class Order extends Entity implements MeasuredInterface {
         $this->embBlocker = new Closer();
         $this->embState = new State();
         $this->sellingOrderItems = new ArrayCollection();
+        $this->totalFixedPrice = new Measure();
+        $this->totalForecastPrice = new Measure();
     }
 
     final public function getBilledTo(): ?BillingAddress {
