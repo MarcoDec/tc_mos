@@ -13,14 +13,15 @@
     })
     const componentType = computed(() => {
         switch (props.field.mode) {
-            case 'tab':
-                return 'AppFormTabs'
-            case 'fieldset':
-                return AppFormFieldset
-            default:
-                return AppFormGroupJS
+        case 'tab':
+            return 'AppFormTabs'
+        case 'fieldset':
+            return AppFormFieldset
+        default:
+            return AppFormGroupJS
         }
     })
+    // console.log('AppFormField props', props, props.field.mode, componentType.value)
     function input(value) {
         emit('update:modelValue', value)
     }

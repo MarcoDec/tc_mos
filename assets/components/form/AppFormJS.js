@@ -36,24 +36,26 @@ function AppFormJS(props, context) {
         //         violation: props.violations.find(violation => violation.propertyPath === field.name)
         //     }))
         for (const field of props.fields) {
-            if (field.children) {
-                for (const child of field.children) {
-                    groups.push(h(AppFormField, {
-                        disabled: props.disabled,
-                        field: child,
-                        form: props.id,
-                        key: child.name,
-                        labelCols: props.labelCols,
-                        modelValue: props.modelValue[child.name],
-                        newField: field,
-                        'onUpdate:modelValue': value => context.emit('update:modelValue', {
-                            ...props.modelValue,
-                            [child.name]: value
-                        }),
-                        violation: props.violations.find(violation => violation.propertyPath === child.name)
-                    }))
-                }
-            } else {
+            // if (field.childrens) {
+            //     console.log("has children", field)
+            //     for (const child of field.children) {
+            //         groups.push(h(AppFormField, {
+            //             disabled: props.disabled,
+            //             field: child,
+            //             form: props.id,
+            //             key: child.name,
+            //             labelCols: props.labelCols,
+            //             modelValue: props.modelValue[child.name],
+            //             newField: field,
+            //             'onUpdate:modelValue': value => context.emit('update:modelValue', {
+            //                 ...props.modelValue,
+            //                 [child.name]: value
+            //             }),
+            //             violation: props.violations.find(violation => violation.propertyPath === child.name)
+            //         }))
+            //     }
+            // } else {
+            //     console.log("no children", field)
                 groups.push(h(AppFormField, {
                     disabled: props.disabled,
                     field,
@@ -67,7 +69,7 @@ function AppFormJS(props, context) {
                     }),
                     violation: props.violations.find(violation => violation.propertyPath === field.name)
                 }))
-            }
+            // }
         }
 
         if (props.submitLabel !== null){

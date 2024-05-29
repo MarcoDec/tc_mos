@@ -44,44 +44,59 @@
     //console.log('optionsOrderFamily', optionsOrderFamily.value)
     const fieldsGenerality = computed(() => [
         {
-            label: 'Compagnie *',
-            name: 'company',
-            options: {
-                label: value =>
-                    companiesOptions.value.find(option => option.type === value)?.text ?? null,
-                options: companiesOptions.value
-            },
-            type: 'select'
+            label: '',
+            name: 'generality',
+            mode: 'fieldset',
+            children: [
+                {
+                    label: 'Compagnie *',
+                    name: 'company',
+                    options: {
+                        label: value =>
+                            companiesOptions.value.find(option => option.type === value)?.text ?? null,
+                        options: companiesOptions.value
+                    },
+                    type: 'select'
+                },
+                {
+                    label: 'client',
+                    name: 'customer',
+                    type: 'multiselect-fetch',
+                    api: '/api/customers',
+                    filteredProperty: 'name',
+                    max: 1
+                },
+                {label: 'ref', name: 'ref', type: 'text'}
+            ]
         },
         {
-            label: 'client',
-            name: 'customer',
-            type: 'multiselect-fetch',
-            api: '/api/customers',
-            filteredProperty: 'name',
-            max: 1
+            label: '',
+            name: 'specificities',
+            mode: 'fieldset',
+            children: [
+                {
+                    label: 'Type de commande *',
+                    name: 'orderFamily',
+                    options: {
+                        label: value => optionsOrderFamily.value.find(option => option.type === value)?.text ?? null,
+                        options: optionsOrderFamily.value
+                    },
+                    type: 'select'
+                },
+                {
+                    label: 'Type de Produit',
+                    name: 'kind',
+                    options: {
+                        label: value =>
+                            kindOptions.find(option => option.type === value)?.text ?? null,
+                        options: kindOptions
+                    },
+                    type: 'select'
+                }
+            ]
         },
-        {
-            label: 'Type de commande *',
-            name: 'orderFamily',
-            options: {
-                label: value => optionsOrderFamily.value.find(option => option.type === value)?.text ?? null,
-                options: optionsOrderFamily.value
-            },
-            type: 'select'
-        },
-        {
-            label: 'Type de Produit',
-            name: 'kind',
-            options: {
-                label: value =>
-                    kindOptions.find(option => option.type === value)?.text ?? null,
-                options: kindOptions
-            },
-            type: 'select'
-        },
-        {label: 'note', name: 'notes', type: 'text'},
-        {label: 'ref', name: 'ref', type: 'text'}
+
+        {label: 'note', name: 'notes', type: 'text'}
     ])
     // console.log('fieldsGenerality', fieldsGenerality.value)
 
