@@ -2,6 +2,7 @@
     import AppFormFieldset from './AppFormFieldset.vue'
     import AppFormGroupJS from './AppFormGroupJS'
     import {computed, defineEmits, defineProps} from 'vue'
+    import AppFormFlexWrapper from "./AppFormFlexWrapper.vue";
     // import AppFormFieldset from './AppFormFieldset.vue'
 
     const emit = defineEmits(['update:modelValue', 'input'])
@@ -9,9 +10,11 @@
         field: {required: true, type: Object},
         form: {required: true, type: String},
         modelValue: {default: null, type: [Object, String]},
-        newField: {default: null, required: false, type: Object}
+        newField: {default: null, required: false, type: Object},
+        disabled: {default: false, type: Boolean}
     })
     const componentType = computed(() => {
+        if (props.field.mode === 'wrap') return AppFormFlexWrapper
         switch (props.field.mode) {
         case 'tab':
             return 'AppFormTabs'
@@ -30,6 +33,7 @@
 <template>
     <component
         :is="componentType"
+        :disabled="disabled"
         :field="field"
         :form="form"
         :name="field.name"

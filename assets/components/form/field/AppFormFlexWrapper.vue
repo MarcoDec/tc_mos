@@ -1,17 +1,19 @@
 <script setup>
-    import {defineProps, defineEmits} from 'vue';
+import {defineProps, defineEmits, ref} from 'vue';
 
     const props = defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},
         modelValue: {default: null, type: [Object, String]},
-        newField: {default: null, required: false, type: Object}
+        newField: {default: null, required: false, type: Object},
+        disabled: {default: false, type: Boolean}
     });
-
     const emit = defineEmits(['update:modelValue', 'input']);
-
-    function input(value) {
-        emit('update:modelValue', value);
+    const localData = ref({})
+    localData.value = props.modelValue;
+    function input(value, fieldName) {
+        localData.value[fieldName] = value;
+        emit('update:modelValue', localData.value);
     }
 
     function getComponent(child) {
@@ -24,6 +26,14 @@
             return 'AppFormGroupJS';
         }
     }
+    function getChildStyle() {
+        return {
+            width: props.field.wrapWidth || '100%',
+            minWidth: props.field.wrapMinWidth || '400px',
+            margin: '5px',
+            fontSize: props.field.fontSize || '1rem'
+        }
+    }
 </script>
 <template>
     <div class="flex-wrapper">
@@ -31,13 +41,16 @@
             v-for="child in field.children"
             :key="child.name"
             :is="getComponent(child)"
+            class="flex-fill"
+            :disabled="disabled"
             :field="child"
             :form="form"
             :name="child.name"
-            :model-value="modelValue"
+            :model-value="modelValue[child.name]"
             :new-field="newField"
-            :values="modelValue"
-            @update:model-value="input"
+            :values="modelValue[child.name]"
+            @update:model-value="(value) => input(value,child.name)"
+            :style="getChildStyle()"
         >
             <slot/>
         </component>
@@ -45,8 +58,9 @@
 </template>
 
 <style scoped>
-.flex-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-}
+    .flex-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
 </style>

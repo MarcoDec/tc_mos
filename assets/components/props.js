@@ -19,7 +19,8 @@ const types = [
     'text',
     'textarea',
     'time',
-    'trafficLight'
+    'trafficLight',
+    'wrap'
 ]
 
 export function fieldValidator(field) {

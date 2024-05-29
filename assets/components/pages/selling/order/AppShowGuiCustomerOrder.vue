@@ -44,36 +44,22 @@
     //console.log('optionsOrderFamily', optionsOrderFamily.value)
     const fieldsGenerality = computed(() => [
         {
-            label: '',
-            name: 'generality',
-            mode: 'fieldset',
+            label: 'Test wrap',
+            name: 'wrap1',
+            mode: 'wrap',
+            wrapWidth: '30%',
+            wrapMinWidth: '300px',
+            fontSize: '0.6rem',
             children: [
+                {label: 'Référence commande client *', name: 'ref', type: 'text'},
                 {
-                    label: 'Compagnie *',
-                    name: 'company',
-                    options: {
-                        label: value =>
-                            companiesOptions.value.find(option => option.type === value)?.text ?? null,
-                        options: companiesOptions.value
-                    },
-                    type: 'select'
-                },
-                {
-                    label: 'client',
+                    label: 'Client',
                     name: 'customer',
                     type: 'multiselect-fetch',
                     api: '/api/customers',
                     filteredProperty: 'name',
                     max: 1
                 },
-                {label: 'ref', name: 'ref', type: 'text'}
-            ]
-        },
-        {
-            label: '',
-            name: 'specificities',
-            mode: 'fieldset',
-            children: [
                 {
                     label: 'Type de commande *',
                     name: 'orderFamily',
@@ -92,11 +78,30 @@
                         options: kindOptions
                     },
                     type: 'select'
-                }
+                },
+                {
+                    label: 'Compagnie *',
+                    name: 'company',
+                    options: {
+                        label: value =>
+                            companiesOptions.value.find(option => option.type === value)?.text ?? null,
+                        options: companiesOptions.value
+                    },
+                    type: 'select'
+                },
             ]
         },
-
-        {label: 'note', name: 'notes', type: 'text'}
+        {
+            label: 'wrap2',
+            name: 'wrap2',
+            mode: 'wrap',
+            wrapWidth: '100%',
+            wrapMinWidth: '300px',
+            fontSize: '0.6rem',
+            children: [
+                {label: 'Notes', name: 'notes', type: 'textarea'}
+            ]
+        }
     ])
     // console.log('fieldsGenerality', fieldsGenerality.value)
 
@@ -114,21 +119,29 @@
     }
     const generalityData = ref({})
     const order = computed(() => fetchCustomerOrderStore.customerOrder)
-    async function updateGeneralityData(data) {
+    async function updateGeneralityDataFromAppCardShow(data) {
+        console.log('current GeneralityData', generalityData.value)
+        console.log('data', data)
+        //generalityData.value = data
+    }
+    async function updateGeneralityDataFromApi(data) {
         //Si customer est défini, on le charge afin de pouvoir identifier le type de commande possible
         if (data.customer){
             // console.log('client non encore défini => chargement')
             fetchCustomerOrderStore.selectedCustomer = await api(data.customer, 'GET')
             // console.log('client chargé', fetchCustomerOrderStore.selectedCustomer)
         }
-        console.log('data', data)
         generalityData.value = {
-            company: data.company['@id'],
-            customer: data.customer,
-            kind: data.kind,
-            notes: data.notes,
-            ref: data.ref,
-            orderFamily: data.orderFamily
+            wrap1: {
+                company: data.company['@id'],
+                customer: data.customer,
+                kind: data.kind,
+                ref: data.ref,
+                orderFamily: data.orderFamily
+            },
+            wrap2: {
+                notes: data.notes
+            }
         }
         // console.log('generalityData', generalityData.value)
     }
@@ -159,12 +172,12 @@
         const payload = {
             id: idCustomerOrder,
             SellingOrder: {
-                company: generalityData.value.company,
-                customer: generalityData.value.customer,
-                kind: generalityData.value.kind,
-                notes: generalityData.value.notes,
-                ref: generalityData.value.ref,
-                orderFamily: generalityData.value.orderFamily
+                company: generalityData.value.wrap1.company,
+                customer: generalityData.value.wrap1.customer,
+                kind: generalityData.value.wrap1.kind,
+                notes: generalityData.value.wrap2.notes,
+                ref: generalityData.value.wrap1.ref,
+                orderFamily: generalityData.value.wrap1.orderFamily
             }
         }
         await fetchCustomerOrderStore.updateSellingOrder(payload)
@@ -178,7 +191,7 @@
             // console.log('customerOrder', fetchCustomerOrderStore.customerOrder)
             iriCustomerOrder.value = fetchCustomerOrderStore.customerOrder['@id']
             // console.log('avant onBEforeMount:updateGeneralityData')
-            await updateGeneralityData(fetchCustomerOrderStore.customerOrder)
+            await updateGeneralityDataFromApi(fetchCustomerOrderStore.customerOrder)
             generalityKey.value++
             // console.log('après onBEforeMount:updateGeneralityData', generalityKey.value)
             beforeMountDataLoaded.value = true
@@ -189,7 +202,7 @@
         if (iriCustomerOrder.value !== fetchCustomerOrderStore.customerOrder['@id']) {
             iriCustomerOrder.value = fetchCustomerOrderStore.customerOrder['@id']
             // console.log('avant onBeforeUpdate:updateGeneralityData')
-            await updateGeneralityData(fetchCustomerOrderStore.customerOrder)
+            await updateGeneralityDataFromApi(fetchCustomerOrderStore.customerOrder)
             generalityKey.value++
             // console.log('après onBeforeUpdate:updateGeneralityData', generalityKey.value)
         }
@@ -222,7 +235,7 @@
                     </div>
                 </div>
                 <div :key="generalityKey" class="row">
-                    <AppCardShow id="Generality" :fields="fieldsGenerality" :component-attribute="generalityData" title="Informations générales de la commande" @update:model-value="updateGeneralityData" @update="updateGeneralityCustomerOrder"/>
+                    <AppCardShow id="Generality" :fields="fieldsGenerality" :component-attribute="generalityData" title="Informations générales de la commande" @update:model-value="updateGeneralityDataFromAppCardShow" @update="updateGeneralityCustomerOrder"/>
                 </div>
             </template>
             <template #gui-bottom>
