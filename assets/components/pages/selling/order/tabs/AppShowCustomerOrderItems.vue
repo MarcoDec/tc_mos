@@ -110,7 +110,7 @@
                     label: 'Code',
                     name: 'price.code',
                     options: {
-                        label: value => 'test',
+                        label: value => value, //TODO: Ajouter le tableau d'option des devises
                         options: []
                     },
                     type: 'select'

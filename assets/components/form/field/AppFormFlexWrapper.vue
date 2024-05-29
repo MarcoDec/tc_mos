@@ -1,5 +1,5 @@
 <script setup>
-import {defineProps, defineEmits, ref} from 'vue';
+    import {defineProps, defineEmits, ref} from 'vue'
 
     const props = defineProps({
         field: {required: true, type: Object},
@@ -7,23 +7,23 @@ import {defineProps, defineEmits, ref} from 'vue';
         modelValue: {default: null, type: [Object, String]},
         newField: {default: null, required: false, type: Object},
         disabled: {default: false, type: Boolean}
-    });
-    const emit = defineEmits(['update:modelValue', 'input']);
+    })
+    const emit = defineEmits(['update:modelValue', 'input'])
     const localData = ref({})
-    localData.value = props.modelValue;
+    localData.value = props.modelValue
     function input(value, fieldName) {
-        localData.value[fieldName] = value;
-        emit('update:modelValue', localData.value);
+        localData.value[fieldName] = value
+        emit('update:modelValue', localData.value)
     }
 
     function getComponent(child) {
         switch (child.mode) {
-        case 'tab':
-            return 'AppFormTabs';
-        case 'fieldset':
-            return 'AppFormFieldset';
-        default:
-            return 'AppFormGroupJS';
+            case 'tab':
+                return 'AppFormTabs'
+            case 'fieldset':
+                return 'AppFormFieldset'
+            default:
+                return 'AppFormGroupJS'
         }
     }
     function getChildStyle() {
@@ -35,12 +35,13 @@ import {defineProps, defineEmits, ref} from 'vue';
         }
     }
 </script>
+
 <template>
     <div class="flex-wrapper">
         <component
+            :is="getComponent(child)"
             v-for="child in field.children"
             :key="child.name"
-            :is="getComponent(child)"
             class="flex-fill"
             :disabled="disabled"
             :field="child"
@@ -48,10 +49,9 @@ import {defineProps, defineEmits, ref} from 'vue';
             :name="child.name"
             :model-value="modelValue[child.name]"
             :new-field="newField"
-            :values="modelValue[child.name]"
-            @update:model-value="(value) => input(value,child.name)"
             :style="getChildStyle()"
-        >
+            :values="modelValue[child.name]"
+            @update:model-value="(value) => input(value, child.name)">
             <slot/>
         </component>
     </div>

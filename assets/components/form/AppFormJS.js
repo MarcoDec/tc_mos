@@ -56,19 +56,19 @@ function AppFormJS(props, context) {
             //     }
             // } else {
             //     console.log("no children", field)
-                groups.push(h(AppFormField, {
-                    disabled: props.disabled,
-                    field,
-                    form: props.id,
-                    key: field.name,
-                    labelCols: props.labelCols,
-                    modelValue: props.modelValue[field.name],
-                    'onUpdate:modelValue': value => context.emit('update:modelValue', {
-                        ...props.modelValue,
-                        [field.name]: value
-                    }),
-                    violation: props.violations.find(violation => violation.propertyPath === field.name)
-                }))
+            groups.push(h(AppFormField, {
+                disabled: props.disabled,
+                field,
+                form: props.id,
+                key: field.name,
+                labelCols: props.labelCols,
+                modelValue: props.modelValue[field.name],
+                'onUpdate:modelValue': value => context.emit('update:modelValue', {
+                    ...props.modelValue,
+                    [field.name]: value
+                }),
+                violation: props.violations.find(violation => violation.propertyPath === field.name)
+            }))
             // }
         }
 

@@ -2,8 +2,7 @@
     import AppFormFieldset from './AppFormFieldset.vue'
     import AppFormGroupJS from './AppFormGroupJS'
     import {computed, defineEmits, defineProps} from 'vue'
-    import AppFormFlexWrapper from "./AppFormFlexWrapper.vue";
-    // import AppFormFieldset from './AppFormFieldset.vue'
+    import AppFormFlexWrapper from './AppFormFlexWrapper.vue'
 
     const emit = defineEmits(['update:modelValue', 'input'])
     const props = defineProps({
@@ -16,12 +15,12 @@
     const componentType = computed(() => {
         if (props.field.mode === 'wrap') return AppFormFlexWrapper
         switch (props.field.mode) {
-        case 'tab':
-            return 'AppFormTabs'
-        case 'fieldset':
-            return AppFormFieldset
-        default:
-            return AppFormGroupJS
+            case 'tab':
+                return 'AppFormTabs'
+            case 'fieldset':
+                return AppFormFieldset
+            default:
+                return AppFormGroupJS
         }
     })
     // console.log('AppFormField props', props, props.field.mode, componentType.value)

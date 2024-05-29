@@ -2,6 +2,7 @@
     import AppFormField from './AppFormField.vue'
 
     const emit = defineEmits(['update:modelValue', 'click'])
+    /* eslint-disable no-unused-vars */
     const props = defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},

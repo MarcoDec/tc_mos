@@ -88,7 +88,7 @@
                         options: companiesOptions.value
                     },
                     type: 'select'
-                },
+                }
             ]
         },
         {
@@ -197,7 +197,7 @@
             beforeMountDataLoaded.value = true
         })
     })
-    onBeforeUpdate( async () => {
+    onBeforeUpdate(async () => {
         // console.log('onBeforeUpdate')
         if (iriCustomerOrder.value !== fetchCustomerOrderStore.customerOrder['@id']) {
             iriCustomerOrder.value = fetchCustomerOrderStore.customerOrder['@id']
