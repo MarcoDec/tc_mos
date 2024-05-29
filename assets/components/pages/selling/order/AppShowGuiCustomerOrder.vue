@@ -45,70 +45,101 @@
     ]
     const optionsOrderFamily = computed(() => fetchCustomerOrderStore.orderFamilyOptions())
     //console.log('optionsOrderFamily', optionsOrderFamily.value)
-    const fieldsGenerality = computed(() => [
-        {
-            label: 'Test wrap',
-            name: 'wrap1',
-            mode: 'wrap',
-            wrapWidth: '40%',
-            wrapMinWidth: '300px',
-            fontSize: '0.6rem',
-            children: [
-                {label: 'Référence commande client *', name: 'ref', type: 'text'},
-                {
-                    label: 'Client',
-                    name: 'customer',
-                    type: 'multiselect-fetch',
-                    api: '/api/customers',
-                    filteredProperty: 'name',
-                    readOnly: !isAdmin,
-                    max: 1
-                },
-                {
-                    label: 'Type de commande *',
-                    name: 'orderFamily',
-                    options: {
-                        label: value => optionsOrderFamily.value.find(option => option.type === value)?.text ?? null,
-                        options: optionsOrderFamily.value
-                    },
-                    type: 'select'
-                },
-                {
-                    label: 'Type de Produit',
-                    name: 'kind',
-                    readOnly: !isAdmin,
-                    options: {
-                        label: value =>
-                            kindOptions.find(option => option.type === value)?.text ?? null,
-                        options: kindOptions
-                    },
-                    type: 'select'
-                },
-                {
-                    label: 'Compagnie Gérante *',
-                    name: 'company',
-                    readOnly: !isAdmin,
-                    options: {
-                        label: value =>
-                            companiesOptions.value.find(option => option.type === value)?.text ?? null,
-                        options: companiesOptions.value
-                    },
-                    type: 'select'
-                }
-            ]
-        },
-        {
-            label: 'wrap2',
-            name: 'wrap2',
-            mode: 'wrap',
-            wrapWidth: '100%',
-            wrapMinWidth: '300px',
-            fontSize: '0.6rem',
-            children: [
-                {label: 'Notes', name: 'notes', type: 'textarea'}
-            ]
+    const fieldsGenerality = computed(() => {
+        let addresseFilter = null
+        let contactFilter = null
+        if (typeof generalityData.value.wrap1.customer !== 'undefined') {
+            // on peut alors filtrer les types de commandes, les adresses de livraison et les contacts du client
+            // Le filtre des commandes se fait dans le store
+            // Le filtre des adresses de livraison et des contacts se fait ici via les paramètres du multiselect-fetch
+            addresseFilter = {field: 'customer', value: generalityData.value.wrap1.customer}
+            contactFilter = {field: 'society', value: generalityData.value.wrap1.customer}
         }
-    ])
+        return [
+            {
+                label: 'Test wrap',
+                name: 'wrap1',
+                mode: 'wrap',
+                wrapWidth: '40%',
+                wrapMinWidth: '300px',
+                fontSize: '0.6rem',
+                children: [
+                    {
+                        label: 'Compagnie Gérante *',
+                        name: 'company',
+                        readOnly: !isAdmin,
+                        options: {
+                            label: value =>
+                                companiesOptions.value.find(option => option.type === value)?.text ?? null,
+                            options: companiesOptions.value
+                        },
+                        type: 'select'
+                    },
+                    {
+                        label: 'Type de commande *',
+                        name: 'orderFamily',
+                        options: {
+                            label: value => optionsOrderFamily.value.find(option => option.type === value)?.text ?? null,
+                            options: optionsOrderFamily.value
+                        },
+                        type: 'select'
+                    },
+                    {
+                        label: 'Client',
+                        name: 'customer',
+                        type: 'multiselect-fetch',
+                        api: '/api/customers',
+                        filteredProperty: 'name',
+                        readOnly: !isAdmin,
+                        max: 1
+                    },
+                    {label: 'Référence commande client *', name: 'ref', type: 'text'},
+                    {
+                        label: 'Type de Produit',
+                        name: 'kind',
+                        readOnly: !isAdmin,
+                        options: {
+                            label: value =>
+                                kindOptions.find(option => option.type === value)?.text ?? null,
+                            options: kindOptions
+                        },
+                        type: 'select'
+                    },
+                    {
+                        label: 'Adresse de livraison Client *',
+                        name: 'destination',
+                        type: 'multiselect-fetch',
+                        api: '/api/delivery-addresses',
+                        filteredProperty: 'name',
+                        permanentFilters: [addresseFilter],
+                        min: true,
+                        max: 1
+                    }
+                ]
+            },
+            {
+                label: 'wrap2',
+                name: 'wrap2',
+                mode: 'wrap',
+                wrapWidth: '40%',
+                wrapMinWidth: '300px',
+                fontSize: '0.6rem',
+                children: [
+                    {
+                        label: 'Contact Client',
+                        name: 'contact',
+                        type: 'multiselect-fetch',
+                        api: '/api/customer-contacts',
+                        filteredProperty: 'fullName',
+                        permanentFilters: [contactFilter],
+                        min: true,
+                        max: 1
+                    },
+                    {label: 'Notes', name: 'notes', type: 'textarea'}
+                ]
+            }
+        ]
+    })
     // console.log('fieldsGenerality', fieldsGenerality.value)
 
     const requestDetails = () => {
@@ -143,9 +174,11 @@
                 customer: data.customer,
                 kind: data.kind,
                 ref: data.ref,
-                orderFamily: data.orderFamily
+                orderFamily: data.orderFamily,
+                destination: data.destination
             },
             wrap2: {
+                contact: data.contact,
                 notes: data.notes
             }
         }
@@ -183,7 +216,9 @@
                 kind: generalityData.value.wrap1.kind,
                 notes: generalityData.value.wrap2.notes,
                 ref: generalityData.value.wrap1.ref,
-                orderFamily: generalityData.value.wrap1.orderFamily
+                orderFamily: generalityData.value.wrap1.orderFamily,
+                destination: generalityData.value.wrap1.destination,
+                contact: generalityData.value.wrap2.contact
             }
         }
         await fetchCustomerOrderStore.updateSellingOrder(payload)

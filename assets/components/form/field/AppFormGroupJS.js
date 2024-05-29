@@ -13,7 +13,6 @@ function AppFormGroupJS(props, context) {
         modelValue: props.modelValue,
         'onUpdate:modelValue': value => context.emit('update:modelValue', value)
     }
-    console.log("AppFormGroupJS", props.field, props.disabled)
     const children = []
     if (props.violation) {
         attrs.class = 'is-invalid'

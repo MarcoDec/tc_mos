@@ -41,7 +41,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get',
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un contact',
