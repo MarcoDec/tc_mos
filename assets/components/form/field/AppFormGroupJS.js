@@ -4,14 +4,16 @@ import AppLabelJS from './AppLabelJS'
 
 function AppFormGroupJS(props, context) {
     const id = `${props.form}-${props.field.name}`
+    const isDisabled = props.disabled || props.field.readOnly
     const attrs = {
-        disabled: props.disabled,
+        disabled: isDisabled,
         field: props.field,
         form: props.form,
         id,
         modelValue: props.modelValue,
         'onUpdate:modelValue': value => context.emit('update:modelValue', value)
     }
+    console.log("AppFormGroupJS", props.field, props.disabled)
     const children = []
     if (props.violation) {
         attrs.class = 'is-invalid'

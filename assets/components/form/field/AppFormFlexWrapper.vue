@@ -1,5 +1,5 @@
 <script setup>
-    import {defineProps, defineEmits, ref} from 'vue'
+import {defineProps, defineEmits, ref, computed} from 'vue'
 
     const props = defineProps({
         field: {required: true, type: Object},
@@ -34,6 +34,7 @@
             fontSize: props.field.fontSize || '1rem'
         }
     }
+    const isDisabled = computed(() => props.disabled || props.field.readOnly)
 </script>
 
 <template>
@@ -43,7 +44,7 @@
             v-for="child in field.children"
             :key="child.name"
             class="flex-fill"
-            :disabled="disabled"
+            :disabled="isDisabled"
             :field="child"
             :form="form"
             :name="child.name"

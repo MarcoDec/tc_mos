@@ -23,6 +23,7 @@
                 return AppFormGroupJS
         }
     })
+    const isDisabled = computed(() => props.disabled || props.field.readOnly)
     // console.log('AppFormField props', props, props.field.mode, componentType.value)
     function input(value) {
         emit('update:modelValue', value)
@@ -32,7 +33,7 @@
 <template>
     <component
         :is="componentType"
-        :disabled="disabled"
+        :disabled="isDisabled"
         :field="field"
         :form="form"
         :name="field.name"

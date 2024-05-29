@@ -6,6 +6,7 @@
     import AppCustomerOrderShow from './tabs/AppCustomerOrderShow.vue'
     import AppBtn from '../../../AppBtn.vue'
     import api from '../../../../api'
+    import useUser from '../../../../stores/security'
 
     import {useCustomerOrderStore} from '../../../../stores/customer/customerOrder'
     import {useRoute, useRouter} from 'vue-router'
@@ -15,6 +16,8 @@
 
     const route = useRoute()
     const router = useRouter()
+    const user = useUser()
+    const isAdmin = user.isSellingAdmin
     const fetchCustomerOrderStore = useCustomerOrderStore()
     const fetchCompaniesOptions = useOptions('companies')
 
@@ -47,7 +50,7 @@
             label: 'Test wrap',
             name: 'wrap1',
             mode: 'wrap',
-            wrapWidth: '30%',
+            wrapWidth: '40%',
             wrapMinWidth: '300px',
             fontSize: '0.6rem',
             children: [
@@ -58,6 +61,7 @@
                     type: 'multiselect-fetch',
                     api: '/api/customers',
                     filteredProperty: 'name',
+                    readOnly: !isAdmin,
                     max: 1
                 },
                 {
@@ -72,6 +76,7 @@
                 {
                     label: 'Type de Produit',
                     name: 'kind',
+                    readOnly: !isAdmin,
                     options: {
                         label: value =>
                             kindOptions.find(option => option.type === value)?.text ?? null,
@@ -80,8 +85,9 @@
                     type: 'select'
                 },
                 {
-                    label: 'Compagnie *',
+                    label: 'Compagnie Gérante *',
                     name: 'company',
+                    readOnly: !isAdmin,
                     options: {
                         label: value =>
                             companiesOptions.value.find(option => option.type === value)?.text ?? null,
@@ -235,7 +241,7 @@
                     </div>
                 </div>
                 <div :key="generalityKey" class="row">
-                    <AppCardShow id="Generality" :fields="fieldsGenerality" :component-attribute="generalityData" title="Informations générales de la commande" @update:model-value="updateGeneralityDataFromAppCardShow" @update="updateGeneralityCustomerOrder"/>
+                    <AppCardShow id="Generality" :fields="fieldsGenerality" :component-attribute="generalityData" :title="`Informations générales de la commande${isAdmin?' (admin mode)':''}`" @update:model-value="updateGeneralityDataFromAppCardShow" @update="updateGeneralityCustomerOrder"/>
                 </div>
             </template>
             <template #gui-bottom>
