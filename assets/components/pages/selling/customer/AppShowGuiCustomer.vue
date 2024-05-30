@@ -24,10 +24,10 @@
     const keyTabs = ref(0)
     const imageUpdateUrl = `/api/customers/${idCustomer}/image`
 
-    onBeforeMount(() => {
-        fetchCustomerStore.fetchOne(idCustomer).then(() => {
+    onBeforeMount(async () => {
+        await fetchCustomerStore.fetchOne(idCustomer).then(() => {
             iriCustomer.value = fetchCustomerStore.customer['@id']
-            beforeMountDataLoaded.value = true
+            //beforeMountDataLoaded.value = true
         })
     })
     const onUpdated = () => {
@@ -55,7 +55,7 @@
 
 <template>
     <AppSuspense>
-        <AppShowGuiGen v-if="beforeMountDataLoaded">
+        <AppShowGuiGen>
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
                     <div class="d-flex flex-row">
