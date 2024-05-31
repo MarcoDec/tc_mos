@@ -5,7 +5,7 @@
         fields: {required: true, type: Array}
         // trier: {required: true, type: String}
     })
-    console.log(props.fields)
+    // console.log(props.fields)
     function trierAlphabet(payload) {
         emit('trierAlphabet', payload)
     }

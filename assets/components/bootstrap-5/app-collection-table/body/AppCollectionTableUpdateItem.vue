@@ -1,6 +1,6 @@
 <script setup>
     import clone from 'clone'
-    import {computed} from 'vue'
+    import {computed, ref} from 'vue'
 
     const props = defineProps({
         fields: {required: true, type: Array},
@@ -22,9 +22,23 @@
         emit('annuleAjout')
     }
     async function update() {
+        // on ajoute à localItem, la clé de l'item
+        if (props.item['@id']) localItem.value['@id'] = props.item['@id']
+        if (props.item['$id']) localItem.value['$id'] = props.item['$id']
+        if (props.item.id) localItem.value.id = props.item.id
         emit('annuleAjout')
-        emit('update', props.item)
+        emit('update', localItem.value)
     }
+    const localItem = ref({})
+    localItem.value = tabFields.value.reduce((acc, field) => {
+            if (field.name.includes('.')) {
+                const [relation, name] = field.name.split('.')
+                acc[field.name] = props.item[relation][name]
+            } else {
+                acc[field.name] = props.item[field.name]
+            }
+            return acc
+        }, {})
 </script>
 
 <template>
@@ -38,9 +52,11 @@
     </td>
     <td v-for="field in tabFields" :key="field.name">
         <AppInputGuesser
-            v-model="item[field.name]"
+            id=""
+            form=""
+            v-model="localItem[field.name]"
             :field="field"
-            :item="item"
+            :item="localItem"
             @update:model-value="modelValue"/>
     </td>
 </template>
