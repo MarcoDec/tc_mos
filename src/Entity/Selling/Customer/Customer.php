@@ -22,6 +22,7 @@ use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
 use App\Entity\Selling\Customer\Attachment\CustomerAttachment;
+use App\Entity\Selling\Customer\Price\Product;
 use App\Entity\Selling\Order\Order;
 use App\Entity\Traits\FileTrait;
 use App\Filter\SetFilter;

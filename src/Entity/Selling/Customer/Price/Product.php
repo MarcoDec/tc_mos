@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Selling\Customer;
+namespace App\Entity\Selling\Customer\Price;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
@@ -11,6 +11,7 @@ use App\Entity\Entity;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Unit;
 use App\Entity\Project\Product\Product as TechnicalSheet;
+use App\Entity\Selling\Customer\Customer;
 use App\Filter\RelationFilter;
 use App\Repository\Selling\Customer\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;

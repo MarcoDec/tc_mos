@@ -16,7 +16,7 @@ use App\Entity\Purchase\Component\Component;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Management\CompanyReference;
 use App\Entity\Selling\Customer\Customer;
-use App\Entity\Selling\Customer\Product as CustomerProduct;
+use App\Entity\Selling\Customer\Price\Product as CustomerProduct;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Selling\Customer;
+namespace App\Entity\Selling\Customer\Address;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
