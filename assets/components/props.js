@@ -48,7 +48,7 @@ export function fieldValidator(field) {
             }
             if (typeof field.options.base === 'undefined'){
                 if (!Array.isArray(field.options.options)) {
-                    console.error('field.options.options must be defined and an array', field.options)
+                    console.error('field.options.options must be defined and an array', field)
                     return false
                 }
                 for (const option of field.options.options)
