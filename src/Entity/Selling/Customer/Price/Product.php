@@ -98,7 +98,7 @@ class Product extends Entity {
 
     #[
         ApiProperty(description: 'Prix', readableLink: false, example: '/api/customer-product-prices/1'),
-        ORM\OneToMany(mappedBy: 'product', targetEntity: Price::class, cascade: ['persist', 'remove']),
+        ORM\OneToMany(mappedBy: 'product', targetEntity: ProductPrice::class, cascade: ['persist', 'remove']),
         Serializer\Groups(['read:product-customer', 'write:product-customer'])
     ]
     private Collection $productPrices;
@@ -164,18 +164,18 @@ class Product extends Entity {
     }
 
     // On récupère le meilleur prix associé au produit en fonction de la quantité passée en paramètre
-    public function getBestPrice(Measure $quantity): ?Price {
+    public function getBestPrice(Measure $quantity): ?ProductPrice {
         $bestPrice = new Measure();
         $bestPrice->setValue(0);
         $bestPrice->setCode('EUR');
         $possiblePrices = [];
-        /** @var Price $price */
+        /** @var ProductPrice $price */
         foreach ($this->productPrices as $price) {
             if ($quantity->isGreaterThanOrEqual($price->getQuantity())) {
                 $possiblePrices [] = $price;
             }
         }
-        /** @var Price $price */
+        /** @var ProductPrice $price */
         foreach ($possiblePrices as $price) {
             // Si le prix à une valeur supérieure à zéro et que le meilleur prix est à zéro alors on le prend
             if ($price->getPrice()->getValue() > 0 && $bestPrice->getValue() === 0) {

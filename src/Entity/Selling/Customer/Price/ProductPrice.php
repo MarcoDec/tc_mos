@@ -65,7 +65,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\Table(name: 'customer_product_price')
 ]
-class Price extends Entity implements MeasuredInterface {
+class ProductPrice extends Entity implements MeasuredInterface {
     //region properties
     #[
         ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
