@@ -1,8 +1,24 @@
 import {generateField, generateLabelCols} from '../../props'
 import {h} from 'vue'
+import Fa from '../../Fa'
 
 function AppLabelJS(props) {
-    return h('label', {class: `col-form-label ${props.cols}`, for: props.for}, props.field.label)
+    if (props.field.info) {
+        //On ajoute une icone cirlce-question point d'intérrogation pour les labels qui ont une info
+        const children = []
+        children.push(props.field.label)
+        children.push(h(Fa, {icon: 'circle-info', title: `${props.field.info}`, class: 'overable', style: 'color: #0dcaf0; margin-left: 5px;'}))
+        return h('label', {
+            class: `col-form-label ${props.cols}`,
+            for: props.for
+        }, children)
+    }
+    else {
+        return h('label', {
+            class: `col-form-label ${props.cols}`,
+            for: props.for},
+            props.field.label)
+    }
 }
 
 AppLabelJS.props = {
