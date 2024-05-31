@@ -23,6 +23,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère les adresses clientes',
                     'summary' => 'Récupère les adresses clientes',
                 ]
+            ],
+            'post' => [
+                'openapi_context' => [
+                    'description' => 'Crée une adresse cliente',
+                    'summary' => 'Crée une adresse cliente',
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
             ]
         ],
         itemOperations: [
