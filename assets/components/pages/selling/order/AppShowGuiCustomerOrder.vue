@@ -68,6 +68,7 @@
                         label: 'Compagnie Gérante *',
                         name: 'company',
                         readOnly: !isAdmin,
+                        info: 'Seuls les administrateurs peuvent modifier la compagnie gérante.',
                         options: {
                             label: value =>
                                 companiesOptions.value.find(option => option.type === value)?.text ?? null,
@@ -91,6 +92,7 @@
                         api: '/api/customers',
                         filteredProperty: 'name',
                         readOnly: !isAdmin,
+                        info: 'Seuls les administrateurs peuvent modifier le client.',
                         max: 1
                     },
                     {label: 'Référence commande client *', name: 'ref', type: 'text'},
@@ -98,6 +100,7 @@
                         label: 'Type de Produit',
                         name: 'kind',
                         readOnly: !isAdmin,
+                        info: 'Seuls les administrateurs peuvent modifier le type de produit.',
                         options: {
                             label: value =>
                                 kindOptions.find(option => option.type === value)?.text ?? null,
@@ -289,7 +292,7 @@
                 <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small">
                     <div class="full-visible-width">
                         <AppSuspense>
-                            <AppCustomerOrderShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100" :order="order"/>
+                            <AppCustomerOrderShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100" :customer="customer" :order="order"/>
                             <AppCustomerOrderInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>
                         </AppSuspense>
                     </div>
