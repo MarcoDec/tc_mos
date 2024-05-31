@@ -98,11 +98,12 @@
         </AppTab>
         <AppTab
             id="gui-start-addresses"
-            title="Adresse"
+            title="Adresses"
             icon="location-dot"
             tabs="gui-start">
             <AppSuspense>
                 <AppShowCustomerTabAddress
+                    :customer-id="customerId"
                     :options-countries="optionsCountries"/>
             </AppSuspense>
         </AppTab>

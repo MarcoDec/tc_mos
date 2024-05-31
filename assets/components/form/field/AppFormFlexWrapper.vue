@@ -8,7 +8,7 @@ import {defineProps, defineEmits, ref, computed} from 'vue'
         newField: {default: null, required: false, type: Object},
         disabled: {default: false, type: Boolean}
     })
-    console.log('props', props)
+    // console.log('props', props)
     const emit = defineEmits(['update:modelValue', 'input'])
     const localData = ref({})
     localData.value = props.modelValue

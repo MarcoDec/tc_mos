@@ -11,7 +11,7 @@
     })
     const user = useUser()
     const isItAdmin = user.isItAdmin
-    console.log('Informations Client', props.dataCustomers)
+    // console.log('Informations Client', props.dataCustomers)
     const fetchCustomerStore = useCustomerStore()
     const localData = ref({})
     //region select Famille EDI
@@ -52,7 +52,7 @@
         isEdiOrders: props.dataCustomers.isEdiOrders,
         ediKind: props.dataCustomers.ediKind
     }
-    console.log('localData', props.dataCustomers.ediKind)
+    // console.log('localData', props.dataCustomers.ediKind)
     const localWebEdiData = ref({})
     localWebEdiData.value = {
         webEdiUrl: props.dataCustomers.webEdiUrl,

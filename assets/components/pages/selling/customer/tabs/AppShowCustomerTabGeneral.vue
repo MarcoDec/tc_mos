@@ -8,6 +8,7 @@
     const props = defineProps({
         dataCustomers: {required: true, type: Object}
     })
+    // console.log('dataCustomers', props.dataCustomers)
     const localData = ref({})
     const societyId = ref(0)
     const fetchCustomerStore = useCustomerStore()
