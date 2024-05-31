@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, ref} from 'vue'
+    import {ref} from 'vue'
     import api from '../../../../../api'
     import {AppCollectionTable} from '../../../../bootstrap-5/app-collection-table'
 
@@ -7,14 +7,13 @@
         customerId: {required: true, type: Number},
         optionsCountries: {required: true, type: Array}
     })
-
+    console.log('optionsCountries', props.optionsCountries)
     const customerAddresses = ref({})
     async function updateTable() {
         await api(`/api/customer-addresses?customer=/api/customers/${props.customerId}`, 'GET').then(response => {
             customerAddresses.value = response['hydra:member']
             //console.log('customerAddresses', customerAddresses.value)
-            }
-        )
+        })
     }
     await updateTable()
     const isError2 = ref(false)
@@ -36,7 +35,15 @@
         {label: 'Complément d\'adresse', name: 'address.address2', type: 'text'},
         {label: 'Code postal', name: 'address.zipCode', type: 'text'},
         {label: 'Ville', name: 'address.city', type: 'text'},
-        {label: 'Pays', name: 'address.country', type: 'text'},
+        {
+            label: 'Pays',
+            name: 'address.country',
+            options: {
+                label: value => props.optionsCountries.find(option => option.value === value)?.text ?? null,
+                options: props.optionsCountries
+            },
+            type: 'select'
+        },
         {
             label: 'Type',
             name: '@type',
@@ -59,9 +66,9 @@
                 zipCode: inputValues['address.zipCode'] ?? ''
             },
             name: inputValues.name ?? '',
-            customer: `/api/customers/${props.customerId}`,
+            customer: `/api/customers/${props.customerId}`
         }
-        let  baseUrl = ''
+        let baseUrl = ''
         switch (inputValues['@type']) {
             case 'DeliveryAddress':
                 baseUrl = '/api/delivery-addresses'
@@ -145,7 +152,3 @@
         @deleted="deleted"
         @update="updateCustomerAddress"/>
 </template>
-
-<style scoped>
-
-</style>

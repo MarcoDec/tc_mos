@@ -24,21 +24,21 @@
     async function update() {
         // on ajoute à localItem, la clé de l'item
         if (props.item['@id']) localItem.value['@id'] = props.item['@id']
-        if (props.item['$id']) localItem.value['$id'] = props.item['$id']
+        if (props.item.$id) localItem.value.$id = props.item.$id
         if (props.item.id) localItem.value.id = props.item.id
         emit('annuleAjout')
         emit('update', localItem.value)
     }
     const localItem = ref({})
     localItem.value = tabFields.value.reduce((acc, field) => {
-            if (field.name.includes('.')) {
-                const [relation, name] = field.name.split('.')
-                acc[field.name] = props.item[relation][name]
-            } else {
-                acc[field.name] = props.item[field.name]
-            }
-            return acc
-        }, {})
+        if (field.name.includes('.')) {
+            const [relation, name] = field.name.split('.')
+            acc[field.name] = props.item[relation][name]
+        } else {
+            acc[field.name] = props.item[field.name]
+        }
+        return acc
+    }, {})
 </script>
 
 <template>
@@ -53,8 +53,8 @@
     <td v-for="field in tabFields" :key="field.name">
         <AppInputGuesser
             id=""
-            form=""
             v-model="localItem[field.name]"
+            form=""
             :field="field"
             :item="localItem"
             @update:model-value="modelValue"/>

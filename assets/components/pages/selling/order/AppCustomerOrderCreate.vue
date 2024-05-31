@@ -22,10 +22,7 @@
     const currentCompany = user.company
     const generalData = ref({})
     const selectedCustomer = ref(null)
-    const optionsOrderFamily = computed(() => {
-        //TODO
-        return storeCustomerOrder.orderFamilyOptions()
-    })
+    const optionsOrderFamily = computed(() => storeCustomerOrder.orderFamilyOptions())
 
     const fields = computed(() => {
         let addresseFilter = null

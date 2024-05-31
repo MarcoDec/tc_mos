@@ -17,7 +17,6 @@
     const idCustomer = Number(route.params.id_customer)
     const iriCustomer = ref('')
     const fetchCustomerStore = useCustomerStore()
-    const beforeMountDataLoaded = ref(false)
     const keyTitle = ref(0)
     const modeDetail = ref(true)
     const isFullScreen = ref(false)

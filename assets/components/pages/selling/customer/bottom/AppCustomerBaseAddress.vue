@@ -4,12 +4,11 @@
     import {useCustomerStore} from '../../../../../stores/selling/customers/customers'
 
     const props = defineProps({
-        customerId: {required: true, type: Number},
         optionsCountries: {required: true, type: Array}
     })
     const addressLocalData = ref({})
     const fetchCustomersStore = useCustomerStore()
-    const addressFields = computed(()=> [
+    const addressFields = computed(() => [
         {
             label: '',
             name: 'wrap1',
@@ -87,7 +86,7 @@
             },
             wrap3: {
                 getAddress: fetchCustomersStore.customer.address.address,
-                getAddress2: fetchCustomersStore.customer.address.address2,
+                getAddress2: fetchCustomersStore.customer.address.address2
             },
             wrap2: {
                 getPostal: fetchCustomersStore.customer.address.zipCode,
@@ -106,7 +105,3 @@
         :component-attribute="addressLocalData"
         @update="updateAddress(fetchCustomersStore.customer)"/>
 </template>
-
-<style scoped>
-
-</style>

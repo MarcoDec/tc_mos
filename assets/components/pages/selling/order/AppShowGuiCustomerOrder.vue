@@ -276,7 +276,13 @@
                     </div>
                 </div>
                 <div :key="generalityKey" class="row">
-                    <AppCardShow id="Generality" :fields="fieldsGenerality" :component-attribute="generalityData" :title="`Informations générales de la commande${isAdmin?' (admin mode)':''}`" @update:model-value="updateGeneralityDataFromAppCardShow" @update="updateGeneralityCustomerOrder"/>
+                    <AppCardShow
+                        id="Generality"
+                        :fields="fieldsGenerality"
+                        :component-attribute="generalityData"
+                        :title="`Informations générales de la commande${isAdmin ? ' (admin mode)' : ''}`"
+                        @update:model-value="updateGeneralityDataFromAppCardShow"
+                        @update="updateGeneralityCustomerOrder"/>
                 </div>
             </template>
             <template #gui-bottom>
