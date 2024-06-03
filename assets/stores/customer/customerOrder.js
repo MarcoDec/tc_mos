@@ -21,7 +21,7 @@ export const useCustomerOrderStore = defineStore('customerOrder', {
             this.customerOrder.closer = this.customerOrder.embBlocker.state
         },
         async updateSellingOrder(payload) {
-            console.log(payload)
+            // console.log(payload)
             await api(`/api/selling-orders/${payload.id}`, 'PATCH', payload.SellingOrder)
             await this.fetchById(payload.id)
         },

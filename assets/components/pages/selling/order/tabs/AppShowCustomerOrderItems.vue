@@ -78,7 +78,15 @@
             api: '/api/products',
             filteredProperty: 'code',
             max: 1},
-        {label: 'Composant', name: 'component', type: 'multiselect-fetch', api: '/api/components', filteredProperty: 'code', max: 1},
+        {
+            label: 'Composant',
+            name: 'component',
+            info: 'Si un composant est sélectionné, l\'unité associée sera affectée aux quantités demandées et confirmées.',
+            type: 'multiselect-fetch',
+            api: '/api/components',
+            filteredProperty: 'code',
+            max: 1
+        },
         {
             label: 'Quantité souhaitée *',
             name: 'requestedQuantity',
@@ -104,9 +112,7 @@
                     step: 0.1
                 }
             },
-            trie: true,
-            type: 'measure',
-            width: 150
+            type: 'measure'
         },
         {
             label: 'Quantité confirmée',
@@ -133,23 +139,22 @@
                     step: 0.1
                 }
             },
-            trie: true,
-            type: 'measure',
-            width: 150
+            type: 'measure'
         },
         {
             label: 'Date de livraison souhaitée *',
             name: 'requestedDate',
             info: 'Obligatoire',
-            trie: true,
-            type: 'date',
-            width: 80
+            type: 'date'
         },
-        {label: 'Date de livraison confirmée', name: 'confirmedDate', trie: true, type: 'date', width: 80},
+        {
+            label: 'Date de livraison confirmée',
+            name: 'confirmedDate',
+            type: 'date'
+        },
         {
             label: 'Prix Unitaire',
             name: 'price',
-            trie: false,
             type: 'measure',
             info: 'Le prix unitaire est récupéré automatiquement de la grille tarifaire associée au produit/composant et au client.\n' +
                 'Il est calculé en fonction de la quantité confirmée si la quantité est non nulle, sinon il est calculé à partir de la quantité souhaitée.\n' +
@@ -175,13 +180,29 @@
         }
     ])
     const fieldsOpenOrderItem = computed(() => [
-        {label: 'Produit', name: 'product', type: 'multiselect-fetch', api: '/api/products', filteredProperty: 'code', max: 1},
-        {label: 'Composant', name: 'component', type: 'multiselect-fetch', api: '/api/components', filteredProperty: 'code', max: 1},
+        {
+            label: 'Produit',
+            name: 'product',
+            info: 'Si un produit est sélectionné, la quantité minimale de livraison définie sur la fiche produit sera affectée aux quantités demandées.',
+            type: 'multiselect-fetch',
+            api: '/api/products',
+            filteredProperty: 'code',
+            max: 1
+        },
+        {
+            label: 'Composant',
+            name: 'component',
+            info: 'Si un composant est sélectionné, l\'unité associée sera affectée aux quantités demandées et confirmées.',
+            type: 'multiselect-fetch',
+            api: '/api/components',
+            filteredProperty: 'code',
+            max: 1
+        },
         {
             label: 'Quantité souhaitée',
             name: 'requestedQuantity',
-            filter: true,
-            min: true,
+            info: 'Obligatoire\nSi un produit est sélectionnée, cette quantité doit être supérieure à la quantité minimale de livraison définie sur la fiche produit.\n' +
+                'Lorsque la quantité change le prix unitaire est récupéré automatiquement de la grille tarifaire associée au produit/composant et au client',
             measure: {
                 code: {
                     label: 'Code',
@@ -200,11 +221,39 @@
                     step: 0.1
                 }
             },
-            trie: true,
-            type: 'measure',
-            width: 150
+            type: 'measure'
         },
-        {label: 'Date de livraison souhaitée', name: 'requestedDate', trie: true, type: 'date', width: 80}
+        {
+            label: 'Date de livraison souhaitée',
+            name: 'requestedDate',
+            type: 'date'
+        },
+        {
+            label: 'Prix Unitaire',
+            name: 'price',
+            type: 'measure',
+            info: 'Le prix unitaire est récupéré automatiquement de la grille tarifaire associée au produit/composant et au client.\n' +
+                'Il est calculé en fonction de la quantité souhaitée.\n' +
+                'La valeur du prix unitaire peut être modifiée manuellement.',
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'price.code',
+                    options: {
+                        label: value =>
+                            optionsCurrency.value.find(option => option.type === value)?.text ?? null,
+                        options: optionsCurrency.value
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'price.value',
+                    type: 'number',
+                    step: 0.0001
+                }
+            }
+        }
     ])
     const customerOrderItems = computed(() => storeCustomerOrderItems.itemsCustomerOrders)
     const optionsUnit = computed(() =>
@@ -320,7 +369,66 @@
     ])
     //endregion
     //endregion
+
     //region Methods
+    async function getProductGridPrice(product, customer, order, quantity) {
+        // on récupère le type de produit associé à la commande
+        const kind = order.kind
+        // on récupère les iri produit et client
+        const productIri = product['@id']
+        const customerIri = customer['@id']
+        // on récupère le productCustomer associé au produit et au client
+        const productCustomer = await api(`/api/customer-products?product=${productIri}&customer=${customerIri}&kind=${kind}`, 'GET')
+        // Si il y a au moins une réponse on récupère le premier élément
+        if (productCustomer['hydra:member'].length > 0) {
+            const productCustomerItem = productCustomer['hydra:member'][0]
+            // On récupère la grille tarifaire dans CustomerProductPrice associer au productCustomer
+            const productCustomerPrices = await api(`/api/customer-product-prices?product=${productCustomerItem['@id']}`, 'GET')
+            // Si il y a au moins une réponse on parcourt les éléments pour récupérer les prix dont la quantité associée est supérieure ou égale à la quantité demandée
+            if (productCustomerPrices['hydra:member'].length > 0) {
+                const productCustomerPricesItems = productCustomerPrices['hydra:member'].find(price => price.quantity.value <= quantity.value)
+                if (productCustomerPricesItems) {
+                    // Si il y a au moins un élément on trie les éléments par ordre croissant prix
+                    const productCustomerPricesItemsSorted = productCustomerPrices['hydra:member'].sort((a, b) => a.price.value - b.price.value)
+                    // On récupère le premier élément
+                    const productCustomerPricesItem = productCustomerPricesItemsSorted[0]
+                    // On retourne le prix
+                    return productCustomerPricesItem.price
+                }
+            }
+        } else {
+            return null
+        }
+    }
+    async function getComponentGridPrice(component, customer, order, quantity) {
+        // on récupère le type de produit associé à la commande
+        const kind = order.kind
+        // on récupère les iri produit et client
+        const componentIri = component['@id']
+        const customerIri = customer['@id']
+        // on récupère le productCustomer associé au produit et au client
+        const componentCustomer = await api(`/api/customer-components?component=${componentIri}&customer=${customerIri}&kind=${kind}`, 'GET')
+        // Si il y a au moins une réponse on récupère le premier élément
+        if (componentCustomer['hydra:member'].length > 0) {
+            const componentCustomerItem = componentCustomer['hydra:member'][0]
+            // On récupère la grille tarifaire dans CustomerProductPrice associer au productCustomer
+            const componentCustomerPrices = await api(`/api/customer-component-prices?component=${componentCustomerItem['@id']}`, 'GET')
+            // Si il y a au moins une réponse on parcourt les éléments pour récupérer les prix dont la quantité associée est supérieure ou égale à la quantité demandée
+            if (componentCustomerPrices['hydra:member'].length > 0) {
+                const componentCustomerPricesItems = componentCustomerPrices['hydra:member'].find(price => price.quantity.value <= quantity.value)
+                if (componentCustomerPricesItems) {
+                    // Si il y a au moins un élément on trie les éléments par ordre croissant prix
+                    const componentCustomerPricesItemsSorted = componentCustomerPrices['hydra:member'].sort((a, b) => a.price.value - b.price.value)
+                    // On récupère le premier élément
+                    const componentCustomerPricesItem = componentCustomerPricesItemsSorted[0]
+                    // On retourne le prix
+                    return componentCustomerPricesItem.price
+                }
+            }
+        } else {
+            return null
+        }
+    }
     function setQuantityToMinDelivery(localData, response) {
         // Lors de la sélection d'un produit nous en récupérons les informations de livraison minimale et nous les affectons aux quantités demandées et confirmées
         if (localData.requestedQuantity) {
@@ -379,28 +487,14 @@
     function updateForecastValue(value) {
         if (value.product && value.product !== localForecastData.value.product) {
             api(value.product, 'GET').then(response => {
-                // console.log('produit sélectionné', response)
-                // Lors de la sélection d'un produit nous en récupérons les informations de livraison minimale et nous les affectons aux quantités demandées
-                if (localForecastData.value.requestedQuantity) {
-                    localForecastData.value.requestedQuantity.code = response.minDelivery.code
-                    localForecastData.value.requestedQuantity.value = response.minDelivery.value
-                }
-                else localForecastData.value.requestedQuantity = {
-                    code: response.minDelivery.code,
-                    value: response.minDelivery.value
-                }
+                setQuantityToMinDelivery(localForecastData.value, response)
                 forecastFormKey.value++
-                // console.log(localForecastData.value)
             })
         }
         if (value.component && value.component !== localForecastData.value.component) {
             api(value.component, 'GET').then(response => {
-                // console.log('composant sélectionné', response)
-                // Lors de la sélection d'un composant nous en récupérons les informations de l'unité associé (pas de champ minDelivery) et nous les affectons aux quantités demandées
-                if (localForecastData.value.requestedQuantity) localForecastData.value.requestedQuantity.code = response.unit
-                else localForecastData.value.requestedQuantity = {code: response.unit}
+                setQuantityToUnit(localForecastData.value, response)
                 forecastFormKey.value++
-                // console.log(localForecastData.value)
             })
         }
         localForecastData.value = value

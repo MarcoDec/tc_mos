@@ -160,8 +160,8 @@
     const generalityData = ref({})
     const order = computed(() => fetchCustomerOrderStore.customerOrder)
     async function updateGeneralityDataFromAppCardShow(data) {
-        console.log('current GeneralityData', generalityData.value)
-        console.log('data', data)
+        // console.log('current GeneralityData', generalityData.value)
+        // console.log('data', data)
         //generalityData.value = data
     }
     async function updateGeneralityDataFromApi(data) {
