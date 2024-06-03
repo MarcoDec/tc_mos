@@ -2,30 +2,30 @@
 
 namespace App\Repository\Selling\Customer;
 
-use App\Entity\Selling\Customer\Price\Product;
+use App\Entity\Selling\Customer\Price\Component;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Product>
+ * @extends ServiceEntityRepository<Component>
  *
- * @method null|Product find($id, $lockMode = null, $lockVersion = null)
- * @method null|Product findOneBy(array $criteria, ?array $orderBy = null)
- * @method Product[]    findAll()
- * @method Product[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method null|Component find($id, $lockMode = null, $lockVersion = null)
+ * @method null|Component findOneBy(array $criteria, ?array $orderBy = null)
+ * @method Component[]    findAll()
+ * @method Component[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ProductRepository extends ServiceEntityRepository {
+class ComponentRepository extends ServiceEntityRepository {
     public function __construct(ManagerRegistry $registry) {
-        parent::__construct($registry, Product::class);
+        parent::__construct($registry, Component::class);
     }
 
-    public function findWithUnit(int $id): ?Product {
+    public function findWithUnit(int $id): ?Component {
         $query = $this
             ->createQueryBuilder('cp')
             ->addSelect('p')
             ->addSelect('u')
-            ->innerJoin('cp.product', 'p')
+            ->innerJoin('cp.component', 'p')
             ->innerJoin('p.unit', 'u')
             ->where('cp.id = :id')
             ->setParameter('id', $id)

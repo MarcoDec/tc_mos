@@ -11,9 +11,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Collection;
 use App\Controller\Purchase\Component\ComponentController;
 use App\Entity\Embeddable\Blocker;
-use App\Entity\Embeddable\Purchase\Component\State;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
+use App\Entity\Embeddable\Purchase\Component\State;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\FileEntity;
@@ -22,11 +22,14 @@ use App\Entity\Logistics\Component\Preparation;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Attachment\ComponentAttachment;
 use App\Entity\Purchase\Order\ComponentItem;
+use App\Entity\Purchase\Supplier\Component as SupplierComponent;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Purchase\ComponentReference;
+use App\Entity\Selling\Customer\Price\Component as CustomerComponent;
 use App\Entity\Traits\BarCodeTrait;
 use App\Entity\Traits\FileTrait;
 use App\Filter\RelationFilter;
+use App\Filter\SetFilter;
 use App\Repository\Purchase\Component\ComponentRepository;
 use App\Validator as AppAssert;
 use DateTimeImmutable;
@@ -36,8 +39,6 @@ use Doctrine\ORM\Mapping as ORM;
 use PHPUnit\TextUI\XmlConfiguration\File;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Entity\Purchase\Supplier\Component as SupplierComponent;
-use App\Filter\SetFilter;
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name', 'code', 'id']),
@@ -404,10 +405,13 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     private bool $rohs = false;
 
     #[
-        ORM\OneToMany(targetEntity: SupplierComponent::class, mappedBy: 'component')
+        ORM\OneToMany(mappedBy: 'component', targetEntity: SupplierComponent::class)
     ]
     private DoctrineCollection $supplierComponents;
-
+    #[
+        ORM\OneToMany(mappedBy: 'component', targetEntity: CustomerComponent::class)
+    ]
+    private DoctrineCollection $customerComponents;
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         Assert\NotBlank(groups: ['Component-create', 'Component-logistics']),
@@ -454,11 +458,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         $this->minStock = new Measure();
         $this->references = new ArrayCollection();
         $this->supplierComponents = new ArrayCollection();
+        $this->customerComponents = new ArrayCollection();
         $this->weight = new Measure();
         $this->code = '';
         $this->code = $this->getCode();
         $this->preparationComponents = new ArrayCollection();
-
     }
 
     public function __clone() {
@@ -863,5 +867,13 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         $this->componentItems = $componentItems;
     }
 
+    public function getCustomerComponents(): DoctrineCollection
+    {
+        return $this->customerComponents;
+    }
 
+    public function setCustomerComponents(DoctrineCollection $customerComponents): void
+    {
+        $this->customerComponents = $customerComponents;
+    }
 }

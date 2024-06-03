@@ -22,6 +22,7 @@ use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
 use App\Entity\Selling\Customer\Attachment\CustomerAttachment;
+use App\Entity\Selling\Customer\Price\Component;
 use App\Entity\Selling\Customer\Price\Product;
 use App\Entity\Selling\Order\Order;
 use App\Entity\Traits\FileTrait;
@@ -350,10 +351,15 @@ class Customer extends Entity implements FileEntity {
     private WebPortal $qualityPortal;
 
     #[
-        ApiProperty(description: 'Grilles Produits', readableLink: false, example: '/api/customer-products/1'),
+        ApiProperty(description: 'Grilles de prix Produits', readableLink: false, example: '/api/customer-products/1'),
         ORM\OneToMany(mappedBy: 'customer', targetEntity: Product::class)
         ]
     private Collection $productCustomers;
+    #[
+        ApiProperty(description: 'Grilles de prix Composant', readableLink: false, example: '/api/customer-components/1'),
+        ORM\OneToMany(mappedBy: 'component', targetEntity: Component::class)
+    ]
+    private Collection $componentCustomers;
 
     #[
         ORM\OneToMany(mappedBy: 'customer', targetEntity: Order::class)
@@ -395,6 +401,7 @@ class Customer extends Entity implements FileEntity {
         $this->outstandingMax = new Measure();
         $this->sellingOrders = new ArrayCollection();
         $this->productCustomers = new ArrayCollection();
+        $this->componentCustomers = new ArrayCollection();
     }
     //region getters et setters
     final public function addAdministeredBy(Company $administeredBy): self {
@@ -823,6 +830,16 @@ class Customer extends Entity implements FileEntity {
     public function setProductCustomers(Collection $productCustomers): void
     {
         $this->productCustomers = $productCustomers;
+    }
+
+    public function getComponentCustomers(): Collection
+    {
+        return $this->componentCustomers;
+    }
+
+    public function setComponentCustomers(Collection $componentCustomers): void
+    {
+        $this->componentCustomers = $componentCustomers;
     }
     //endregion
 }
