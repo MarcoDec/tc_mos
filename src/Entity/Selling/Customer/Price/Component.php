@@ -75,7 +75,7 @@ class Component extends Entity {
     /** @var Collection<int, Company> */
     #[
         ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
-        ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'components'),
+        ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'components'),
         Serializer\Groups(['read:component-customer'])
     ]
     private Collection $administeredBy;

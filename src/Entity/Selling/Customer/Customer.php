@@ -189,6 +189,12 @@ class Customer extends Entity implements FileEntity {
     private Collection $attachments;
 
     #[
+        ApiProperty(description: 'Grilles de prix Composant', readableLink: false, example: '/api/customer-components/1'),
+        ORM\OneToMany(mappedBy: 'customer', targetEntity: Component::class)
+    ]
+    private Collection $componentCustomers;
+
+    #[
         ApiProperty(description: 'Temps de livraison', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
         ORM\Embedded,
         Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
@@ -355,11 +361,6 @@ class Customer extends Entity implements FileEntity {
         ORM\OneToMany(mappedBy: 'customer', targetEntity: Product::class)
         ]
     private Collection $productCustomers;
-    #[
-        ApiProperty(description: 'Grilles de prix Composant', readableLink: false, example: '/api/customer-components/1'),
-        ORM\OneToMany(mappedBy: 'component', targetEntity: Component::class)
-    ]
-    private Collection $componentCustomers;
 
     #[
         ORM\OneToMany(mappedBy: 'customer', targetEntity: Order::class)
