@@ -5,6 +5,7 @@ namespace App\Entity\Selling\Customer\Price;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Doctrine\DBAL\Types\Project\Product\KindType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
@@ -19,9 +20,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['customer', 'component']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['customer', 'component', 'kind']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['component.code' => 'partial', 'component.name' => 'partial', 'component.price.code' => 'partial', 'component.price.value' => 'partial',
         'component.index' => 'partial', 'component.forecastVolume.value' => 'partial', 'component.forecastVolume.code' => 'partial'
     ]),
@@ -95,7 +97,13 @@ class Component extends Entity {
         Serializer\Groups(['read:component-customer', 'write:component-customer', 'read:manufacturing-order','read:nomenclature'])
     ]
     private ?TechnicalSheet $component;
-
+    #[
+        ApiProperty(description: 'Type de grille produit', example: KindType::TYPE_PROTOTYPE, openapiContext: ['enum' => KindType::TYPES]),
+        Assert\Choice(choices: KindType::TYPES),
+        ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_SERIES]),
+        Serializer\Groups(['read:product-customer', 'write:product-customer'])
+    ]
+    private KindType $kind;
     #[
         ApiProperty(description: 'Prix', readableLink: false, example: '/api/customer-component-prices/1'),
         ORM\OneToMany(mappedBy: 'component', targetEntity: ComponentPrice::class, cascade: ['persist', 'remove']),
@@ -162,6 +170,26 @@ class Component extends Entity {
     {
         $this->componentPrices = $componentPrices;
     }
+
+    /**
+     * @return KindType
+     */
+    public function getKind(): KindType
+    {
+        return $this->kind;
+    }
+
+    /**
+     * @param KindType $kind
+     * @return Component
+     */
+    public function setKind(KindType $kind): Component
+    {
+        $this->kind = $kind;
+        return $this;
+    }
+
+
 
     // On récupère le meilleur prix associé au produit en fonction de la quantité passée en paramètre
     public function getBestPrice(Measure $quantity): ?ComponentPrice {

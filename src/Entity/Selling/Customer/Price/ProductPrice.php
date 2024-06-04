@@ -15,7 +15,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
     ApiResource(
-        description: 'Prix',
+        description: 'Grille tarifaire produit',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [

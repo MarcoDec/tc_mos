@@ -5,6 +5,7 @@ namespace App\Entity\Selling\Customer\Price;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Doctrine\DBAL\Types\Project\Product\KindType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
@@ -19,9 +20,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['customer', 'product']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['customer', 'product', 'kind']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['product.code' => 'partial', 'product.name' => 'partial', 'product.price.code' => 'partial', 'product.price.value' => 'partial',
         'product.index' => 'partial', 'product.forecastVolume.value' => 'partial', 'product.forecastVolume.code' => 'partial'
     ]),
@@ -87,6 +89,14 @@ class Product extends Entity {
         Serializer\Groups(['read:product-customer', 'write:product-customer', 'read:manufacturing-order', 'read:expedition', 'read:nomenclature'])
     ]
     private ?Customer $customer;
+
+    #[
+        ApiProperty(description: 'Type de grille produit', example: KindType::TYPE_PROTOTYPE, openapiContext: ['enum' => KindType::TYPES]),
+        Assert\Choice(choices: KindType::TYPES),
+        ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_SERIES]),
+        Serializer\Groups(['read:product-customer', 'write:product-customer'])
+    ]
+    private KindType $kind;
 
     #[
         ApiProperty(description: 'Produit', readableLink: true),
@@ -161,6 +171,24 @@ class Product extends Entity {
     public function setProductPrices(Collection $productPrices): void
     {
         $this->productPrices = $productPrices;
+    }
+
+    /**
+     * @return KindType
+     */
+    public function getKind(): KindType
+    {
+        return $this->kind;
+    }
+
+    /**
+     * @param KindType $kind
+     * @return Product
+     */
+    public function setKind(KindType $kind): Product
+    {
+        $this->kind = $kind;
+        return $this;
     }
 
     // On récupère le meilleur prix associé au produit en fonction de la quantité passée en paramètre

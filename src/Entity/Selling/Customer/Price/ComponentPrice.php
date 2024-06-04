@@ -15,7 +15,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
     ApiResource(
-        description: 'Prix',
+        description: 'Grille tarifaire composant',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -48,7 +48,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
             ]
         ],
-        shortName: 'CustomerProductPrice',
+        shortName: 'CustomerComponentPrice',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_SELLING_READER.'\')'
         ],
