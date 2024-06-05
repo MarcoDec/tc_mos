@@ -14,7 +14,7 @@
         order: {default: () => ({}), required: true, type: Object},
         customer: {default: () => ({}), required: true, type: Object}
     })
-
+    console.log('customer', props.customer)
     //region initialisation des constantes et variables
     const fetchUser = useUser()
     const isSellingWriterOrAdmin = fetchUser.isSellingWriter || fetchUser.isSellingAdmin
@@ -371,6 +371,18 @@
     //endregion
 
     //region Methods
+    /**
+     * Cette fonction permet de récupérer le prix unitaire d'un produit en fonction de:
+     * -> la quantité demandée
+     * -> le client associé à la commande
+     * -> le produit associé à la commande
+     * -> le type de produit associé à la commande
+     * @param product
+     * @param customer
+     * @param order
+     * @param quantity
+     * @returns {Promise<{code: null, value: null}|{code: null, value: null}|*|null>}
+     */
     async function getProductGridPrice(product, customer, order, quantity) {
         // on récupère le type de produit associé à la commande
         const kind = order.kind
@@ -381,12 +393,23 @@
         const productCustomer = await api(`/api/customer-products?product=${productIri}&customer=${customerIri}&kind=${kind}`, 'GET')
         // Si il y a au moins une réponse on récupère le premier élément
         if (productCustomer['hydra:member'].length > 0) {
+            console.log('productCustomer', productCustomer['hydra:member'])
+            // Normalement s'il existe plus d'une grilles tarifaire il faut alerter l'utilisateur
+            if (productCustomer['hydra:member'].length > 1) {
+                return `Il existe plus d'une grille tarifaire pour ce produit et ce client de type ${kind}`
+            }
             const productCustomerItem = productCustomer['hydra:member'][0]
-            // On récupère la grille tarifaire dans CustomerProductPrice associer au productCustomer
+            // On récupère la grille tarifaire dans CustomerProductPrice associée au productCustomer
             const productCustomerPrices = await api(`/api/customer-product-prices?product=${productCustomerItem['@id']}`, 'GET')
+            console.log('productCustomerPrices', productCustomerPrices['hydra:member'])
             // Si il y a au moins une réponse on parcourt les éléments pour récupérer les prix dont la quantité associée est supérieure ou égale à la quantité demandée
             if (productCustomerPrices['hydra:member'].length > 0) {
-                const productCustomerPricesItems = productCustomerPrices['hydra:member'].find(price => price.quantity.value <= quantity.value)
+                const productCustomerPricesItems = productCustomerPrices['hydra:member'].find(price => {
+                    console.log('currentPrice', price)
+                    console.log('quantity', price.quantity.value, quantity.value)
+                    return price.quantity.value <= quantity.value
+                })
+                console.log('productCustomerPricesItems', productCustomerPricesItems)
                 if (productCustomerPricesItems) {
                     // Si il y a au moins un élément on trie les éléments par ordre croissant prix
                     const productCustomerPricesItemsSorted = productCustomerPrices['hydra:member'].sort((a, b) => a.price.value - b.price.value)
@@ -395,9 +418,11 @@
                     // On retourne le prix
                     return productCustomerPricesItem.price
                 }
+                return 'La grille de prix correspondant à cette quantité est vide pour ce produit et client'
             }
+            return 'Il n\'y a pas de grille de prix pour ce produit et ce client'
         } else {
-            return null
+            return 'Ce produit n\'est pas associé à ce client'
         }
     }
     async function getComponentGridPrice(component, customer, order, quantity) {
@@ -431,9 +456,13 @@
     }
     function setQuantityToMinDelivery(localData, response) {
         // Lors de la sélection d'un produit nous en récupérons les informations de livraison minimale et nous les affectons aux quantités demandées et confirmées
+        console.info('Positionnement MinDelivery à ', response.minDelivery)
         if (localData.requestedQuantity) {
-            localData.requestedQuantity.code = optionsUnit.value.find(unit => unit.text === response.minDelivery.code).value
-            localData.requestedQuantity.value = response.minDelivery.value
+            // En 1ère approximation, nous positionnons la quantité minimale uniquement lorsque sa valeur est supérieure à la valeur actuelle
+            if (localData.requestedQuantity.value < response.minDelivery.value) {
+                localData.requestedQuantity.code = optionsUnit.value.find(unit => unit.text === response.minDelivery.code).value
+                localData.requestedQuantity.value = response.minDelivery.value
+            }
         }
         else {
             localData.requestedQuantity = {
@@ -442,8 +471,11 @@
             }
         }
         if (localData.confirmedQuantity) {
-            localData.confirmedQuantity.code = optionsUnit.value.find(unit => unit.text === response.minDelivery.code).value
-            localData.confirmedQuantity.value = response.minDelivery.value
+            // En 1ère approximation, nous positionnons la quantité minimale uniquement lorsque sa valeur est supérieure à la valeur actuelle
+            if (localData.confirmedQuantity.value < response.minDelivery.value) {
+                localData.confirmedQuantity.code = optionsUnit.value.find(unit => unit.text === response.minDelivery.code).value
+                localData.confirmedQuantity.value = response.minDelivery.value
+            }
         }
         else localData.confirmedQuantity = {
             code: optionsUnit.value.find(unit => unit.text === response.minDelivery.code).value,
@@ -465,7 +497,16 @@
             localFixedData.value.component = null
             await api(value.product, 'GET').then(response => {
                 setQuantityToMinDelivery(localFixedData.value, response)
-                fixedFormKey.value++
+                // On récupère le prix unitaire associé au produit et au client
+                getProductGridPrice(response, props.customer, props.order, localFixedData.value.requestedQuantity).then(price => {
+                    console.log('price', price)
+                    if (typeof price === 'string') window.alert(price)
+                    else {
+                        localFixedData.value.price.code = price.code
+                        localFixedData.value.price.value = price.value
+                        fixedFormKey.value++
+                    }
+                })
             })
         }
         if (value.component && value.component !== initialLocalData.component) {
@@ -475,7 +516,8 @@
                 fixedFormKey.value++
             })
         }
-        // à partir du produit sélectionné et du client associé à la commande, nous récupérons la grille tarifaire associée afin de récupérer le prix correspondant à la quantité saisie
+        // à partir du produit sélectionné et du client associé à la commande,
+        // nous récupérons la grille tarifaire associée afin de récupérer le prix correspondant à la quantité saisie
         if (value.requestedQuantity.value && value.requestedQuantity.value !== initialLocalData.requestedQuantity.value) {
             const price = await api(`/api/prices/${props.customer['@id']}/${value.product}/${value.requestedQuantity.value}`, 'GET')
             localFixedData.value.price.code = price.currency
@@ -498,6 +540,9 @@
             })
         }
         localForecastData.value = value
+    }
+    async function refreshTableCustomerOrders() {
+        await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     }
     function addFixedItem() {
         //On ajoute le champ parentOrder
@@ -549,9 +594,6 @@
         //On rafraichit le formulaire
         tableKey.value++
     }
-    async function refreshTableCustomerOrders() {
-        await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
-    }
     async function deletedCustomerOrderItem(idRemove) {
         await storeCustomerOrderItems.remove(idRemove)
         await refreshTableCustomerOrders()
@@ -559,6 +601,9 @@
     async function getPageCustomerOrders(nPage) {
         customerOrderItemsCriteria.gotoPage(parseFloat(nPage))
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
+    }
+    function addPermanentFilters() {
+        customerOrderItemsCriteria.addFilter('parentOrder', props.order['@id'])
     }
     async function searchCustomerOrders(inputValues) {
         // console.log('inputValues', inputValues)
@@ -615,9 +660,6 @@
         }
         // console.log('customerOrderItemsCriteria', customerOrderItemsCriteria.getFetchCriteria)
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
-    }
-    function addPermanentFilters() {
-        customerOrderItemsCriteria.addFilter('parentOrder', props.order['@id'])
     }
     //endregion
     //chargement des données
