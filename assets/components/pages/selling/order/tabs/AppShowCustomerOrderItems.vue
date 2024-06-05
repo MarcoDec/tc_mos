@@ -587,7 +587,7 @@
     async function refreshTableCustomerOrders() {
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     }
-    function addFixedItem() {
+    async function addFixedItem() {
         //On ajoute le champ parentOrder
         localFixedData.value.parentOrder = props.order['@id']
         //On ajoute le type d'item isForecast à false
@@ -609,10 +609,10 @@
         }
         //On réinitalise les données locales
         localFixedData.value = {}
-        refreshTableCustomerOrders()
+        await refreshTableCustomerOrders()
         tableKey.value++
     }
-    function addForecastItem() {
+    async function addForecastItem() {
         //On ajoute le champ parentOrder
         localForecastData.value.parentOrder = props.order['@id']
         //On ajoute le type d'item isForecast
@@ -622,6 +622,15 @@
         //Si c'est un produit on positionne la clé item avec la valeur de la clé produit, sinon on positionne la clé item avec la valeur de la clé component
         if (localForecastData.value.product) localForecastData.value.item = localForecastData.value.product
         else localForecastData.value.item = localForecastData.value.component
+        if (localForecastData.value.confirmedQuantity) {
+            //on retire la quantité confirmée
+            delete localForecastData.value.confirmedQuantity
+        }
+        //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
+        await api(localForecastData.value.price.code, 'GET').then(currency => {
+            localForecastData.value.price.code = currency.code
+        })
+
         localForecastData.value.requestedQuantity.code = requestedUnit.text
         storeCustomerOrderItems.add(localForecastData.value)
         //On ferme la modale
@@ -633,7 +642,7 @@
         //On réinitalise les données locales
         localForecastData.value = {}
         //On rafraichit les données du tableau
-        refreshTableCustomerOrders()
+        await refreshTableCustomerOrders()
         //On rafraichit le formulaire
         tableKey.value++
     }
