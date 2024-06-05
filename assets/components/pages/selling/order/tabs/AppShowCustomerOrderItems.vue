@@ -404,8 +404,8 @@
             // console.log('productCustomerPrices', productCustomerPrices['hydra:member'])
             // Si il y a au moins une réponse on parcourt les éléments pour récupérer les prix dont la quantité associée est supérieure ou égale à la quantité demandée
             if (productCustomerPrices['hydra:member'].length > 0) {
-                // On tri les éléments par ordre croissant de quantité
-                productCustomerPrices['hydra:member'].sort((a, b) => a.quantity.value - b.quantity.value)
+                // On tri les éléments par ordre décroissant de quantité
+                productCustomerPrices['hydra:member'].sort((a, b) => b.quantity.value - a.quantity.value)
                 // on récupère le premier élément dont la quantité est supérieure ou égale à la quantité demandée
                 const productCustomerPricesItems = productCustomerPrices['hydra:member'].find(price => {
                     return price.quantity.value <= quantity.value
@@ -439,8 +439,8 @@
             // console.log('componentCustomerPrices', componentCustomerPrices['hydra:member'])
             // Si il y a au moins une réponse on parcourt les éléments pour récupérer les prix dont la quantité associée est supérieure ou égale à la quantité demandée
             if (componentCustomerPrices['hydra:member'].length > 0) {
-                // On tri les éléments par ordre croissant de quantité
-                componentCustomerPrices['hydra:member'].sort((a, b) => a.quantity.value - b.quantity.value)
+                // On tri les éléments par ordre décroissant de quantité
+                componentCustomerPrices['hydra:member'].sort((a, b) => b.quantity.value - a.quantity.value)
                 // on récupère le premier élément dont la quantité est supérieure ou égale à la quantité demandée
                 const componentCustomerPricesItems = componentCustomerPrices['hydra:member'].find(price => {
                     return price.quantity.value <= quantity.value
@@ -455,7 +455,7 @@
     }
     function setQuantityToMinDelivery(localData, response) {
         // Lors de la sélection d'un produit nous en récupérons les informations de livraison minimale et nous les affectons aux quantités demandées et confirmées
-        console.info('Positionnement MinDelivery à ', response.minDelivery)
+        //console.info('Positionnement MinDelivery à ', response.minDelivery)
         if (localData.requestedQuantity) {
             // En 1ère approximation, nous positionnons la quantité minimale uniquement lorsque sa valeur est supérieure à la valeur actuelle
             if (localData.requestedQuantity.value < response.minDelivery.value) {
@@ -488,25 +488,26 @@
         if (localData.confirmedQuantity) localData.confirmedQuantity.code = response.unit
         else localData.confirmedQuantity = {code: response.unit}
     }
-    async function getAndSetProductPrice(product, customer, order, quantity) {
+    async function getAndSetProductPrice(product, customer, order, quantity, localData, formKey) {
         await getProductGridPrice(product, customer, order, quantity).then(async price => {
+            console.log('price', price)
             if (typeof price === 'string') window.alert(price)
             else {
                 const currency = await api(`/api/currencies?code=${price.code}`)
-                localFixedData.value.price.value = price.value
-                localFixedData.value.price.code = currency['hydra:member'][0]['@id']
-                fixedFormKey.value++
+                localData.value.price.value = price.value
+                localData.value.price.code = currency['hydra:member'][0]['@id']
+                formKey.value++
             }
         })
     }
-    async function getAndSetComponentPrice(component, customer, order, quantity) {
+    async function getAndSetComponentPrice(component, customer, order, quantity, localData, formKey) {
         await getComponentGridPrice(component, customer, order, quantity).then(async price => {
             if (typeof price === 'string') window.alert(price)
             else {
                 const currency = await api(`/api/currencies?code=${price.code}`)
-                localForecastData.value.price.value = price.value
-                localForecastData.value.price.code = currency['hydra:member'][0]['@id']
-                forecastFormKey.value++
+                localData.value.price.value = price.value
+                localData.value.price.code = currency['hydra:member'][0]['@id']
+                formKey.value++
             }
         })
     }
@@ -518,55 +519,70 @@
             localFixedData.value.component = null
             await api(value.product, 'GET').then(async response => {
                 setQuantityToMinDelivery(localFixedData.value, response)
-                await getAndSetProductPrice(response, props.customer, props.order, localFixedData.value.requestedQuantity)
+                await getAndSetProductPrice(response, props.customer, props.order, localFixedData.value.requestedQuantity, localFixedData, fixedFormKey)
             })
             return
         }
         if (value.component && value.component !== initialLocalData.component) {
             localFixedData.value.product = null
-            await api(value.component, 'GET').then(response => {
+            await api(value.component, 'GET').then(async response => {
                 setQuantityToUnit(localFixedData.value, response)
-                fixedFormKey.value++
+                await getAndSetComponentPrice(response, props.customer, props.order, localFixedData.value.requestedQuantity, localFixedData, fixedFormKey)
             })
             return
         }
         if (value.confirmedQuantity.value && value.confirmedQuantity.value !== initialLocalData.confirmedQuantity.value) {
             // Si un produit a été sélectionné on récupère le prix unitaire associé au produit et au client
             if (value.product) {
-                await getAndSetProductPrice(value.product, props.customer, props.order, localFixedData.value.confirmedQuantity)
+                await getAndSetProductPrice(value.product, props.customer, props.order, localFixedData.value.confirmedQuantity, localFixedData, fixedFormKey)
                 return
             }
             if (value.component) {
-                await getAndSetComponentPrice(value.component, props.customer, props.order, localFixedData.value.confirmedQuantity)
+                await getAndSetComponentPrice(value.component, props.customer, props.order, localFixedData.value.confirmedQuantity, localFixedData, fixedFormKey)
                 return
             }
         }
         if (value.requestedQuantity.value && value.requestedQuantity.value !== initialLocalData.requestedQuantity.value) {
             // Si un produit a été sélectionné on récupère le prix unitaire associé au produit et au client
             if (value.product) {
-                await getAndSetProductPrice(value.product, props.customer, props.order, localFixedData.value.requestedQuantity)
+                await getAndSetProductPrice(value.product, props.customer, props.order, localFixedData.value.requestedQuantity, localFixedData, fixedFormKey)
                 return
             }
             if (value.component) {
-                await getAndSetComponentPrice(value.component, props.customer, props.order, localFixedData.value.requestedQuantity)
-                return
+                await getAndSetComponentPrice(value.component, props.customer, props.order, localFixedData.value.requestedQuantity, localFixedData, fixedFormKey)
             }
         }
     }
-    function updateForecastValue(value) {
-        if (value.product && value.product !== localForecastData.value.product) {
-            api(value.product, 'GET').then(response => {
-                setQuantityToMinDelivery(localForecastData.value, response)
-                forecastFormKey.value++
-            })
-        }
-        if (value.component && value.component !== localForecastData.value.component) {
-            api(value.component, 'GET').then(response => {
-                setQuantityToUnit(localForecastData.value, response)
-                forecastFormKey.value++
-            })
-        }
+    async function updateForecastValue(value) {
+        const initialLocalData = localForecastData.value
         localForecastData.value = value
+
+        if (value.product && value.product !== initialLocalData.product) {
+            localForecastData.value.component = null
+            await api(value.product, 'GET').then(async response => {
+                setQuantityToMinDelivery(localForecastData.value, response)
+                await getAndSetProductPrice(response, props.customer, props.order, localForecastData.value.requestedQuantity, localForecastData, forecastFormKey)
+            })
+            return
+        }
+        if (value.component && value.component !== initialLocalData.component) {
+            localForecastData.value.product = null
+            await api(value.component, 'GET').then(async response => {
+                setQuantityToUnit(localForecastData.value, response)
+                await getAndSetComponentPrice(response, props.customer, props.order, localForecastData.value.requestedQuantity, localForecastData, forecastFormKey)
+            })
+            return
+        }
+        if (value.requestedQuantity.value && value.requestedQuantity.value !== initialLocalData.requestedQuantity.value) {
+            // Si un produit a été sélectionné on récupère le prix unitaire associé au produit et au client
+            if (value.product) {
+                await getAndSetProductPrice(value.product, props.customer, props.order, localForecastData.value.requestedQuantity, localForecastData, forecastFormKey)
+                return
+            }
+            if (value.component) {
+                await getAndSetComponentPrice(value.component, props.customer, props.order, localForecastData.value.requestedQuantity, localForecastData, forecastFormKey)
+            }
+        }
     }
     async function refreshTableCustomerOrders() {
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
