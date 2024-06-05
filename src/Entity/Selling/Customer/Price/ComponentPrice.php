@@ -12,8 +12,11 @@ use App\Entity\Management\Unit;
 use App\Validator as AppAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[
+    ApiFilter(SearchFilter::class, properties: ['component' => 'exact']),
     ApiResource(
         description: 'Grille tarifaire composant',
         collectionOperations: [
