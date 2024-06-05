@@ -28,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         'product.index' => 'partial', 'product.forecastVolume.value' => 'partial', 'product.forecastVolume.code' => 'partial'
     ]),
     ApiResource(
-        description: 'Produit Client',
+        description: 'Produit vu du Client',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -96,7 +96,7 @@ class Product extends Entity {
         ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_SERIES]),
         Serializer\Groups(['read:product-customer', 'write:product-customer'])
     ]
-    private KindType $kind;
+    private ?string $kind;
 
     #[
         ApiProperty(description: 'Produit', readableLink: true),
@@ -174,18 +174,18 @@ class Product extends Entity {
     }
 
     /**
-     * @return KindType
+     * @return ?string
      */
-    public function getKind(): KindType
+    public function getKind(): ?string
     {
         return $this->kind;
     }
 
     /**
-     * @param KindType $kind
+     * @param ?string $kind
      * @return Product
      */
-    public function setKind(KindType $kind): Product
+    public function setKind(?string $kind): Product
     {
         $this->kind = $kind;
         return $this;
