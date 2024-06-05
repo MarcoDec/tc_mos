@@ -240,7 +240,7 @@
             })            // console.log('avant onBEforeMount:updateGeneralityData')
             await updateGeneralityDataFromApi(fetchCustomerOrderStore.customerOrder)
             generalityKey.value++
-            // console.log('après onBEforeMount:updateGeneralityData', generalityKey.value)
+            console.log('avant beforeMountDataLoaded', beforeMountDataLoaded.value)
             beforeMountDataLoaded.value = true
         })
     })
@@ -261,8 +261,8 @@
 
 <template>
     <AppSuspense>
-        <AppShowGuiGen v-if="beforeMountDataLoaded">
-            <template #gui-left>
+        <AppShowGuiGen>
+            <template v-if="beforeMountDataLoaded" #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
                     <div class="d-flex flex-row">
                         <div>
@@ -291,7 +291,7 @@
                         @update="updateGeneralityCustomerOrder"/>
                 </div>
             </template>
-            <template #gui-bottom>
+            <template v-if="beforeMountDataLoaded" #gui-bottom>
                 <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small">
                     <div class="full-visible-width">
                         <AppSuspense>
@@ -305,7 +305,7 @@
                     </span>
                 </div>
             </template>
-            <template #gui-right/>
+            <template v-if="beforeMountDataLoaded" #gui-right/>
         </AppShowGuiGen>
     </AppSuspense>
 </template>
