@@ -231,11 +231,11 @@
     const customer = ref({})
     onBeforeMount(async () => {
         // console.log('onBeforeMount')
-        fetchCompaniesOptions.fetchOp()
-        fetchCustomerOrderStore.fetchById(idCustomerOrder).then(async () => {
+        await fetchCompaniesOptions.fetchOp()
+        await fetchCustomerOrderStore.fetchById(idCustomerOrder).then(async () => {
             // console.log('customerOrder', fetchCustomerOrderStore.customerOrder)customer_product
             iriCustomerOrder.value = fetchCustomerOrderStore.customerOrder['@id']
-            api(fetchCustomerOrderStore.customerOrder.customer , 'GET').then(response => {
+            await api(fetchCustomerOrderStore.customerOrder.customer , 'GET').then(response => {
                 customer.value = response
             })            // console.log('avant onBEforeMount:updateGeneralityData')
             await updateGeneralityDataFromApi(fetchCustomerOrderStore.customerOrder)
