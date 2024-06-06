@@ -2,12 +2,11 @@
     import AppSuspense from '../../../../AppSuspense.vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import useUser from '../../../../../stores/security'
-    import {Modal} from 'bootstrap'
-    import {computed, onBeforeMount, ref} from 'vue'
+    import {computed, ref} from 'vue'
     import {useCustomerOrderItemsStore} from '../../../../../stores/customer/customerOrderItems'
-    import AppFixedItemAddForm from "./itemsForms/AppFixedItemAddForm.vue";
-    import AppForeCastItemAddForm from "./itemsForms/AppForeCastItemAddForm.vue";
-    import useOptions from "../../../../../stores/option/options";
+    import AppFixedItemAddForm from './itemsForms/AppFixedItemAddForm.vue'
+    import AppForeCastItemAddForm from './itemsForms/AppForeCastItemAddForm.vue'
+    import useOptions from '../../../../../stores/option/options'
 
     const props = defineProps({
         order: {default: () => ({}), required: true, type: Object},

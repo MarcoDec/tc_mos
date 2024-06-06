@@ -1,6 +1,6 @@
 <script setup>
     import AppShowCustomerOrderItems from './AppShowCustomerOrderItems.vue'
-    import AppSuspense from "../../../../AppSuspense.vue";
+    import AppSuspense from '../../../../AppSuspense.vue'
     defineProps({
         order: {default: () => ({}), required: true, type: Object},
         customer: {default: () => ({}), required: true, type: Object}

@@ -235,9 +235,10 @@
         await fetchCustomerOrderStore.fetchById(idCustomerOrder).then(async () => {
             // console.log('customerOrder', fetchCustomerOrderStore.customerOrder)customer_product
             iriCustomerOrder.value = fetchCustomerOrderStore.customerOrder['@id']
-            await api(fetchCustomerOrderStore.customerOrder.customer , 'GET').then(response => {
+            await api(fetchCustomerOrderStore.customerOrder.customer, 'GET').then(response => {
                 customer.value = response
-            })            // console.log('avant onBEforeMount:updateGeneralityData')
+            })
+            // console.log('avant onBEforeMount:updateGeneralityData')
             await updateGeneralityDataFromApi(fetchCustomerOrderStore.customerOrder)
             generalityKey.value++
             console.log('avant beforeMountDataLoaded', beforeMountDataLoaded.value)

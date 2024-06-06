@@ -13,12 +13,8 @@ function AppLabelJS(props) {
             for: props.for
         }, children)
     }
-    else {
-        return h('label', {
-            class: `col-form-label ${props.cols}`,
-            for: props.for},
-            props.field.label)
-    }
+    return h('label', {class: `col-form-label ${props.cols}`,
+        for: props.for}, props.field.label)
 }
 
 AppLabelJS.props = {

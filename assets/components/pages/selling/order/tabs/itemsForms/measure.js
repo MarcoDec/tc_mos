@@ -1,17 +1,17 @@
-import api from "../../../../../../api";
+import api from '../../../../../../api'
 
 class Measure {
     constructor(optionsUnit) {
-        this.measure = 0;
-        this.optionsUnit = optionsUnit;
+        this.measure = 0
+        this.optionsUnit = optionsUnit
     }
 
     add() {
-        this.measure++;
+        this.measure++
     }
 
     get() {
-        return this.measure;
+        return this.measure
     }
 
     setQuantityToMinDelivery(localData, objectWithMinDelivery) {
@@ -41,7 +41,7 @@ class Measure {
         }
     }
 
-    setQuantityToUnit(localData, response) {
+    static setQuantityToUnit(localData, response) {
         // Lors de la sélection d'un composant nous en récupérons les informations de l'unité associé (pas de champ minDelivery) et nous les affectons aux quantités demandées et confirmées
         if (localData.requestedQuantity) localData.requestedQuantity.code = response.unit
         else localData.requestedQuantity = {code: response.unit}
@@ -49,7 +49,7 @@ class Measure {
         else localData.confirmedQuantity = {code: response.unit}
     }
 
-    async getProductGridPrice(product, customer, order, quantity) {
+    static async getProductGridPrice(product, customer, order, quantity) {
         // on récupère le type de produit associé à la commande
         const kind = order.kind
         // on récupère les iri produit et client
@@ -73,19 +73,16 @@ class Measure {
                 // On tri les éléments par ordre décroissant de quantité
                 productCustomerPrices['hydra:member'].sort((a, b) => b.quantity.value - a.quantity.value)
                 // on récupère le premier élément dont la quantité est supérieure ou égale à la quantité demandée
-                const productCustomerPricesItems = productCustomerPrices['hydra:member'].find(price => {
-                    return price.quantity.value <= quantity.value
-                })
+                const productCustomerPricesItems = productCustomerPrices['hydra:member'].find(price => price.quantity.value <= quantity.value)
                 // console.log('productCustomerPricesItems 1er élément avec quantité', productCustomerPricesItems)
                 return productCustomerPricesItems.price
             }
             return 'Il n\'y a pas de grille de prix pour ce produit et ce client'
-        } else {
-            return 'Ce produit n\'est pas associé à ce client'
         }
+        return 'Ce produit n\'est pas associé à ce client'
     }
 
-    async getComponentGridPrice(component, customer, order, quantity) {
+    static async getComponentGridPrice(component, customer, order, quantity) {
         // on récupère le type de produit associé à la commande
         const kind = order.kind
         // on récupère les iri produit et client
@@ -109,16 +106,11 @@ class Measure {
                 // On tri les éléments par ordre décroissant de quantité
                 componentCustomerPrices['hydra:member'].sort((a, b) => b.quantity.value - a.quantity.value)
                 // on récupère le premier élément dont la quantité est supérieure ou égale à la quantité demandée
-                const componentCustomerPricesItems = componentCustomerPrices['hydra:member'].find(price => {
-                    return price.quantity.value <= quantity.value
-                })
-                // console.log('componentCustomerPricesItems 1er élément avec quantité', componentCustomerPricesItems)
-                return componentCustomer
+                return componentCustomerPrices['hydra:member'].find(price => price.quantity.value <= quantity.value)
             }
             return 'Il n\'y a pas de grille de prix pour ce composant et ce client'
-        } else {
-            return 'Ce composant n\'est pas associé à ce client'
         }
+        return 'Ce composant n\'est pas associé à ce client'
     }
 
     async getAndSetProductPrice(product, customer, order, quantity, localData, formKey) {
@@ -146,4 +138,4 @@ class Measure {
     }
 }
 
-export default Measure;
+export default Measure
