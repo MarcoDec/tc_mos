@@ -1,5 +1,4 @@
 <script setup>
-    import AppSuspense from '../../../../AppSuspense.vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import useUser from '../../../../../stores/security'
     import {computed, ref} from 'vue'
@@ -25,9 +24,9 @@
     promises.push(fetchUnitOptions.fetchOp())
     promises.push(fetchCurrencyOptions.fetchOp())
     await Promise.all(promises).then(() => {
-        console.log('promises', promises)
-        console.log('fetchUnitOptions', fetchUnitOptions)
-        console.log('fetchCurrencyOptions', fetchCurrencyOptions)
+        // console.log('promises', promises)
+        // console.log('fetchUnitOptions', fetchUnitOptions)
+        // console.log('fetchCurrencyOptions', fetchCurrencyOptions)
         formKeys.value++
     })
     const optionsUnit = computed(() =>
@@ -42,8 +41,8 @@
             const value = op.value
             return {text, value}
         }))
-    console.log('optionsUnit', optionsUnit.value)
-    console.log('optionsCurrency', optionsCurrency.value)
+    // console.log('optionsUnit', optionsUnit.value)
+    // console.log('optionsCurrency', optionsCurrency.value)
     const storeCustomerOrderItems = useCustomerOrderItemsStore()
     const customerOrderItemsCriteria = useFetchCriteria('customer-order-items-criteria')
     const tableKey = ref(0)
@@ -242,67 +241,61 @@
     addPermanentFilters()
     await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     isLoaded.value = true
-    console.log('éléments de tableau chargés')
+    // console.log('éléments de tableau chargés')
     //endregion
 </script>
 
 <template>
-    <AppSuspense>
-        <AppFixedItemAddForm
-            v-if="isLoaded"
-            :key="`addFixedItem_${formKeys}`"
-            :customer="customer"
-            :order="order"
-            :options-currency="optionsCurrency"
-            :options-unit="optionsUnit"
-            @updated="updateTable"/>
-    </AppSuspense>
-    <AppSuspense>
-        <AppForeCastItemAddForm
-            v-if="isLoaded && !fixedFamilies.includes(order.orderFamily)"
-            :key="`addForecastItem_${formKeys}`"
-            :customer="customer"
-            :order="order"
-            :options-currency="optionsCurrency"
-            :options-unit="optionsUnit"
-            @updated="updateTable"/>
-    </AppSuspense>
-    <AppSuspense>
-        <AppCardableTable
-            v-if="isLoaded"
-            :key="tableKey"
-            :current-page="storeCustomerOrderItems.currentPage"
-            :fields="fieldsCommande"
-            :first-page="storeCustomerOrderItems.firstPage"
-            :items="customerOrderItems"
-            :last-page="storeCustomerOrderItems.lastPage"
-            :next-page="storeCustomerOrderItems.nextPage"
-            :pag="storeCustomerOrderItems.pagination"
-            :previous-page="storeCustomerOrderItems.previousPage"
-            :user="roleUser"
-            title
-            form="formCustomerOrdersTable"
-            @deleted="deletedCustomerOrderItem"
-            @get-page="getPageCustomerOrders"
-            @trier-alphabet="trierAlphabetCustomerOrders"
-            @search="searchCustomerOrders"
-            @cancel-search="cancelSearchCustomerOrders">
-            <template #title>
-                <span>Items de commande {{ order.ref }}</span>
-                <button
-                    class="btn btn-success btn-float-right m-1"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalAddNewOrderItem">
-                    Ajouter Item en Ferme
-                </button>
-                <button
-                    v-if="!fixedFamilies.includes(order.orderFamily)"
-                    class="btn btn-success btn-float-right m-1"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalAddNewForecastItem">
-                    Ajouter Item en Prévisionnel {{ order.orderFamily }}
-                </button>
-            </template>
-        </AppCardableTable>
-    </AppSuspense>
+    <AppFixedItemAddForm
+        v-if="isLoaded"
+        :key="`addFixedItem_${formKeys}`"
+        :customer="customer"
+        :order="order"
+        :options-currency="optionsCurrency"
+        :options-unit="optionsUnit"
+        @updated="updateTable"/>
+    <AppForeCastItemAddForm
+        v-if="isLoaded && !fixedFamilies.includes(order.orderFamily)"
+        :key="`addForecastItem_${formKeys}`"
+        :customer="customer"
+        :order="order"
+        :options-currency="optionsCurrency"
+        :options-unit="optionsUnit"
+        @updated="updateTable"/>
+    <AppCardableTable
+        v-if="isLoaded"
+        :key="tableKey"
+        :current-page="storeCustomerOrderItems.currentPage"
+        :fields="fieldsCommande"
+        :first-page="storeCustomerOrderItems.firstPage"
+        :items="customerOrderItems"
+        :last-page="storeCustomerOrderItems.lastPage"
+        :next-page="storeCustomerOrderItems.nextPage"
+        :pag="storeCustomerOrderItems.pagination"
+        :previous-page="storeCustomerOrderItems.previousPage"
+        :user="roleUser"
+        title
+        form="formCustomerOrdersTable"
+        @deleted="deletedCustomerOrderItem"
+        @get-page="getPageCustomerOrders"
+        @trier-alphabet="trierAlphabetCustomerOrders"
+        @search="searchCustomerOrders"
+        @cancel-search="cancelSearchCustomerOrders">
+        <template #title>
+            <span>Items de commande {{ order.ref }}</span>
+            <button
+                class="btn btn-success btn-float-right m-1"
+                data-bs-toggle="modal"
+                data-bs-target="#modalAddNewOrderItem">
+                Ajouter Item en Ferme
+            </button>
+            <button
+                v-if="!fixedFamilies.includes(order.orderFamily)"
+                class="btn btn-success btn-float-right m-1"
+                data-bs-toggle="modal"
+                data-bs-target="#modalAddNewForecastItem">
+                Ajouter Item en Prévisionnel {{ order.orderFamily }}
+            </button>
+        </template>
+    </AppCardableTable>
 </template>

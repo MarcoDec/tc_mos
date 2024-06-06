@@ -14,22 +14,22 @@
         optionsUnit: {default: () => ({}), type: Object},
         optionsCurrency: {default: () => ({}), type: Object}
     })
-    console.log('props', props)
+    // console.log('props', props)
     const storeCustomerOrderItems = useCustomerOrderItemsStore()
-
     const measure = new Measure(props.optionsUnit)
     const forecastFormKey = ref(0)
-    const localForecastData = ref({product: null,
-                                   component: null,
-                                   requestedQuantity: {
-                                       code: null,
-                                       value: null
-                                   },
-                                   requestedDate: null,
-                                   price: {
-                                       code: null,
-                                       value: null
-                                   }})
+    const localForecastData = ref({
+        product: null,
+        component: null,
+        requestedQuantity: {
+           code: null,
+           value: null
+        },
+        requestedDate: null,
+        price: {
+           code: null,
+           value: null
+        }})
     const customerOrderItemForecastCreateModal = ref(null)
 
     const fieldsOpenOrderItem = computed(() => [
@@ -109,33 +109,54 @@
         }
     ])
     async function updateForecastValue(value, localData) {
-        const initialLocalData = localData.value
-        localData.value = value
-
+        console.log('updateForecastValue')
+        if (typeof localData === 'undefined') {
+            return
+        }
+        // localData doit être mise à jour mais comme certaines actions et contrôles doivent être
+        // effectués en fonction de la valeur initiale de localData, on crée une copie de localData
+        // pour pouvoir comparer les valeurs initiales et les valeurs mises à jour
+        const initialLocalData = {...localData}
+        Object.assign(localData, value);
+        // Si un produit a été sélectionné
         if (value.product && value.product !== initialLocalData.product) {
-            localData.value.component = null
+            console.log('---modification produit')
+            // On remet à zéro le composant
+            localData.component = null
+            console.log('------chargement produit', value.product)
+            // On récupère les données du produit
             await api(value.product, 'GET').then(async response => {
-                measure.setQuantityToMinDelivery(localData.value, response)
-                await measure.getAndSetProductPrice(response, props.customer, props.order, localData.value.requestedQuantity, localData, forecastFormKey)
+                // On met à jour la quantité requise en fonction de la quantité minimale de livraison
+                console.log('------produit récupéré', response)
+                console.log('------récupération de la quantité minimale de livraison')
+                measure.setQuantityToMinDelivery(localData, response)
+                console.log('------quantité minimale de livraison récupérée', localData.requestedQuantity)
+                // On récupère le prix unitaire associé au produit et au client
+                console.log('------récupération du prix unitaire')
+                await Measure.getAndSetProductPrice(response, props.customer, props.order, localData.requestedQuantity, localData, forecastFormKey)
+                console.log('------prix unitaire récupéré')
             })
             return
         }
         if (value.component && value.component !== initialLocalData.component) {
-            localData.value.product = null
+            localData.product = null
             await api(value.component, 'GET').then(async response => {
-                measure.setQuantityToUnit(localData.value, response)
-                await measure.getAndSetComponentPrice(response, props.customer, props.order, localData.value.requestedQuantity, localData, forecastFormKey)
+                measure.setQuantityToUnit(localData, response)
+                await measure.getAndSetComponentPrice(response, props.customer, props.order, localData.requestedQuantity, localData, forecastFormKey)
             })
             return
         }
         if (value.requestedQuantity.value && value.requestedQuantity.value !== initialLocalData.requestedQuantity.value) {
+            console.log('modification quantité requise', value, localData)
             // Si un produit a été sélectionné on récupère le prix unitaire associé au produit et au client
-            if (value.product) {
-                await measure.getAndSetProductPrice(value.product, props.customer, props.order, localData.value.requestedQuantity, localData, forecastFormKey)
+            if (initialLocalData.product) {
+                console.log('un produit est sélectionné', value.product)
+                await Measure.getAndSetProductPrice(value.product, props.customer, props.order, localData.requestedQuantity, localData, forecastFormKey)
                 return
             }
-            if (value.component) {
-                await measure.getAndSetComponentPrice(value.component, props.customer, props.order, localData.value.requestedQuantity, localData, forecastFormKey)
+            if (initialLocalData.component) {
+                console.log('un composant est sélectionné')
+                await Measure.getAndSetComponentPrice(value.component, props.customer, props.order, localData.requestedQuantity, localData, forecastFormKey)
             }
         }
     }
@@ -186,7 +207,7 @@
             :model-value="localForecastData"
             :fields="fieldsOpenOrderItem"
             submit-label="Ajouter"
-            @update:model-value="updateForecastValue"
+            @update:model-value="value => updateForecastValue(value, localForecastData)"
             @submit="addForecastItem"/>
     </AppModal>
 </template>

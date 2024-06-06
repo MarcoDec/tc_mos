@@ -241,7 +241,7 @@
             // console.log('avant onBEforeMount:updateGeneralityData')
             await updateGeneralityDataFromApi(fetchCustomerOrderStore.customerOrder)
             generalityKey.value++
-            console.log('avant beforeMountDataLoaded', beforeMountDataLoaded.value)
+            // console.log('avant beforeMountDataLoaded', beforeMountDataLoaded.value)
             beforeMountDataLoaded.value = true
         })
     })
@@ -296,8 +296,8 @@
                 <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small">
                     <div class="full-visible-width">
                         <AppSuspense>
-                            <AppCustomerOrderShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100" :customer="customer" :order="order"/>
-                            <AppCustomerOrderInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>
+                            <AppCustomerOrderShow v-if="modeDetail" :key="`formtab-${keyTabs}`" :customer="customer" :order="order"/>
+                            <AppCustomerOrderInlist v-else :key="`formlist-${keyTabs}`"/>
                         </AppSuspense>
                     </div>
                     <span>

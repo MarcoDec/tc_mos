@@ -14,11 +14,9 @@
         optionsUnit: {default: () => ({}), type: Object},
         optionsCurrency: {default: () => ({}), type: Object}
     })
-    console.log('props', props)
+    // console.log('props', props)
     const storeCustomerOrderItems = useCustomerOrderItemsStore()
-
     const measure = new Measure(props.optionsUnit)
-
     const fixedFormKey = ref(0)
     const customerOrderItemFixedCreateModal = ref(null)
     const localFixedData = ref({
@@ -40,130 +38,134 @@
         }
     })
     const fieldsOrderItem = computed(() => [{
-                                                label: 'Produit',
-                                                name: 'product',
-                                                info: 'Si un produit est sélectionné, la quantité minimale de livraison définie sur la fiche produit sera affectée aux quantités demandées et confirmées.',
-                                                type: 'multiselect-fetch',
-                                                api: '/api/products',
-                                                filteredProperty: 'code',
-                                                max: 1
-                                            },
-                                            {
-                                                label: 'Composant',
-                                                name: 'component',
-                                                info: 'Si un composant est sélectionné, l\'unité associée sera affectée aux quantités demandées et confirmées.',
-                                                type: 'multiselect-fetch',
-                                                api: '/api/components',
-                                                filteredProperty: 'code',
-                                                max: 1
-                                            },
-                                            {
-                                                label: 'Quantité souhaitée *',
-                                                name: 'requestedQuantity',
-                                                info: 'Obligatoire\nSi un produit est sélectionnée, cette quantité doit être supérieure à la quantité minimale de livraison définie sur la fiche produit.\n'
-                                                    + 'Lorsque la quantité change le prix unitaire est récupéré automatiquement de la grille tarifaire associée au produit/composant et au client',
-                                                filter: true,
-                                                min: true,
-                                                measure: {
-                                                    code: {
-                                                        label: 'Code',
-                                                        name: 'requestedQuantity.code',
-                                                        options: {
-                                                            label: value =>
-                                                                props.optionsUnit.find(option => option.type === value)?.text ?? null,
-                                                            options: props.optionsUnit
-                                                        },
-                                                        type: 'select'
-                                                    },
-                                                    value: {
-                                                        label: 'Valeur',
-                                                        name: 'requestedQuantity.value',
-                                                        type: 'number',
-                                                        step: 0.1
-                                                    }
-                                                },
-                                                type: 'measure'
-                                            },
-                                            {
-                                                label: 'Quantité confirmée',
-                                                name: 'confirmedQuantity',
-                                                info: 'Si un produit est sélectionnée, cette quantité doit être supérieure à la quantité minimale de livraison définie sur la fiche produit.\n'
-                                                    + 'Lorsque la quantité change le prix unitaire est récupéré automatiquement de la grille tarifaire associée au produit/composant et au client',
-                                                filter: true,
-                                                min: true,
-                                                measure: {
-                                                    code: {
-                                                        label: 'Code',
-                                                        name: 'confirmedQuantity.code',
-                                                        options: {
-                                                            label: value =>
-                                                                props.optionsUnit.find(option => option.type === value)?.text ?? null,
-                                                            options: props.optionsUnit
-                                                        },
-                                                        type: 'select'
-                                                    },
-                                                    value: {
-                                                        label: 'Valeur',
-                                                        name: 'confirmedQuantity.value',
-                                                        type: 'number',
-                                                        step: 0.1
-                                                    }
-                                                },
-                                                type: 'measure'
-                                            },
-                                            {
-                                                label: 'Date de livraison souhaitée *',
-                                                name: 'requestedDate',
-                                                info: 'Obligatoire',
-                                                type: 'date'
-                                            },
-                                            {
-                                                label: 'Date de livraison confirmée',
-                                                name: 'confirmedDate',
-                                                type: 'date'
-                                            },
-                                            {
-                                                label: 'Prix Unitaire',
-                                                name: 'price',
-                                                type: 'measure',
-                                                info: 'Le prix unitaire est récupéré automatiquement de la grille tarifaire associée au produit/composant et au client.\n'
-                                                    + 'Il est calculé en fonction de la quantité confirmée si la quantité est non nulle, sinon il est calculé à partir de la quantité souhaitée.\n'
-                                                    + 'La valeur du prix unitaire peut être modifiée manuellement.',
-                                                measure: {
-                                                    code: {
-                                                        label: 'Code',
-                                                        name: 'price.code',
-                                                        options: {
-                                                            label: value =>
-                                                                props.optionsCurrency.find(option => option.type === value)?.text ?? null,
-                                                            options: props.optionsCurrency
-                                                        },
-                                                        type: 'select'
-                                                    },
-                                                    value: {
-                                                        label: 'Valeur',
-                                                        name: 'price.value',
-                                                        type: 'number',
-                                                        step: 0.0001
-                                                    }
-                                                }
-                                            }])
+            label: 'Produit',
+            name: 'product',
+            info: 'Si un produit est sélectionné, la quantité minimale de livraison définie sur la fiche produit sera affectée aux quantités demandées et confirmées.',
+            type: 'multiselect-fetch',
+            api: '/api/products',
+            filteredProperty: 'code',
+            max: 1
+        },
+        {
+            label: 'Composant',
+            name: 'component',
+            info: 'Si un composant est sélectionné, l\'unité associée sera affectée aux quantités demandées et confirmées.',
+            type: 'multiselect-fetch',
+            api: '/api/components',
+            filteredProperty: 'code',
+            max: 1
+        },
+        {
+            label: 'Quantité souhaitée *',
+            name: 'requestedQuantity',
+            info: 'Obligatoire\nSi un produit est sélectionnée, cette quantité doit être supérieure à la quantité minimale de livraison définie sur la fiche produit.\n'
+                + 'Lorsque la quantité change le prix unitaire est récupéré automatiquement de la grille tarifaire associée au produit/composant et au client',
+            filter: true,
+            min: true,
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'requestedQuantity.code',
+                    options: {
+                        label: value =>
+                            props.optionsUnit.find(option => option.type === value)?.text ?? null,
+                        options: props.optionsUnit
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'requestedQuantity.value',
+                    type: 'number',
+                    step: 0.1
+                }
+            },
+            type: 'measure'
+        },
+        {
+            label: 'Quantité confirmée',
+            name: 'confirmedQuantity',
+            info: 'Si un produit est sélectionnée, cette quantité doit être supérieure à la quantité minimale de livraison définie sur la fiche produit.\n'
+                + 'Lorsque la quantité change le prix unitaire est récupéré automatiquement de la grille tarifaire associée au produit/composant et au client',
+            filter: true,
+            min: true,
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'confirmedQuantity.code',
+                    options: {
+                        label: value =>
+                            props.optionsUnit.find(option => option.type === value)?.text ?? null,
+                        options: props.optionsUnit
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'confirmedQuantity.value',
+                    type: 'number',
+                    step: 0.1
+                }
+            },
+            type: 'measure'
+        },
+        {
+            label: 'Date de livraison souhaitée *',
+            name: 'requestedDate',
+            info: 'Obligatoire',
+            type: 'date'
+        },
+        {
+            label: 'Date de livraison confirmée',
+            name: 'confirmedDate',
+            type: 'date'
+        },
+        {
+            label: 'Prix Unitaire',
+            name: 'price',
+            type: 'measure',
+            info: 'Le prix unitaire est récupéré automatiquement de la grille tarifaire associée au produit/composant et au client.\n'
+                + 'Il est calculé en fonction de la quantité confirmée si la quantité est non nulle, sinon il est calculé à partir de la quantité souhaitée.\n'
+                + 'La valeur du prix unitaire peut être modifiée manuellement.',
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'price.code',
+                    options: {
+                        label: value =>
+                            props.optionsCurrency.find(option => option.type === value)?.text ?? null,
+                        options: props.optionsCurrency
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'price.value',
+                    type: 'number',
+                    step: 0.0001
+                }
+            }
+        }])
     async function updateFixedLocalData(value, localData) {
-        const initialLocalData = localData.value
-        localData.value = value
+        if (typeof localData === 'undefined') {
+            return
+        }
+        const initialLocalData = {...localData}
+        Object.assign(localData, value);
+        // localData = value
 
         if (value.product && value.product !== initialLocalData.product) {
             localData.value.component = null
             await api(value.product, 'GET').then(async response => {
                 measure.setQuantityToMinDelivery(localData.value, response)
-                await measure.getAndSetProductPrice(response, props.customer, props.order, localData.value.requestedQuantity, localData, fixedFormKey)
+                await Measure.getAndSetProductPrice(response, props.customer, props.order, localData.value.requestedQuantity, localData, fixedFormKey)
             })
             return
         }
         if (value.component && value.component !== initialLocalData.component) {
             localData.value.product = null
             await api(value.component, 'GET').then(async response => {
-                measure.setQuantityToUnit(localData.value, response)
+                Measure.setQuantityToUnit(localData.value, response)
                 await measure.getAndSetComponentPrice(response, props.customer, props.order, localData.value.requestedQuantity, localData, fixedFormKey)
             })
             return
@@ -171,11 +173,11 @@
         if (value.confirmedQuantity.value && value.confirmedQuantity.value !== initialLocalData.confirmedQuantity.value) {
             // Si un produit a été sélectionné on récupère le prix unitaire associé au produit et au client
             if (value.product) {
-                await measure.getAndSetProductPrice(value.product, props.customer, props.order, localData.value.confirmedQuantity, localData, fixedFormKey)
+                await Measure.getAndSetProductPrice(value.product, props.customer, props.order, localData.value.confirmedQuantity, localData, fixedFormKey)
                 return
             }
             if (value.component) {
-                await measure.getAndSetComponentPrice(value.component, props.customer, props.order, localData.value.confirmedQuantity, localData, fixedFormKey)
+                await Measure.getAndSetComponentPrice(value.component, props.customer, props.order, localData.value.confirmedQuantity, localData, fixedFormKey)
                 return
             }
         }
