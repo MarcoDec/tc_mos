@@ -16,7 +16,8 @@
     })
     // console.log('props', props)
     const storeCustomerOrderItems = useCustomerOrderItemsStore()
-    const measure = new Measure(props.optionsUnit)
+    const measure = new Measure('U', 0.0)
+    measure.initUnits()
     const forecastFormKey = ref(0)
     const localForecastData = ref({
         product: null,
@@ -40,6 +41,9 @@
             type: 'multiselect-fetch',
             api: '/api/products',
             filteredProperty: 'code',
+            permanentFilters: [
+                {field: 'productCustomers.customer', value: props.customer['@id']}
+            ],
             max: 1
         },
         {
@@ -109,7 +113,7 @@
         }
     ])
     async function updateForecastValue(value, localData) {
-        console.log('updateForecastValue')
+        // console.log('updateForecastValue',value, localData)
         if (typeof localData === 'undefined') {
             return
         }
@@ -118,49 +122,93 @@
         // pour pouvoir comparer les valeurs initiales et les valeurs mises à jour
         const initialLocalData = {...localData}
         Object.assign(localData, value);
+        if (value.product === null) localData.product = null
+        if (value.component === null) localData.component = null
         // Si un produit a été sélectionné
         if (value.product && value.product !== initialLocalData.product) {
-            console.log('---modification produit')
             // On remet à zéro le composant
             localData.component = null
-            console.log('------chargement produit', value.product)
             // On récupère les données du produit
             await api(value.product, 'GET').then(async response => {
                 // On met à jour la quantité requise en fonction de la quantité minimale de livraison
-                console.log('------produit récupéré', response)
-                console.log('------récupération de la quantité minimale de livraison')
-                measure.setQuantityToMinDelivery(localData, response)
-                console.log('------quantité minimale de livraison récupérée', localData.requestedQuantity)
+                await measure.setQuantityToMinDelivery(localData, response)
                 // On récupère le prix unitaire associé au produit et au client
-                console.log('------récupération du prix unitaire')
                 await Measure.getAndSetProductPrice(response, props.customer, props.order, localData.requestedQuantity, localData, forecastFormKey)
-                console.log('------prix unitaire récupéré')
             })
             return
         }
         if (value.component && value.component !== initialLocalData.component) {
             localData.product = null
             await api(value.component, 'GET').then(async response => {
-                measure.setQuantityToUnit(localData, response)
-                await measure.getAndSetComponentPrice(response, props.customer, props.order, localData.requestedQuantity, localData, forecastFormKey)
+                await Measure.setQuantityToUnit(localData, response)
+                await Measure.getAndSetComponentPrice(response, props.customer, props.order, localData.requestedQuantity, localData, forecastFormKey)
             })
             return
         }
         if (value.requestedQuantity.value && value.requestedQuantity.value !== initialLocalData.requestedQuantity.value) {
-            console.log('modification quantité requise', value, localData)
+            // console.log('modification quantité requise', value, localData)
             // Si un produit a été sélectionné on récupère le prix unitaire associé au produit et au client
             if (initialLocalData.product) {
-                console.log('un produit est sélectionné', value.product)
-                await Measure.getAndSetProductPrice(value.product, props.customer, props.order, localData.requestedQuantity, localData, forecastFormKey)
+                // console.log('un produit est sélectionné', value.product)
+                const loadedProduct = await api(value.product, 'GET')
+                await Measure.getAndSetProductPrice(loadedProduct, props.customer, props.order, localData.requestedQuantity, localData, forecastFormKey)
                 return
             }
             if (initialLocalData.component) {
-                console.log('un composant est sélectionné')
-                await Measure.getAndSetComponentPrice(value.component, props.customer, props.order, localData.requestedQuantity, localData, forecastFormKey)
+                // console.log('un composant est sélectionné', value.component)
+                const loadedComponent = await api(value.component, 'GET')
+                await Measure.getAndSetComponentPrice(loadedComponent, props.customer, props.order, localData.requestedQuantity, localData, forecastFormKey)
             }
         }
     }
-    async function addForecastItem() {
+    function check_data(data) {
+        violations.value = []
+        if (typeof data === 'undefined' || data === null) {
+            violations.value.push({propertyPath: 'product', message: 'Veuillez remplir le formulaire'})
+            return false
+        }
+        // on retire d'éventuelles violations précédentes liées à la propriété product
+        violations.value = violations.value.filter(violation => violation.propertyPath !== 'product')
+        if (data.product === null && data.component === null) {
+            violations.value.push({propertyPath: 'product', message: 'Vous devez sélectionner un produit ou un composant'})
+            return false
+        }
+        // on retire d'éventuelles violations précédentes liées à la propriété product
+        violations.value = violations.value.filter(violation => violation.propertyPath !== 'product')
+        if (typeof data.requestedQuantity === 'undefined' || data.requestedQuantity === null) {
+            violations.value.push({propertyPath: 'requestedQuantity', message: 'Vous devez saisir une quantité'})
+            return false
+        }
+        // on retire d'éventuelles violations précédentes liées à la propriété requestedQuantity
+        violations.value = violations.value.filter(violation => violation.propertyPath !== 'requestedQuantity')
+        if (data.requestedQuantity.code === null || data.requestedQuantity.value === null) {
+            violations.value.push({propertyPath: 'requestedQuantity', message: 'Vous devez saisir une quantité'})
+            return false
+        }
+        // on retire d'éventuelles violations précédentes liées à la propriété requestedQuantity
+        violations.value = violations.value.filter(violation => violation.propertyPath !== 'requestedQuantity')
+        if (data.requestedDate === null) {
+            violations.value.push({propertyPath: 'requestedDate', message: 'Vous devez saisir une date'})
+            return false
+        }
+        // on retire d'éventuelles violations précédentes liées à la propriété requestedDate
+        violations.value = violations.value.filter(violation => violation.propertyPath !== 'requestedDate')
+        if (data.price.code === null || data.price.value === null) {
+            violations.value.push({propertyPath: 'price', message: 'Vous devez saisir un prix'})
+            return false
+        }
+        // on retire d'éventuelles violations précédentes liées à la propriété price
+        violations.value = violations.value.filter(violation => violation.propertyPath !== 'price')
+        return true
+    }
+    const violations = ref([])
+    async function addForecastItem(data) {
+        // console.log('Analyse données', data, localForecastData.value)
+        if (!check_data(localForecastData.value)) {
+            // console.log('Données invalides')
+            return
+        }
+        // console.log('Données valides', localForecastData.value)
         //On ajoute le champ parentOrder
         localForecastData.value.parentOrder = props.order['@id']
         //On ajoute le type d'item isForecast
@@ -180,6 +228,8 @@
         })
         // eslint-disable-next-line require-atomic-updates
         localForecastData.value.requestedQuantity.code = requestedUnit.text
+        //On ajoute l'item en base
+        console.log('Ajout de l\'item en base', localForecastData.value)
         await storeCustomerOrderItems.add(localForecastData.value)
         //On ferme la modale
         if (customerOrderItemForecastCreateModal.value) {
@@ -192,7 +242,7 @@
         // eslint-disable-next-line require-atomic-updates
         localForecastData.value = {}
         //On rafraichit les données du tableau
-        emits.push('updated')
+        emits('updated')
     }
 </script>
 
@@ -202,10 +252,11 @@
         ref="customerOrderItemForecastCreateModal"
         title="Ajouter Item en Prévisionnel">
         <AppFormJS
-            id="formAddNewOrderItem"
+            id="formAddNewForecastOrderItem"
             :key="forecastFormKey"
             :model-value="localForecastData"
             :fields="fieldsOpenOrderItem"
+            :violations="violations"
             submit-label="Ajouter"
             @update:model-value="value => updateForecastValue(value, localForecastData)"
             @submit="addForecastItem"/>

@@ -1,10 +1,8 @@
 import {fieldValidator, generateLabelCols} from '../props'
-import {h, resolveComponent} from 'vue'
-// import AppFormGroupJS from './field/AppFormGroupJS'
-
+import {h, ref, resolveComponent} from 'vue'
 import AppFormField from './field/AppFormField.vue'
-// import AppFormFieldVue from './field/AppFormFieldVue.vue'
 
+const focusedField = ref(null)
 function AppFormJS(props, context) {
     function generateSlot() {
         return context.slots.default({
@@ -59,6 +57,7 @@ function AppFormJS(props, context) {
             groups.push(h(AppFormField, {
                 disabled: props.disabled,
                 field,
+                focusedField,
                 form: props.id,
                 key: field.name,
                 labelCols: props.labelCols,
@@ -67,6 +66,7 @@ function AppFormJS(props, context) {
                     ...props.modelValue,
                     [field.name]: value
                 }),
+                'onFocusin': value => focusedField.value = value,
                 violation: props.violations.find(violation => violation.propertyPath === field.name)
             }))
             // }
@@ -87,7 +87,10 @@ function AppFormJS(props, context) {
                                 disabled: props.disabled,
                                 form: props.id,
                                 type: 'submit',
-                                onClick: () => context.emit('submit')
+                                onClick: () => {
+                                    console.log("onClick Button submit")
+                                    //context.emit('submit')
+                                }
                             },
                             () => props.submitLabel
                         )
@@ -101,9 +104,12 @@ function AppFormJS(props, context) {
         id: props.id,
         method: 'POST',
         novalidate: true,
+        'onSubmit.prevent': () => {},
         onSubmit(e) {
+            console.log("onSubmit")
             e.preventDefault()
             const data = new FormData(e.target)
+            // console.log('data before', data)
             for (const [key, value] of Object.entries(Object.fromEntries(data))) {
                 if (typeof value === 'undefined' || value === null)
                     data.delete(key)

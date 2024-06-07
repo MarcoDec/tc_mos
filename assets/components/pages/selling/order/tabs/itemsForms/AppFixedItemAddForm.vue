@@ -16,7 +16,8 @@
     })
     // console.log('props', props)
     const storeCustomerOrderItems = useCustomerOrderItemsStore()
-    const measure = new Measure(props.optionsUnit)
+    const measure = new Measure('U', 0.0)
+    measure.initUnits()
     const fixedFormKey = ref(0)
     const customerOrderItemFixedCreateModal = ref(null)
     const localFixedData = ref({
@@ -157,7 +158,8 @@
         if (value.product && value.product !== initialLocalData.product) {
             localData.value.component = null
             await api(value.product, 'GET').then(async response => {
-                measure.setQuantityToMinDelivery(localData.value, response)
+                await measure.setQuantityToMinDelivery(localData.value, response, ['requestedQuantity', 'confirmedQuantity'])
+                console.log('new localData', localData.value)
                 await Measure.getAndSetProductPrice(response, props.customer, props.order, localData.value.requestedQuantity, localData, fixedFormKey)
             })
             return
@@ -166,7 +168,7 @@
             localData.value.product = null
             await api(value.component, 'GET').then(async response => {
                 Measure.setQuantityToUnit(localData.value, response)
-                await measure.getAndSetComponentPrice(response, props.customer, props.order, localData.value.requestedQuantity, localData, fixedFormKey)
+                await Measure.getAndSetComponentPrice(response, props.customer, props.order, localData.value.requestedQuantity, localData, fixedFormKey)
             })
             return
         }
@@ -193,6 +195,7 @@
         }
     }
     async function addFixedItem() {
+        console.log('addFixedItem', localFixedData.value)
         //On ajoute le champ parentOrder
         localFixedData.value.parentOrder = props.order['@id']
         //On ajoute le type d'item isForecast à false
