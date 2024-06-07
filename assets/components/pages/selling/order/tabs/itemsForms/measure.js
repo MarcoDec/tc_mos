@@ -2,11 +2,12 @@ import api from '../../../../../../api'
 
 class Unit {
     children = []
-    constructor() {
-        this.code = null
-        this.name = null
-        this.parent = null
-        this.base = 1
+    constructor(code, name, parent, base) {
+        console.log('constructor Unit', code, name, parent, base)
+        this.code = code
+        this.name = name
+        this.parent = parent
+        this.base = base
     }
     initFromApi(data) {
         this.code = data.code
@@ -111,10 +112,10 @@ class Unit {
 class Measure {
     //region méthodes statiques
     static async getOptionsUnit() {
-        return api('/api/units', 'GET')
+        return (await api('/api/units', 'GET'))['hydra:member']
     }
     static async getOptionsCurrency() {
-        return api('/api/currencies', 'GET')
+        return (await api('/api/currencies', 'GET'))['hydra:member']
     }
     static async getUnitByCode(code) {
         return api(`/api/units?code=${code}`, 'GET')
@@ -133,7 +134,10 @@ class Measure {
         await Measure.getProductGridPrice(product, customer, order, quantity).then(async price => {
             if (typeof price === 'string') window.alert(price)
             else {
-                if (price === null) return
+                if (price === null) {
+                    console.log('pas de tarif trouvé')
+                    return
+                }
                 const currency = await api(`/api/currencies?code=${price.code}`)
                 localData.price.value = price.value
                 localData.price.code = currency['hydra:member'][0]['@id']
@@ -162,7 +166,6 @@ class Measure {
         const componentCustomer = await api(`/api/customer-components?component=${componentIri}&customer=${customerIri}&kind=${kind}`, 'GET')
         // Si il y a au moins une réponse on récupère le premier élément
         if (componentCustomer['hydra:member'].length > 0) {
-            // console.log('componentCustomer', componentCustomer['hydra:member'])
             // Normalement s'il existe plus d'une grilles tarifaire il faut alerter l'utilisateur
             if (componentCustomer['hydra:member'].length > 1) {
                 return `Il existe plus d'une grille tarifaire pour ce composant et ce client de type ${kind}`
@@ -170,7 +173,6 @@ class Measure {
             const componentCustomerItem = componentCustomer['hydra:member'][0]
             // On récupère la grille tarifaire dans CustomerProductPrice associée au productCustomer
             const componentCustomerPrices = await api(`/api/customer-component-prices?component=${componentCustomerItem['@id']}`, 'GET')
-            // console.log('componentCustomerPrices', componentCustomerPrices['hydra:member'])
             // Si il y a au moins une réponse on parcourt les éléments pour récupérer les prix dont la quantité associée est supérieure ou égale à la quantité demandée
             if (componentCustomerPrices['hydra:member'].length > 0) {
                 // On tri les éléments par ordre décroissant de quantité
@@ -191,24 +193,20 @@ class Measure {
         const productCustomer = await api(`/api/customer-products?product=${productIri}&customer=${customerIri}&kind=${kind}`, 'GET')
         // Si il y a au moins une réponse on récupère le premier élément
         if (productCustomer['hydra:member'].length > 0) {
-            // console.log('productCustomer', productCustomer['hydra:member'])
             // Normalement s'il existe plus d'une grilles tarifaire il faut alerter l'utilisateur
-            console.log('productCustomer', productCustomer['hydra:member'])
             if (productCustomer['hydra:member'].length > 1) {
-                return `Il existe plus d'une grille tarifaire pour ce produit et ce client de type ${kind}`
+                return `Il existe plus d'une grille tarifaire pour ce produit ${productIri} et ce client ${customerIri} de type ${kind}`
             }
             const productCustomerItem = productCustomer['hydra:member'][0]
             // On récupère la grille tarifaire dans CustomerProductPrice associée au productCustomer
             const productCustomerPrices = await api(`/api/customer-product-prices?product=${productCustomerItem['@id']}`, 'GET')
-            // console.log('productCustomerPrices', productCustomerPrices['hydra:member'])
             // Si il y a au moins une réponse on parcourt les éléments pour récupérer les prix dont la quantité associée est supérieure ou égale à la quantité demandée
             if (productCustomerPrices['hydra:member'].length > 0) {
                 // On tri les éléments par ordre décroissant de quantité
                 productCustomerPrices['hydra:member'].sort((a, b) => b.quantity.value - a.quantity.value)
                 // on récupère le premier élément dont la quantité est supérieure ou égale à la quantité demandée
-                const productCustomerPricesItems = productCustomerPrices['hydra:member'].find(price => price.quantity.value <= quantity.value)
-                console.log('productCustomerPricesItems 1er élément', productCustomerPricesItems)
-                // console.log('productCustomerPricesItems 1er élément avec quantité', productCustomerPricesItems)
+                const quantityMoreThan1 = quantity.value >= 1 ? quantity.value : 1
+                const productCustomerPricesItems = productCustomerPrices['hydra:member'].find(price => price.quantity.value <= quantityMoreThan1)
                 if (typeof productCustomerPricesItems === 'undefined') return null
                 return productCustomerPricesItems.price
             }
@@ -219,6 +217,7 @@ class Measure {
     //endregion
 
     constructor(code, value, denominator = null, denominatorUnit = null) {
+        console.log('constructor Measure', code, value, denominator, denominatorUnit)
         this.code = code
         this.value = value
         this.denominator = denominator
@@ -232,14 +231,17 @@ class Measure {
     }
     async initUnits() {
         this.type = 'unit'
-        this.unit = await Measure.getUnitByCode(this.code)
+        const unitData = await Measure.getUnitByCode(this.code)
+        this.unit = new Unit(unitData.code, unitData.name, unitData.parent, unitData.base)
         if (this.denominator !== null) {
-            this.denominatorUnit = await Measure.getUnitByCode(this.denominator)
+            const denominatorUnitData = await Measure.getUnitByCode(this.denominator)
+            this.denominatorUnit = new Unit(denominatorUnitData.code, denominatorUnitData.name, denominatorUnitData.parent, denominatorUnitData.base)
         }
     }
     async initCurrencies() {
         this.type = 'currency'
-        this.unit = await Measure.getCurrencyByCode(this.code)
+        const unitData = await Measure.getCurrencyByCode(this.code)
+        this.unit = new Unit(unitData.code, unitData.name, unitData.parent, unitData.base)
         this.denominator = null
         this.denominatorUnit = null
     }
@@ -255,7 +257,8 @@ class Measure {
     async getSafeUnit() {
         if (this.unit === null) {
             //on récupère l'unité ayant le code this.code
-            this.unit = await Measure.getUnitByCode(this.code);
+            const unitData = await Measure.getUnitByCode(this.code);
+            this.unit = new Unit(unitData.code, unitData.name, unitData.parent, unitData.base)
         }
         return this.unit;
     }
@@ -291,7 +294,8 @@ class Measure {
 
     //region méthodes de conversion et calculs
     isGreaterThanOrEqual(measure) {
-        const clone = Object.assign({}, this);
+        console.log('isGreaterThanOrEqual', this.code)
+        const clone = new Measure(this.code, this.value, this.denominator, this.denominatorUnit)
         measure = clone.convertToSame(measure);
         return clone.value >= measure.value;
     }
@@ -351,43 +355,40 @@ class Measure {
         }
         return this;
     }
-    convertToSame(measure) {
-        const unit = Measure.getLess(this.getSafeUnit(), measure.getSafeUnit());
+    async convertToSame(measure) {
+        const unit = Measure.getLess(await this.getSafeUnit(), await measure.getSafeUnit());
+        console.log('convertToSame', unit)
         const denominator =
             this.denominatorUnit !== null && measure.denominatorUnit !== null
-                ? Measure.getLess(this.denominatorUnit,measure.denominatorUnit)
+                ? Measure.getLess(this.denominatorUnit, measure.denominatorUnit)
                 : null;
         this.convert(unit, denominator);
         return Object.assign({}, measure).convert(unit, denominator);
     }
-    //TODO: Corriger liste d'options
-    setQuantityToMinDelivery(localData, objectWithMinDelivery) {
-        console.log('setQuantityToMinDelivery', localData, objectWithMinDelivery)
-        // Lors de la sélection d'un produit nous en récupérons les informations de livraison minimale et nous les affectons aux quantités demandées et confirmées
-        //console.info('Positionnement MinDelivery à ', objectWith.minDelivery)
-        if (localData.requestedQuantity) {
-            // En 1ère approximation, nous positionnons la quantité minimale uniquement lorsque sa valeur est supérieure à la valeur actuelle
-            if (localData.requestedQuantity.value < objectWithMinDelivery.minDelivery.value) {
-                localData.requestedQuantity.code = this.optionsUnit.find(unit => unit.text === objectWithMinDelivery.minDelivery.code).value
-                localData.requestedQuantity.value = objectWithMinDelivery.minDelivery.value
-            }
-        } else {
-            localData.requestedQuantity = {
-                code: this.optionsUnit.find(unit => unit.text === objectWithMinDelivery.minDelivery.code).value,
-                value: objectWithMinDelivery.minDelivery.value
-            }
-        }
-        if (localData.confirmedQuantity) {
-            // En 1ère approximation, nous positionnons la quantité minimale uniquement lorsque sa valeur est supérieure à la valeur actuelle
-            if (localData.confirmedQuantity.value < objectWithMinDelivery.minDelivery.value) {
-                localData.confirmedQuantity.code = this.optionsUnit.find(unit => unit.text === objectWithMinDelivery.minDelivery.code).value
-                localData.confirmedQuantity.value = objectWithMinDelivery.minDelivery.value
-            }
-        } else {
-            // console.log(this.optionsUnit)
-            localData.confirmedQuantity = {
-                code: this.optionsUnit.find(unit => unit.text === objectWithMinDelivery.minDelivery.code).value,
-                value: objectWithMinDelivery.minDelivery.value
+
+    async setQuantityToMinDelivery(localData, objectWithMinDelivery, quantityFields = ['requestedQuantity']) {
+        // console.log('setQuantityToMinDelivery', objectWithMinDelivery.minDelivery.code)
+        const minDeliveryMeasure = new Measure(objectWithMinDelivery.minDelivery.code, objectWithMinDelivery.minDelivery.value)
+        for (const quantityField of quantityFields) {
+            if (localData[quantityField] && localData[quantityField].code !== null) {
+                console.log('localMeasure', localData[quantityField].code)
+                const localMeasure = new Measure(localData[quantityField].code, localData[quantityField].value)
+                if (!localMeasure.isGreaterThanOrEqual(minDeliveryMeasure)) {
+                    // la quantité demandée est inférieure à la quantité minimale de livraison
+                    localData[quantityField].code = (await Measure.getOptionsUnit()).find(unit => unit.code === objectWithMinDelivery.minDelivery.code)['@id']
+                    localData[quantityField].value = objectWithMinDelivery.minDelivery.value
+                }
+            } else {
+                const code = (await Measure.getOptionsUnit()).find(unit => unit.code === objectWithMinDelivery.minDelivery.code)['@id']
+                let value = objectWithMinDelivery.minDelivery.value
+                // L'unité de la quantité demandée n'est pas définie mais peut-être que la bvaleur est définie, dans ce cas on prendra le max entre cette valeur et la valeur de la quantité minimale de livraison
+                if (localData[quantityField] && localData[quantityField].value !== null && localData[quantityField].value > value) {
+                    value = localData[quantityField].value
+                }
+                localData[quantityField] = {
+                    code:  code,
+                    value: value
+                }
             }
         }
     }
