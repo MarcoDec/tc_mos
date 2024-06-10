@@ -1,7 +1,7 @@
 <script setup>
     import {computed} from 'vue'
 
-    const emit = defineEmits(['update:modelValue', 'on-focusin'])
+    const emit = defineEmits(['update:modelValue', 'onFocusin'])
     const props = defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
@@ -10,7 +10,7 @@
         id: {required: true, type: String},
         modelValue: {default: ''}
     })
-    // console.log('AppInput.vue props.focusedField', props.focusedField)
+    console.log('AppInput.vue props.focusedField', props.focusedField)
     const theValue = computed(() => {
         if (typeof props.modelValue === 'boolean') {
             // console.warn('AppInput.vue entrée booléenne détectée, remplacement valeur par chaine texte vide', props.field)
@@ -21,7 +21,7 @@
     const type = computed(() => props.field.type ?? 'text')
     const multiple = computed(() => props.field.multiple ?? true)
     function input(e) {
-        // emit('update:modelValue', e.target.value)
+        emit('update:modelValue', e.target.value)
     }
     function change(e) {
         // console.log('change', e.target.value, e.relatedTarget, e.key)
@@ -36,11 +36,11 @@
         //On récupère la référence au champ actif
         const $refs = document.getElementById(props.id)
         // console.log('AppInput:onFocusin', $refs)
-        emit('on-focusin', $refs)
+        emit('onFocusin', $refs)
     }
     function onFocusout() {
         // console.log('onFocusout')
-        emit('on-focusin', null)
+        emit('onFocusin', null)
     }
 </script>
 

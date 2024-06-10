@@ -38,7 +38,8 @@
             value: null
         }
     })
-    const fieldsOrderItem = computed(() => [{
+    const fieldsOrderItem = computed(() => [
+        {
             label: 'Produit',
             name: 'product',
             info: 'Si un produit est sélectionné, la quantité minimale de livraison définie sur la fiche produit sera affectée aux quantités demandées et confirmées.',
@@ -146,13 +147,14 @@
                     step: 0.0001
                 }
             }
-        }])
+        }
+    ])
     async function updateFixedLocalData(value, localData) {
         if (typeof localData === 'undefined') {
             return
         }
         const initialLocalData = {...localData}
-        Object.assign(localData, value);
+        Object.assign(localData, value)
         // localData = value
 
         if (value.product && value.product !== initialLocalData.product) {

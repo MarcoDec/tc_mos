@@ -66,7 +66,7 @@ function AppFormJS(props, context) {
                     ...props.modelValue,
                     [field.name]: value
                 }),
-                'onFocusin': value => focusedField.value = value,
+                onFocusin: value => focusedField.value = value,
                 violation: props.violations.find(violation => violation.propertyPath === field.name)
             }))
             // }
@@ -88,7 +88,7 @@ function AppFormJS(props, context) {
                                 form: props.id,
                                 type: 'submit',
                                 onClick: () => {
-                                    console.log("onClick Button submit")
+                                    console.log('onClick Button submit')
                                     //context.emit('submit')
                                 }
                             },
@@ -104,9 +104,11 @@ function AppFormJS(props, context) {
         id: props.id,
         method: 'POST',
         novalidate: true,
-        'onSubmit.prevent': () => {},
+        'onSubmit.prevent': () => {
+            console.log('onSubmit.prevent')
+        },
         onSubmit(e) {
-            console.log("onSubmit")
+            console.log('onSubmit')
             e.preventDefault()
             const data = new FormData(e.target)
             // console.log('data before', data)

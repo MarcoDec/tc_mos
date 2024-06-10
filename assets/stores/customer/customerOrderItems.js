@@ -1,6 +1,8 @@
 import {defineStore} from 'pinia'
 import api from '../../api'
 import {unset} from 'lodash/object'
+import {ref} from 'vue'
+import Measure from '../../components/pages/selling/order/tabs/itemsForms/measure'
 
 const BaseUrl = '/api/selling-order-items'
 const BaseUrlProduct = '/api/selling-order-item-products'
@@ -79,6 +81,15 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
         },
         async addComponents(data){
             await api('/api/selling-order-item-components', 'POST', data)
+        },
+        async setCurrentItem(item) {
+            this.currentItem.value = item
+            // On remplace confirmedQuantity.code par l'iri de l'unité correspondante
+            if (this.currentItem.value.confirmedQuantity.code !== null) this.currentItem.value.confirmedQuantity.code = (await Measure.getUnitByCode(this.currentItem.value.confirmedQuantity.code))['hydra:member'][0]['@id']
+            // On remplace requestedQuantity.code par l'iri de l'unité correspondante
+            if (this.currentItem.value.requestedQuantity.code !== null) this.currentItem.value.requestedQuantity.code = (await Measure.getUnitByCode(this.currentItem.value.requestedQuantity.code))['hydra:member'][0]['@id']
+            // On remplace price.code par l'iri de la devise correspondante
+            if (this.currentItem.value.price.code !== null) this.currentItem.value.price.code = (await Measure.getCurrencyByCode(this.currentItem.value.price.code))['hydra:member'][0]['@id']
         }
     },
     getters: {
@@ -125,6 +136,7 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
     },
     state: () => ({
         asc: true,
+        currentItem: ref({}),
         current: 1,
         first: 1,
         items: [],

@@ -1,32 +1,20 @@
 <script setup>
-    import {computed, ref} from 'vue'
+    import {computed} from 'vue'
     import {useCustomerOrderItemsStore} from '../../../../../../stores/customer/customerOrderItems'
     import AppGenOrderItemForm from './AppGenOrderItemForm.vue'
+    import AppSuspense from '../../../../../AppSuspense.vue'
 
-    const emits = defineEmits(['updated'])
+    const emits = defineEmits(['updated', 'closed'])
     const props = defineProps({
         customer: {default: () => ({}), type: Object},
         modalId: {required: true, type: String},
         order: {default: () => ({}), type: Object},
-        optionsUnit: {default: () => ({}), type: Object},
-        optionsCurrency: {default: () => ({}), type: Object}
+        optionsUnit: {default: () => ({}), required: true, type: Object},
+        optionsCurrency: {default: () => ({}), required: true, type: Object}
     })
+    console.log('props', props)
     const storeCustomerOrderItems = useCustomerOrderItemsStore()
-    const localForecastData = ref(
-        {
-            product: null,
-            component: null,
-            requestedQuantity: {
-                code: '/api/units/1',
-                value: 1.0
-            },
-            requestedDate: null,
-            price: {
-                code: '/api/currencies/1',
-                value: 0.0
-            }
-        }
-    )
+    const localForecastData = computed(() => storeCustomerOrderItems.currentItem.value)
     const fieldsOpenOrderItem = computed(() => [
         {
             label: 'Produit',
@@ -106,17 +94,27 @@
             }
         }
     ])
+    console.log('localForecastData', localForecastData.value)
+    function onModalClose() {
+        emits('closed')
+    }
 </script>
 
 <template>
-    <AppGenOrderItemForm
-        :customer="customer"
-        :fields="fieldsOpenOrderItem"
-        :form-data="localForecastData"
-        :modal-id="modalId"
-        :order="order"
-        :options-unit="optionsUnit"
-        :options-currency="optionsCurrency"
-        :store="storeCustomerOrderItems"
-        @updated="value => emits('updated', value)"/>
+    <AppSuspense>
+        <AppGenOrderItemForm
+            :customer="customer"
+            :fields="fieldsOpenOrderItem"
+            :form-data="localForecastData"
+            :modal-id="modalId"
+            mode="edit"
+            :order="order"
+            :options-unit="optionsUnit"
+            :options-currency="optionsCurrency"
+            :store="storeCustomerOrderItems"
+            :title="`Modifier item prévisionnel du ${localForecastData.requestedDate}`"
+            btn-label="Modifier"
+            @closed="onModalClose"
+            @updated="value => emits('updated', value)"/>
+    </AppSuspense>
 </template>

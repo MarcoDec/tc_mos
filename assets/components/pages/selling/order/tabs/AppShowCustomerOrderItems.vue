@@ -1,16 +1,19 @@
 <script setup>
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import useUser from '../../../../../stores/security'
-    import {computed, ref} from 'vue'
+    import {computed, nextTick, ref} from 'vue'
     import {useCustomerOrderItemsStore} from '../../../../../stores/customer/customerOrderItems'
     import AppFixedItemAddForm from './itemsForms/AppFixedItemAddForm.vue'
     import AppForeCastItemAddForm from './itemsForms/AppForeCastItemAddForm.vue'
     import useOptions from '../../../../../stores/option/options'
+    import AppForeCastUpdateForm from './itemsForms/AppForeCastUpdateForm.vue'
+    import {Modal} from 'bootstrap'
 
     const props = defineProps({
         order: {default: () => ({}), required: true, type: Object},
         customer: {default: () => ({}), required: true, type: Object}
     })
+    const showUpdateForm = ref(false)
     //console.log('customer', props.customer)
     //region initialisation des constantes et variables
     const fetchUser = useUser()
@@ -20,13 +23,11 @@
     const fetchUnitOptions = useOptions('units')
     const fetchCurrencyOptions = useOptions('currencies')
     const formKeys = ref(0)
+    const formUpdateKeys = ref(0)
     const promises = []
     promises.push(fetchUnitOptions.fetchOp())
     promises.push(fetchCurrencyOptions.fetchOp())
     await Promise.all(promises).then(() => {
-        // console.log('promises', promises)
-        // console.log('fetchUnitOptions', fetchUnitOptions)
-        // console.log('fetchCurrencyOptions', fetchCurrencyOptions)
         formKeys.value++
     })
     const optionsUnit = computed(() =>
@@ -41,8 +42,6 @@
             const value = op.value
             return {text, value}
         }))
-    // console.log('optionsUnit', optionsUnit.value)
-    // console.log('optionsCurrency', optionsCurrency.value)
     const storeCustomerOrderItems = useCustomerOrderItemsStore()
     const customerOrderItemsCriteria = useFetchCriteria('customer-order-items-criteria')
     const tableKey = ref(0)
@@ -231,9 +230,8 @@
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     }
     async function updateTable() {
-        console.log('updateTable')
         await refreshTableCustomerOrders()
-        //On rafraichit le formulaire
+        showUpdateForm.value = false
         tableKey.value++
     }
     //endregion
@@ -243,6 +241,39 @@
     isLoaded.value = true
     // console.log('éléments de tableau chargés')
     //endregion
+    function updateItemToUpdate(item) {
+        console.log('updateItemToUpdate', item)
+        storeCustomerOrderItems.setCurrentItem(item)
+        if (item.isForecast) {
+            showUpdateForm.value = true
+            nextTick(() => {
+                const modalElement = document.getElementById('modalUpdateForecastItem')
+                const bootstrapModal = Modal.getInstance(modalElement)
+                bootstrapModal.show()
+            })
+        } else {
+            // On récupère la modale de mise à jour
+            const modalElement = document.getElementById('modalUpdateOrderItem')
+            const bootstrapModal = Modal.getInstance(modalElement)
+            bootstrapModal.show()
+        }
+    }
+    function openModalAddNewOrderItem() {
+        // On récupère la modale d'ajout
+        const modalElement = document.getElementById('modalAddNewOrderItem')
+        const bootstrapModal = Modal.getInstance(modalElement)
+        bootstrapModal.show()
+    }
+    function openModalAddNewForecastItem() {
+        // On récupère la modale d'ajout
+        const modalElement = document.getElementById('modalAddNewForecastItem')
+        const bootstrapModal = Modal.getInstance(modalElement)
+        bootstrapModal.show()
+    }
+    function onModalClose() {
+        console.log('onModalClose')
+        showUpdateForm.value = false
+    }
 </script>
 
 <template>
@@ -258,9 +289,20 @@
         v-if="isLoaded && !fixedFamilies.includes(order.orderFamily)"
         :key="`addForecastItem_${formKeys}`"
         :customer="customer"
+        modal-id="modalAddNewForecastItem"
         :order="order"
         :options-currency="optionsCurrency"
         :options-unit="optionsUnit"
+        @updated="updateTable"/>
+    <AppForeCastUpdateForm
+        v-if="isLoaded && !fixedFamilies.includes(order.orderFamily) && showUpdateForm"
+        :key="`updateForecastItem_${formUpdateKeys}`"
+        :customer="customer"
+        modal-id="modalUpdateForecastItem"
+        :order="order"
+        :options-currency="optionsCurrency"
+        :options-unit="optionsUnit"
+        @closed="onModalClose"
         @updated="updateTable"/>
     <AppCardableTable
         v-if="isLoaded"
@@ -279,21 +321,20 @@
         @deleted="deletedCustomerOrderItem"
         @get-page="getPageCustomerOrders"
         @trier-alphabet="trierAlphabetCustomerOrders"
+        @update="updateItemToUpdate"
         @search="searchCustomerOrders"
         @cancel-search="cancelSearchCustomerOrders">
         <template #title>
             <span>Items de commande {{ order.ref }}</span>
             <button
                 class="btn btn-success btn-float-right m-1"
-                data-bs-toggle="modal"
-                data-bs-target="#modalAddNewOrderItem">
+                @click="openModalAddNewOrderItem">
                 Ajouter Item en Ferme
             </button>
             <button
                 v-if="!fixedFamilies.includes(order.orderFamily)"
                 class="btn btn-success btn-float-right m-1"
-                data-bs-toggle="modal"
-                data-bs-target="#modalAddNewForecastItem">
+                @click="openModalAddNewForecastItem">
                 Ajouter Item en Prévisionnel {{ order.orderFamily }}
             </button>
         </template>

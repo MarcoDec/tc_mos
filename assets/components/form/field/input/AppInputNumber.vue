@@ -29,6 +29,5 @@
         :form="form"
         :model-value="modelValue"
         @update:model-value="updateModelValue"
-        @onFocusin="onFocusIn"
-    />
+        @on-focusin="onFocusIn"/>
 </template>
