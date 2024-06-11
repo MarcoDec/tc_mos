@@ -28,11 +28,13 @@
     const modalRef = ref(null)
     const fieldsItem = computed(() => props.fields)
     const violations = ref([])
+    const loaderShow = ref(false)
 
     async function updateValue(value, localData1) {
         if (typeof localData1 === 'undefined') {
             return
         }
+        loaderShow.value = true
         // localData doit être mise à jour mais comme certaines actions et contrôles doivent être
         // effectués en fonction de la valeur initiale de localData, on crée une copie de localData
         // pour pouvoir comparer les valeurs initiales et les valeurs mises à jour
@@ -50,6 +52,7 @@
                 await Measure.setQuantityToMinDelivery(localData1, minDeliveryMeasure)
                 await Measure.getAndSetProductPrice(response, props.customer, props.order, localData1.requestedQuantity, localData1, formKey)
             })
+            loaderShow.value = false
             return
         }
         if (value.component && value.component !== initialLocalData.component) {
@@ -58,20 +61,25 @@
                 await Measure.setQuantityToUnit(localData1, response)
                 await Measure.getAndSetComponentPrice(response, props.customer, props.order, localData1.requestedQuantity, localData1, formKey)
             })
+            loaderShow.value = false
             return
         }
-        if (value.requestedQuantity.value && value.requestedQuantity.value !== initialLocalData.requestedQuantity.value) {
-            // Si un produit a été sélectionné on récupère le prix unitaire associé au produit et au client
-            if (initialLocalData.product) {
-                const loadedProduct = await api(value.product, 'GET')
-                await Measure.getAndSetProductPrice(loadedProduct, props.customer, props.order, localData1.requestedQuantity, localData1, formKey)
-                return
-            }
-            if (initialLocalData.component) {
-                const loadedComponent = await api(value.component, 'GET')
-                await Measure.getAndSetComponentPrice(loadedComponent, props.customer, props.order, localData1.requestedQuantity, localData1, formKey)
-            }
-        }
+        // if (value.requestedQuantity.value && value.requestedQuantity.value !== initialLocalData.requestedQuantity.value) {
+        //     // Si un produit a été sélectionné on récupère le prix unitaire associé au produit et au client
+        //     if (initialLocalData.product) {
+        //         const loadedProduct = await api(value.product, 'GET')
+        //         await Measure.getAndSetProductPrice(loadedProduct, props.customer, props.order, localData1.requestedQuantity, localData1, formKey)
+        //         loaderShow.value = false
+        //         return
+        //     }
+        //     if (initialLocalData.component) {
+        //         const loadedComponent = await api(value.component, 'GET')
+        //         await Measure.getAndSetComponentPrice(loadedComponent, props.customer, props.order, localData1.requestedQuantity, localData1, formKey)
+        //         loaderShow.value = false
+        //         return
+        //     }
+        // }
+        loaderShow.value = false
     }
     function checkData(data) {
         violations.value = []
@@ -118,6 +126,7 @@
         if (!checkData(localData.value)) {
             throw new Error('Données invalides localData.value')
         }
+        loaderShow.value = true
         //On ajoute le champ parentOrder
         localData.value.parentOrder = props.order['@id']
         //On ajoute le type d'item isForecast
@@ -143,6 +152,7 @@
         if (modalRef.value) {
             const modalElement = modalRef.value.$el
             const bootstrapModal = Modal.getInstance(modalElement)
+            loaderShow.value = false
             bootstrapModal.hide()
         }
         //On réinitalise les données locales
@@ -153,18 +163,23 @@
         emits('updated')
     }
     async function onSubmit(data) {
+        loaderShow.value = true
         if (props.mode === 'add') {
             await addForecastItem(data)
         }
         if (props.mode === 'edit') {
             await editForecastItem(data)
         }
+        loaderShow.value = false
     }
     function editForecastItem(data) {
         console.log('Modification de l\'item en base', data)
     }
     function onModalClose() {
         emits('closed')
+    }
+    function onFocusOut() {
+        console.log('AppGenOrderItemForm.vue onFocusOut')
     }
 </script>
 
@@ -174,7 +189,11 @@
         ref="modalRef"
         :modal-ref-name="modalId"
         :title="title"
+        style="padding-bottom: 0"
         @closed="onModalClose">
+        <div v-if="loaderShow" class="overlay-spinner d-flex justify-content-center align-items-center">
+            <div class="spinner-border" role="status" aria-hidden="true"></div>
+        </div>
         <AppFormJS
             id="formAddNewForecastOrderItem"
             :key="formKey"
@@ -183,6 +202,22 @@
             :violations="violations"
             :submit-label="btnLabel"
             @update:model-value="value => updateValue(value, localData)"
+            @focusout="onFocusOut"
             @submit="onSubmit"/>
     </AppModal>
 </template>
+
+<style scoped>
+    .overlay-spinner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.25);
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>

@@ -2,7 +2,6 @@ import {fieldValidator, generateLabelCols} from '../props'
 import {h, ref, resolveComponent} from 'vue'
 import AppFormField from './field/AppFormField.vue'
 
-const focusedField = ref(null)
 function AppFormJS(props, context) {
     function generateSlot() {
         return context.slots.default({
@@ -18,46 +17,10 @@ function AppFormJS(props, context) {
         if (typeof context.slots.default === 'function')
             groups.push(generateSlot())
     } else {
-        //  for (const field of props.fields)
-        //     groups.push(h(AppFormField, {
-        //         disabled: props.disabled,
-        //         field,
-        //         form: props.id,
-        //         key: field.name,
-        //         labelCols: props.labelCols,
-        //         modelValue: props.modelValue[field.name],
-        //         'onUpdate:modelValue': value => context.emit('update:modelValue', {
-        //             ...props.modelValue,
-        //             [field.name]: value
-        //             // [field.children[1].name]: value
-        //         }),
-        //         violation: props.violations.find(violation => violation.propertyPath === field.name)
-        //     }))
         for (const field of props.fields) {
-            // if (field.childrens) {
-            //     console.log("has children", field)
-            //     for (const child of field.children) {
-            //         groups.push(h(AppFormField, {
-            //             disabled: props.disabled,
-            //             field: child,
-            //             form: props.id,
-            //             key: child.name,
-            //             labelCols: props.labelCols,
-            //             modelValue: props.modelValue[child.name],
-            //             newField: field,
-            //             'onUpdate:modelValue': value => context.emit('update:modelValue', {
-            //                 ...props.modelValue,
-            //                 [child.name]: value
-            //             }),
-            //             violation: props.violations.find(violation => violation.propertyPath === child.name)
-            //         }))
-            //     }
-            // } else {
-            //     console.log("no children", field)
             groups.push(h(AppFormField, {
                 disabled: props.disabled,
                 field,
-                focusedField,
                 form: props.id,
                 key: field.name,
                 labelCols: props.labelCols,
@@ -66,10 +29,8 @@ function AppFormJS(props, context) {
                     ...props.modelValue,
                     [field.name]: value
                 }),
-                onFocusin: value => focusedField.value = value,
                 violation: props.violations.find(violation => violation.propertyPath === field.name)
             }))
-            // }
         }
 
         if (props.submitLabel !== null){

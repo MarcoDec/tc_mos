@@ -42,7 +42,6 @@ function AppInputGuesserJS(props, context) {
     return h(getType(props.field), {
         disabled: props.disabled,
         field: props.field,
-        focusedField: props.focusedField,
         form: props.form,
         id: props.id,
         modelValue: props.modelValue,
@@ -58,7 +57,6 @@ AppInputGuesserJS.emits = ['update:modelValue', 'on-focusin']
 AppInputGuesserJS.props = {
     disabled: {type: Boolean},
     field: generateField(),
-    focusedField: {required: true, type: Object},
     form: {required: true, type: String},
     id: {required: true, type: String},
     modelValue: {}

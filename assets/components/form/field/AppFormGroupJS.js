@@ -11,7 +11,11 @@ function AppFormGroupJS(props, context) {
         form: props.form,
         id,
         modelValue: props.modelValue,
-        'onUpdate:modelValue': value => context.emit('update:modelValue', value)
+        'onUpdate:modelValue': value => context.emit('update:modelValue', value),
+        focusout: value => {
+            console.log('AppFormGroupJS onFocusOut', value)
+            context.emit('focusout', value)
+        }
     }
     const children = []
     if (props.violation) {

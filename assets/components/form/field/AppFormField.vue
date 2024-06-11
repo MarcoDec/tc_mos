@@ -4,7 +4,7 @@
     import {computed, defineEmits, defineProps} from 'vue'
     import AppFormFlexWrapper from './AppFormFlexWrapper.vue'
 
-    const emit = defineEmits(['update:modelValue', 'input'])
+    const emit = defineEmits(['update:modelValue', 'input', 'focusout'])
     const props = defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},
@@ -28,6 +28,10 @@
     function input(value) {
         emit('update:modelValue', value)
     }
+    function onFocusOut() {
+        console.log('AppFormField.vue onFocusOut', props.field.name)
+        emit('focusout', null)
+    }
 </script>
 
 <template>
@@ -40,7 +44,9 @@
         :model-value="modelValue"
         :new-field="newField"
         :values="modelValue"
-        @update:model-value="input">
+        @update:model-value="input"
+        @focusout="onFocusOut"
+    >
         <slot/>
     </component>
 </template>
