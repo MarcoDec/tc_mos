@@ -3,7 +3,6 @@ import api from '../../../../../../api'
 class Unit {
     children = []
     constructor(code, name, parent, base) {
-        // console.log('constructor Unit', code, name, parent, base)
         this.code = code
         this.name = name
         this.parent = parent
@@ -98,16 +97,20 @@ class Unit {
 
     getDepthChildren() {
         const children = this.getChildren().map(child => child.getDepthChildren().push(child))
-        return children.unique(child => child.getCode())
+        // on récupère une collection d'enfant ayant des codes uniques
+        return children.reduce((acc, child) => acc.concat(child), [])
     }
 
     async getFamily() {
         const root = await this.getRoot()
-        return root.getDepthChildren().push(root).unique(child => child.getId())
+        root.getDepthChildren().push(root)
+        // on récupère une collection d'enfant ayant des codes uniques
+        return root.getDepthChildren().reduce((acc, child) => acc.concat(child), [])
     }
 
-    has(unit) {
-        const unitFamily = this.getFamily()
+    async has(unit) {
+        if (typeof this.code === 'undefined' || this.code === null) throw Error('No code defined.')
+        const unitFamily = await this.getFamily()
         return unit !== null && (unit.getCode() === this.getCode() || unitFamily.contains(member => member.getId() === unit.getId()))
     }
 
@@ -116,6 +119,7 @@ class Unit {
     }
 
     assertSameAs(unit) {
+        if (typeof this.code === 'undefined' || this.code === null) throw Error('No code defined.')
         if (unit === null || unit.code === null) {
             throw new Error('No code defined.')
         }

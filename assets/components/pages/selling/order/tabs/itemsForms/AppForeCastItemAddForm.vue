@@ -36,7 +36,8 @@
             api: '/api/products',
             filteredProperty: 'code',
             permanentFilters: [
-                {field: 'productCustomers.customer', value: props.customer['@id']}
+                {field: 'productCustomers.customer', value: props.customer['@id']},
+                {field: 'kind', value: props.order.kind}
             ],
             max: 1
         },

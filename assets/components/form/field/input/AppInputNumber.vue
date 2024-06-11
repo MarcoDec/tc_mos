@@ -15,7 +15,6 @@
         emit('update:modelValue', parseFloat(v))
     }
     function onFocusIn(data) {
-        // console.log('AppInputNumber:onFocusIn', data)
         emit('onFocusin', data)
     }
 </script>

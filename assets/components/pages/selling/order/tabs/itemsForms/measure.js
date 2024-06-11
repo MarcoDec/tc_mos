@@ -32,8 +32,7 @@ class Measure {
             if (typeof price === 'string') window.alert(price)
             else {
                 if (price === null) {
-                    // console.log('pas de tarif trouvé')
-                    return
+                    throw new Error('Le prix du produit n\'a pas été trouvé')
                 }
                 const currency = await api(`/api/currencies?code=${price.code}`)
                 localData.price.value = price.value
@@ -116,36 +115,51 @@ class Measure {
     }
     //endregion
 
-    constructor(code, value, denominator = null, denominatorUnit = null) {
-        // console.log('constructor Measure', code, value, denominator, denominatorUnit)
+    constructor(code, value, denominator = null, type = 'unit') {
         this.code = code
         this.value = value
         this.denominator = denominator
-        this.denominatorUnit = denominatorUnit
+        this.type = type
         if (code === null || code === '') {
             throw new Error('une unité de mesure doit être définie')
         }
+        if (type === null) throw new Error('le type d\'unité de mesure doit être défini')
         if (value === null) {
             this.value = 0.0
         }
     }
 
-    async initUnits() {
-        this.type = 'unit'
-        const unitData = await Measure.getUnitByCode(this.code)
-        this.unit = new Unit(unitData.code, unitData.name, unitData.parent, unitData.base)
-        if (this.denominator !== null) {
-            const denominatorUnitData = await Measure.getUnitByCode(this.denominator)
-            this.denominatorUnit = new Unit(denominatorUnitData.code, denominatorUnitData.name, denominatorUnitData.parent, denominatorUnitData.base)
+    async checkWellLoaded() {
+        if (!this.isLoaded) {
+            await this.init()
         }
     }
 
+    async init() {
+        if (this.type === 'unit') {
+            await this.initUnits()
+        } else if (this.type === 'currency') {
+            await this.initCurrencies()
+        }
+    }
+
+    async initUnits() {
+        // On commence par récupérer les iri des unités de mesure
+        this.unitData = (await Measure.getUnitByCode(this.code))['hydra:member'][0]
+        this.unit = new Unit(this.unitData.code, this.unitData.name, this.unitData.parent, this.unitData.base)
+        if (await this.denominator !== null) {
+            this.denominatorUnitData = (await Measure.getUnitByCode(this.denominator))['hydra:member'][0]
+            this.denominatorUnit = new Unit(this.denominatorUnitData.code, this.denominatorUnitData.name, this.denominatorUnitData.parent, this.denominatorUnitData.base)
+        }
+        this.isLoaded = true
+    }
+
     async initCurrencies() {
-        this.type = 'currency'
-        const unitData = await Measure.getCurrencyByCode(this.code)
-        this.unit = new Unit(unitData.code, unitData.name, unitData.parent, unitData.base)
+        this.unitData = (await Measure.getCurrencyByCode(this.code))['hydra:member'][0]
+        this.unit = new Unit(this.unitData.code, this.unitData.name, this.unitData.parent, this.unitData.base)
         this.denominator = null
         this.denominatorUnit = null
+        this.isLoaded = true
     }
 
     //region getters et setters
@@ -153,13 +167,21 @@ class Measure {
         return this.code
     }
 
-    setCode(code) {
+    async setCode(code) {
         this.code = code
+        this.isLoaded = false
+        await this.checkWellLoaded()
         return this
     }
 
     async getSafeUnit() {
-        if (this.unit === null) {
+        await this.checkWellLoaded()
+        if (typeof this.code === 'string') {
+            // Si this.code contient /api/units/ on récupère le code de l'unité
+            const containsIriApiUnits = this.code.includes('/api/units/')
+            if (containsIriApiUnits) throw new Error('getSafeUnit() le code de l\'unité de mesure ne doit pas contenir /api/units/')
+        }
+        if (typeof this.unit === 'undefined' || this.unit === null) {
             //on récupère l'unité ayant le code this.code
             const unitData = await Measure.getUnitByCode(this.code)
             this.unit = new Unit(unitData.code, unitData.name, unitData.parent, unitData.base)
@@ -176,68 +198,76 @@ class Measure {
         return this
     }
 
-    getUnit() {
+    async getUnit() {
+        await this.checkWellLoaded()
         return this.unit
     }
 
-    setUnit(unit) {
+    async setUnit(unit) {
         this.unit = unit
+        this.isLoaded = false
+        await this.checkWellLoaded()
         return this
     }
 
-    getDenominator() {
+    async getDenominator() {
+        await this.checkWellLoaded()
         return this.denominator
     }
 
-    setDenominator(denominator) {
+    async setDenominator(denominator) {
         this.denominator = denominator
+        this.isLoaded = false
+        await this.checkWellLoaded()
         return this
     }
 
-    getDenominatorUnit() {
+    async getDenominatorUnit() {
+        await this.checkWellLoaded()
         return this.denominatorUnit
     }
 
-    setDenominatorUnit(denominatorUnit) {
+    async setDenominatorUnit(denominatorUnit) {
         this.denominatorUnit = denominatorUnit
+        this.isLoaded = false
+        await this.checkWellLoaded()
         return this
     }
     //endregion
 
     //region méthodes de conversion et calculs
     async isGreaterThanOrEqual(measure) {
-        // console.log('isGreaterThanOrEqual', this.code)
-        const clone = new Measure(this.code, this.value, this.denominator, this.denominatorUnit)
+        const clone = new Measure(this.getCode(), this.getValue(), this.getDenominator(), await this.getDenominatorUnit())
         // measure = clone.convertToSame(measure)
         await clone.convertToSame(measure)
         return clone.value >= measure.value
     }
 
     async add(measure) {
-        if (measure.code === null || measure.code === '') throw new Error('add(measure) une unité de mesure doit être définie')
+        if (measure.getCode() === null || measure.getCode() === '') throw new Error('add(measure) une unité de mesure doit être définie')
         switch (this.type) {
         case 'unit':
             if (measure.type !== 'unit') throw new Error('add(measure) les deux mesures doivent être de type unité')
             // eslint-disable-next-line require-atomic-updates
-            measure.unit = measure.unit ?? await Measure.getUnitByCode(measure.code)
+            measure.setUnit(measure.unit ?? await Measure.getUnitByCode(measure.getCode()))
             break
         case 'currency':
             if (measure.type !== 'currency') throw new Error('add(measure) les deux mesures doivent être de type devise')
             // eslint-disable-next-line require-atomic-updates
-            measure.unit = measure.unit ?? await Measure.getCurrencyByCode(measure.code)
+            measure.setUnit(measure.unit ?? await Measure.getCurrencyByCode(measure.getCode()))
             break
         default:
             throw new Error('add(measure) le type de mesure n\'est pas défini')
         }
-        if (!measure.unit) throw new Error(`add(measure) l'unité de mesure ${measure.code} n'a pas été trouvée pour le type ${this.type}`)
-        if (this.unit === null && this.code === null) {
-            this.unit = measure.unit
-            this.code = measure.code
-            this.value = measure.value
+        if (!measure.unit) throw new Error(`add(measure) l'unité de mesure ${measure.getCode()} n'a pas été trouvée pour le type ${this.type}`)
+        if (await this.getUnit() === null && this.getCode() === null) {
+            await this.setUnit(await measure.getUnit())
+            await this.setCode(await measure.getCode())
+            this.setValue(measure.getValue())
             return this
         }
-        if (this.unit === null) {
-            this.unit = await Measure.getUnitByCode(this.code)
+        if (await this.getUnit() === null) {
+            await this.setUnit(await Measure.getUnitByCode(this.getCode()))
         }
         // measure = this.convertToSame(measure)
         await this.convertToSame(measure)
@@ -249,66 +279,76 @@ class Measure {
         return this.add(measure.setValue(-measure.value))
     }
 
-    convert(unit, denominator = null) {
-        const safeUnit = this.getSafeUnit()
+    async convert(unit, denominator = null) {
+        const safeUnit = await this.getSafeUnit()
         safeUnit.assertSameAs(unit)
         if (safeUnit.getCode() !== unit.getCode()) {
             this.value *= safeUnit.getConvertorDistance(unit)
-            this.code = unit.getCode()
-            this.unit = unit
+            await this.setCode(unit.getCode())
+            await this.setUnit(unit)
         }
 
         if (denominator !== null) {
-            if (this.denominator === null) {
-                throw new Error('No denominator.')
+            const safeDenominator = await this.getDenominatorUnit()
+            if (safeDenominator === null) {
+                throw new Error('Convertion error, denominators are not consistent. (one with, the other without)')
             }
-            if (this.denominatorUnit === null) {
+            const safeDenominatorUnit = await this.getDenominatorUnit()
+            if (safeDenominatorUnit === null) {
                 throw new Error('Unit not loaded.')
             }
-            this.denominatorUnit.assertSameAs(denominator)
-            if (this.denominatorUnit.getCode() !== denominator.getCode()) {
-                this.value *= 1 / this.denominatorUnit.getConvertorDistance(denominator)
-                this.denominator = denominator.getCode()
-                this.denominatorUnit = denominator
+            safeDenominatorUnit.assertSameAs(denominator)
+            if (safeDenominatorUnit.getCode() !== denominator.getCode()) {
+                this.value *= 1 / safeDenominatorUnit.getConvertorDistance(denominator)
+                await this.setDenominator(denominator.getCode())
+                await this.setDenominatorUnit(denominator)
             }
         }
         return this
     }
 
+    clone() {
+        return new Measure(this.getCode(), this.getValue(), this.getDenominator(), this.type)
+    }
+
     async convertToSame(measure) {
-        const unit = Measure.getLess(await this.getSafeUnit(), await measure.getSafeUnit())
-        // console.log('convertToSame', unit)
-        const denominator = this.denominatorUnit !== null && measure.denominatorUnit !== null
-            ? Measure.getLess(this.denominatorUnit, measure.denominatorUnit)
+        const safeUnitThis = await this.getSafeUnit()
+        const safeUnitMeasure = await measure.getSafeUnit()
+        const unit = Measure.getLess(safeUnitThis, safeUnitMeasure)
+        const safeDenominatorUnitThis = await this.getDenominatorUnit()
+        const safeDenominatorUnitMeasure = await measure.getDenominatorUnit()
+        const denominator = safeDenominatorUnitThis !== null && safeDenominatorUnitMeasure !== null
+            ? Measure.getLess(safeDenominatorUnitThis, safeDenominatorUnitMeasure)
             : null
-        this.convert(unit, denominator)
+        await this.convert(unit, denominator)
         //On  ignore l'eslint prefer-object-spread
+        // On clone la mesure 'me
         // eslint-disable-next-line prefer-object-spread
-        const convertedMeasure = Object.assign({}, measure).convert(unit, denominator)
-        measure.setCode(this.code)
-        measure.setValue(this.value)
-        measure.setUnit(this.unit)
-        measure.setDenominator(this.denominator)
-        measure.setDenominatorUnit(this.denominatorUnit)
+        const convertedMeasure = measure.clone().convert(unit, denominator)
+        measure.setCode(this.getCode())
+        measure.setValue(this.getValue())
+        await measure.setUnit(await this.getUnit())
+        await measure.setDenominator(await this.getDenominator())
+        await measure.setDenominatorUnit(await this.getDenominatorUnit())
         return convertedMeasure
     }
 
-    static async setQuantityToMinDelivery(localData, objectWithMinDelivery, quantityFields = ['requestedQuantity']) {
-        // console.log('setQuantityToMinDelivery', objectWithMinDelivery.minDelivery.code)
-        const minDeliveryMeasure = new Measure(objectWithMinDelivery.minDelivery.code, objectWithMinDelivery.minDelivery.value)
+    static async setQuantityToMinDelivery(localData, minDeliveryMeasure, quantityFields = ['requestedQuantity']) {
         const units = await Measure.getOptionsUnit()
+        let isGreaterThanOrEqual = false
         for (const quantityField of quantityFields) {
             if (localData[quantityField] && localData[quantityField].code !== null) {
-                // console.log('localMeasure', localData[quantityField].code)
-                const localMeasure = new Measure(localData[quantityField].code, localData[quantityField].value)
-                if (!localMeasure.isGreaterThanOrEqual(minDeliveryMeasure)) {
+                const localUnit = await api(localData[quantityField].code, 'GET')
+                const localMeasure = new Measure(localUnit.code, localData[quantityField].value)
+                isGreaterThanOrEqual = await localMeasure.isGreaterThanOrEqual(minDeliveryMeasure)
+                if (!isGreaterThanOrEqual) {
                     // la quantité demandée est inférieure à la quantité minimale de livraison
-                    localData[quantityField].code = units.find(unit => unit.code === objectWithMinDelivery.minDelivery.code)['@id']
-                    localData[quantityField].value = objectWithMinDelivery.minDelivery.value
+                    localData[quantityField].code = units.find(unit => unit.code === minDeliveryMeasure.code)['@id']
+                    localData[quantityField].value = minDeliveryMeasure.value
                 }
             } else {
-                const code = units.find(unit => unit.code === objectWithMinDelivery.minDelivery.code)['@id']
-                let value = objectWithMinDelivery.minDelivery.value
+                const code = units.find(unit => unit.code === minDeliveryMeasure.code)['@id']
+                let value = minDeliveryMeasure.value
                 // L'unité de la quantité demandée n'est pas définie mais peut-être que la bvaleur est définie, dans ce cas on prendra le max entre cette valeur et la valeur de la quantité minimale de livraison
                 if (localData[quantityField] && localData[quantityField].value !== null && localData[quantityField].value > value) {
                     value = localData[quantityField].value
@@ -323,10 +363,14 @@ class Measure {
     //endregion
 
     static getLess(measure1, measure2) {
-        if (measure1 === null) return measure2
-        if (measure2 === null) return measure1
+        const test1 = typeof measure1 === 'undefined' || measure1 === null
+        const test2 = typeof measure2 === 'undefined' || measure2 === null
+        if (test1 && test2) return null
+        if (test1) return measure2
+        if (test2) return measure1
         return measure1.base < measure2.base ? measure1 : measure2
     }
+
 }
 
 export default Measure

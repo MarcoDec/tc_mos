@@ -20,7 +20,6 @@
         title: {default: 'Ajouter Item en Prévisionnel', required: false, type: String},
         btnLabel: {default: 'Ajouter', required: false, type: String}
     })
-    // console.log('props.formData', props.formData)
     const itemStore = props.store
     const measure = new Measure('U', 0.0)
     measure.initUnits()
@@ -46,7 +45,9 @@
             localData1.component = null // On remet à zéro le composant
             // On récupère les données du produit
             await api(value.product, 'GET').then(async response => {
-                await Measure.setQuantityToMinDelivery(localData1, response)
+                const minDeliveryMeasure = new Measure(response.minDelivery.code, response.minDelivery.value, response.minDelivery.denominator, 'unit')
+                await minDeliveryMeasure.init()
+                await Measure.setQuantityToMinDelivery(localData1, minDeliveryMeasure)
                 await Measure.getAndSetProductPrice(response, props.customer, props.order, localData1.requestedQuantity, localData1, formKey)
             })
             return
@@ -114,12 +115,9 @@
     }
 
     async function addForecastItem() {
-        // console.log('Analyse données', data, localForecastData.value)
         if (!checkData(localData.value)) {
-            // console.log('Données invalides')
-            return
+            throw new Error('Données invalides localData.value')
         }
-        // console.log('Données valides', localForecastData.value)
         //On ajoute le champ parentOrder
         localData.value.parentOrder = props.order['@id']
         //On ajoute le type d'item isForecast
@@ -140,7 +138,6 @@
         // eslint-disable-next-line require-atomic-updates
         localData.value.requestedQuantity.code = requestedUnit.text
         //On ajoute l'item en base
-        // console.log('Ajout de l\'item en base', localData.value)
         await itemStore.add(localData.value)
         //On ferme la modale
         if (modalRef.value) {
@@ -166,7 +163,6 @@
     function editForecastItem(data) {
         console.log('Modification de l\'item en base', data)
     }
-    console.log('localData', localData.value)
     function onModalClose() {
         emits('closed')
     }
