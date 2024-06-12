@@ -48,10 +48,10 @@ function AppFormJS(props, context) {
                                 disabled: props.disabled,
                                 form: props.id,
                                 type: 'submit',
-                                onClick: () => {
-                                    console.log('onClick Button submit')
-                                    //context.emit('submit')
-                                }
+                                // onClick: () => {
+                                //     console.log('onClick Button submit')
+                                //     //context.emit('submit')
+                                // }
                             },
                             () => props.submitLabel
                         )
@@ -65,11 +65,10 @@ function AppFormJS(props, context) {
         id: props.id,
         method: 'POST',
         novalidate: true,
-        'onSubmit.prevent': () => {
-            console.log('onSubmit.prevent')
-        },
+        // 'onSubmit.prevent': () => {
+        //     console.log('onSubmit.prevent')
+        // },
         onSubmit(e) {
-            console.log('onSubmit')
             e.preventDefault()
             const data = new FormData(e.target)
             // console.log('data before', data)

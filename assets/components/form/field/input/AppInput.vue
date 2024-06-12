@@ -27,8 +27,8 @@
         e.preventDefault()
         e.stopPropagation()
     }
-    function onFocusout() {
-        emit('focusout', props.field.name)
+    function onFocusout(e) {
+        emit('focusout',e)
     }
 </script>
 

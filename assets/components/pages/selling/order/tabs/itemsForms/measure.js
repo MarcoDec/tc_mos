@@ -35,8 +35,10 @@ class Measure {
                     throw new Error('Le prix du produit n\'a pas été trouvé')
                 }
                 const currency = await api(`/api/currencies?code=${price.code}`)
-                localData.price.value = price.value
-                localData.price.code = currency['hydra:member'][0]['@id']
+                localData.price = {
+                    value: price.value,
+                    code: currency['hydra:member'][0]['@id']
+                }
                 formKey.value++
             }
         })

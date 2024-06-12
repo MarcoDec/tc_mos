@@ -1,5 +1,6 @@
 <script setup>
     import AppInput from './AppInput.vue'
+    import {ref} from 'vue'
 
     const props = defineProps({
         disabled: {type: Boolean},
@@ -8,16 +9,16 @@
         id: {required: true, type: String},
         modelValue: {default: 0, type: Number}
     })
-    const emit = defineEmits(['update:modelValue', 'focusout'])
-
+    const emit = defineEmits(['update:modelValue'])
+    const localData = ref(props.modelValue)
     function updateModelValue(v) {
-        emit('update:modelValue', parseFloat(v))
+        localData.value = v
     }
-    function onFocusOut() {
-        console.log('AppInputNumber.vue onFocusOut', props.field.name)
-        emit('focusout', props.field.name)
+    function onFocusOut(e) {
+        e.preventDefault()
+        e.stopPropagation()
+        emit('update:modelValue', parseFloat(localData.value))
     }
-    console.log('AppInputNumber.vue', props.field.name)
 </script>
 
 <template>

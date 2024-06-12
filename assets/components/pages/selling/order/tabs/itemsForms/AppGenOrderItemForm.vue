@@ -64,21 +64,14 @@
             loaderShow.value = false
             return
         }
-        // if (value.requestedQuantity.value && value.requestedQuantity.value !== initialLocalData.requestedQuantity.value) {
-        //     // Si un produit a été sélectionné on récupère le prix unitaire associé au produit et au client
-        //     if (initialLocalData.product) {
-        //         const loadedProduct = await api(value.product, 'GET')
-        //         await Measure.getAndSetProductPrice(loadedProduct, props.customer, props.order, localData1.requestedQuantity, localData1, formKey)
-        //         loaderShow.value = false
-        //         return
-        //     }
-        //     if (initialLocalData.component) {
-        //         const loadedComponent = await api(value.component, 'GET')
-        //         await Measure.getAndSetComponentPrice(loadedComponent, props.customer, props.order, localData1.requestedQuantity, localData1, formKey)
-        //         loaderShow.value = false
-        //         return
-        //     }
-        // }
+        // Si la quantité demandée a été modifiée
+        if (value.requestedQuantity && value.requestedQuantity !== initialLocalData.requestedQuantity) {
+            await api(value.product, 'GET').then(async response => {
+                await Measure.getAndSetProductPrice(response, props.customer, props.order, localData1.requestedQuantity, localData1, formKey)
+            })
+            loaderShow.value = false
+            return
+        }
         loaderShow.value = false
     }
     function checkData(data) {
@@ -178,9 +171,6 @@
     function onModalClose() {
         emits('closed')
     }
-    function onFocusOut() {
-        console.log('AppGenOrderItemForm.vue onFocusOut')
-    }
 </script>
 
 <template>
@@ -202,7 +192,6 @@
             :violations="violations"
             :submit-label="btnLabel"
             @update:model-value="value => updateValue(value, localData)"
-            @focusout="onFocusOut"
             @submit="onSubmit"/>
     </AppModal>
 </template>

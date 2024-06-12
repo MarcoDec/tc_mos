@@ -1,7 +1,5 @@
 <script setup>
-    /* eslint-disable vue/no-unused-properties */
     import AppInput from './AppInput.vue'
-    //import AppInputGuesserJS from './AppInputGuesserJS'
     import AppInputMeasure from './AppInputMeasure.vue'
     import AppInputNumber from './AppInputNumber.vue'
     import AppTrafficLight from './AppTrafficLight.vue'
@@ -51,10 +49,8 @@
         emit('searchChange', {field: props.field, data})
     }
     function onFocusOut() {
-        console.log('AppInputGuesser.vue onFocusOut', props.field.name)
         emit('focusOut', props.field.name)
     }
-    console.log('AppInputGuesser.vue', props.field.name)
 </script>
 
 <template>

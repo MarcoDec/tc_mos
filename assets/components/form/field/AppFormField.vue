@@ -1,10 +1,10 @@
 <script setup>
     import AppFormFieldset from './AppFormFieldset.vue'
     import AppFormGroupJS from './AppFormGroupJS'
-    import {computed, defineEmits, defineProps} from 'vue'
+    import {computed, defineEmits, defineProps, ref} from 'vue'
     import AppFormFlexWrapper from './AppFormFlexWrapper.vue'
 
-    const emit = defineEmits(['update:modelValue', 'input', 'focusout'])
+    const emit = defineEmits(['update:modelValue', 'input'])
     const props = defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},
@@ -12,6 +12,7 @@
         newField: {default: null, required: false, type: Object},
         disabled: {default: false, type: Boolean}
     })
+    const localData = ref(props.modelValue)
     const componentType = computed(() => {
         if (props.field.mode === 'wrap') return AppFormFlexWrapper
         switch (props.field.mode) {
@@ -28,10 +29,6 @@
     function input(value) {
         emit('update:modelValue', value)
     }
-    function onFocusOut() {
-        console.log('AppFormField.vue onFocusOut', props.field.name)
-        emit('focusout', null)
-    }
 </script>
 
 <template>
@@ -44,9 +41,7 @@
         :model-value="modelValue"
         :new-field="newField"
         :values="modelValue"
-        @update:model-value="input"
-        @focusout="onFocusOut"
-    >
+        @update:model-value="input">
         <slot/>
     </component>
 </template>
