@@ -78,6 +78,7 @@
         {
             label: 'Date de livraison souhaitée',
             name: 'requestedDate',
+            info: 'Obligatoire',
             type: 'date'
         },
         {
@@ -115,9 +116,12 @@
         :fields="fieldsOpenOrderItem"
         :form-data="localForecastData"
         :modal-id="modalId"
+        mode="add"
         :order="order"
         :options-unit="optionsUnit"
         :options-currency="optionsCurrency"
         :store="storeCustomerOrderItems"
+        title="Ajouter Item en Prévisionnel"
+        variant="forecast"
         @updated="value => emits('updated', value)"/>
 </template>

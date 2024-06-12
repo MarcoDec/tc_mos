@@ -6,35 +6,33 @@
     import {Modal} from 'bootstrap'
     import Measure from './measure'
     import {useCustomerOrderItemsStore} from '../../../../../../stores/customer/customerOrderItems'
+    import AppGenOrderItemForm from "./AppGenOrderItemForm.vue";
 
     const emits = defineEmits(['updated'])
     const props = defineProps({
         customer: {default: () => ({}), type: Object},
+        modalId: {required: true, type: String},
         order: {default: () => ({}), type: Object},
         optionsUnit: {default: () => ({}), type: Object},
         optionsCurrency: {default: () => ({}), type: Object}
     })
     const storeCustomerOrderItems = useCustomerOrderItemsStore()
-    const measure = new Measure('U', 0.0)
-    measure.initUnits()
-    const fixedFormKey = ref(0)
-    const customerOrderItemFixedCreateModal = ref(null)
     const localFixedData = ref({
         product: null,
         component: null,
         requestedQuantity: {
-            code: null,
-            value: null
+            code: '/api/units/1',
+            value: 1.0
         },
         confirmedQuantity: {
-            code: null,
-            value: null
+            code: '/api/units/1',
+            value: 0
         },
         requestedDate: null,
         confirmedDate: null,
         price: {
-            code: null,
-            value: null
+            code: '/api/currencies/1',
+            value: 0.0
         }
     })
     const fieldsOrderItem = computed(() => [
@@ -45,6 +43,10 @@
             type: 'multiselect-fetch',
             api: '/api/products',
             filteredProperty: 'code',
+            permanentFilters: [
+                {field: 'productCustomers.customer', value: props.customer['@id']},
+                {field: 'kind', value: props.order.kind}
+            ],
             max: 1
         },
         {
@@ -61,8 +63,6 @@
             name: 'requestedQuantity',
             info: 'Obligatoire\nSi un produit est sélectionnée, cette quantité doit être supérieure à la quantité minimale de livraison définie sur la fiche produit.\n'
                 + 'Lorsque la quantité change le prix unitaire est récupéré automatiquement de la grille tarifaire associée au produit/composant et au client',
-            filter: true,
-            min: true,
             measure: {
                 code: {
                     label: 'Code',
@@ -88,8 +88,6 @@
             name: 'confirmedQuantity',
             info: 'Si un produit est sélectionnée, cette quantité doit être supérieure à la quantité minimale de livraison définie sur la fiche produit.\n'
                 + 'Lorsque la quantité change le prix unitaire est récupéré automatiquement de la grille tarifaire associée au produit/composant et au client',
-            filter: true,
-            min: true,
             measure: {
                 code: {
                     label: 'Code',
@@ -148,94 +146,21 @@
             }
         }
     ])
-    async function updateFixedLocalData(value, localData) {
-        if (typeof localData === 'undefined') {
-            return
-        }
-        const initialLocalData = {...localData}
-        Object.assign(localData, value)
-        // localData = value
 
-        if (value.product && value.product !== initialLocalData.product) {
-            localData.value.component = null
-            await api(value.product, 'GET').then(async response => {
-                const minDeliveryMeasure = new Measure(response.code, response.value, response.denominator, 'unit')
-                await minDeliveryMeasure.init()
-                await Measure.setQuantityToMinDelivery(localData.value, minDeliveryMeasure, ['requestedQuantity', 'confirmedQuantity'])
-                await Measure.getAndSetProductPrice(response, props.customer, props.order, localData.value.requestedQuantity, localData, fixedFormKey)
-            })
-            return
-        }
-        if (value.component && value.component !== initialLocalData.component) {
-            localData.value.product = null
-            await api(value.component, 'GET').then(async response => {
-                Measure.setQuantityToUnit(localData.value, response)
-                await Measure.getAndSetComponentPrice(response, props.customer, props.order, localData.value.requestedQuantity, localData, fixedFormKey)
-            })
-            return
-        }
-        if (value.confirmedQuantity.value && value.confirmedQuantity.value !== initialLocalData.confirmedQuantity.value) {
-            // Si un produit a été sélectionné on récupère le prix unitaire associé au produit et au client
-            if (value.product) {
-                await Measure.getAndSetProductPrice(value.product, props.customer, props.order, localData.value.confirmedQuantity, localData, fixedFormKey)
-                return
-            }
-            if (value.component) {
-                await Measure.getAndSetComponentPrice(value.component, props.customer, props.order, localData.value.confirmedQuantity, localData, fixedFormKey)
-                return
-            }
-        }
-        if (value.requestedQuantity.value && value.requestedQuantity.value !== initialLocalData.requestedQuantity.value) {
-            // Si un produit a été sélectionné on récupère le prix unitaire associé au produit et au client
-            if (value.product) {
-                await measure.getAndSetProductPrice(value.product, props.customer, props.order, localData.value.requestedQuantity, localData, fixedFormKey)
-                return
-            }
-            if (value.component) {
-                await measure.getAndSetComponentPrice(value.component, props.customer, props.order, localData.value.requestedQuantity, localData, fixedFormKey)
-            }
-        }
-    }
-    async function addFixedItem() {
-        //On ajoute le champ parentOrder
-        localFixedData.value.parentOrder = props.order['@id']
-        //On ajoute le type d'item isForecast à false
-        localFixedData.value.isForecast = false
-        //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
-        const requestedUnit = props.optionsUnit.find(unit => unit.value === localFixedData.value.requestedQuantity.code)
-        const confirmedUnit = props.optionsUnit.find(unit => unit.value === localFixedData.value.confirmedQuantity.code)
-        //Si c'est un produit on positionne la clé item avec la valeur de la clé produit, sinon on positionne la clé item avec la valeur de la clé component
-        if (localFixedData.value.product) localFixedData.value.item = localFixedData.value.product
-        else localFixedData.value.item = localFixedData.value.component
-        localFixedData.value.requestedQuantity.code = requestedUnit.text
-        //eslint-disable-next-line require-atomic-updates
-        localFixedData.value.confirmedQuantity.code = confirmedUnit.text
-        await storeCustomerOrderItems.add(localFixedData.value)
-        //On ferme la modale
-        if (customerOrderItemFixedCreateModal.value) {
-            const modalElement = customerOrderItemFixedCreateModal.value.$el
-            const bootstrapModal = Modal.getInstance(modalElement)
-            bootstrapModal.hide()
-        }
-        //On réinitalise les données locales
-        // eslint-disable-next-line require-atomic-updates
-        localFixedData.value = {}
-        emits.push('updated')
-    }
 </script>
 
 <template>
-    <AppModal
-        id="modalAddNewOrderItem"
-        ref="customerOrderItemFixedCreateModal"
-        title="Ajouter Item en Ferme">
-        <AppFormJS
-            id="formAddNewOrderItem"
-            :key="fixedFormKey"
-            :model-value="localFixedData"
-            :fields="fieldsOrderItem"
-            submit-label="Ajouter"
-            @update:model-value="value => updateFixedLocalData(value, localFixedData)"
-            @submit="addFixedItem"/>
-    </AppModal>
+    <AppGenOrderItemForm
+        :customer="customer"
+        :fields="fieldsOrderItem"
+        :form-data="localFixedData"
+        :modal-id="modalId"
+        mode="add"
+        :options-currency="optionsCurrency"
+        :options-unit="optionsUnit"
+        :order="order"
+        :store="storeCustomerOrderItems"
+        title="Ajouter Item en ferme"
+        variant="fixed"
+        @updated="value => emits('updated', value)"/>
 </template>

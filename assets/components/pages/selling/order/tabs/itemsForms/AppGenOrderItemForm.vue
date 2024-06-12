@@ -8,17 +8,18 @@
 
     const emits = defineEmits(['updated', 'closed'])
     const props = defineProps({
+        btnLabel: {default: 'Ajouter', required: false, type: String},
         customer: {default: () => ({}), required: true, type: Object},
         fields: {default: () => [], required: true, type: Array},
         formData: {default: () => ({}), required: true, type: Object},
-        mode: {default: 'add', required: false, type: String},
         modalId: {required: true, type: String},
-        order: {default: () => ({}), required: true, type: Object},
-        optionsUnit: {default: () => ({}), required: true, type: Object},
+        mode: {default: 'add', required: false, type: String}, // ou edit
         optionsCurrency: {default: () => ({}), required: true, type: Object},
+        optionsUnit: {default: () => ({}), required: true, type: Object},
+        order: {default: () => ({}), required: true, type: Object},
         store: {default: () => ({}), required: true, type: Object},
         title: {default: 'Ajouter Item en Prévisionnel', required: false, type: String},
-        btnLabel: {default: 'Ajouter', required: false, type: String}
+        variant: {default: 'fixed', required: true, type: String} //ou forecast
     })
     const itemStore = props.store
     const measure = new Measure('U', 0.0)
@@ -72,6 +73,15 @@
             loaderShow.value = false
             return
         }
+        if (props.variant === 'fixed') {
+            if (value.confirmedQuantity && value.confirmedQuantity !== initialLocalData.confirmedQuantity) {
+                await api(value.product, 'GET').then(async response => {
+                    await Measure.getAndSetProductPrice(response, props.customer, props.order, localData1.confirmedQuantity, localData1, formKey)
+                })
+                loaderShow.value = false
+                return
+            }
+        }
         loaderShow.value = false
     }
     function checkData(data) {
@@ -115,7 +125,7 @@
         return true
     }
 
-    async function addForecastItem() {
+    async function addItem() {
         if (!checkData(localData.value)) {
             throw new Error('Données invalides localData.value')
         }
@@ -123,7 +133,51 @@
         //On ajoute le champ parentOrder
         localData.value.parentOrder = props.order['@id']
         //On ajoute le type d'item isForecast
-        localData.value.isForecast = true
+        localData.value.isForecast = props.variant === 'forecast'
+        //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
+        const requestedUnit = props.optionsUnit.find(unit => unit.value === localData.value.requestedQuantity.code)
+        // eslint-disable-next-line require-atomic-updates
+        localData.value.requestedQuantity.code = requestedUnit.text
+        if (props.variant === 'fixed') {
+            const confirmedUnit = props.optionsUnit.find(unit => unit.value === localData.value.confirmedQuantity.code)
+            // eslint-disable-next-line require-atomic-updates
+            localData.value.confirmedQuantity.code = confirmedUnit.text
+        } else {
+            delete localData.value.confirmedQuantity
+        }
+        //Si c'est un produit on positionne la clé item avec la valeur de la clé produit, sinon on positionne la clé item avec la valeur de la clé component
+        if (localData.value.product) localData.value.item = localData.value.product
+        else localData.value.item = localData.value.component
+        //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
+        await api(localData.value.price.code, 'GET').then(currency => {
+            localData.value.price.code = currency.code
+        })
+        //On ajoute l'item en base
+        await itemStore.add(localData.value)
+        //On ferme la modale
+        if (modalRef.value) {
+            const modalElement = modalRef.value.$el
+            const bootstrapModal = Modal.getInstance(modalElement)
+            loaderShow.value = false
+            bootstrapModal.hide()
+        }
+        //On réinitalise les données locales
+        // on désactive require-atomic-updates car on ne peut pas utiliser await dans une fonction non asynchrone
+        // eslint-disable-next-line require-atomic-updates
+        localData.value = {}
+        //On rafraichit les données du tableau
+        emits('updated')
+    }
+    // TODO: à compléter
+    async function editItem() {
+        if (!checkData(localData.value)) {
+            throw new Error('Données invalides localData.value')
+        }
+        loaderShow.value = true
+        //On ajoute le champ parentOrder
+        localData.value.parentOrder = props.order['@id']
+        //On ajoute le type d'item isForecast
+        localData.value.isForecast = props.variant === 'forecast'
         //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
         const requestedUnit = props.optionsUnit.find(unit => unit.value === localData.value.requestedQuantity.code)
         //Si c'est un produit on positionne la clé item avec la valeur de la clé produit, sinon on positionne la clé item avec la valeur de la clé component
@@ -158,15 +212,16 @@
     async function onSubmit(data) {
         loaderShow.value = true
         if (props.mode === 'add') {
-            await addForecastItem(data)
+            await addItem(data)
+            loaderShow.value = false
+            return
         }
         if (props.mode === 'edit') {
-            await editForecastItem(data)
+            await editItem(data)
+            loaderShow.value = false
+            return
         }
         loaderShow.value = false
-    }
-    function editForecastItem(data) {
-        console.log('Modification de l\'item en base', data)
     }
     function onModalClose() {
         emits('closed')

@@ -260,7 +260,7 @@
     }
     function openModalAddNewOrderItem() {
         // On récupère la modale d'ajout
-        const modalElement = document.getElementById('modalAddNewOrderItem')
+        const modalElement = document.getElementById('modalAddNewFixedItem')
         const bootstrapModal = Modal.getInstance(modalElement)
         bootstrapModal.show()
     }
@@ -281,6 +281,7 @@
         v-if="isLoaded"
         :key="`addFixedItem_${formKeys}`"
         :customer="customer"
+        modal-id="modalAddNewFixedItem"
         :order="order"
         :options-currency="optionsCurrency"
         :options-unit="optionsUnit"
