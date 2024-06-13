@@ -146,7 +146,19 @@
         //On ajoute le type d'item isForecast
         localData.value.isForecast = props.variant === 'forecast'
         //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
-        const requestedUnit = props.optionsUnit.find(unit => unit.value === localData.value.requestedQuantity.code)
+        //si le code contient `/api/units/` alors on remplace par le code de l'unité
+        let requestedUnit = null
+        if (localData.value.requestedQuantity.code.includes('/api/units/') || localData.value.requestedQuantity.code.includes('/api/currencies/')) {
+            requestedUnit = props.optionsUnit.find(unit => unit.value === localData.value.requestedQuantity.code)
+            console.log('requestedUnit', requestedUnit, localData.value.requestedQuantity.code)
+            // eslint-disable-next-line require-atomic-updates
+            localData.value.requestedQuantity.code = requestedUnit.text
+        } else {
+            requestedUnit = props.optionsUnit.find(unit => unit.text === localData.value.requestedQuantity.code)
+            console.log('requestedUnit', requestedUnit, localData.value.requestedQuantity.code)
+        }
+        // const requestedUnit = props.optionsUnit.find(unit => unit.value === localData.value.requestedQuantity.code)
+        // console.log('requestedUnit', requestedUnit, localData.value.requestedQuantity.code)
         // eslint-disable-next-line require-atomic-updates
         localData.value.requestedQuantity.code = requestedUnit.text
         if (props.variant === 'fixed') {
@@ -225,13 +237,11 @@
         if (props.mode === 'add') {
             await addItem(e)
             loaderShow.value = false
-            return
         }
         if (props.mode === 'edit') {
             console.log('form submission for edit')
             // await editItem(localData.value)
             // loaderShow.value = false
-            // return
         }
         emits('submit')
         loaderShow.value = false

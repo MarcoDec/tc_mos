@@ -51,7 +51,7 @@
             max: 1
         },
         {
-            label: 'Quantité souhaitée',
+            label: 'Quantité souhaitée *',
             name: 'requestedQuantity',
             info: 'Obligatoire\nSi un produit est sélectionnée, cette quantité doit être supérieure à la quantité minimale de livraison définie sur la fiche produit.\n'
                 + 'Lorsque la quantité change le prix unitaire est récupéré automatiquement de la grille tarifaire associée au produit/composant et au client',
@@ -76,7 +76,7 @@
             type: 'measure'
         },
         {
-            label: 'Date de livraison souhaitée',
+            label: 'Date de livraison souhaitée *',
             name: 'requestedDate',
             info: 'Obligatoire',
             type: 'date'
