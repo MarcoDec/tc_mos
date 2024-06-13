@@ -3,7 +3,7 @@
     import {useCustomerOrderItemsStore} from '../../../../../../stores/customer/customerOrderItems'
     import AppGenOrderItemForm from './AppGenOrderItemForm.vue'
 
-    const emits = defineEmits(['updated'])
+    const emits = defineEmits(['updated', 'closed', 'submit'])
     const props = defineProps({
         customer: {default: () => ({}), type: Object},
         modalId: {required: true, type: String},
@@ -115,6 +115,7 @@
         :customer="customer"
         :fields="fieldsOpenOrderItem"
         :form-data="localForecastData"
+        form-id="formAddNewForecastOrderItem"
         :modal-id="modalId"
         mode="add"
         :order="order"
@@ -123,5 +124,7 @@
         :store="storeCustomerOrderItems"
         title="Ajouter Item en Prévisionnel"
         variant="forecast"
-        @updated="value => emits('updated', value)"/>
+        @updated="value => emits('updated', value)"
+        @closed="() => emits('closed')"
+        @submit="() => emits('submit')"/>
 </template>

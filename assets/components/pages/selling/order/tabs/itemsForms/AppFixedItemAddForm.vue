@@ -148,6 +148,7 @@
         :customer="customer"
         :fields="fieldsOrderItem"
         :form-data="localFixedData"
+        form-id="formAddNewFixedOrderItem"
         :modal-id="modalId"
         mode="add"
         :options-currency="optionsCurrency"

@@ -14,7 +14,6 @@
         customer: {default: () => ({}), required: true, type: Object}
     })
     const showUpdateForm = ref(false)
-    //console.log('customer', props.customer)
     //region initialisation des constantes et variables
     const fetchUser = useUser()
     const isLoaded = ref(false)
@@ -174,7 +173,6 @@
         customerOrderItemsCriteria.addFilter('parentOrder', props.order['@id'])
     }
     async function searchCustomerOrders(inputValues) {
-        // console.log('inputValues', inputValues)
         customerOrderItemsCriteria.resetAllFilter()
         addPermanentFilters()
         if (inputValues.product) customerOrderItemsCriteria.addFilter('item', inputValues.product)
@@ -226,7 +224,6 @@
         } else {
             customerOrderItemsCriteria.addSort(payload.name, payload.direction)
         }
-        // console.log('customerOrderItemsCriteria', customerOrderItemsCriteria.getFetchCriteria)
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     }
     async function updateTable() {
@@ -239,10 +236,8 @@
     addPermanentFilters()
     await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     isLoaded.value = true
-    // console.log('éléments de tableau chargés')
     //endregion
     function updateItemToUpdate(item) {
-        console.log('updateItemToUpdate', item)
         storeCustomerOrderItems.setCurrentItem(item)
         if (item.isForecast) {
             showUpdateForm.value = true
@@ -270,9 +265,8 @@
         const bootstrapModal = Modal.getInstance(modalElement)
         bootstrapModal.show()
     }
-    function onModalClose() {
-        console.log('onModalClose')
-        showUpdateForm.value = false
+    function onFormSubmitted() {
+        updateTable()
     }
 </script>
 
@@ -285,7 +279,9 @@
         :order="order"
         :options-currency="optionsCurrency"
         :options-unit="optionsUnit"
-        @updated="updateTable"/>
+        @updated="updateTable"
+        @closed="() => console.log('fixed add form closed')"
+        @submit="onFormSubmitted"/>
     <AppForeCastItemAddForm
         v-if="isLoaded && !fixedFamilies.includes(order.orderFamily)"
         :key="`addForecastItem_${formKeys}`"
@@ -294,7 +290,9 @@
         :order="order"
         :options-currency="optionsCurrency"
         :options-unit="optionsUnit"
-        @updated="updateTable"/>
+        @updated="updateTable"
+        @closed="() => console.log('forecast add form closed')"
+        @submit="onFormSubmitted"/>
     <AppForeCastUpdateForm
         v-if="isLoaded && !fixedFamilies.includes(order.orderFamily) && showUpdateForm"
         :key="`updateForecastItem_${formUpdateKeys}`"
@@ -303,8 +301,9 @@
         :order="order"
         :options-currency="optionsCurrency"
         :options-unit="optionsUnit"
-        @closed="onModalClose"
-        @updated="updateTable"/>
+        @updated="updateTable"
+        @closed="() => console.log('forecast update form closed')"
+        @submit="onFormSubmitted"/>
     <AppCardableTable
         v-if="isLoaded"
         :key="tableKey"

@@ -12,7 +12,6 @@
         optionsUnit: {default: () => ({}), required: true, type: Object},
         optionsCurrency: {default: () => ({}), required: true, type: Object}
     })
-    console.log('props', props)
     const storeCustomerOrderItems = useCustomerOrderItemsStore()
     const localForecastData = computed(() => storeCustomerOrderItems.currentItem.value)
     const fieldsOpenOrderItem = computed(() => [
@@ -94,9 +93,11 @@
             }
         }
     ])
-    console.log('localForecastData', localForecastData.value)
     function onModalClose() {
         emits('closed')
+    }
+    function onUpdate(value) {
+        emits('updated', value)
     }
 </script>
 
@@ -114,7 +115,8 @@
             :store="storeCustomerOrderItems"
             :title="`Modifier item prévisionnel du ${localForecastData.requestedDate}`"
             btn-label="Modifier"
+            variant="forecast"
             @closed="onModalClose"
-            @updated="value => emits('updated', value)"/>
+            @update:model-value="onUpdate"/>
     </AppSuspense>
 </template>

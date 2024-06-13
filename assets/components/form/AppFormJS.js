@@ -47,11 +47,11 @@ function AppFormJS(props, context) {
                             {
                                 disabled: props.disabled,
                                 form: props.id,
-                                type: 'submit'
-                                // onClick: () => {
-                                //     console.log('onClick Button submit')
-                                //     //context.emit('submit')
-                                // }
+                                type: 'submit',
+                                'onClick': (e) => {
+                                    e.preventDefault()
+                                    context.emit('submit', e)
+                                },
                             },
                             () => props.submitLabel
                         )
@@ -65,13 +65,9 @@ function AppFormJS(props, context) {
         id: props.id,
         method: 'POST',
         novalidate: true,
-        // 'onSubmit.prevent': () => {
-        //     console.log('onSubmit.prevent')
-        // },
         onSubmit(e) {
             e.preventDefault()
             const data = new FormData(e.target)
-            // console.log('data before', data)
             for (const [key, value] of Object.entries(Object.fromEntries(data))) {
                 if (typeof value === 'undefined' || value === null)
                     data.delete(key)
@@ -81,7 +77,6 @@ function AppFormJS(props, context) {
                         data.delete(key)
                 }
             }
-            context.emit('submit', data)
         }
     }
     if (props.inline)

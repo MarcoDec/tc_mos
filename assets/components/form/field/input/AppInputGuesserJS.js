@@ -45,15 +45,11 @@ function AppInputGuesserJS(props, context) {
         form: props.form,
         id: props.id,
         modelValue: props.modelValue,
-        'onUpdate:modelValue': value => context.emit('update:modelValue', value),
-        onFocusin: value => {
-            // console.log('AppInputGuesserJS', value)
-            context.emit('on-focusin', value)
-        }
+        'onUpdate:modelValue': value => context.emit('update:modelValue', value)
     })
 }
 
-AppInputGuesserJS.emits = ['update:modelValue', 'on-focusin']
+AppInputGuesserJS.emits = ['update:modelValue']
 AppInputGuesserJS.props = {
     disabled: {type: Boolean},
     field: generateField(),
