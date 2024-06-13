@@ -1,12 +1,7 @@
 <script setup>
-    import AppModal from '../../../../../modal/AppModal.vue'
-    import AppFormJS from '../../../../../form/AppFormJS'
     import {computed, ref} from 'vue'
-    import api from '../../../../../../api'
-    import {Modal} from 'bootstrap'
-    import Measure from './measure'
     import {useCustomerOrderItemsStore} from '../../../../../../stores/customer/customerOrderItems'
-    import AppGenOrderItemForm from "./AppGenOrderItemForm.vue";
+    import AppGenOrderItemForm from './AppGenOrderItemForm.vue'
 
     const emits = defineEmits(['updated'])
     const props = defineProps({
@@ -146,7 +141,6 @@
             }
         }
     ])
-
 </script>
 
 <template>

@@ -335,27 +335,32 @@ class Measure {
         return convertedMeasure
     }
 
-    static async setQuantityToMinDelivery(localData, minDeliveryMeasure, quantityFields = ['requestedQuantity']) {
+    static async setQuantityToMinDelivery(minDeliveryMeasure, quantityFields = ['requestedQuantity']) {
         const units = await Measure.getOptionsUnit()
         let isGreaterThanOrEqual = false
         for (const quantityField of quantityFields) {
-            if (localData[quantityField] && localData[quantityField].code !== null) {
-                const localUnit = await api(localData[quantityField].code, 'GET')
-                const localMeasure = new Measure(localUnit.code, localData[quantityField].value)
+            if (localData.value[quantityField] && localData.value[quantityField].code !== null) {
+                // On désactive eslint pour les await dans une boucle
+                // eslint-disable-next-line no-await-in-loop
+                const localUnit = await api(localData.value[quantityField].code, 'GET')
+                const localMeasure = new Measure(localUnit.code, localData.value[quantityField].value)
+                // eslint-disable-next-line no-await-in-loop
                 isGreaterThanOrEqual = await localMeasure.isGreaterThanOrEqual(minDeliveryMeasure)
                 if (!isGreaterThanOrEqual) {
                     // la quantité demandée est inférieure à la quantité minimale de livraison
-                    localData[quantityField].code = units.find(unit => unit.code === minDeliveryMeasure.code)['@id']
-                    localData[quantityField].value = minDeliveryMeasure.value
+                    localData.value[quantityField] = {
+                        code: units.find(unit => unit.code === minDeliveryMeasure.code)['@id'],
+                        value: minDeliveryMeasure.value
+                    }
                 }
             } else {
                 const code = units.find(unit => unit.code === minDeliveryMeasure.code)['@id']
                 let value = minDeliveryMeasure.value
                 // L'unité de la quantité demandée n'est pas définie mais peut-être que la bvaleur est définie, dans ce cas on prendra le max entre cette valeur et la valeur de la quantité minimale de livraison
-                if (localData[quantityField] && localData[quantityField].value !== null && localData[quantityField].value > value) {
-                    value = localData[quantityField].value
+                if (localData.value[quantityField] && localData.value[quantityField].value !== null && localData.value[quantityField].value > value) {
+                    value = localData.value[quantityField].value
                 }
-                localData[quantityField] = {
+                localData.value[quantityField] = {
                     code,
                     value
                 }
@@ -372,7 +377,6 @@ class Measure {
         if (test2) return measure1
         return measure1.base < measure2.base ? measure1 : measure2
     }
-
 }
 
 export default Measure

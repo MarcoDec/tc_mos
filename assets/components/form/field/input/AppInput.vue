@@ -28,7 +28,7 @@
         e.stopPropagation()
     }
     function onFocusout(e) {
-        emit('focusout',e)
+        emit('focusout', e)
     }
 </script>
 

@@ -21,7 +21,7 @@
         title: {default: 'Ajouter Item en Prévisionnel', required: false, type: String},
         variant: {default: 'fixed', required: true, type: String} //ou forecast
     })
-    console.log('initialisation composant AppGenOrderItemForm')
+    console.log('initialisation composant AppGenOrderItemForm', props.optionsCurrency)
     const itemStore = props.store
     const measure = new Measure('U', 0.0)
     measure.initUnits()
@@ -61,7 +61,7 @@
             await api(value.product, 'GET').then(async response => {
                 const minDeliveryMeasure = new Measure(response.minDelivery.code, response.minDelivery.value, response.minDelivery.denominator, 'unit')
                 await minDeliveryMeasure.init()
-                await Measure.setQuantityToMinDelivery(localData.value, minDeliveryMeasure)
+                await Measure.setQuantityToMinDelivery(minDeliveryMeasure)
                 await Measure.getAndSetProductPrice(response, props.customer, props.order, localData.value.requestedQuantity, localData.value, formKey)
             })
             loaderShow.value = false
@@ -257,12 +257,12 @@
     <AppModal
         :id="modalId"
         ref="modalRef"
+        class="padding-bottom-0"
         :modal-ref-name="modalId"
         :title="title"
-        style="padding-bottom: 0"
         @closed="onModalClose">
         <div v-if="loaderShow" class="overlay-spinner d-flex justify-content-center align-items-center">
-            <div class="spinner-border" role="status" aria-hidden="true"></div>
+            <div class="spinner-border" role="status" aria-hidden="true"/>
         </div>
         <AppFormJS
             id="formAddNewForecastOrderItem"
@@ -277,6 +277,12 @@
 </template>
 
 <style scoped>
+    .overlay-spinner .spinner-border {
+        color: #fff;
+    }
+    .padding-bottom-0 {
+        padding-bottom: 0;
+    }
     .overlay-spinner {
         position: absolute;
         top: 0;

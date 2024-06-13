@@ -27,6 +27,7 @@
     const isDisabled = computed(() => props.disabled || props.field.readOnly)
     // console.log('AppFormField props', props, props.field.mode, componentType.value)
     function input(value) {
+        localData.value = value
         emit('update:modelValue', value)
     }
 </script>
@@ -38,7 +39,7 @@
         :field="field"
         :form="form"
         :name="field.name"
-        :model-value="modelValue"
+        :model-value="localData"
         :new-field="newField"
         :values="modelValue"
         @update:model-value="input">

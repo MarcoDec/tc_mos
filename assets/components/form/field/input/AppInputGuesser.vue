@@ -11,6 +11,7 @@
     import AppMultiselectFetch from './select/AppMultiselectFetch.vue'
 
     const emit = defineEmits(['update:modelValue', 'searchChange', 'focusOut'])
+    // on échappe eslint pour les no-unused-properties
     const props = defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
@@ -54,8 +55,10 @@
 </script>
 
 <template>
-    <component :is="kind" v-bind="$props"
-               @update:model-value="input"
-               @focusout="onFocusOut"
-               @search-change="searchChange"/>
+    <component
+        :is="kind"
+        v-bind="$props"
+        @update:model-value="input"
+        @focusout="onFocusOut"
+        @search-change="searchChange"/>
 </template>

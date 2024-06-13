@@ -1,5 +1,5 @@
 import {fieldValidator, generateLabelCols} from '../props'
-import {h, ref, resolveComponent} from 'vue'
+import {h, resolveComponent} from 'vue'
 import AppFormField from './field/AppFormField.vue'
 
 function AppFormJS(props, context) {
@@ -47,7 +47,7 @@ function AppFormJS(props, context) {
                             {
                                 disabled: props.disabled,
                                 form: props.id,
-                                type: 'submit',
+                                type: 'submit'
                                 // onClick: () => {
                                 //     console.log('onClick Button submit')
                                 //     //context.emit('submit')
