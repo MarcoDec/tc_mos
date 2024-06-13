@@ -66,7 +66,13 @@
             </template>
         </AppCardableTableHeader>
         <tbody>
-            <AppCardableTableBodyItem :items="items" :fields="displayedFields" :current-page="currentPage" :pagine="pag" :should-delete="shouldDelete" :should-see="shouldSee" @update="update" @deleted="deleted"/>
+            <AppCardableTableBodyItem
+                :items="items"
+                :fields="displayedFields"
+                :should-delete="shouldDelete"
+                :should-see="shouldSee"
+                @update="update"
+                @deleted="deleted"/>
         </tbody>
     </table>
     <nav v-if="pag" aria-label="Page navigation example">
