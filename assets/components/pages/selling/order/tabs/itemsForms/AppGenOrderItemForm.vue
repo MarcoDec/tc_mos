@@ -7,7 +7,6 @@
     import Measure from './measure'
 
     const checkData = async (data) => {
-        // console.log('checkData', data)
         violations.value = []
         if (typeof data === 'undefined' || data === null) {
             violations.value.push({propertyPath: 'product', message: 'Veuillez remplir le formulaire'})
@@ -45,6 +44,7 @@
         }
         // on retire d'éventuelles violations précédentes liées à la propriété price
         violations.value = violations.value.filter(violation => violation.propertyPath !== 'price')
+        console.log('checkData return true')
         return true
     }
 
@@ -147,38 +147,44 @@
         }
         return props.optionsCurrency.find(currency => currency.text === code)
     }
+    function initLocalData(dataToSend) {
+        dataToSend.parentOrder = props.order['@id']
+        dataToSend.isForecast = props.variant === 'forecast'
+    }
+    function getUnitCode(dataToSendCode) {
+        const requestedUnit = getUnitFromMeasureCode(dataToSendCode)
+       return requestedUnit.text
+    }
     async function addItem() {
         violations.value = []
         loaderShow.value = true
-        const checkresult = await checkData(localData.value)
-        if (!checkresult) {
+        const dataToSend = {...localData.value}
+        const checkResult = await checkData(dataToSend)
+        if (!checkResult) {
             loaderShow.value = false
             throw new Error('Données invalides localData.value')
         }
-        //On ajoute le champ parentOrder
-        localData.value.parentOrder = props.order['@id']
-        //On ajoute le type d'item isForecast
-        localData.value.isForecast = props.variant === 'forecast'
-        //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
-        const requestedUnit = getUnitFromMeasureCode(localData.value.requestedQuantity.code)
-        // eslint-disable-next-line require-atomic-updates
-        localData.value.requestedQuantity.code = requestedUnit.text
-        if (props.variant === 'fixed') {
-            const confirmedUnit = getUnitFromMeasureCode(localData.value.confirmedQuantity.code)
-            // eslint-disable-next-line require-atomic-updates
-            localData.value.confirmedQuantity.code = confirmedUnit.text
-        } else {
-            delete localData.value.confirmedQuantity
+        initLocalData(dataToSend)
+
+        dataToSend.requestedQuantity.code = getUnitCode(dataToSend.requestedQuantity.code)
+        if (props.variant === 'fixed') dataToSend.confirmedQuantity.code = getUnitCode(dataToSend.confirmedQuantity.code)
+        else {
+            delete dataToSend.confirmedQuantity
+            delete dataToSend.confirmedDate
         }
+        
         //Si c'est un produit on positionne la clé item avec la valeur de la clé produit, sinon on positionne la clé item avec la valeur de la clé component
-        if (localData.value.product) localData.value.item = localData.value.product
-        else localData.value.item = localData.value.component
+        if (dataToSend.product) dataToSend.item = dataToSend.product
+        else dataToSend.item = dataToSend.component
+        delete dataToSend.product
+        delete dataToSend.component
+
         //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
-        const currency = getCurrencyFromMeasureCode(localData.value.price.code)
-        localData.value.price.code = currency.text
+        const currency = getCurrencyFromMeasureCode(dataToSend.price.code)
+        dataToSend.price.code = currency.text
 
         //On ajoute l'item en base
-        await itemStore.add(localData.value)
+        await itemStore.add(dataToSend)
         //On ferme la modale
         if (modalRef.value) {
             const modalElement = modalRef.value.$el
@@ -186,19 +192,14 @@
             loaderShow.value = false
             bootstrapModal.hide()
         }
-        //On rafraichit les données du tableau
-        emits('update:modelValue', localData.value)
     }
-    // TODO: à compléter
     async function editItem() {
-        if (!await checkData(localData.value)) {
+        const testCheckData = await checkData(localData.value)
+        if (!testCheckData) {
             throw new Error('Données invalides localData.value')
         }
+        initLocalData()
         loaderShow.value = true
-        //On ajoute le champ parentOrder
-        localData.value.parentOrder = props.order['@id']
-        //On ajoute le type d'item isForecast
-        localData.value.isForecast = props.variant === 'forecast'
         //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
         const requestedUnit = props.optionsUnit.find(unit => unit.value === localData.value.requestedQuantity.code)
         //Si c'est un produit on positionne la clé item avec la valeur de la clé produit, sinon on positionne la clé item avec la valeur de la clé component

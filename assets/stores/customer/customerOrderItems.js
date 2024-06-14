@@ -72,8 +72,8 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
             this.customerOrdersItems = this.customerOrdersItems.filter(customerOrderItem => Number(customerOrderItem['@id'].match(/\d+/)[0]) !== id)
         },
         async add(data){
-            if (data.product) await this.addProducts(data)
-            else if (data.component) await this.addComponents(data)
+            if (data.item.includes('/api/products')) await this.addProducts(data)
+            else if (data.item.includes('/api/components')) await this.addComponents(data)
             else window.alert('impossible d\'ajouter cet élément à la commande, veuillez sélectionner un produit ou un composant.')
         },
         async addProducts(data){
