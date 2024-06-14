@@ -7,7 +7,7 @@
     import Measure from './measure'
 
     const checkData = async (data) => {
-        console.log('checkData', data)
+        // console.log('checkData', data)
         violations.value = []
         if (typeof data === 'undefined' || data === null) {
             violations.value.push({propertyPath: 'product', message: 'Veuillez remplir le formulaire'})
@@ -133,6 +133,20 @@
         loaderShow.value = false
         emits('update:modelValue', localData.value)
     }
+    function getUnitFromMeasureCode(code) {
+        if (code === null) return null
+        if (code.includes('/api/units/')) {
+            return props.optionsUnit.find(unit => unit.value === code)
+        }
+        return props.optionsUnit.find(unit => unit.text === code)
+    }
+    function getCurrencyFromMeasureCode(code) {
+        if (code === null) return null
+        if (code.includes('/api/currencies/')) {
+            return props.optionsCurrency.find(currency => currency.value === code)
+        }
+        return props.optionsCurrency.find(currency => currency.text === code)
+    }
     async function addItem() {
         violations.value = []
         loaderShow.value = true
@@ -146,23 +160,11 @@
         //On ajoute le type d'item isForecast
         localData.value.isForecast = props.variant === 'forecast'
         //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
-        //si le code contient `/api/units/` alors on remplace par le code de l'unité
-        let requestedUnit = null
-        if (localData.value.requestedQuantity.code.includes('/api/units/') || localData.value.requestedQuantity.code.includes('/api/currencies/')) {
-            requestedUnit = props.optionsUnit.find(unit => unit.value === localData.value.requestedQuantity.code)
-            console.log('requestedUnit', requestedUnit, localData.value.requestedQuantity.code)
-            // eslint-disable-next-line require-atomic-updates
-            localData.value.requestedQuantity.code = requestedUnit.text
-        } else {
-            requestedUnit = props.optionsUnit.find(unit => unit.text === localData.value.requestedQuantity.code)
-            console.log('requestedUnit', requestedUnit, localData.value.requestedQuantity.code)
-        }
-        // const requestedUnit = props.optionsUnit.find(unit => unit.value === localData.value.requestedQuantity.code)
-        // console.log('requestedUnit', requestedUnit, localData.value.requestedQuantity.code)
+        const requestedUnit = getUnitFromMeasureCode(localData.value.requestedQuantity.code)
         // eslint-disable-next-line require-atomic-updates
         localData.value.requestedQuantity.code = requestedUnit.text
         if (props.variant === 'fixed') {
-            const confirmedUnit = props.optionsUnit.find(unit => unit.value === localData.value.confirmedQuantity.code)
+            const confirmedUnit = getUnitFromMeasureCode(localData.value.confirmedQuantity.code)
             // eslint-disable-next-line require-atomic-updates
             localData.value.confirmedQuantity.code = confirmedUnit.text
         } else {
@@ -172,9 +174,9 @@
         if (localData.value.product) localData.value.item = localData.value.product
         else localData.value.item = localData.value.component
         //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
-        await api(localData.value.price.code, 'GET').then(currency => {
-            localData.value.price.code = currency.code
-        })
+        const currency = getCurrencyFromMeasureCode(localData.value.price.code)
+        localData.value.price.code = currency.text
+
         //On ajoute l'item en base
         await itemStore.add(localData.value)
         //On ferme la modale
@@ -184,10 +186,6 @@
             loaderShow.value = false
             bootstrapModal.hide()
         }
-        //On réinitalise les données locales
-        // on désactive require-atomic-updates car on ne peut pas utiliser await dans une fonction non asynchrone
-        // eslint-disable-next-line require-atomic-updates
-        //localData.value = {}
         //On rafraichit les données du tableau
         emits('update:modelValue', localData.value)
     }
