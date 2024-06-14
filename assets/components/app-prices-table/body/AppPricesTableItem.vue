@@ -1,120 +1,148 @@
 <script setup>
-import { defineProps, computed } from "vue";
-import { isObject } from "@vueuse/core";
-import AppPricesTableAddItems from "./AppPricesTableAddItems.vue";
+    import {defineProps, computed, ref} from 'vue'
+    import AppPricesTableAddItems from './AppPricesTableAddItems.vue'
+    import AppPricesTableUpdateItem from './AppPricesTableUpdateItem.vue'
+    import AppPricesTableItemsComponentSuppliers from './AppPricesTableItemsComponentSuppliers.vue'
+    import AppPricesTableItemsPrices from './AppPricesTableItemsPrices.vue'
+    import AppPricesTableUpdateItemPrices from './AppPricesTableUpdateItemPrices.vue'
 
+    const props = defineProps({
+        item: {required: true, type: Object},
+        fieldsComponenentSuppliers: {required: true, type: Array},
+        fieldsComponenentSuppliersPrices: {required: true, type: Array},
+        form: {required: true, type: String}
+    })
+    const emit = defineEmits(['addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'update', 'updateItems', 'updatePrices', 'updateItemsPrices'])
+    const updated = ref(false)
+    const priceModified = ref(Array(props.item.prices.length).fill(false))
+    function update(){
+        emit('update')
+        updated.value = true
+    }
+    function deleted(id){
+        emit('deleted', id)
+    }
+    async function updateItems(item) {
+        emit('updateItems', item)
+        emit('annuleUpdate')
+    }
+    function annuleUpdated() {
+        emit('annuleUpdate')
+        updated.value = false
+    }
+    function addItemPrice(formData) {
+        const component = props.item['@id']
+        emit('addItemPrice', {formData, component})
+    }
+    function updatePrices(index) {
+        emit('updatePrices')
+        priceModified.value[index] = true
+    }
+    async function updateItemsPrices(index, item) {
+        emit('updateItemsPrices', item)
+        priceModified.value[index] = false
+    }
+    function annuleUpdatedprices(index) {
+        emit('annuleUpdate')
+        priceModified.value[index] = false
+    }
+    function deletedPrices(id){
+        emit('deletedPrices', id)
+    }
 
-const props = defineProps({
-  item: { required: true, type: Object },
-  fieldsComponenentSuppliers: { required: true, type: Array },
-  fieldsComponenentSuppliersPrices: { required: true, type: Array },
-  items: { required: true, type: Array },
-});
-const nbTr = computed(()=>{
-    const nbItems = props.item.prices.length
-    if (nbItems>0) return nbItems
-    return 1 
-})
-
-   function range (n){
-    return Array.from({length:n},(value,key)=>key+1)
-   }
+    const nbTr = computed(() => {
+        const nbItems = props.item.prices.length
+        if (nbItems > 0) return nbItems
+        return 1
+    })
+    function range(n){
+        return Array.from({length: n}, (value, key) => key + 1)
+    }
 </script>
 
 <template>
-    <tr v-for="(i, index) in range(nbTr)" :key="index">
-        <td :rowspan="range(nbTr).length+1" v-if="(index=== 0)">
-            <button  class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.id" @click="update">
-                <Fa icon="pencil"/>
-            </button>
-            <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted">
-                <Fa icon="trash"/>
-            </button>
-        </td>
-        <template v-for="field in fieldsComponenentSuppliers" :key="field.name">
-            <td :rowspan="range(nbTr).length+1" v-if="(index=== 0)&&(field.name !== 'prices')">
-                <template v-if="item[field.name] !== null">
-                    <div v-if="field.name !== 'prices'">
-                        <div v-if="field.type === 'select'">
-                            <template v-if="isObject(item[field.name])">
-                                <span v-if="field.options.label(item[field.name]['@id']) !== null">{{ field.options.label(item[field.name]['@id']) }}</span>
-                                <span v-else>{{ item[field.name] }}</span>
-                            </template>
-                            <template v-else>
-                                <span v-if="field.options.label(item[field.name]) !== null">{{ field.options.label(item[field.name]) }}</span>
-                                <span v-else>{{ item[field.name] }}</span>
-                            </template>
-                        </div>
-                        <div v-else-if="field.type === 'measure'">
-                            <div class="text-center">
-                                {{ item[field.name].value }} {{ item[field.name].code }}
-                            </div>
-                        </div>
-                        <div v-else-if="field.type === 'date'">
-                            {{ item[field.name].substring(0, 10) }}
-                        </div>
-                        <div v-else-if="field.type === 'boolean'">
-                            <AppSwitch :id="`${field.name}_${id}`" :disabled="true" :field="field" form="" :model-value="item[field.name]"/>
-                        </div>
-                        <div v-else-if="field.type === 'multiselect-fetch'">
-                            {{ multiSelectResults[field.name] }}
-                        </div>
-                        <div v-else-if="field.type === 'link'">
-                            <a v-if="item[field.name] !== null && item[field.name] !== ''" :href="item[field.name]" target="_blank">Download file</a>
-                        </div>
-                        <div v-else>
-                            <span v-if="isObject(item[field.name])" class="bg-danger text-white">Object given for field '{{ field.name }}' - {{ item[field.name] }}</span>
-                            <span v-else>{{ item[field.name] }}</span>
-                            
-                        </div>
-                    </div>  
+    <template v-if="priceModified.length !== 0">
+        <tr v-for="(i, index) in range(nbTr)" :key="index">
+            <template v-if="updated === false">
+                <td v-if="(index === 0)" :rowspan="range(nbTr).length + 1">
+                    <button class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.id" @click="update">
+                        <Fa icon="pencil"/>
+                    </button>
+                    <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted(item.id)">
+                        <Fa icon="trash"/>
+                    </button>
+                </td>
+                <template v-for="field in fieldsComponenentSuppliers" :key="field.name">
+                    <AppPricesTableItemsComponentSuppliers :field="field" :item="item" :rowspan="range(nbTr).length + 1" :index="index"/>
+                    <td v-if="field.name === 'prices' && priceModified[index] === false">
+                        <button class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.prices[index].id" @click="updatePrices(index)">
+                            <Fa icon="pencil"/>
+                        </button>
+                        <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deletedPrices(item.prices[index].id)">
+                            <Fa icon="trash"/>
+                        </button>
+                    </td>
+                    <td v-else-if="field.name === 'prices' && priceModified[index] === true">
+                        <button class="btn btn-icon btn-primary btn-sm mx-2">
+                            <Fa icon="check" @click="updateItemsPrices(index, item.prices[index])"/>
+                        </button>
+                        <button class="btn btn-danger btn-icon btn-sm" @click="annuleUpdatedprices(index)">
+                            <Fa icon="times"/>
+                        </button>
+                    </td>
                 </template>
-            </td>
-            <td v-if="field.name === 'prices'" >
-                <button  class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.id" @click="update">
-                    <Fa icon="pencil"/>
-                </button>
-                <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted">
-                    <Fa icon="trash"/>
-                </button>
-            </td>
-        </template>
-        <td v-for="field in fieldsComponenentSuppliersPrices" :key="field.name">
-            <template v-if="item.prices[index][field.name] !== null">
-                <div v-if="field.type === 'select'">
-                    <template v-if="isObject(item.prices[index][field.name])">
-                        <span v-if="field.options.label(item.prices[index][field.name]['@id']) !== null">{{ field.options.label(item.prices[index][field.name]['@id']) }}</span>
-                        <span v-else>{{ item.prices[index][field.name] }}</span>
-                    </template>
-                    <template v-else>
-                        <span v-if="field.options.label(item.prices[index][field.name]) !== null">{{ field.options.label(item.prices[index][field.name]) }}</span>
-                        <span v-else>{{ item.prices[index][field.name] }}</span>
-                    </template>
-                </div>
-                <div v-else-if="field.type === 'measure'">
-                    <div class="text-center">
-                        {{ item.prices[index][field.name].value }} {{ item.prices[index][field.name].code }}
-                    </div>
-                </div>
-                <div v-else-if="field.type === 'date'">
-                    {{ item.prices[index][field.name].substring(0, 10) }}
-                </div>
-                <div v-else-if="field.type === 'boolean'">
-                    <AppSwitch :id="`${field.name}_${id}`" :disabled="true" :field="field" form="" :model-value="item.prices[index][field.name]"/>
-                </div>
-                <div v-else-if="field.type === 'multiselect-fetch'">
-                    {{ multiSelectResults[field.name] }}
-                </div>
-                <div v-else-if="field.type === 'link'">
-                    <a v-if="item.prices[index][field.name] !== null && item.prices[index][field.name] !== ''" :href="item.prices[index][field.name]" target="_blank">Download file</a>
-                </div>
-                <div v-else>
-                    <span v-if="isObject(item.prices[index][field.name])" class="bg-danger text-white">Object given for field '{{ field.name }}' - {{ item.prices[index][field.name] }}</span>
-                    <span v-else>{{ item.prices[index][field.name] }}</span>
-                </div>
             </template>
-        </td>
-    </tr>
-    <AppPricesTableAddItems :fields="fieldsComponenentSuppliersPrices" />
-
+            <template v-else>
+                <AppPricesTableUpdateItem v-if="(index === 0)" :fields="fieldsComponenentSuppliers" :form="form" :item="item" :rowspan="range(nbTr).length + 1" :index="index" @annule-update="annuleUpdated" @update-items="updateItems"/>
+                <td v-if="priceModified[index] === false">
+                    <button class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.prices[index].id" @click="updatePrices(index)">
+                        <Fa icon="pencil"/>
+                    </button>
+                    <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deletedPrices(item.prices[index].id)">
+                        <Fa icon="trash"/>
+                    </button>
+                </td>
+                <td v-else>
+                    <button class="btn btn-icon btn-primary btn-sm mx-2">
+                        <Fa icon="check" @click="updateItemsPrices(index, item.prices[index])"/>
+                    </button>
+                    <button class="btn btn-danger btn-icon btn-sm" @click="annuleUpdatedprices(index)">
+                        <Fa icon="times"/>
+                    </button>
+                </td>
+            </template>
+            <template v-for="field in fieldsComponenentSuppliersPrices" :key="field.name">
+                <template v-if="priceModified[index] === false">
+                    <td>
+                        <AppPricesTableItemsPrices :field="field" :item="item" :index="index"/>
+                    </td>
+                </template>
+                <template v-else>
+                    <AppPricesTableUpdateItemPrices :field="field" :form="form" :item="item" :index="index"/>
+                </template>
+            </template>
+        </tr>
+        <AppPricesTableAddItems :fields="fieldsComponenentSuppliersPrices" :form="form" @add-item="addItemPrice"/>
+    </template>
+    <template v-if="priceModified.length === 0 ">
+        <tr v-for="(i, index) in range(nbTr)" :key="index">
+            <template v-if="updated === false">
+                <td v-if="(index === 0)" :rowspan="range(nbTr).length + 1">
+                    <button class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.id" @click="update">
+                        <Fa icon="pencil"/>
+                    </button>
+                    <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted(item.id)">
+                        <Fa icon="trash"/>
+                    </button>
+                </td>
+                <template v-for="field in fieldsComponenentSuppliers" :key="field.name">
+                    <AppPricesTableItemsComponentSuppliers :field="field" :item="item" :rowspan="range(nbTr).length + 1" :index="index"/>
+                </template>
+            </template>
+            <template v-else>
+                <AppPricesTableUpdateItem v-if="(index === 0)" :fields="fieldsComponenentSuppliers" :form="form" :item="item" :rowspan="range(nbTr).length + 1" :index="index" @annule-update="annuleUpdated" @update-items="updateItems"/>
+            </template>
+        </tr>
+        <AppPricesTableAddItems :fields="fieldsComponenentSuppliersPrices" :form="form" @add-item="addItemPrice"/>
+    </template>
 </template>

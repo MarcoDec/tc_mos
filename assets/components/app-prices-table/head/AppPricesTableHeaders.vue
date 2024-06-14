@@ -1,12 +1,10 @@
 <script setup>
     import {computed} from 'vue'
-    import AppPricesTableFields from "./AppPricesTableFields.vue";
-
+    import AppPricesTableFields from './AppPricesTableFields.vue'
 
     const props = defineProps({
-        fieldsComponenentSuppliers: { required: true, type: Array },
-        fieldsComponenentSuppliersPrices: { required: true, type: Array }
-    });
+        fieldsComponenentSuppliers: {required: true, type: Array}
+    })
 
     const rows = computed(() => {
         const ranks = []

@@ -1,256 +1,360 @@
 <script setup>
-import AppRowsTablePage from "./AppRowsTablePage.vue";
-import AppSuspense from '../../../components/AppSuspense.vue'
-import useOptions from '../../../stores/option/options'
+    import AppRowsTablePage from './AppRowsTablePage.vue'
+    import {computed} from 'vue'
+    import AppSuspense from '../../../components/AppSuspense.vue'
+    import useOptions from '../../../stores/option/options'
+    import {useCurrenciesStore} from '../../../stores/currencies/currencies'
+    import {useComponentSuppliersStore} from '../../../stores/prices/componentSuppliers'
+    import {useComponentSuppliersPricesStore} from '../../../stores/prices/componentSuppliersPrices'
 
+    const fetchUnitOptions = useOptions('units')
+    await fetchUnitOptions.fetchOp()
+    const optionsUnit = fetchUnitOptions.options.map(op => {
+        const text = op.text
+        const value = op.value
+        return {text, value}
+    })
+    const fetchIncotermsOptions = useOptions('incoterms')
+    await fetchIncotermsOptions.fetchOp()
+    const incotermsOptions = fetchIncotermsOptions.options.map(op => {
+        const text = op.text
+        const value = op['@id']
+        return {text, value}
+    })
 
-const fetchUnitOptions = useOptions('units')
-await fetchUnitOptions.fetchOp()
-const optionsUnit = fetchUnitOptions.options.map(op => {
-    const text = op.text
-    const value = op.value
-    return {text, value}
-})
+    const storecurrencies = useCurrenciesStore()
+    await storecurrencies.fetch()
+    const currenciesOption = computed(() => storecurrencies.currenciesOption)
 
-const fieldsComponenentSuppliers = [
-  {
-      create: true,
-      filter: true,
-      label: 'Proportion',
-      name: 'proportion',
-      prefix: 'componentSuppliers',
-      sort: false,
-      type: 'text',
-      update: true
-  },
-  {
-      create: true,
-      label: 'Délai',
-      name: 'delai',
-      prefix: 'componentSuppliers',
-      measure: {
-          code: {
-              label: 'Code',
-              name: 'delai.code',
-              options: {
-                  label: value =>
-                  optionsUnit.find(option => option.type === value)?.text ?? null,
-                  options: optionsUnit
-              },
-              type: 'select'
-          },
-          value: {
-              label: 'Valeur',
-              name: 'delai.value',
-              type: 'number',
-              step: 0.1
-          }
-      },
-      type: 'measure',
-      update: true
-  },
-  {
-      create: false,
-      label: 'Moq',
-      name: 'moq',
-      prefix: 'componentSuppliers',
-      measure: {
-          code: {
-              label: 'Code',
-              name: 'moq.code',
-              options: {
-                  label: value =>
-                  optionsUnit.find(option => option.type === value)?.text ?? null,
-                  options: optionsUnit
-              },
-              type: 'select'
-          },
-          value: {
-              label: 'Valeur',
-              name: 'moq.value',
-              type: 'number',
-              step: 0.1
-          }
-      },
-      type: 'measure',
-      update: true
-  },
-  {
-      filter: true,
-      label: 'Poids cu',
-      name: 'poidsCu',
-      prefix: 'componentSuppliers',
-      measure: {
-          code: {
-              label: 'Code',
-              name: 'poidsCu.code',
-              options: {
-                  label: value =>
-                  optionsUnit.find(option => option.type === value)?.text ?? null,
-                  options: optionsUnit
-              },
-              type: 'select'
-          },
-          value: {
-              label: 'Valeur',
-              name: 'poidsCu.value',
-              type: 'number',
-              step: 0.1
-          }
-      },
-      type: 'measure',
-      update: true
-  },
-  {
-      create: false,
-      filter: true,
-      label: 'Référence',
-      name: 'reference',
-      prefix: 'componentSuppliers',
-      sort: false,
-      type: 'text',
-      update: true
-  },
-  {
-      create: true,
-      filter: true,
-      label: 'Indice',
-      name: 'indice',
-      prefix: 'componentSuppliers',
-      sort: false,
-      type: 'number',
-      update: true
-  },
-  {
-      create: true,
-      label: 'incoterms',
-      name: 'incoterms',
-      prefix: 'componentSuppliers',
-      type: 'text',
-      update: true
-  },
-  {
-      filter: true,
-      label: 'packaging',
-      name: 'packaging',
-      prefix: 'componentSuppliers',
-      measure: {
-          code: {
-              label: 'Code',
-              name: 'packaging.code',
-              options: {
-                  label: value =>
-                  optionsUnit.find(option => option.type === value)?.text ?? null,
-                  options: optionsUnit
-              },
-              type: 'select'
-          },
-          value: {
-              label: 'Valeur',
-              name: 'packaging.value',
-              type: 'number',
-              step: 0.1
-          }
-      },
-      type: 'measure',
-      update: true
-  },
-  {
-      create: true,
-      label: 'packagingKind',
-      name: 'packagingKind',
-      prefix: 'componentSuppliers',
-      type: 'number',
-      update: true
-  },
-  {
-      children: [
-          {create: true, filter: true, label: '€', name: 'price', prefix: 'componentSupplierPrices', sort: false, type: 'number', update: true},
-          {create: true, filter: true, label: 'Q', name: 'quantite', prefix: 'componentSupplierPrices', sort: false, type: 'number', update: true},
-          {create: true, filter: true, label: 'ref', name: 'ref', prefix: 'componentSupplierPrices', sort: false, type: 'number', update: true}
-      ],
-      create: false,
-      filter: true,
-      label: 'Prix',
-      name: 'prices',
-      prefix: 'componentSuppliers',
-      sort: false,
-      type: 'text',
-      update: true
-  }
-]
-
-const fieldsComponenentSuppliersPrices = [
-  {
-    create: true,
-    filter: true,
-    label: '€',
-    name: 'price',
-    prefix: 'componentSupplierPrices',
-    measure: {
-          code: {
-              label: 'Code',
-              name: 'price.code',
-              options: {
-                  label: value =>
-                  optionsUnit.find(option => option.type === value)?.text ?? null,
-                  options: optionsUnit
-              },
-              type: 'select'
-          },
-          value: {
-              label: 'Valeur',
-              name: 'price.value',
-              type: 'number',
-              step: 0.1
-          }
-      },
-    type: 'measure',
-    update: true
-  },
-  {
-    create: true,
-    filter: true,
-    label: 'Q',
-    name: 'quantity',
-    prefix: 'componentSupplierPrices',
-    measure: {
-        code: {
-            label: 'Code',
-            name: 'quantity.code',
+    const fieldsComponenentSuppliers = [
+        {
+            create: true,
+            filter: true,
+            label: 'Proportion',
+            name: 'proportion',
+            prefix: 'componentSuppliers',
+            sort: false,
+            type: 'number',
+            update: true
+        },
+        {
+            create: true,
+            label: 'Délai',
+            name: 'delai',
+            prefix: 'componentSuppliers',
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'delai.code',
+                    options: {
+                        label: value =>
+                            optionsUnit.find(option => option.value === value)?.text ?? null,
+                        options: optionsUnit
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'delai.value',
+                    type: 'number',
+                    step: 0.1
+                }
+            },
+            type: 'measure',
+            update: true
+        },
+        {
+            create: false,
+            label: 'Moq',
+            name: 'moq',
+            prefix: 'componentSuppliers',
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'moq.code',
+                    options: {
+                        label: value =>
+                            optionsUnit.find(option => option.value === value)?.text ?? null,
+                        options: optionsUnit
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'moq.value',
+                    type: 'number',
+                    step: 0.1
+                }
+            },
+            type: 'measure',
+            update: true
+        },
+        {
+            filter: true,
+            label: 'Poids cu',
+            name: 'poidsCu',
+            prefix: 'componentSuppliers',
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'poidsCu.code',
+                    options: {
+                        label: value =>
+                            optionsUnit.find(option => option.value === value)?.text ?? null,
+                        options: optionsUnit
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'poidsCu.value',
+                    type: 'number',
+                    step: 0.1
+                }
+            },
+            type: 'measure',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Référence',
+            name: 'reference',
+            prefix: 'componentSuppliers',
+            sort: false,
+            type: 'text',
+            update: true
+        },
+        {
+            create: true,
+            filter: true,
+            label: 'Indice',
+            name: 'indice',
+            prefix: 'componentSuppliers',
+            sort: false,
+            type: 'text',
+            update: true
+        },
+        {
+            create: true,
+            label: 'incoterms',
+            name: 'incoterms',
+            prefix: 'componentSuppliers',
             options: {
                 label: value =>
-                optionsUnit.find(option => option.type === value)?.text ?? null,
-                options: optionsUnit
+                    incotermsOptions.find(option => option.value === value)?.text ?? null,
+                options: incotermsOptions
             },
-            type: 'select'
+            type: 'select',
+            update: true
         },
-        value: {
-            label: 'Valeur',
-            name: 'quantity.value',
-            type: 'number',
-            step: 0.1
+        {
+            filter: true,
+            label: 'packaging',
+            name: 'packaging',
+            prefix: 'componentSuppliers',
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'packaging.code',
+                    options: {
+                        label: value =>
+                            optionsUnit.find(option => option.value === value)?.text ?? null,
+                        options: optionsUnit
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'packaging.value',
+                    type: 'number',
+                    step: 0.1
+                }
+            },
+            type: 'measure',
+            update: true
+        },
+        {
+            create: true,
+            label: 'packagingKind',
+            name: 'packagingKind',
+            prefix: 'componentSuppliers',
+            type: 'text',
+            update: true
+        },
+        {
+            children: [
+                {create: true, filter: true, label: '€', name: 'price', prefix: 'componentSupplierPrices', sort: false, type: 'number', update: true},
+                {create: true, filter: true, label: 'Q', name: 'quantite', prefix: 'componentSupplierPrices', sort: false, type: 'number', update: true},
+                {create: true, filter: true, label: 'ref', name: 'ref', prefix: 'componentSupplierPrices', sort: false, type: 'text', update: true}
+            ],
+            create: false,
+            filter: true,
+            label: 'Prix',
+            name: 'prices',
+            prefix: 'componentSuppliers',
+            sort: false,
+            type: 'text',
+            update: true
         }
-    },
-    type: 'measure',
-    update: true
-  },
-  {
-    create: true,
-    filter: true, 
-    label: 'ref', 
-    name: 'ref', 
-    prefix: 'componentSupplierPrices', 
-    sort: false, 
-    type: 'number', 
-    update: true
-  }
-]
+    ]
 
+    const fieldsComponenentSuppliersPrices = [
+        {
+            create: true,
+            filter: true,
+            label: '€',
+            name: 'price',
+            prefix: 'componentSupplierPrices',
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'price.code',
+                    options: {
+                        label: value =>
+                            currenciesOption.value.find(option => option.value === value)?.text ?? null,
+                        options: currenciesOption.value
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'price.value',
+                    type: 'number',
+                    step: 0.1
+                }
+            },
+            type: 'measure',
+            update: true
+        },
+        {
+            create: true,
+            filter: true,
+            label: 'Q',
+            name: 'quantity',
+            prefix: 'componentSupplierPrices',
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'quantity.code',
+                    options: {
+                        label: value =>
+                            optionsUnit.find(option => option.value === value)?.text ?? null,
+                        options: optionsUnit
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'quantity.value',
+                    type: 'number',
+                    step: 0.1
+                }
+            },
+            type: 'measure',
+            update: true
+        },
+        {
+            create: true,
+            filter: true,
+            label: 'ref',
+            name: 'ref',
+            prefix: 'componentSupplierPrices',
+            sort: false,
+            type: 'text',
+            update: true
+        }
+    ]
+
+    const storeComponentSuppliers = useComponentSuppliersStore()
+    await storeComponentSuppliers.fetchByComponent(667)
+    await storeComponentSuppliers.fetchPricesForItems()
+    const componentSuppliersItems = computed(() => storeComponentSuppliers.componentSuppliersItems)
+    const storeComponentSuppliersPrices = useComponentSuppliersPricesStore()
+
+    function transformItems(ItemscomponentSuppliers, optionsUnits, currenciesOptions) {
+        return ItemscomponentSuppliers.map(item => {
+            const foundUnitDelai = optionsUnits.find(unit => unit.text === item.delai.code)
+            const foundUnitMoq = optionsUnits.find(unit => unit.text === item.moq.code)
+            const foundUnitPackaging = optionsUnits.find(unit => unit.text === item.packaging.code)
+            const foundUnitPoidsCu = optionsUnits.find(unit => unit.text === item.poidsCu.code)
+
+            const transformedPrices = item.prices.map(price => {
+                const foundUnitQuantity = optionsUnits.find(unit => unit.text === price.quantity.code)
+                const foundCurrencietPrice = currenciesOptions.value.find(currencie => currencie.text === price.price.code)
+                return {
+                    ...price,
+                    quantity: {
+                        ...price.quantity,
+                        code: foundUnitQuantity ? foundUnitQuantity.value : price.quantity.code
+                    },
+                    price: {
+                        ...price.price,
+                        code: foundCurrencietPrice ? foundCurrencietPrice.value : price.price.code
+                    }
+                }
+            })
+
+            return {
+                ...item,
+                delai: {value: item.delai.value, code: foundUnitDelai ? foundUnitDelai.value : item.delai.code},
+                moq: {value: item.moq.value, code: foundUnitMoq ? foundUnitMoq.value : item.moq.code},
+                packaging: {value: item.packaging.value, code: foundUnitPackaging ? foundUnitPackaging.value : item.packaging.code},
+                poidsCu: {value: item.poidsCu.value, code: foundUnitPoidsCu ? foundUnitPoidsCu.value : item.poidsCu.code},
+                prices: transformedPrices
+            }
+        })
+    }
+    const localItems = computed(() => transformItems(componentSuppliersItems.value, optionsUnit, currenciesOption))
+
+    async function refreshTable() {
+        await storeComponentSuppliers.fetchByComponent(667)
+        await storeComponentSuppliers.fetchPricesForItems()
+        const componentSuppliersItem = computed(() => storeComponentSuppliers.componentSuppliersItems)
+        localItems.value = computed(() => transformItems(componentSuppliersItem.value, optionsUnit, currenciesOption))
+    }
+    async function addItem(formData) {
+        const component = '/api/components/667'
+        await storeComponentSuppliers.addComponentSuppliers({formData, component})
+        await refreshTable()
+    }
+    async function annuleUpdated() {
+        await refreshTable()
+    }
+    async function updateItems(item) {
+        await storeComponentSuppliers.updateComponentSuppliers(item)
+        await refreshTable()
+    }
+    async function addItemPrice(formData) {
+        await storeComponentSuppliersPrices.addPrices(formData)
+        await refreshTable()
+    }
+    async function updateItemsPrices(item) {
+        await storeComponentSuppliersPrices.updatePrices(item)
+        await refreshTable()
+    }
+    async function deleted(id){
+        await storeComponentSuppliers.remove(id)
+        await refreshTable()
+    }
+    async function deletedPrices(id){
+        await storeComponentSuppliersPrices.removePrice(id)
+        await refreshTable()
+    }
 </script>
 
 <template>
-  <AppSuspense>
-   <AppRowsTablePage :fieldsComponenentSuppliers="fieldsComponenentSuppliers" :fieldsComponenentSuppliersPrices="fieldsComponenentSuppliersPrices"/>
-  </AppSuspense>
+    <AppSuspense>
+        <AppRowsTablePage
+            :fields-componenent-suppliers="fieldsComponenentSuppliers"
+            :fields-componenent-suppliers-prices="fieldsComponenentSuppliersPrices"
+            :items="localItems"
+            @add-item="addItem"
+            @add-item-price="addItemPrice"
+            @deleted="deleted"
+            @deleted-prices="deletedPrices"
+            @annule-update="annuleUpdated"
+            @update-items="updateItems"
+            @update-items-prices="updateItemsPrices"/>
+    </AppSuspense>
 </template>

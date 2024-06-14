@@ -1,9 +1,9 @@
 <script setup>
-    import {computed, defineProps, ref} from 'vue'
-    import AppPricesTableField from "./AppPricesTableField.vue";
+    import {computed, defineProps} from 'vue'
+    import AppPricesTableField from './AppPricesTableField.vue'
 
     const props = defineProps({fields: {required: true, type: Array}})
-            
+
     function walkRowspan(walkedFields, span = 1) {
         let max = span
         for (const field of walkedFields)
@@ -16,7 +16,6 @@
     }
 
     const rowspan = computed(() => walkRowspan(props.fields))
-
 </script>
 
 <template>
