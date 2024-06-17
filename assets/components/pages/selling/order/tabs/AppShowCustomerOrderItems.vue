@@ -8,6 +8,7 @@
     import useOptions from '../../../../../stores/option/options'
     import AppForeCastUpdateForm from './itemsForms/AppForeCastUpdateForm.vue'
     import {Modal} from 'bootstrap'
+    import AppFixedUpdateForm from "./itemsForms/AppFixedUpdateForm.vue";
 
     const props = defineProps({
         order: {default: () => ({}), required: true, type: Object},
@@ -21,7 +22,8 @@
     //region initialisation des constantes et variables
     const fetchUser = useUser()
     const isLoaded = ref(false)
-    const isSellingWriterOrAdmin = fetchUser.isSellingWriter || fetchUser.isSellingAdmin
+    const isSellingAdmin = fetchUser.isSellingAdmin
+    const isSellingWriterOrAdmin = fetchUser.isSellingWriter || isSellingAdmin
     const roleUser = ref(isSellingWriterOrAdmin ? 'writer' : 'reader')
     const fetchUnitOptions = useOptions('units')
     const fetchCurrencyOptions = useOptions('currencies')
@@ -249,6 +251,7 @@
         storeCustomerOrderItems.setCurrentUnitOptions(optionsUnit.value)
         storeCustomerOrderItems.setCurrentCurrencyOptions(optionsCurrency.value)
         storeCustomerOrderItems.setCurrentItem(item)
+        formUpdateKeys.value++
         // console.log('updatedStore', storeCustomerOrderItems.currentUnitOptions, storeCustomerOrderItems.currentCurrencyOptions)
         // Si l'item n'est pas à l'état "draft" et que l'utilisateur n'est pas "administrateur" alors on ne peut pas modifier l'item
         if (item.state !== 'draft' && !isSellingAdmin && !item.isForecast) {
@@ -266,7 +269,7 @@
         }
         showFixedUpdateForm.value = true
         nextTick(() => {
-            const modalElement = document.getElementById('modalUpdateOrderItem')
+            const modalElement = document.getElementById('modalUpdateFixedItem')
             const bootstrapModal = Modal.getInstance(modalElement)
             bootstrapModal.show()
         })
@@ -323,6 +326,19 @@
         :options-unit="optionsUnit"
         @updated="updateTable"
         @closed="() => console.log('forecast update form closed')"
+        @submit="onFormSubmitted"/>
+    <AppFixedUpdateForm
+        v-if="isLoaded && showFixedUpdateForm"
+        :key="`updateFixedItem_${formUpdateKeys}`"
+        :can-modify="canModifyForm"
+        :model-value="storeCustomerOrderItems.currentItem"
+        :customer="customer"
+        modal-id="modalUpdateFixedItem"
+        :order="order"
+        :options-currency="optionsCurrency"
+        :options-unit="optionsUnit"
+        @updated="updateTable"
+        @closed="() => console.log('fixed update form closed')"
         @submit="onFormSubmitted"/>
     <AppCardableTable
         v-if="isLoaded"

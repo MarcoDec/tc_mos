@@ -114,8 +114,9 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
             }
             // On remplace confirmedQuantity.code par l'iri de l'unité correspondante
             if (item.confirmedQuantity.code !== null) {
-                if (item.confirmedQuantity.code.includes('api/units')) this.currentItem.confirmedQuantity.code = (this.currentUnitOptions.find(unit => unit.value === item.confirmedQuantity.code)).text
-                else this.currentItem.confirmedQuantity.code = (this.currentUnitOptions.find(unit => unit.text === item.confirmedQuantity.code)).text
+                if (!item.confirmedQuantity.code.includes('/api/units/')) {
+                    this.currentItem.confirmedQuantity.code = (this.currentUnitOptions.find(unit => unit.text === item.confirmedQuantity.code)).value
+                }
             }
             // On remplace requestedQuantity.code par l'iri de l'unité correspondante
             if (item.requestedQuantity.code !== null) {
@@ -125,7 +126,9 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
             }
             // On remplace price.code par l'iri de la devise correspondante
             if (item.price.code !== null) {
-                if (!item.price.code.includes('/api/currencies')) this.currentItem.price.code = (this.currentCurrencyOptions.find(currency => currency.text === item.price.code)).value
+                if (!item.price.code.includes('/api/currencies')) {
+                    this.currentItem.price.code = (this.currentCurrencyOptions.find(currency => currency.text === item.price.code)).value
+                }
             }
         },
         setCurrentUnitOptions(options) {
@@ -145,7 +148,10 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
                     value: item.confirmedQuantity.value
                 },
                 isForecast: item.isForecast,
-                price: item.price,
+                price: {
+                    code: item.price.code,
+                    value: item.price.value
+                },
                 requestedDate: item.requestedDate,
                 requestedQuantity: {
                     code: item.requestedQuantity.code,

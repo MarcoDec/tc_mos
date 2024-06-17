@@ -15,7 +15,7 @@ const props = defineProps({
 })
 const storeCustomerOrderItems = useCustomerOrderItemsStore()
 const localForecastData = ref(props.modelValue)
-const fieldsOpenOrderItem = computed(() => [
+const fieldsFixedOrderItem = computed(() => [
     {
         label: 'Produit',
         name: 'product',
@@ -70,6 +70,36 @@ const fieldsOpenOrderItem = computed(() => [
         type: 'date'
     },
     {
+        label: 'Quantité confirmé',
+        name: 'confirmedQuantity',
+        info: 'Si un produit est sélectionnée, cette quantité doit être supérieure à la quantité minimale de livraison définie sur la fiche produit.\n'
+            + 'Lorsque la quantité change le prix unitaire est récupéré automatiquement de la grille tarifaire associée au produit/composant et au client',
+        measure: {
+            code: {
+                label: 'Code',
+                name: 'confirmedQuantity.code',
+                options: {
+                    label: value =>
+                        props.optionsUnit.find(option => option.type === value)?.text ?? null,
+                    options: props.optionsUnit
+                },
+                type: 'select'
+            },
+            value: {
+                label: 'Valeur',
+                name: 'confirmedQuantity.value',
+                type: 'number',
+                step: 0.1
+            }
+        },
+        type: 'measure'
+    },
+    {
+        label: 'Date de livraison confirmée',
+        name: 'confirmedDate',
+        type: 'date'
+    },
+    {
         label: 'Prix Unitaire',
         name: 'price',
         type: 'measure',
@@ -103,17 +133,17 @@ const fieldsOpenOrderItem = computed(() => [
         btn-label="Enregistrer"
         :can-modify="props.canModify"
         :customer="customer"
-        :fields="fieldsOpenOrderItem"
+        :fields="fieldsFixedOrderItem"
         :form-data="localForecastData"
-        form-id="formAddNewForecastOrderItem"
+        form-id="formUpdateFixedOrderItem"
         :modal-id="modalId"
         mode="edit"
         :order="order"
         :options-unit="optionsUnit"
         :options-currency="optionsCurrency"
         :store="storeCustomerOrderItems"
-        title="Modifier Item en Prévisionnel"
-        variant="forecast"
+        title="Modifier Item en Ferme"
+        variant="fixed"
         @updated="value => emits('updated', value)"
         @closed="() => emits('closed')"
         @submit="() => emits('submit')"/>
