@@ -5,10 +5,13 @@ export const useOfCustomerOrderItemsStore = defineStore('ofCustomerOrderItems', 
     actions: {
         async fetch(criteria = '') {
             const response = await api(`/api/manufacturing-orders${criteria}`, 'GET')
-            this.ofCustomerOrderItems = await this.updatePagination(response)
+            this.ofCustomerOrderItems = this.updatePagination(response)
+            this.ofCustomerOrderItems.forEach(ofCustomerOrderItem => {
+                ofCustomerOrderItem.product = ofCustomerOrderItem.product['@id']
+            })
         },
-        async updatePagination(response) {
-            const responseData = await response['hydra:member']
+        updatePagination(response) {
+            const responseData = response['hydra:member']
             let paginationView = {}
             if (Object.prototype.hasOwnProperty.call(response, 'hydra:view')) {
                 paginationView = response['hydra:view']
@@ -33,7 +36,6 @@ export const useOfCustomerOrderItemsStore = defineStore('ofCustomerOrderItems', 
         }
     },
     getters: {
-
         itemsofCustomerOrder: state => state.ofCustomerOrderItems.map(item => {
             const newObject = {
                 '@id': item['@id'],
@@ -42,7 +44,10 @@ export const useOfCustomerOrderItemsStore = defineStore('ofCustomerOrderItems', 
                     code: item.quantityRequested.code,
                     value: item.quantityRequested.value
                 },
-                currentPlace: item.embState.state
+                currentPlace: item.embState.state,
+                product: item.product,
+                manufacturingDate: item.manufacturingDate,
+                deliveryDate: item.deliveryDate,
             }
             return newObject
         })

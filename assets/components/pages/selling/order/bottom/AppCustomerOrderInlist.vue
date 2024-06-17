@@ -44,9 +44,10 @@
             const value = op.value
             return {text, value}
         }))
-    const storeCustomerorder = useCustomerOrderStore()
-    await storeCustomerorder.fetchById(id)
-    const customer = computed(() => storeCustomerorder.customer)
+    const storeCustomerOrder = useCustomerOrderStore()
+    await storeCustomerOrder.fetchById(id)
+    console.log('storeCustomerorder', storeCustomerOrder.customerOrder)
+    const customer = computed(() => storeCustomerOrder.customer)
 
     const storeCustomerAddress = useCustomerAddressStore()
     await storeCustomerAddress.fetchDeliveryAddress()
@@ -87,6 +88,7 @@
     <AppTabs id="gui-form-create" class="display-block-important">
         <AppTab id="gui-start-files" active icon="industry" title="OF" tabs="gui-form-create">
             <AppCustomerOrderManufacturingOrders
+                :order="storeCustomerOrder.customerOrder"
                 :companies-options="companiesOptions"
                 :current-company="currentCompany"
                 :options-unit="optionsUnit"
@@ -98,16 +100,17 @@
         </AppTab>
         <AppTab id="gui-start-purchase-logistics" icon="truck" title="BL" tabs="gui-form-create">
             <AppCustomerOrderExpedition
-                :order="storeCustomerorder.customerOrder"
+                :order="storeCustomerOrder.customerOrder"
                 :current-company="currentCompany"
                 :customer="customer"
                 :customer-address-store="storeCustomerAddress"
-                :store-customer-order="storeCustomerorder"
+                :store-customer-order="storeCustomerOrder"
                 :role-user="roleuser"
             />
         </AppTab>
         <AppTab id="gui-start-accounting" icon="file-invoice-dollar" title="Factures" tabs="gui-form-create">
             <AppCustomerOrderBill
+                :order="storeCustomerOrder.customerOrder"
                 :current-company="currentCompany"
                 :currencies-options="currenciesOptions"
                 :store-customer-address="storeCustomerAddress"

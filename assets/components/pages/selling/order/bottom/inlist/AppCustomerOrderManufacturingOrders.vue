@@ -10,9 +10,10 @@
         currentCompany: Object,
         companiesOptions: Array,
         optionsUnit: Array,
-        roleUser: String
+        roleUser: String,
+        order: Object
     })
-
+    console.log('props', props)
     const route = useRoute()
     const id = Number(route.params.id)
     const currentCompany = ref(props.currentCompany)
@@ -21,16 +22,14 @@
     const companiesOptions = computed(() => props.companiesOptions)
     const optionsUnit = computed(() => props.optionsUnit)
 
-    const storeCustomerOrderItems = useCustomerOrderItemsStore()
-    const customerOrderCriteria = useFetchCriteria('customer-orders-criteria')
-    customerOrderCriteria.addFilter('product', `/api/products/${id}`)
-    await storeCustomerOrderItems.fetchAll(customerOrderCriteria.getFetchCriteria)
-
-    customerOrderCriteria.addFilter('company', currentCompany)
-    const storeOfCustomerOrderItems = useOfCustomerOrderItemsStore()
-    const ofCustomerOrderCriteria = useFetchCriteria('of-customer-orders-criteria')
-    customerOrderCriteria.addFilter('order', `/api/selling-orders/${id}`)
-    await storeOfCustomerOrderItems.fetch(ofCustomerOrderCriteria.getFetchCriteria)
+    function filterInitialize() {
+        ofCustomerOrderCriteria.resetAllFilter()
+        ofCustomerOrderCriteria.addFilter('order', props.order['@id'])
+    }
+    const ofCustomerOrderCriteria = useFetchCriteria('manufacturing-orders-criteria')
+    filterInitialize()
+    const manufacturingOrderStore = useOfCustomerOrderItemsStore()
+    await manufacturingOrderStore.fetch(ofCustomerOrderCriteria.getFetchCriteria)
 
     const currentPlaceOptions = [
         {text: 'rejected', value: 'rejected'},
@@ -48,6 +47,16 @@
             },
             trie: false,
             type: 'select'
+        },
+        {
+            label: 'Produit',
+            name: 'product',
+            filter: true,
+            min: true,
+            type: 'multiselect-fetch',
+            api: '/api/products',
+            filteredProperty: 'code',
+            max: 1
         },
         {
             label: 'Quantité demandée',
@@ -85,38 +94,50 @@
             },
             trie: true,
             type: 'select'
+        },
+        {
+            label: 'Date de fabrication',
+            name: 'manufacturingDate',
+            type: 'date',
+            trie: true,
+        },
+        {
+            label: 'Date de livraison',
+            name: 'deliveryDate',
+            type: 'date',
+            trie: true,
         }
     ]
 
-    ofCustomerOrderCriteria.addFilter('company', currentCompany)
-    const ofCustomerOrderItems = computed(() => storeOfCustomerOrderItems.itemsofCustomerOrder)
+    const ofCustomerOrderItems = computed(() => manufacturingOrderStore.itemsofCustomerOrder)
+
     async function refreshTableOfCustomerOrders() {
-        await storeOfCustomerOrderItems.fetch(ofCustomerOrderCriteria.getFetchCriteria)
+        filterInitialize()
+        await manufacturingOrderStore.fetch(ofCustomerOrderCriteria.getFetchCriteria)
     }
     await refreshTableOfCustomerOrders()
     async function deletedOFCustomerOrders(idRemove) {
-        await storeOfCustomerOrderItems.remove(idRemove)
+        await manufacturingOrderStore.remove(idRemove)
         await refreshTableOfCustomerOrders()
     }
     async function getPageOfCustomerOrders(nPage) {
         ofCustomerOrderCriteria.gotoPage(parseFloat(nPage))
-        await storeOfCustomerOrderItems.fetch(ofCustomerOrderCriteria.getFetchCriteria)
+        await manufacturingOrderStore.fetch(ofCustomerOrderCriteria.getFetchCriteria)
     }
     async function trierAlphabetOfCustomerOrders(payload) {
         if (payload.name === 'quantityRequested') {
             ofCustomerOrderCriteria.addSort('quantityRequested.value', payload.direction)
-            await storeOfCustomerOrderItems.fetch(ofCustomerOrderCriteria.getFetchCriteria)
+            await manufacturingOrderStore.fetch(ofCustomerOrderCriteria.getFetchCriteria)
         } else if (payload.name === 'currentPlace') {
             ofCustomerOrderCriteria.addSort('embState.state', payload.direction)
-            await storeOfCustomerOrderItems.fetch(ofCustomerOrderCriteria.getFetchCriteria)
+            await manufacturingOrderStore.fetch(ofCustomerOrderCriteria.getFetchCriteria)
         } else {
             ofCustomerOrderCriteria.addSort(payload.name, payload.direction)
-            await storeOfCustomerOrderItems.fetch(ofCustomerOrderCriteria.getFetchCriteria)
+            await manufacturingOrderStore.fetch(ofCustomerOrderCriteria.getFetchCriteria)
         }
     }
     async function searchOfCustomerOrders(inputValues) {
-        ofCustomerOrderCriteria.resetAllFilter()
-        ofCustomerOrderCriteria.addFilter('company', currentCompany)
+        filterInitialize()
         if (inputValues.manufacturingCompany) ofCustomerOrderCriteria.addFilter('manufacturingCompany', inputValues.manufacturingCompany)
         if (inputValues.quantityRequested) ofCustomerOrderCriteria.addFilter('quantityRequested.value', inputValues.quantityRequested.value)
         if (inputValues.quantityRequested) {
@@ -124,26 +145,25 @@
             ofCustomerOrderCriteria.addFilter('quantityRequested.code', requestedUnit.code)
         }
         if (inputValues.currentPlace) ofCustomerOrderCriteria.addFilter('embState.state[]', inputValues.currentPlace)
-        await storeOfCustomerOrderItems.fetch(ofCustomerOrderCriteria.getFetchCriteria)
+        await manufacturingOrderStore.fetch(ofCustomerOrderCriteria.getFetchCriteria)
     }
     async function cancelSearchOfCustomerOrders() {
-        ofCustomerOrderCriteria.resetAllFilter()
-        ofCustomerOrderCriteria.addFilter('company', currentCompany)
-        await storeOfCustomerOrderItems.fetch(ofCustomerOrderCriteria.getFetchCriteria)
+        filterInitialize()
+        await manufacturingOrderStore.fetch(ofCustomerOrderCriteria.getFetchCriteria)
     }
 </script>
 
 <template>
     <AppSuspense>
         <AppCardableTable
-            :current-page="storeOfCustomerOrderItems.currentPage"
+            :current-page="manufacturingOrderStore.currentPage"
             :fields="ofFields"
-            :first-page="storeOfCustomerOrderItems.firstPage"
+            :first-page="manufacturingOrderStore.firstPage"
             :items="ofCustomerOrderItems"
-            :last-page="storeOfCustomerOrderItems.lastPage"
-            :next-page="storeOfCustomerOrderItems.nextPage"
-            :pag="storeOfCustomerOrderItems.pagination"
-            :previous-page="storeOfCustomerOrderItems.previousPage"
+            :last-page="manufacturingOrderStore.lastPage"
+            :next-page="manufacturingOrderStore.nextPage"
+            :pag="manufacturingOrderStore.pagination"
+            :previous-page="manufacturingOrderStore.previousPage"
             :user="roleUser.toString()"
             form="ofCustomerOrderTable"
             @deleted="deletedOFCustomerOrders"
