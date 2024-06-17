@@ -13,7 +13,11 @@
         order: {default: () => ({}), required: true, type: Object},
         customer: {default: () => ({}), required: true, type: Object}
     })
-    const showUpdateForm = ref(false)
+    //Si l'utilisateur courant a les droits admin ou writer, il peut ajouter/modifier et supprimer des items de commande
+
+
+    const showForeCastUpdateForm = ref(false)
+    const showFixedUpdateForm = ref(false)
     //region initialisation des constantes et variables
     const fetchUser = useUser()
     const isLoaded = ref(false)
@@ -162,6 +166,9 @@
         await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     }
     async function deletedCustomerOrderItem(idRemove) {
+        //On demande une confirmation avant de supprimer
+        const confirmation = window.confirm('Voulez-vous vraiment supprimer cet item de commande ?')
+        if (!confirmation) return
         await storeCustomerOrderItems.remove(idRemove)
         await refreshTableCustomerOrders()
     }
@@ -228,7 +235,7 @@
     }
     async function updateTable() {
         await refreshTableCustomerOrders()
-        showUpdateForm.value = false
+        showForeCastUpdateForm.value = false
         tableKey.value++
     }
     //endregion
@@ -237,21 +244,32 @@
     await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
     isLoaded.value = true
     //endregion
+    const canModifyForm = ref(true)
     function updateItemToUpdate(item) {
+        storeCustomerOrderItems.setCurrentUnitOptions(optionsUnit.value)
+        storeCustomerOrderItems.setCurrentCurrencyOptions(optionsCurrency.value)
         storeCustomerOrderItems.setCurrentItem(item)
+        // console.log('updatedStore', storeCustomerOrderItems.currentUnitOptions, storeCustomerOrderItems.currentCurrencyOptions)
+        // Si l'item n'est pas à l'état "draft" et que l'utilisateur n'est pas "administrateur" alors on ne peut pas modifier l'item
+        if (item.state !== 'draft' && !isSellingAdmin && !item.isForecast) {
+            canModifyForm.value = false
+            return
+        }
         if (item.isForecast) {
-            showUpdateForm.value = true
+            showForeCastUpdateForm.value = true
             nextTick(() => {
                 const modalElement = document.getElementById('modalUpdateForecastItem')
                 const bootstrapModal = Modal.getInstance(modalElement)
                 bootstrapModal.show()
             })
-        } else {
-            // On récupère la modale de mise à jour
+            return
+        }
+        showFixedUpdateForm.value = true
+        nextTick(() => {
             const modalElement = document.getElementById('modalUpdateOrderItem')
             const bootstrapModal = Modal.getInstance(modalElement)
             bootstrapModal.show()
-        }
+        })
     }
     function openModalAddNewOrderItem() {
         // On récupère la modale d'ajout
@@ -294,8 +312,10 @@
         @closed="() => console.log('forecast add form closed')"
         @submit="onFormSubmitted"/>
     <AppForeCastUpdateForm
-        v-if="isLoaded && !fixedFamilies.includes(order.orderFamily) && showUpdateForm"
+        v-if="isLoaded && !fixedFamilies.includes(order.orderFamily) && showForeCastUpdateForm"
         :key="`updateForecastItem_${formUpdateKeys}`"
+        :can-modify="canModifyForm"
+        :model-value="storeCustomerOrderItems.currentItem"
         :customer="customer"
         modal-id="modalUpdateForecastItem"
         :order="order"
@@ -307,6 +327,8 @@
     <AppCardableTable
         v-if="isLoaded"
         :key="tableKey"
+        :should-delete="isSellingWriterOrAdmin"
+        :should-see="isSellingWriterOrAdmin"
         :current-page="storeCustomerOrderItems.currentPage"
         :fields="fieldsCommande"
         :first-page="storeCustomerOrderItems.firstPage"
@@ -328,11 +350,12 @@
             <span>Items de commande {{ order.ref }}</span>
             <button
                 class="btn btn-success btn-float-right m-1"
+                v-if="isSellingWriterOrAdmin"
                 @click="openModalAddNewOrderItem">
                 Ajouter Item en Ferme
             </button>
             <button
-                v-if="!fixedFamilies.includes(order.orderFamily)"
+                v-if="!fixedFamilies.includes(order.orderFamily) && isSellingWriterOrAdmin"
                 class="btn btn-success btn-float-right m-1"
                 @click="openModalAddNewForecastItem">
                 Ajouter Item en Prévisionnel {{ order.orderFamily }}

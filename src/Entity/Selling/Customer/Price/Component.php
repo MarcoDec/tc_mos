@@ -52,7 +52,14 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ],
-            'get' => NO_ITEM_GET_OPERATION
+            'get',
+            'patch' => [
+                'openapi_context' => [
+                    'description' => 'Modifie une association d\'un composant à un client',
+                    'summary' => 'Modifie une association d\'un composant à un client',
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
+            ]
         ],
         shortName: 'CustomerComponent',
         attributes: [

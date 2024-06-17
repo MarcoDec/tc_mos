@@ -71,6 +71,9 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
             await api(`/api/selling-order-items/${id}`, 'DELETE')
             this.customerOrdersItems = this.customerOrdersItems.filter(customerOrderItem => Number(customerOrderItem['@id'].match(/\d+/)[0]) !== id)
         },
+        async update(data, iri) {
+            await api(iri, 'PATCH', data)
+        },
         async add(data){
             if (data.item.includes('/api/products')) await this.addProducts(data)
             else if (data.item.includes('/api/components')) await this.addComponents(data)
@@ -82,15 +85,55 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
         async addComponents(data){
             await api('/api/selling-order-item-components', 'POST', data)
         },
-        async setCurrentItem(item) {
-            this.currentItem.value = item
+        setCurrentItem(item) {
+            // On clone l'item afin que les modifications ne soient pas répercutées sur l'item original
+            this.currentItem = {
+                confirmedDate: item.confirmedDate,
+                confirmedQuantity: {
+                    code: item.confirmedQuantity.code,
+                    value: item.confirmedQuantity.value
+                },
+                isForecast: item.isForecast,
+                price: item.price,
+                requestedDate: item.requestedDate,
+                requestedQuantity: {
+                    code: item.requestedQuantity.code,
+                    value: item.requestedQuantity.value
+                },
+                ref: item.ref,
+                state: item.state,
+                notes: item.notes,
+                id: item.id
+            }
+            this.currentItem['@id'] = item['@id']
+            if (item.component) {
+                this.currentItem.component = item.component['@id']
+            }
+            if (item.product) {
+                this.currentItem.product = item.product['@id']
+            }
             // On remplace confirmedQuantity.code par l'iri de l'unité correspondante
-            if (this.currentItem.value.confirmedQuantity.code !== null) this.currentItem.value.confirmedQuantity.code = (await Measure.getUnitByCode(this.currentItem.value.confirmedQuantity.code))['hydra:member'][0]['@id']
+            if (item.confirmedQuantity.code !== null) {
+                if (item.confirmedQuantity.code.includes('api/units')) this.currentItem.confirmedQuantity.code = (this.currentUnitOptions.find(unit => unit.value === item.confirmedQuantity.code)).text
+                else this.currentItem.confirmedQuantity.code = (this.currentUnitOptions.find(unit => unit.text === item.confirmedQuantity.code)).text
+            }
             // On remplace requestedQuantity.code par l'iri de l'unité correspondante
-            if (this.currentItem.value.requestedQuantity.code !== null) this.currentItem.value.requestedQuantity.code = (await Measure.getUnitByCode(this.currentItem.value.requestedQuantity.code))['hydra:member'][0]['@id']
+            if (item.requestedQuantity.code !== null) {
+                if (!item.requestedQuantity.code.includes('/api/units/')) {
+                    this.currentItem.requestedQuantity.code = (this.currentUnitOptions.find(unit => unit.text === item.requestedQuantity.code)).value
+                }
+            }
             // On remplace price.code par l'iri de la devise correspondante
-            if (this.currentItem.value.price.code !== null) this.currentItem.value.price.code = (await Measure.getCurrencyByCode(this.currentItem.value.price.code))['hydra:member'][0]['@id']
-        }
+            if (item.price.code !== null) {
+                if (!item.price.code.includes('/api/currencies')) this.currentItem.price.code = (this.currentCurrencyOptions.find(currency => currency.text === item.price.code)).value
+            }
+        },
+        setCurrentUnitOptions(options) {
+            this.currentUnitOptions = options
+        },
+        setCurrentCurrencyOptions(options) {
+            this.currentCurrencyOptions = options
+        },
     },
     getters: {
         itemsCustomerOrders: state => state.customerOrdersItems.map(item => {
@@ -137,6 +180,8 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
     state: () => ({
         asc: true,
         currentItem: ref({}),
+        currentUnitOptions: ref([]),
+        currentCurrencyOptions: ref([]),
         current: 1,
         first: 1,
         items: [],

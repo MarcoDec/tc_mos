@@ -15,7 +15,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial', 'active' => 'exact', 'symbol' => 'partial', 'base' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial', 'active' => 'exact', 'getSymbol' => 'exact', 'base' => 'partial']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'name', 'symbol', 'base']),
     ApiResource(
         description: 'Devises',

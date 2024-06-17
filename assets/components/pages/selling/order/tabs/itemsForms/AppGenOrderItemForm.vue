@@ -44,12 +44,13 @@
         }
         // on retire d'éventuelles violations précédentes liées à la propriété price
         violations.value = violations.value.filter(violation => violation.propertyPath !== 'price')
-        console.log('checkData return true')
+        // console.log('checkData return true')
         return true
     }
 
     const props = defineProps({
         btnLabel: {default: 'Ajouter', required: false, type: String},
+        canModify: {default: true, required: false, type: Boolean},
         customer: {default: () => ({}), required: true, type: Object},
         fields: {default: () => [], required: true, type: Array},
         formData: {default: () => ({}), required: true, type: Object},
@@ -64,7 +65,7 @@
         variant: {default: 'fixed', required: true, type: String} //ou forecast
     })
     const localData = ref(props.formData)
-
+    //console.log('localData', localData.value)
     const emits = defineEmits(['closed', 'update:modelValue', 'submit'])
     emits['update:modelValue'] = (value) => checkData(value)
     const itemStore = props.store
@@ -119,6 +120,7 @@
         }
         // Si la quantité demandée a été modifiée
         if (value.requestedQuantity && value.requestedQuantity !== initialLocalData.requestedQuantity) {
+            // console.log('value', value)
             await api(value.product, 'GET').then(async response => {
                 await Measure.getAndSetProductPrice(response, props.customer, props.order, localData.value.requestedQuantity, localData.value, formKey)
             })
@@ -194,29 +196,34 @@
         }
     }
     async function editItem() {
-        const testCheckData = await checkData(localData.value)
-        if (!testCheckData) {
+        violations.value = []
+        loaderShow.value = true
+        const dataToSend = {...localData.value}
+        const checkResult = await checkData(dataToSend)
+        if (!checkResult) {
+            loaderShow.value = false
             throw new Error('Données invalides localData.value')
         }
-        initLocalData()
-        loaderShow.value = true
-        //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
-        const requestedUnit = props.optionsUnit.find(unit => unit.value === localData.value.requestedQuantity.code)
-        //Si c'est un produit on positionne la clé item avec la valeur de la clé produit, sinon on positionne la clé item avec la valeur de la clé component
-        if (localData.value.product) localData.value.item = localData.value.product
-        else localData.value.item = localData.value.component
-        if (localData.value.confirmedQuantity) {
-            //on retire la quantité confirmée
-            delete localData.value.confirmedQuantity
+        initLocalData(dataToSend)
+
+        dataToSend.requestedQuantity.code = getUnitCode(dataToSend.requestedQuantity.code)
+        if (props.variant === 'fixed') dataToSend.confirmedQuantity.code = getUnitCode(dataToSend.confirmedQuantity.code)
+        else {
+            delete dataToSend.confirmedQuantity
+            delete dataToSend.confirmedDate
         }
+
+        //Si c'est un produit on positionne la clé item avec la valeur de la clé produit, sinon on positionne la clé item avec la valeur de la clé component
+        if (dataToSend.product) dataToSend.item = dataToSend.product
+        else dataToSend.item = dataToSend.component
+        delete dataToSend.product
+        delete dataToSend.component
+
         //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
-        await api(localData.value.price.code, 'GET').then(currency => {
-            localData.value.price.code = currency.code
-        })
-        // eslint-disable-next-line require-atomic-updates
-        localData.value.requestedQuantity.code = requestedUnit.text
+        const currency = getCurrencyFromMeasureCode(dataToSend.price.code)
+        dataToSend.price.code = currency.text
         //On ajoute l'item en base
-        await itemStore.add(localData.value)
+        await itemStore.update(dataToSend, dataToSend['@id'])
         //On ferme la modale
         if (modalRef.value) {
             const modalElement = modalRef.value.$el
@@ -224,26 +231,14 @@
             loaderShow.value = false
             bootstrapModal.hide()
         }
-        //On réinitalise les données locales
-        // on désactive require-atomic-updates car on ne peut pas utiliser await dans une fonction non asynchrone
-        // eslint-disable-next-line require-atomic-updates
-        localData.value = {}
-        //On rafraichit les données du tableau
-        emits('update:modelValue', localData.value)
     }
     async function submition(e) {
+        // console.log('form submission', props.mode)
         loaderShow.value = true
-        if (props.mode === 'add') {
-            await addItem(e)
-            loaderShow.value = false
-        }
-        if (props.mode === 'edit') {
-            console.log('form submission for edit')
-            // await editItem(localData.value)
-            // loaderShow.value = false
-        }
-        emits('submit')
+        if (props.mode === 'add') await addItem(e)
+        if (props.mode === 'edit') await editItem(localData.value)
         loaderShow.value = false
+        emits('submit')
     }
     function onModalClose() {
         emits('closed')
@@ -263,6 +258,7 @@
         </div>
         <AppFormJS
             :id="formId"
+            :disabled="!canModify"
             :key="formKey"
             :model-value="localData"
             :fields="fieldsItem"
