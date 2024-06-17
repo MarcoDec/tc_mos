@@ -45,9 +45,11 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
                 })
                 Promise.allSettled(promises).then(result => {
                     myData.forEach((aData, index) => {
-                        const iri = this.customerOrdersItems[index][aData]['@id']
-                        const indexOf = Object.keys(toLoad).indexOf(iri)
-                        this.customerOrdersItems[index][aData] = result[indexOf].value
+                        if (this.customerOrdersItems.length > 0) {
+                            const iri = this.customerOrdersItems[index][aData]['@id']
+                            const indexOf = Object.keys(toLoad).indexOf(iri)
+                            this.customerOrdersItems[index][aData] = result[indexOf].value
+                        }
                     })
                 })
                 if (response['hydra:view']['hydra:first']) {
