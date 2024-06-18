@@ -48,7 +48,7 @@ export const useOfCustomerOrderItemsStore = defineStore('ofCustomerOrderItems', 
                 blocker: item.embBlocker.state,
                 product: item.product,
                 manufacturingDate: item.manufacturingDate,
-                deliveryDate: item.deliveryDate,
+                deliveryDate: item.deliveryDate
             }
             return newObject
         })

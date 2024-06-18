@@ -6,7 +6,7 @@
     import {Modal} from 'bootstrap'
     import Measure from './measure'
 
-    const checkData = async (data) => {
+    const checkData = async data => {
         violations.value = []
         if (typeof data === 'undefined' || data === null) {
             violations.value.push({propertyPath: 'product', message: 'Veuillez remplir le formulaire'})
@@ -67,7 +67,7 @@
     const localData = ref(props.formData)
     //console.log('localData', localData.value)
     const emits = defineEmits(['closed', 'update:modelValue', 'submit'])
-    emits['update:modelValue'] = (value) => checkData(value)
+    emits['update:modelValue'] = value => checkData(value)
     const itemStore = props.store
     const measure = new Measure('U', 0.0)
     measure.initUnits()
@@ -76,11 +76,11 @@
     const fieldsItem = computed(() => props.fields)
     const violations = ref([])
     const loaderShow = ref(false)
-    function generateUniqueId() {
-        // Combinaison d'un timestamp actuel et d'un nombre aléatoire pour assurer l'unicité
-        return 'id-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
-    }
-    const test = generateUniqueId()
+    // function generateUniqueId() {
+    //     // Combinaison d'un timestamp actuel et d'un nombre aléatoire pour assurer l'unicité
+    //     return 'id-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+    // }
+    // const test = generateUniqueId()
     async function updateValue(value) {
         if (typeof localData.value === 'undefined') {
             console.warn('localData.value is empty => return')
@@ -155,7 +155,7 @@
     }
     function getUnitCode(dataToSendCode) {
         const requestedUnit = getUnitFromMeasureCode(dataToSendCode)
-       return requestedUnit.text
+        return requestedUnit.text
     }
     async function addItem() {
         violations.value = []
@@ -174,7 +174,6 @@
             delete dataToSend.confirmedQuantity
             delete dataToSend.confirmedDate
         }
-        
         //Si c'est un produit on positionne la clé item avec la valeur de la clé produit, sinon on positionne la clé item avec la valeur de la clé component
         if (dataToSend.product) dataToSend.item = dataToSend.product
         else dataToSend.item = dataToSend.component
@@ -258,8 +257,8 @@
         </div>
         <AppFormJS
             :id="formId"
-            :disabled="!canModify"
             :key="formKey"
+            :disabled="!canModify"
             :model-value="localData"
             :fields="fieldsItem"
             :violations="violations"

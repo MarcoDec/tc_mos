@@ -2,21 +2,14 @@
     import AppSuspense from "../../../../../AppSuspense.vue"
     import {useOfCustomerOrderItemsStore} from "../../../../../../stores/customer/ofCustomerOrderItems"
     import useFetchCriteria from "../../../../../../stores/fetch-criteria/fetchCriteria"
-    import {useCustomerOrderItemsStore} from "../../../../../../stores/customer/customerOrderItems"
     import {computed, ref} from "vue"
-    import {useRoute} from "vue-router"
 
     const props = defineProps({
-        currentCompany: Object,
-        companiesOptions: Array,
-        optionsUnit: Array,
-        roleUser: String,
-        order: Object
+        companiesOptions: {default: () => [], type: Array},
+        optionsUnit: {default: () => [], type: Array},
+        roleUser: {default: '', type: String},
+        order: {default: () => ({}), type: Object}
     })
-    console.log('props', props)
-    const route = useRoute()
-    const id = Number(route.params.id)
-    const currentCompany = ref(props.currentCompany)
 
     const roleUser = ref(props.roleUser)
     const companiesOptions = computed(() => props.companiesOptions)
@@ -116,13 +109,13 @@
             label: 'Date de fabrication',
             name: 'manufacturingDate',
             type: 'date',
-            trie: true,
+            trie: true
         },
         {
             label: 'Date de livraison',
             name: 'deliveryDate',
             type: 'date',
-            trie: true,
+            trie: true
         }
     ]
 
@@ -151,8 +144,7 @@
         } else if (payload.name === 'blocker') {
             ofCustomerOrderCriteria.addSort('embBlocker.state', payload.direction)
             await manufacturingOrderStore.fetch(ofCustomerOrderCriteria.getFetchCriteria)
-        }
-        else {
+        } else {
             ofCustomerOrderCriteria.addSort(payload.name, payload.direction)
             await manufacturingOrderStore.fetch(ofCustomerOrderCriteria.getFetchCriteria)
         }

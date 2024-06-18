@@ -2,7 +2,6 @@ import {defineStore} from 'pinia'
 import api from '../../api'
 import {unset} from 'lodash/object'
 import {ref} from 'vue'
-import Measure from '../../components/pages/selling/order/tabs/itemsForms/measure'
 
 const BaseUrl = '/api/selling-order-items'
 const BaseUrlProduct = '/api/selling-order-item-products'
@@ -117,19 +116,19 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
             // On remplace confirmedQuantity.code par l'iri de l'unité correspondante
             if (item.confirmedQuantity.code !== null) {
                 if (!item.confirmedQuantity.code.includes('/api/units/')) {
-                    this.currentItem.confirmedQuantity.code = (this.currentUnitOptions.find(unit => unit.text === item.confirmedQuantity.code)).value
+                    this.currentItem.confirmedQuantity.code = this.currentUnitOptions.find(unit => unit.text === item.confirmedQuantity.code).value
                 }
             }
             // On remplace requestedQuantity.code par l'iri de l'unité correspondante
             if (item.requestedQuantity.code !== null) {
                 if (!item.requestedQuantity.code.includes('/api/units/')) {
-                    this.currentItem.requestedQuantity.code = (this.currentUnitOptions.find(unit => unit.text === item.requestedQuantity.code)).value
+                    this.currentItem.requestedQuantity.code = this.currentUnitOptions.find(unit => unit.text === item.requestedQuantity.code).value
                 }
             }
             // On remplace price.code par l'iri de la devise correspondante
             if (item.price.code !== null) {
                 if (!item.price.code.includes('/api/currencies')) {
-                    this.currentItem.price.code = (this.currentCurrencyOptions.find(currency => currency.text === item.price.code)).value
+                    this.currentItem.price.code = this.currentCurrencyOptions.find(currency => currency.text === item.price.code).value
                 }
             }
         },
@@ -138,7 +137,7 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
         },
         setCurrentCurrencyOptions(options) {
             this.currentCurrencyOptions = options
-        },
+        }
     },
     getters: {
         itemsCustomerOrders: state => state.customerOrdersItems.map(item => {

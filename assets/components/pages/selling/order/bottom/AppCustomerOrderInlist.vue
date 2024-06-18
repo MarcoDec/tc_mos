@@ -2,7 +2,6 @@
     import {computed, ref} from 'vue'
     import {useCustomerOrderItemsStore} from '../../../../../stores/customer/customerOrderItems'
     import {useRoute} from 'vue-router'
-    import useUnitsStore from '../../../../../stores/unit/units'
     import AppTab from '../../../../../components/tab/AppTab.vue'
     import AppTabs from '../../../../../components/tab/AppTabs.vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
@@ -10,7 +9,6 @@
     import useOptions from '../../../../../stores/option/options'
     import {useCustomerAddressStore} from '../../../../../stores/customer/customerAddress'
     import {useCustomerOrderStore} from '../../../../../stores/customer/customerOrder'
-    import {useCurrenciesStore} from '../../../../../stores/currency/currencies'
     import {useCustomersStore} from '../../../../../stores/customer/customers'
     import AppCustomerOrderManufacturingOrders from "./inlist/AppCustomerOrderManufacturingOrders.vue"
     import AppUnderDevelopment from "../../../../gui/AppUnderDevelopment.vue"
@@ -54,8 +52,6 @@
     filterCustomerAddress.addFilter('customer', customer.value)
     // console.log("filterCustomerAddress", filterCustomerAddress.getFetchCriteria)
     await storeCustomerAddress.fetchDeliveryAddress(filterCustomerAddress.getFetchCriteria)
-
-
     await storeCustomerAddress.fetchBillingAddress(filterCustomerAddress.getFetchCriteria)
 
     const storeCustomers = useCustomersStore()
@@ -65,14 +61,6 @@
     const currentCompany = fetchUser.company
     const isSellingWriterOrAdmin = fetchUser.isSellingWriter || fetchUser.isSellingAdmin
     const roleuser = ref(isSellingWriterOrAdmin ? 'writer' : 'reader')
-
-    const storeUnits = useUnitsStore()
-    await storeUnits.fetch()
-    const units = storeUnits.units
-
-    const storeCurrencies = useCurrenciesStore()
-    await storeCurrencies.fetch()
-    const currencies = storeCurrencies.currencies
     //CustomerOrdersTable
     const storeCustomerOrderItems = useCustomerOrderItemsStore()
     const customerOrderCriteria = useFetchCriteria('customer-orders-criteria')
@@ -95,8 +83,7 @@
                 :companies-options="companiesOptions"
                 :current-company="currentCompany"
                 :options-unit="optionsUnit"
-                :role-user="roleuser"
-            />
+                :role-user="roleuser"/>
         </AppTab>
         <AppTab id="gui-start-quality" icon="clipboard" title="Bons de préparation" tabs="gui-form-create">
             <AppUnderDevelopment/>
@@ -109,8 +96,7 @@
                 :customer-address-store="storeCustomerAddress"
                 :currencies-options="currenciesOptions"
                 :store-customer-order="storeCustomerOrder"
-                :role-user="roleuser"
-            />
+                :role-user="roleuser"/>
         </AppTab>
         <AppTab id="gui-start-accounting" icon="file-invoice-dollar" title="Factures" tabs="gui-form-create">
             <AppCustomerOrderBill

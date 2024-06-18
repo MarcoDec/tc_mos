@@ -8,15 +8,13 @@
     import useOptions from '../../../../../stores/option/options'
     import AppForeCastUpdateForm from './itemsForms/AppForeCastUpdateForm.vue'
     import {Modal} from 'bootstrap'
-    import AppFixedUpdateForm from "./itemsForms/AppFixedUpdateForm.vue";
+    import AppFixedUpdateForm from "./itemsForms/AppFixedUpdateForm.vue"
 
     const props = defineProps({
         order: {default: () => ({}), required: true, type: Object},
         customer: {default: () => ({}), required: true, type: Object}
     })
     //Si l'utilisateur courant a les droits admin ou writer, il peut ajouter/modifier et supprimer des items de commande
-
-
     const showForeCastUpdateForm = ref(false)
     const showFixedUpdateForm = ref(false)
     //region initialisation des constantes et variables
@@ -365,8 +363,8 @@
         <template #title>
             <span>Items de commande {{ order.ref }}</span>
             <button
-                class="btn btn-success btn-float-right m-1"
                 v-if="isSellingWriterOrAdmin"
+                class="btn btn-success btn-float-right m-1"
                 @click="openModalAddNewOrderItem">
                 Ajouter Item en Ferme
             </button>

@@ -5,13 +5,12 @@
     import useFetchCriteria from "../../../../../../stores/fetch-criteria/fetchCriteria"
 
     const props = defineProps({
-        order: Object,
-        currentCompany: Object,
-        customer: Object,
-        storeCustomerOrder: Object,
-        customerAddressStore: Object,
-        roleUser: String,
-        currenciesOptions: Array
+        order: {default: () => ({}), type: Object},
+        customer: {default: () => ({}), type: Object},
+        storeCustomerOrder: {default: () => ({}), type: Object},
+        customerAddressStore: {default: () => ({}), type: Object},
+        roleUser: {default: '', type: String},
+        currenciesOptions: {default: () => [], type: Array}
     })
     const storeCustomerOrder = ref(props.storeCustomerOrder)
     const addressCustomer = {
@@ -19,10 +18,7 @@
     }
     const userRole = ref(props.roleUser)
     console.log('roleUser', userRole.value)
-    const currentCompany = ref(props.currentCompany)
     const storeCustomerAddress = props.customerAddressStore
-
-
     const deliveryAddressesOption = computed(() => storeCustomerAddress.deliveryAddressesOption)
     const filteredDeliveryAddressesOptions = deliveryAddressesOption.value.filter(option => option.customer === props.customer)
     const blFields = [
@@ -120,7 +116,7 @@
             id,
             SellingOrder: {destination: updateAddressCustomerOrder.value.destination}
         }
-        await storeCustomerOrder.updateSellingOrder(payload)
+        await storeCustomerOrder.value.updateSellingOrder(payload)
     }
 
     //BlCustomerOrderTable
@@ -213,7 +209,3 @@
             @cancel-search="cancelSearchBlCustomerOrders"/>
     </AppSuspense>
 </template>
-
-<style scoped>
-
-</style>

@@ -1,5 +1,5 @@
 <script setup>
-
+    console.log('AppUnderDevelopment.vue')
 </script>
 
 <template>
@@ -7,7 +7,3 @@
         En cours de développement
     </div>
 </template>
-
-<style scoped>
-
-</style>
