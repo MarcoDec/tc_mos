@@ -9,7 +9,7 @@ const props = defineProps({
     userRole: String,
     storeCustomerAddress: Object,
     customer: Object,
-    currencies: Array
+    order: Object
 })
 const billingAddressesOption = computed(() => props.storeCustomerAddress.billingAddressesOption)
 const filteredBillingAddressesOptions = billingAddressesOption.value.filter(option => option.customer === props.customer.value)
@@ -34,7 +34,12 @@ const facturesCurrentPlaceOptions = [
     {text: 'paid', value: 'paid'}
 ]
 const fieldsFactures = [
-    {label: 'Invoice Number', name: 'invoiceNumber', trie: true, type: 'text'},
+    {
+        label: 'Invoice Number',
+        name: 'invoiceNumber',
+        trie: true,
+        type: 'text'
+    },
     {
         label: 'Total HT',
         name: 'totalHT',
@@ -126,15 +131,17 @@ const fieldsFactures = [
 ]
 const storeFacturesCustomerOrderItems = useFacturesCustomerOrderItemsStore()
 const facturesCustomerOrderCriteria = useFetchCriteria('factures-customer-orders-criteria')
-await storeFacturesCustomerOrderItems.fetch(facturesCustomerOrderCriteria.getFetchCriteria)
-facturesCustomerOrderCriteria.addFilter('company', props.currentCompany)
 const facturesCustomerOrderItems = computed(() => storeFacturesCustomerOrderItems.itemsFactureCustomerOrder)
-
+function initFilters() {
+    facturesCustomerOrderCriteria.resetAllFilter()
+    facturesCustomerOrderCriteria.addFilter('sellingOrder', props.order['@id'])
+}
+initFilters()
+await storeFacturesCustomerOrderItems.fetch(facturesCustomerOrderCriteria.getFetchCriteria)
 
 async function refreshTableFacturesCustomerOrders() {
     await storeFacturesCustomerOrderItems.fetch(facturesCustomerOrderCriteria.getFetchCriteria)
 }
-await refreshTableFacturesCustomerOrders()
 
 const updateBillingAdressCustomerOrder = {}
 async function updateBillingAdress(newAdress) {
@@ -185,23 +192,28 @@ async function trierAlphabetFacturesCustomerOrders(payload) {
     }
 }
 async function searchFacturesCustomerOrders(inputValues) {
-    facturesCustomerOrderCriteria.resetAllFilter()
-    facturesCustomerOrderCriteria.addFilter('company', props.currentCompany)
+    initFilters()
     if (inputValues.invoiceNumber) facturesCustomerOrderCriteria.addFilter('ref', inputValues.invoiceNumber)
-    if (inputValues.totalHT) facturesCustomerOrderCriteria.addFilter('exclTax.value', inputValues.totalHT.value)
     if (inputValues.totalHT) {
-        const requestedcurrencie = props.currencies.find(currencie => currencie['@id'] === inputValues.totalHT.code)
-        facturesCustomerOrderCriteria.addFilter('exclTax.code', requestedcurrencie.code)
+        if (inputValues.totalHT.value) facturesCustomerOrderCriteria.addFilter('exclTax.value', inputValues.totalHT.value)
+        if (inputValues.totalHT.code) {
+            const requestedcurrencie = props.currenciesOptions.find(currencie => currencie.value === inputValues.totalHT.code)
+            facturesCustomerOrderCriteria.addFilter('exclTax.code', requestedcurrencie.value)
+        }
     }
-    if (inputValues.totalTTC) facturesCustomerOrderCriteria.addFilter('inclTax.value', inputValues.totalTTC.value)
     if (inputValues.totalTTC) {
-        const requestedcurrencie = props.currencies.find(currencie => currencie['@id'] === inputValues.totalTTC.code)
-        facturesCustomerOrderCriteria.addFilter('inclTax.code', requestedcurrencie.code)
+        if (inputValues.totalTTC.value) facturesCustomerOrderCriteria.addFilter('inclTax.value', inputValues.totalTTC.value)
+        if (inputValues.totalTTC.code) {
+            const requestedcurrencie = props.currenciesOptions.find(currencie => currencie.value === inputValues.totalTTC.code)
+            facturesCustomerOrderCriteria.addFilter('inclTax.code', requestedcurrencie.value)
+        }
     }
-    if (inputValues.vta) facturesCustomerOrderCriteria.addFilter('vat.value', inputValues.vta.value)
     if (inputValues.vta) {
-        const requestedcurrencie = props.currencies.find(currencie => currencie['@id'] === inputValues.vta.code)
-        facturesCustomerOrderCriteria.addFilter('vat.code', requestedcurrencie.code)
+        if (inputValues.vta.value) facturesCustomerOrderCriteria.addFilter('vat.value', inputValues.vta.value)
+        if (inputValues.vta.code) {
+            const requestedcurrencie = props.currenciesOptions.find(currencie => currencie.value === inputValues.vta.code)
+            facturesCustomerOrderCriteria.addFilter('vat.code', requestedcurrencie.value)
+        }
     }
     if (inputValues.invoiceDate) facturesCustomerOrderCriteria.addFilter('billingDate', inputValues.invoiceDate)
     if (inputValues.deadlineDate) facturesCustomerOrderCriteria.addFilter('dueDate', inputValues.deadlineDate)
@@ -209,8 +221,7 @@ async function searchFacturesCustomerOrders(inputValues) {
     await storeFacturesCustomerOrderItems.fetch(facturesCustomerOrderCriteria.getFetchCriteria)
 }
 async function cancelSearchFacturesCustomerOrders() {
-    facturesCustomerOrderCriteria.resetAllFilter()
-    facturesCustomerOrderCriteria.addFilter('company', props.currentCompany)
+    initFilters()
     await storeFacturesCustomerOrderItems.fetch(facturesCustomerOrderCriteria.getFetchCriteria)
 }
 
@@ -229,6 +240,8 @@ async function cancelSearchFacturesCustomerOrders() {
             :pag="storeFacturesCustomerOrderItems.pagination"
             :previous-page="storeFacturesCustomerOrderItems.previousPage"
             :user="roleuser.toString()"
+            :should-see="false"
+            :should-delete="false"
             form="facturesCustomerOrderTable"
             @deleted="deletedFacturesCustomerOrders"
             @get-page="getPageFacturesCustomerOrders"
