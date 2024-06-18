@@ -10,7 +10,8 @@
         customer: Object,
         storeCustomerOrder: Object,
         customerAddressStore: Object,
-        roleUser: String
+        roleUser: String,
+        currenciesOptions: Array
     })
     const storeCustomerOrder = ref(props.storeCustomerOrder)
     const addressCustomer = {
@@ -34,6 +35,75 @@
             type: 'select'
         }
     ]
+    const optionsCurrentPlace = [
+        {text: 'Brouillon', value: 'draft'},
+        {text: 'Envoyé', value: 'sent'},
+        {text: 'Annulé', value: 'Rejected'},
+        {text: 'Accusé réception reçu', value: 'acknowledgment_of_receipt'}
+    ]
+    const blListFields = [
+        {
+            label: 'Date',
+            name: 'date',
+            type: 'date',
+            trie: true
+        },
+        {
+            label: 'numéro',
+            name: 'ref',
+            type: 'text',
+            trie: true
+        },
+        {
+            label: 'Surcharge',
+            name: 'freightSurcharge',
+            type: 'measure',
+            trie: true,
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'freightSurcharge.code',
+                    options: {
+                        label: value =>
+                            props.currenciesOptions.find(option => option.type === value)?.text ?? null,
+                        options: props.currenciesOptions
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'freightSurcharge.value',
+                    type: 'number',
+                    step: 0.0001
+                }
+            }
+        },
+        {
+            label: 'statut',
+            name: 'currentPlace',
+            type: 'select',
+            trie: true,
+            options: {
+                label: value =>
+                    optionsCurrentPlace.find(option => option.value === value)?.text ?? null,
+                options: optionsCurrentPlace
+            }
+        },
+        {
+            label: 'Facture',
+            name: 'bill',
+            type: 'multiselect-fetch',
+            trie: true,
+            api: '/api/bills',
+            filteredProperty: 'ref',
+            max: 1
+        },
+        {
+            label: 'Non facturable?',
+            name: 'nonBillable',
+            type: 'boolean'
+        }
+    ]
     const updateAddressCustomerOrder = {}
     async function updateAddress(newAddress) {
         updateAddressCustomerOrder.value = {
@@ -52,17 +122,21 @@
 
     const storeBlCustomerOrderItems = useBlCustomerOrderItemsStore()
     const blCustomerOrderCriteria = useFetchCriteria('bl-customer-orders-criteria')
+    const blCustomerOrderItems = computed(() => storeBlCustomerOrderItems.itemsBlCustomerOrder)
+    function initializeFilter() {
+        blCustomerOrderCriteria.resetAllFilter()
+        blCustomerOrderCriteria.addFilter('sellingOrder', props.order['@id'])
+    }
+    initializeFilter()
     await storeBlCustomerOrderItems.fetch(blCustomerOrderCriteria.getFetchCriteria)
 
-    blCustomerOrderCriteria.addFilter('company', currentCompany)
-    const blCustomerOrderItems = computed(() => storeBlCustomerOrderItems.itemsBlCustomerOrder)
     async function refreshTableBlCustomerOrders() {
         await storeBlCustomerOrderItems.fetch(blCustomerOrderCriteria.getFetchCriteria)
     }
-    await refreshTableBlCustomerOrders()
 
     async function deletedBlCustomerOrders(idRemove) {
         await storeBlCustomerOrderItems.remove(idRemove)
+        initializeFilter()
         await refreshTableBlCustomerOrders()
     }
     async function getPageBlCustomerOrders(nPage) {
@@ -79,23 +153,30 @@
         } else if (payload.name === 'departureDate') {
             blCustomerOrderCriteria.addSort('date', payload.direction)
             await storeBlCustomerOrderItems.fetch(blCustomerOrderCriteria.getFetchCriteria)
+        } else if (payload.name === 'freightSurcharge') {
+            blCustomerOrderCriteria.addSort('freightSurcharge.value', payload.direction)
+            await storeBlCustomerOrderItems.fetch(blCustomerOrderCriteria.getFetchCriteria)
+        } else if (payload.name === 'bill') {
+            blCustomerOrderCriteria.addSort('bill.ref', payload.direction)
+            await storeBlCustomerOrderItems.fetch(blCustomerOrderCriteria.getFetchCriteria)
         } else {
             blCustomerOrderCriteria.addSort(payload.name, payload.direction)
             await storeBlCustomerOrderItems.fetch(blCustomerOrderCriteria.getFetchCriteria)
         }
     }
     async function searchBlCustomerOrders(inputValues) {
-        blCustomerOrderCriteria.resetAllFilter()
-        blCustomerOrderCriteria.addFilter('company', currentCompany)
-        if (inputValues.number) blCustomerOrderCriteria.addFilter('ref', inputValues.number)
-        if (inputValues.departureDate) blCustomerOrderCriteria.addFilter('date', inputValues.departureDate)
+        initializeFilter()
+        if (inputValues.ref) blCustomerOrderCriteria.addFilter('ref', inputValues.ref)
+        if (inputValues.date) blCustomerOrderCriteria.addFilter('date', inputValues.date)
+        if (inputValues.bill) blCustomerOrderCriteria.addFilter('bill', inputValues.date)
+        if (inputValues.nonBillable) blCustomerOrderCriteria.addFilter('nonBillable', inputValues.date)
+        if (inputValues.freightSurcharge) blCustomerOrderCriteria.addFilter('freightSurcharge', inputValues.date)
         if (inputValues.currentPlace) blCustomerOrderCriteria.addFilter('embState.state[]', inputValues.currentPlace)
         await storeBlCustomerOrderItems.fetch(blCustomerOrderCriteria.getFetchCriteria)
     }
     async function cancelSearchBlCustomerOrders() {
-        blCustomerOrderCriteria.resetAllFilter()
-        blCustomerOrderCriteria.addFilter('company', currentCompany)
-        //await storeBlCustomerOrderItems.fetch(ofCustomerOrderCriteria.getFetchCriteria)
+        initializeFilter()
+        await storeBlCustomerOrderItems.fetch(blCustomerOrderCriteria.getFetchCriteria)
     }
 </script>
 
@@ -109,7 +190,7 @@
     <AppSuspense>
         <AppCardableTable
             :current-page="storeBlCustomerOrderItems.currentPage"
-            :fields="blFields"
+            :fields="blListFields"
             :first-page="storeBlCustomerOrderItems.firstPage"
             :items="blCustomerOrderItems"
             :last-page="storeBlCustomerOrderItems.lastPage"
@@ -117,6 +198,8 @@
             :pag="storeBlCustomerOrderItems.pagination"
             :previous-page="storeBlCustomerOrderItems.previousPage"
             :user="userRole.toString()"
+            :should-delete="false"
+            :should-see="false"
             form="blCustomerOrderTable"
             @deleted="deletedBlCustomerOrders"
             @get-page="getPageBlCustomerOrders"

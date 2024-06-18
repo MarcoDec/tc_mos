@@ -38,8 +38,11 @@ export const useBlCustomerOrderItemsStore = defineStore('blCustomerOrderItems', 
             const newObject = {
                 '@id': item['@id'],
                 currentPlace: item.embState.state,
-                departureDate: item.date,
-                number: item.ref
+                date: item.date,
+                ref: item.ref,
+                bill: item.bill,
+                freightSurcharge: item.freightSurcharge,
+                nonBillable: item.nonBillable
             }
             return newObject
         })

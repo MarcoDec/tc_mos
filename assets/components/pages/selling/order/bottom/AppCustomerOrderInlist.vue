@@ -105,6 +105,7 @@
                 :current-company="currentCompany"
                 :customer="customer"
                 :customer-address-store="storeCustomerAddress"
+                :currencies-options="currenciesOptions"
                 :store-customer-order="storeCustomerOrder"
                 :role-user="roleuser"
             />

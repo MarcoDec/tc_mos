@@ -23,10 +23,15 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 
 #[
-    ApiFilter(filterClass: OrderFilter::class, properties: ['date' => 'DESC', 'ref' => 'DESC', 'embState.state' => 'DESC']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['date', 'ref']),
-    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state']),
-
+    ApiFilter(filterClass: OrderFilter::class, properties: [
+        'date' => 'DESC',
+        'ref' => 'DESC',
+        'embState.state' => 'DESC',
+        'freightSurcharge.value' => 'DESC',
+        'bill.ref' => 'DESC'
+    ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['date', 'ref', 'sellingOrder', 'company', 'bill']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state', 'freightSurcharge.value']),
     ApiResource(
         description: 'Bon de livraison',
         collectionOperations: [
@@ -157,6 +162,13 @@ class DeliveryNote extends Entity {
     ]
     private ?string $ref = null;
 
+    #[
+        ApiProperty(description: 'Commande', readableLink: false, example: '/api/selling-orders/1'),
+        ORM\ManyToOne(targetEntity: \App\Entity\Selling\Order\Order::class),
+        Serializer\Groups(['read:delivery-note', 'write:delivery-note', 'read:expedition'])
+    ]
+    private \App\Entity\Selling\Order\Order $sellingOrder;
+
     public function __construct() {
         $this->embState = new State();
         $this->freightSurcharge = new Measure();
@@ -231,6 +243,24 @@ class DeliveryNote extends Entity {
 
     final public function setState(string $state): self {
         $this->embState->setState($state);
+        return $this;
+    }
+
+    /**
+     * @return \App\Entity\Selling\Order\Order
+     */
+    public function getSellingOrder(): \App\Entity\Selling\Order\Order
+    {
+        return $this->sellingOrder;
+    }
+
+    /**
+     * @param \App\Entity\Selling\Order\Order $sellingOrder
+     * @return DeliveryNote
+     */
+    public function setSellingOrder(\App\Entity\Selling\Order\Order $sellingOrder): DeliveryNote
+    {
+        $this->sellingOrder = $sellingOrder;
         return $this;
     }
 
