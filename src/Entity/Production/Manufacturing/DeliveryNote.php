@@ -31,7 +31,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
         'bill.ref' => 'DESC'
     ]),
     ApiFilter(filterClass: RelationFilter::class, properties: ['date', 'ref', 'sellingOrder', 'company', 'bill']),
-    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state', 'freightSurcharge.value']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state', 'freightSurcharge.value', 'nonBillable']),
     ApiResource(
         description: 'Bon de livraison',
         collectionOperations: [

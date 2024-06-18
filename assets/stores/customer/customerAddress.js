@@ -3,12 +3,12 @@ import {defineStore} from 'pinia'
 
 export const useCustomerAddressStore = defineStore('customerAddress', {
     actions: {
-        async fetchDeliveryAddress() {
-            const response = await api('/api/delivery-addresses', 'GET')
+        async fetchDeliveryAddress(filter) {
+            const response = await api(`/api/delivery-addresses${filter}`, 'GET')
             this.deliveryAddresses = response['hydra:member']
         },
-        async fetchBillingAddress() {
-            const response = await api('/api/billing-addresses', 'GET')
+        async fetchBillingAddress(filter) {
+            const response = await api(`/api/billing-addresses${filter}`, 'GET')
             this.billingAddresses = response['hydra:member']
         }
     },

@@ -47,14 +47,16 @@
         }))
     const storeCustomerOrder = useCustomerOrderStore()
     await storeCustomerOrder.fetchById(id)
-    console.log('storeCustomerorder', storeCustomerOrder.customerOrder)
     const customer = computed(() => storeCustomerOrder.customer)
 
     const storeCustomerAddress = useCustomerAddressStore()
-    await storeCustomerAddress.fetchDeliveryAddress()
+    const filterCustomerAddress = useFetchCriteria('customer-addresses-criteria')
+    filterCustomerAddress.addFilter('customer', customer.value)
+    // console.log("filterCustomerAddress", filterCustomerAddress.getFetchCriteria)
+    await storeCustomerAddress.fetchDeliveryAddress(filterCustomerAddress.getFetchCriteria)
 
 
-    await storeCustomerAddress.fetchBillingAddress()
+    await storeCustomerAddress.fetchBillingAddress(filterCustomerAddress.getFetchCriteria)
 
     const storeCustomers = useCustomersStore()
     await storeCustomers.fetch()

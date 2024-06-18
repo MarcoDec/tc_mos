@@ -21,6 +21,8 @@
     console.log('roleUser', userRole.value)
     const currentCompany = ref(props.currentCompany)
     const storeCustomerAddress = props.customerAddressStore
+
+
     const deliveryAddressesOption = computed(() => storeCustomerAddress.deliveryAddressesOption)
     const filteredDeliveryAddressesOptions = deliveryAddressesOption.value.filter(option => option.customer === props.customer)
     const blFields = [
@@ -59,6 +61,7 @@
             name: 'freightSurcharge',
             type: 'measure',
             trie: true,
+            filter: true,
             measure: {
                 code: {
                     label: 'Code',
@@ -101,7 +104,9 @@
         {
             label: 'Non facturable?',
             name: 'nonBillable',
-            type: 'boolean'
+            type: 'boolean',
+            trie: false,
+            filter: false
         }
     ]
     const updateAddressCustomerOrder = {}
@@ -168,9 +173,9 @@
         initializeFilter()
         if (inputValues.ref) blCustomerOrderCriteria.addFilter('ref', inputValues.ref)
         if (inputValues.date) blCustomerOrderCriteria.addFilter('date', inputValues.date)
-        if (inputValues.bill) blCustomerOrderCriteria.addFilter('bill', inputValues.date)
-        if (inputValues.nonBillable) blCustomerOrderCriteria.addFilter('nonBillable', inputValues.date)
-        if (inputValues.freightSurcharge) blCustomerOrderCriteria.addFilter('freightSurcharge', inputValues.date)
+        if (inputValues.bill) blCustomerOrderCriteria.addFilter('bill', inputValues.bill)
+        // if (inputValues.nonBillable) blCustomerOrderCriteria.addFilter('nonBillable[]', inputValues.nonBillable)
+        if (inputValues.freightSurcharge) blCustomerOrderCriteria.addFilter('freightSurcharge.value[]', inputValues.freightSurcharge.value)
         if (inputValues.currentPlace) blCustomerOrderCriteria.addFilter('embState.state[]', inputValues.currentPlace)
         await storeBlCustomerOrderItems.fetch(blCustomerOrderCriteria.getFetchCriteria)
     }
