@@ -24,7 +24,7 @@
 
     function filterInitialize() {
         ofCustomerOrderCriteria.resetAllFilter()
-        ofCustomerOrderCriteria.addFilter('order', props.order['@id'])
+        ofCustomerOrderCriteria.addFilter('sellingOrder', props.order['@id'])
     }
     const ofCustomerOrderCriteria = useFetchCriteria('manufacturing-orders-criteria')
     filterInitialize()
@@ -35,6 +35,11 @@
         {text: 'rejected', value: 'rejected'},
         {text: 'asked', value: 'asked'},
         {text: 'agreed', value: 'agreed'}
+    ]
+    const currentBlockerOptions = [
+        {text: 'blocked', value: 'blocked'},
+        {text: 'enabled', value: 'enabled'},
+        {text: 'disabled', value: 'disabled'}
     ]
     const ofFields = [
         {
@@ -96,6 +101,17 @@
             type: 'select'
         },
         {
+            label: 'Blocker',
+            name: 'blocker',
+            options: {
+                label: value =>
+                    currentBlockerOptions.find(option => option.type === value)?.text ?? null,
+                options: currentBlockerOptions
+            },
+            trie: true,
+            type: 'select'
+        },
+        {
             label: 'Date de fabrication',
             name: 'manufacturingDate',
             type: 'date',
@@ -131,7 +147,11 @@
         } else if (payload.name === 'currentPlace') {
             ofCustomerOrderCriteria.addSort('embState.state', payload.direction)
             await manufacturingOrderStore.fetch(ofCustomerOrderCriteria.getFetchCriteria)
-        } else {
+        } else if (payload.name === 'blocker') {
+            ofCustomerOrderCriteria.addSort('embBlocker.state', payload.direction)
+            await manufacturingOrderStore.fetch(ofCustomerOrderCriteria.getFetchCriteria)
+        }
+        else {
             ofCustomerOrderCriteria.addSort(payload.name, payload.direction)
             await manufacturingOrderStore.fetch(ofCustomerOrderCriteria.getFetchCriteria)
         }
@@ -165,6 +185,8 @@
             :pag="manufacturingOrderStore.pagination"
             :previous-page="manufacturingOrderStore.previousPage"
             :user="roleUser.toString()"
+            :should-delete="false"
+            :should-see="false"
             form="ofCustomerOrderTable"
             @deleted="deletedOFCustomerOrders"
             @get-page="getPageOfCustomerOrders"

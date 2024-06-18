@@ -31,10 +31,30 @@ use App\Controller\Manufacturing\Component\ItemManufacturingComponentController;
 
 
 #[
-    ApiFilter(filterClass: OrderFilter::class, properties: ['deliveryDate' => 'DESC', 'quantityRequested.value' => 'DESC', 'embState.state' => 'DESC', 'manufacturingCompany' => 'DESC']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'order', 'manufacturingCompany']),
+    ApiFilter(filterClass: OrderFilter::class, properties: [
+        'deliveryDate' => 'DESC',
+        'manufacturingDate' => 'DESC',
+        'quantityRequested.value' => 'DESC',
+        'embState.state' => 'DESC',
+        'manufacturingCompany' => 'DESC',
+        'embBlocker.state' => 'DESC'
+    ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'sellingOrder', 'manufacturingCompany']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['product.product.code'=> 'exact', 'embState.state','embBlocker.state', 'product.customer.id' => 'exact', 'product.product.name' => 'partial', 'deliveryDate' => 'partial', 'ref' => 'partial', 'product.product.index' => 'partial', 'quantityRequested.value' => 'partial', 'quantityRequested.code' => 'partial', 'product.product.price.code' => 'exact', 'product.product.price.value' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: [
+        'product.product.code'=> 'exact',
+        'embState.state','embBlocker.state',
+        'product.customer.id' => 'exact',
+        'product.product.name' => 'partial',
+        'deliveryDate' => 'partial',
+        'manufacturingDate' => 'partial',
+        'ref' => 'partial',
+        'product.product.index' => 'partial',
+        'quantityRequested.value' => 'partial',
+        'quantityRequested.code' => 'partial',
+        'product.product.price.code' => 'exact',
+        'product.product.price.value' => 'partial'
+    ]),
 
     ApiResource(
         description: 'OF',
@@ -200,7 +220,7 @@ class Order extends Entity implements BarCodeInterface {
         ORM\ManyToOne,
         Serializer\Groups(['read:production-quality', 'read:manufacturing-order', 'write:manufacturing-order'])
     ]
-    private ?SellingOrder $order = null;
+    private ?SellingOrder $sellingOrder = null;
 
     #[
         ApiProperty(description: 'Produit', readableLink: true, example: '/api/products/1'),
@@ -281,8 +301,8 @@ class Order extends Entity implements BarCodeInterface {
         return $this->notes;
     }
 
-    final public function getOrder(): ?SellingOrder {
-        return $this->order;
+    final public function getSellingOrder(): ?SellingOrder {
+        return $this->sellingOrder;
     }
 
     final public function getProduct(): ?Product {
@@ -354,8 +374,8 @@ class Order extends Entity implements BarCodeInterface {
         return $this;
     }
 
-    final public function setOrder(?SellingOrder $order): self {
-        $this->order = $order;
+    final public function setSellingOrder(?SellingOrder $sellingOrder): self {
+        $this->sellingOrder = $sellingOrder;
         return $this;
     }
 
