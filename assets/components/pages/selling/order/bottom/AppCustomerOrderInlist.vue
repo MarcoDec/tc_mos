@@ -36,6 +36,7 @@
             const value = op.value
             return {text, value}
         }))
+    console.log("companiesOptions", companiesOptions.value)
     const fetchCurrenciesOptions = useOptions('currencies')
     await fetchCurrenciesOptions.fetchOp()
     const currenciesOptions = computed(() =>

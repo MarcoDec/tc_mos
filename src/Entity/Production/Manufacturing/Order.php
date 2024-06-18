@@ -39,7 +39,7 @@ use App\Controller\Manufacturing\Component\ItemManufacturingComponentController;
         'manufacturingCompany' => 'DESC',
         'embBlocker.state' => 'DESC'
     ]),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'sellingOrder', 'manufacturingCompany']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'sellingOrder', 'manufacturingCompany', 'product']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiFilter(filterClass: SearchFilter::class, properties: [
         'product.product.code'=> 'exact',

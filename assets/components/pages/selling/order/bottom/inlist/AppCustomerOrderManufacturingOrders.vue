@@ -20,6 +20,7 @@
 
     const roleUser = ref(props.roleUser)
     const companiesOptions = computed(() => props.companiesOptions)
+    console.log('companiesOptions', companiesOptions.value)
     const optionsUnit = computed(() => props.optionsUnit)
 
     function filterInitialize() {
@@ -47,7 +48,7 @@
             name: 'manufacturingCompany',
             options: {
                 label: value =>
-                    companiesOptions.value.find(option => option.type === value)?.text ?? null,
+                    companiesOptions.value.find(option => option.value === value)?.text ?? null,
                 options: companiesOptions.value
             },
             trie: false,
@@ -165,6 +166,7 @@
             ofCustomerOrderCriteria.addFilter('quantityRequested.code', requestedUnit.code)
         }
         if (inputValues.currentPlace) ofCustomerOrderCriteria.addFilter('embState.state[]', inputValues.currentPlace)
+        if (inputValues.product) ofCustomerOrderCriteria.addFilter('product', inputValues.product)
         await manufacturingOrderStore.fetch(ofCustomerOrderCriteria.getFetchCriteria)
     }
     async function cancelSearchOfCustomerOrders() {
