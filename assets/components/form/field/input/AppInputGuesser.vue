@@ -57,7 +57,11 @@
 <template>
     <component
         :is="kind"
-        v-bind="$props"
+        :id="id"
+        :disabled="disabled"
+        :field="field"
+        :form="form"
+        :model-value="modelValue"
         @update:model-value="input"
         @focusout="onFocusOut"
         @search-change="searchChange"/>

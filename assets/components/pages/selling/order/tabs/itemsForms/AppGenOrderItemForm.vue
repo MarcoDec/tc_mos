@@ -112,6 +112,7 @@
             })
         }
         if (value.component && value.component !== initialLocalData.component) {
+            // eslint-disable-next-line require-atomic-updates
             localData.value.product = null
             await api(value.component, 'GET').then(async response => {
                 await Measure.setQuantityToUnit(localData.value, response)

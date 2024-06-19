@@ -28,12 +28,12 @@ class Measure {
     }
 
     static async getAndSetProductPrice(product, customer, order, quantity, localData, formKey) {
-        await Measure.getProductGridPrice(product, customer, order, quantity).then(async price => {
+        try {
+            const price = await Measure.getProductGridPrice(product, customer, order, quantity)
             if (typeof price === 'string') window.alert(price)
-            else {
-                if (price === null) {
-                    throw new Error('Le prix du produit n\'a pas été trouvé')
-                }
+            else if (price === null) {
+                throw new Error('Le prix du produit n\'a pas été trouvé')
+            } else {
                 const currency = await api(`/api/currencies?code=${price.code}`)
                 localData.price = {
                     value: price.value,
@@ -41,11 +41,14 @@ class Measure {
                 }
                 formKey.value++
             }
-        })
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     static async getAndSetComponentPrice(component, customer, order, quantity, localData, formKey) {
-        await Measure.getComponentGridPrice(component, customer, order, quantity).then(async price => {
+        try {
+            const price = await Measure.getComponentGridPrice(component, customer, order, quantity)
             if (typeof price === 'string') window.alert(price)
             else {
                 const currency = await api(`/api/currencies?code=${price.code}`)
@@ -53,7 +56,9 @@ class Measure {
                 localData.price.code = currency['hydra:member'][0]['@id']
                 formKey.value++
             }
-        })
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     static async getComponentGridPrice(component, customer, order, quantity) {
@@ -348,6 +353,7 @@ class Measure {
                 isGreaterThanOrEqual = await localMeasure.isGreaterThanOrEqual(minDeliveryMeasure)
                 if (!isGreaterThanOrEqual) {
                     // la quantité demandée est inférieure à la quantité minimale de livraison
+                    // eslint-disable-next-line require-atomic-updates
                     localData[quantityField] = {
                         code: units.find(unit => unit.code === minDeliveryMeasure.code)['@id'],
                         value: minDeliveryMeasure.value

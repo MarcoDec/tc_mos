@@ -49,10 +49,10 @@ function AppFormJS(props, context) {
                                 disabled: props.disabled,
                                 form: props.id,
                                 type: 'submit',
-                                'onClick': (e) => {
+                                onClick: e => {
                                     e.preventDefault()
                                     context.emit('submit', e)
-                                },
+                                }
                             },
                             () => props.submitLabel
                         )
