@@ -1,10 +1,10 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import useUser from '../../../../stores/security'
-    import {useReceiptsStore} from '../../../../stores/logistic/order/receipts'
-    import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
-    import useOptions from '../../../../stores/option/options'
-    import {usePurchaseOrderItemComponentsStore} from '../../../../stores/purchase/order/purchaseOrderItem'
+    import useUser from '../../../../../stores/security'
+    import {useReceiptsStore} from '../../../../../stores/logistic/order/receipts'
+    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
+    import useOptions from '../../../../../stores/option/options'
+    import {usePurchaseOrderItemComponentsStore} from '../../../../../stores/purchase/order/purchaseOrderItem'
 
     const fetchUser = useUser()
     const isPurchaseWriterOrAdmin = fetchUser.isPurchaseWriter || fetchUser.isPurchaseAdmin

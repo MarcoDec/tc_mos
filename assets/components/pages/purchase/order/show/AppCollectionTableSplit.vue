@@ -1,5 +1,5 @@
 <script setup>
-    import AppTableSplit from '../../../../components/app-collection-split-new/AppTableSplit.vue'
+    import AppTableSplit from '../../../../app-collection-split-new/AppTableSplit.vue'
     import {defineProps} from 'vue'
 
     defineProps({

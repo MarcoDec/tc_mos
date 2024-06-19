@@ -16,7 +16,7 @@ export default [
                 {label: 'Code douanier', name: 'customsCode'},
                 {label: 'Icône', name: 'file', type: 'file'}
             ],
-            label: 'produits'
+            label: 'Famille de produits'
         }
     },
     {

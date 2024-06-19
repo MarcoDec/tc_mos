@@ -62,6 +62,9 @@
                 <AppNavbarLink icon="magnet" to="component-equivalents" :variant="variantPurchase" @click="emit('close-menu')">
                     Groupes d'équivalences
                 </AppNavbarLink>
+                <AppNavbarLink icon="shopping-cart" to="purchaseOrderList" :variant="variantPurchase" @click="emit('close-menu')">
+                    Liste des commandes
+                </AppNavbarLink>
                 <template v-if="user.isPurchaseAdmin">
                     <AppDropdownItem disabled variant="danger">
                         <span class="text-white">Administration</span>

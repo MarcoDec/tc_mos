@@ -1,10 +1,10 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import useUser from '../../../../stores/security'
+    import useUser from '../../../../../stores/security'
     import { useRoute } from 'vue-router';
-    import { usePurchaseOrderItemComponentsStore } from '../../../../stores/purchase/order/purchaseOrderItem';
-    import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
-    import useOptions from '../../../../stores/option/options'
+    import { usePurchaseOrderItemComponentsStore } from '../../../../../stores/purchase/order/purchaseOrderItem';
+    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
+    import useOptions from '../../../../../stores/option/options'
 
     const route = useRoute()
     const id = Number(route.params.id)

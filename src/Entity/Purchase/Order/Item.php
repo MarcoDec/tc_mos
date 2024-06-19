@@ -138,12 +138,23 @@ abstract class Item extends BaseItem {
     final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
 
     #[
+        ApiProperty(description: 'Accusé réception reçue', readableLink: false, example: 'true'),
+        ORM\Column(type: 'boolean', options: ['default' => false]),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    protected bool $arReceived = false;
+    #[
         ApiProperty(description: 'Prix du cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected Measure $copperPrice;
-
+    #[
+        ApiProperty(description: 'Estimation ?', example: false),
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    protected bool $isForecast = false;
     #[
         ApiProperty(description: 'Prix du', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
@@ -179,7 +190,11 @@ abstract class Item extends BaseItem {
     protected ?Company $targetCompany = null;
 
     /** @var DoctrineCollection<int, Receipt<I>> */
-    #[ORM\OneToMany(mappedBy: 'item', targetEntity: Receipt::class)]
+    #[
+        ApiProperty(description: 'Réceptions associées'),
+        ORM\OneToMany(mappedBy: 'item', targetEntity: Receipt::class),
+        Serializer\Groups(['read:item'])
+    ]
     
     private DoctrineCollection $receipts;
 
@@ -190,6 +205,12 @@ abstract class Item extends BaseItem {
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected Measure $receivedQuantity;
+    #[
+        ApiProperty(description: 'Prix total de l\'item', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    private Measure $totalItemPrice;
 
     public function __construct() {
         parent::__construct();
@@ -199,6 +220,8 @@ abstract class Item extends BaseItem {
         $this->copperPrice = new Measure();
         $this->price = new Measure();
         $this->receivedQuantity = new Measure();
+        $this->totalItemPrice = new Measure();
+
     }
 
     /**
@@ -429,5 +452,35 @@ abstract class Item extends BaseItem {
     {
         $this->receivedQuantity = $receivedQuantity;
         return $this;
+    }
+
+    public function isArReceived(): bool
+    {
+        return $this->arReceived;
+    }
+
+    public function setArReceived(bool $arReceived): void
+    {
+        $this->arReceived = $arReceived;
+    }
+
+    public function isForecast(): bool
+    {
+        return $this->isForecast;
+    }
+
+    public function setIsForecast(bool $isForecast): void
+    {
+        $this->isForecast = $isForecast;
+    }
+
+    public function getTotalItemPrice(): Measure
+    {
+        return $this->totalItemPrice;
+    }
+
+    public function setTotalItemPrice(Measure $totalItemPrice): void
+    {
+        $this->totalItemPrice = $totalItemPrice;
     }
 }

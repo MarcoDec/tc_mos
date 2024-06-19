@@ -4,7 +4,7 @@
     // import AppCollectionTableGestion from './AppCollectionTableGestion.vue'
     // import AppCollectionTableQualite from './AppCollectionTableQualite.vue'
     import AppCollectionTableReception from './AppCollectionTableReception.vue'
-    import AppSuspense from '../../../../components/AppSuspense.vue'
+    import AppSuspense from '../../../../AppSuspense.vue'
 </script>
 
 <template>
