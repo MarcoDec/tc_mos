@@ -26,6 +26,7 @@
     supplierOrderListCriteria.addFilter('company', currentCompany)
 
     const isPurchaseWriterOrAdmin = fetchUser.isPurchaseWriter || fetchUser.isPurchaseAdmin
+    const canDelete = ref(isPurchaseWriterOrAdmin)
     const userRole = ref(isPurchaseWriterOrAdmin ? 'writer' : 'reader')
 
     async function refreshTable() {
@@ -43,11 +44,11 @@
     const itemsTable = computed(() => storeSupplierOrderList.purchaseOrders)
     const optionsEtat = [
         {text: 'Brouillon', value: 'draft'},
-        {text: 'En attente de validation', value: 'to_validate'},
-        {text: 'Approuvée', value: 'agreed'},
-        {text: 'Livrée partiellement', value: 'partially_delivered'},
-        {text: 'Livrée', value: 'delivered'},
-        {text: 'Soldé', value: 'paid'}
+        {text: 'Caddie', value: 'cart'},
+        {text: 'Validée', value: 'agreed'},
+        {text: 'Réceptionné partiellement', value: 'partially_received'},
+        {text: 'Réceptionné', value: 'received'},
+        {text: 'Payé', value: 'paid'}
     ]
     const optionsCloser = [
         {text: 'Actif', value: 'enabled'},
@@ -67,11 +68,26 @@
             max: 1
         },
         {
+            label: 'Site de Destination',
+            name: 'deliveryCompany',
+            trie: false,
+            type: 'multiselect-fetch',
+            api: '/api/companies',
+            filteredProperty: 'name',
+            max: 1
+        },
+        {
             label: 'Type de commande',
             name: 'orderFamily',
             width: 120,
             type: 'text',
             trie: true
+        },
+        {
+            label: 'Type d\'item',
+            name: 'kind',
+            width: 120,
+            type: 'text'
         },
         {
             label: 'Etat',
@@ -100,6 +116,7 @@
     ])
 
     async function deleted(id){
+        if (!window.confirm('Voulez-vous vraiment supprimer cette commande fournisseur ?')) return
         await storeSupplierOrderList.remove(id)
         await refreshTable()
     }
@@ -118,6 +135,8 @@
         if (inputValues.state) supplierOrderListCriteria.addFilter('embState.state[]', inputValues.state)
         if (inputValues.closer) supplierOrderListCriteria.addFilter('embBlocker.state[]', inputValues.closer)
         if (inputValues.supplier) supplierOrderListCriteria.addFilter('supplier', inputValues.supplier)
+        if (inputValues.deliveryCompany) supplierOrderListCriteria.addFilter('deliveryCompany', inputValues.deliveryCompany)
+        if (inputValues.kind) supplierOrderListCriteria.addFilter('kind', inputValues.kind)
         if (inputValues.orderFamily) supplierOrderListCriteria.addFilter('orderFamily', inputValues.orderFamily)
         await storeSupplierOrderList.fetch(supplierOrderListCriteria.getFetchCriteria)
     }
@@ -178,6 +197,7 @@
                     :pag="storeSupplierOrderList.pagination"
                     :previous-page="storeSupplierOrderList.previousPage"
                     :user="userRole"
+                    :should-delete="canDelete"
                     top-offset="48px"
                     form="formSupplierOrderCardableTable"
                     @deleted="deleted"

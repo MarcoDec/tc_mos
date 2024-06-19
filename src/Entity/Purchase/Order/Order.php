@@ -163,10 +163,10 @@ class Order extends Entity {
     #[
         ApiProperty(description: 'Type', example: KindType::TYPE_PROTOTYPE, openapiContext: ['enum' => KindType::TYPES]),
         Assert\Choice(choices: KindType::TYPES),
-        ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_PROTOTYPE]),
+        ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_SERIES]),
         Serializer\Groups(['read:order', 'write:order', 'read:item'])
     ]
-    private ?string $kind = KindType::TYPE_PROTOTYPE;
+    private ?string $kind = KindType::TYPE_SERIES;
     const FAMILY_FREE = 'free'; // Commande libre (sans lien avec un produit)
     const FAMILY_FIXED = 'fixed'; // Commande ferme (avec lien avec un produit) mais hors EDI
     const FAMILY_FORECAST = 'forecast'; // Commande de prévisionnelle (avec lien avec un produit) mais hors EDI
