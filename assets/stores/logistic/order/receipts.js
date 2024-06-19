@@ -50,11 +50,11 @@ export const useReceiptsStore = defineStore('receiptsItem', {
 
     state: () => ({
         receiptsItems: [],
-        pagination : false,
+        pagination: false,
         firstPage: "",
-        lastPage : "",
-        nextPage : "",
-        currentPage : "",
-        previousPage : ""
+        lastPage: "",
+        nextPage: "",
+        currentPage: "",
+        previousPage: ""
     })
 })

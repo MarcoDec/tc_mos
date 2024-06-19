@@ -1,8 +1,8 @@
 <script setup>
     import AppCollectionTableCommande from './AppCollectionTableCommande.vue'
-    import AppCollectionTableEchange from './AppCollectionTableEchange.vue'
-    import AppCollectionTableGestion from './AppCollectionTableGestion.vue'
-    import AppCollectionTableQualite from './AppCollectionTableQualite.vue'
+    // import AppCollectionTableEchange from './AppCollectionTableEchange.vue'
+    // import AppCollectionTableGestion from './AppCollectionTableGestion.vue'
+    // import AppCollectionTableQualite from './AppCollectionTableQualite.vue'
     import AppCollectionTableReception from './AppCollectionTableReception.vue'
     import AppSuspense from '../../../../components/AppSuspense.vue'
 </script>
@@ -21,7 +21,7 @@
                 </AppSuspense>
             </AppTab>
             <AppTab
-                id="gui-start-purchase-rec" 
+                id="gui-start-purchase-rec"
                 icon="truck-moving"
                 tabs="gui-start"
                 title="Réception">
@@ -29,10 +29,10 @@
                     <AppCollectionTableReception/>
                 </AppSuspense>
             </AppTab>
-            <AppTab 
-                id="gui-start-bl" 
-                icon="clipboard-check" 
-                tabs="gui-start" 
+            <AppTab
+                id="gui-start-bl"
+                icon="clipboard-check"
+                tabs="gui-start"
                 title="BL">
                 <h1>en cours de traitement</h1>
             </AppTab>

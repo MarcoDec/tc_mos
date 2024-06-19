@@ -130,7 +130,7 @@
             trie: true,
             type: 'date',
         },
-         {
+        {
             label: 'Etat',
             name: 'state',
             options: {
@@ -157,14 +157,14 @@
             },
             trie: false,
             type: 'select'
-        },
+        }
     ])
 
     const storePurchaseOrderItemComponentItems = usePurchaseOrderItemComponentsStore()
     const purchaseOrderItemComponentCriteria = useFetchCriteria('purchase-order-item-components')
     purchaseOrderItemComponentCriteria.addFilter('order', `/api/purchase-orders/${id}`)
     await storePurchaseOrderItemComponentItems.fetch(purchaseOrderItemComponentCriteria.getFetchCriteria)
-    const itemsPurchaseOrderItemComponents = computed(()=>storePurchaseOrderItemComponentItems.itemsPurchaseOrderItemComponents)
+    const itemsPurchaseOrderItemComponents = computed(() => storePurchaseOrderItemComponentItems.itemsPurchaseOrderItemComponents)
 
     async function refreshPurchaseOrderItemComponent() {
         await storePurchaseOrderItemComponentItems.fetch(purchaseOrderItemComponentCriteria.getFetchCriteria)
@@ -179,7 +179,7 @@
         await storePurchaseOrderItemComponentItems.fetch(purchaseOrderItemComponentCriteria.getFetchCriteria)
     }
     async function trierPurchaseOrderItemComponent(payload) {
-        console.log('payload', payload);
+        console.log('payload', payload)
         if (payload.name === 'component') {
             purchaseOrderItemComponentCriteria.addSort('item.code', payload.direction)
             purchaseOrderItemComponentCriteria.addFilter('order', `/api/purchase-orders/${id}`)
@@ -198,7 +198,7 @@
             await storePurchaseOrderItemComponentItems.fetch(purchaseOrderItemComponentCriteria.getFetchCriteria)
         }
     }
-     async function searchPurchaseOrderItemComponent(inputValues) {
+    async function searchPurchaseOrderItemComponent(inputValues) {
         console.log('inputValues', inputValues)
         purchaseOrderItemComponentCriteria.resetAllFilter()
         if (inputValues.component) purchaseOrderItemComponentCriteria.addFilter('item.code', inputValues.component)
@@ -224,8 +224,7 @@
     async function cancelPurchaseOrderItemComponent() {
         purchaseOrderItemComponentCriteria.resetAllFilter()
         await storePurchaseOrderItemComponentItems.fetch(purchaseOrderItemComponentCriteria.getFetchCriteria)
-    } 
-
+    }
 </script>
 
 <template>

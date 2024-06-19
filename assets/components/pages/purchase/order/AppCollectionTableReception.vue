@@ -1,19 +1,14 @@
 <script setup>
     import {computed, ref} from 'vue'
     import useUser from '../../../../stores/security'
-    import { useRoute } from 'vue-router';
-    import { useReceiptsStore } from '../../../../stores/logistic/order/receipts';
+    import {useReceiptsStore} from '../../../../stores/logistic/order/receipts'
     import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
     import useOptions from '../../../../stores/option/options'
-    import { usePurchaseOrderItemComponentsStore } from '../../../../stores/purchase/order/purchaseOrderItem';
-
-    const route = useRoute()
-    const id = Number(route.params.id)
+    import {usePurchaseOrderItemComponentsStore} from '../../../../stores/purchase/order/purchaseOrderItem'
 
     const fetchUser = useUser()
     const isPurchaseWriterOrAdmin = fetchUser.isPurchaseWriter || fetchUser.isPurchaseAdmin
     const roleuser = ref(isPurchaseWriterOrAdmin ? 'writer' : 'reader')
-    
     const fetchUnitOptions = useOptions('units')
     await fetchUnitOptions.fetchOp()
     const optionsUnit = computed(() =>
@@ -24,10 +19,10 @@
         }))
 
     const stateOptions = [
-    {text: 'asked', value: 'asked'},
-    {text: 'blocked', value: 'blocked'},
-    {text: 'closed', value: 'closed'},
-    {text: 'to_validate', value: 'to_validate'}
+        {text: 'asked', value: 'asked'},
+        {text: 'blocked', value: 'blocked'},
+        {text: 'closed', value: 'closed'},
+        {text: 'to_validate', value: 'to_validate'}
     ]
 
     const fields = [
@@ -40,7 +35,6 @@
             max: 1,
             trie: true
         },
-        
         // {
         //     label: 'Quantité confirmée',
         //     name: 'confirmedQuantity',
@@ -97,7 +91,7 @@
             label: 'Date Souhaitée',
             name: 'requestedDate',
             trie: true,
-            type: 'date',
+            type: 'date'
         },
         {
             label: 'Etat',
@@ -111,50 +105,44 @@
             type: 'select'
         }
     ]
-
     const storeReceiptsItems = useReceiptsStore()
     const receiptsCriteria = useFetchCriteria('receipts')
     // receiptsCriteria.addFilter('purchaseOrder', `/api/purchase-orders/${id}`)
     await storeReceiptsItems.fetch(receiptsCriteria.getFetchCriteria)
-    const itemsReceipts = computed(()=>storeReceiptsItems.itemsReceipts)
+    const itemsReceipts = computed(() => storeReceiptsItems.itemsReceipts)
     // console.log('itemsReceipts', itemsReceipts);
-
     async function refreshReceipts() {
         await storeReceiptsItems.fetch(receiptsCriteria.getFetchCriteria)
     }
     await refreshReceipts()
-    
     async function getPageReceipts(nPage) {
         receiptsCriteria.gotoPage(parseFloat(nPage))
         await storeReceiptsItems.fetch(receiptsCriteria.getFetchCriteria)
     }
 
-    async function extraireItems(itemsReceipts) {
-            const promises = itemsReceipts.value.map(async item => {
-                const parties = item.requestedDate.split('T');
-                const date = parties[0];
-                delete item.requestedDate;
-                item.requestedDate = date;
+    async function extraireItems(itemsReceipts2) {
+        const promises = itemsReceipts2.map(async item => {
+            const parties = item.requestedDate.split('T')
+            const date = parties[0]
+            delete item.requestedDate
+            item.requestedDate = date
 
-                const idComponent = item.component;
-                const partiesComponent = idComponent.split('/');
-                const id = parseInt(partiesComponent[partiesComponent.length - 1], 10);
+            const idComponent = item.component
+            const partiesComponent = idComponent.split('/')
+            const id2 = parseInt(partiesComponent[partiesComponent.length - 1], 10)
 
-                const storePurchaseOrderItemComponentItems = usePurchaseOrderItemComponentsStore();
-                await storePurchaseOrderItemComponentItems.fetchById(id);
+            const storePurchaseOrderItemComponentItems = usePurchaseOrderItemComponentsStore()
+            await storePurchaseOrderItemComponentItems.fetchById(id2)
 
-                const itemsPurchaseOrderItemComponent = storePurchaseOrderItemComponentItems.purchaseOrderitemComponent;
-
-                item.componentObject = itemsPurchaseOrderItemComponent.item;
-                return item;
-            });
-
-        const mappedReceiptsItems = await Promise.all(promises);
-
-        return mappedReceiptsItems;
+            const itemsPurchaseOrderItemComponent = storePurchaseOrderItemComponentItems.purchaseOrderitemComponent
+            //eslint-disable-next-line require-atomic-updates
+            item.componentObject = itemsPurchaseOrderItemComponent.item
+            return item
+        })
+        return Promise.all(promises)
     }
 
-    const resultat = await extraireItems(itemsReceipts);
+    const resultat = await extraireItems(itemsReceipts)
     // console.log('resultat',resultat);
 
     // async function trierReceipts(payload) {
@@ -193,11 +181,16 @@
     //     if (inputValues.targetCompany) receiptsCriteria.addFilter('targetCompany', inputValues.targetCompany)
     //     await storeReceiptsItems.fetch(receiptsCriteria.getFetchCriteria)
     // }
+    function searchReceipts(data) {
+        console.log('searchReceipts data', data)
+    }
     async function cancelReceipts() {
         receiptsCriteria.resetAllFilter()
         await storeReceiptsItems.fetch(receiptsCriteria.getFetchCriteria)
-    } 
-
+    }
+    function trierReceipts(data) {
+        console.log('trierReceipts data', data)
+    }
 </script>
 
 <template>
