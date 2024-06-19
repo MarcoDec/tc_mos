@@ -65,7 +65,7 @@ class SellingOrderSubscriber implements EventSubscriberInterface
             if ($transitionName === 'deliver' && ($currentObjectState === 'agreed' || $currentObjectState === 'partially_delivered')) {
                 // Récupérer la commande associée à l'item de commande
                 /** @var ?Order $order */
-                $order = $object->getOrder();
+                $order = $object->getParentOrder();
                 $allItemsDelivered = !($order === null) && $this->checkAllItemsValid($order, $object, $event, 'delivered');
                 // 3. Si tous les autres items sont dans un état 'delivered', passer la commande à l'état 'delivered'
                 if ($allItemsDelivered) {
@@ -83,7 +83,7 @@ class SellingOrderSubscriber implements EventSubscriberInterface
                 }
             }
             if ($transitionName === 'pay' && $currentObjectState === 'delivered') {
-                $order = $object->getOrder();
+                $order = $object->getParentOrder();
                 $allItemsPaid = !($order === null) && $this->checkAllItemsValid($order, $object, $event, 'paid');
                 // 3. Si tous les autres items sont dans un état 'delivered', passer la commande à l'état 'delivered'
                 if ($allItemsPaid) {

@@ -16,6 +16,7 @@ use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\VatMessage;
 use App\Entity\Selling\Customer\Contact;
 use App\Entity\Selling\Customer\Customer;
+use App\Entity\Selling\Order\Order;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -23,16 +24,29 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Core\Annotation\ApiFilter;
-use App\Filter\RelationFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Filter\RelationFilter;
 
 #[          
-    ApiFilter(filterClass: OrderFilter::class, properties: ['dueDate']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['ref' => 'partial', 'billingDate' => 'partial', 'dueDate' => 'partial', 'forceVat' => 'partial', 'notes' => 'partial', 'vatMessage.name' => 'partial',
-        'exclTax.value' => 'partial', 'exclTax.code' => 'partial', 'inclTax.value' => 'partial', 'inclTax.code' => 'partial', 'vat.value' => 'partial', 'vat.code' => 'partial', 'customer' => 'exact'
+    ApiFilter(filterClass: OrderFilter::class, properties: ['dueDate', 'ref', 'billingDate', 'dueDate', 'exclTax.value', 'inclTax.value', 'vat.value', 'customer', 'sellingOrder.ref']),
+    ApiFilter(filterClass: SearchFilter::class, properties: [
+        'ref' => 'partial',
+        'billingDate' => 'partial',
+        'dueDate' => 'partial',
+        'forceVat' => 'partial',
+        'notes' => 'partial','v
+        atMessage.name' => 'partial',
+        'exclTax.value' => 'partial',
+        'exclTax.code' => 'partial',
+        'inclTax.value' => 'partial',
+        'inclTax.code' => 'partial',
+        'vat.value' => 'partial',
+        'vat.code' => 'partial',
+        'customer' => 'exact',
+        'embState.state' =>'partial'
     ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'customer', 'sellingOrder']),
     ApiResource(
         description: 'Facture',
         collectionOperations: [
@@ -122,7 +136,7 @@ class Bill extends Entity {
     public Blocker $embBlocker;
 
     #[
-        ORM\OneToMany(targetEntity: AccountingItem::class, mappedBy: 'bill'),
+        ORM\OneToMany(mappedBy: 'bill', targetEntity: AccountingItem::class),
         Serializer\Groups(['read:bill', 'write:bill'])
     ]
     private Collection $bill_items;
@@ -217,6 +231,13 @@ class Bill extends Entity {
         Serializer\Groups(['read:bill', 'write:bill'])
     ]
     private ?VatMessage $vatMessage = null;
+
+    #[
+        ApiProperty(description: 'Commande de vente associée', example: '/api/selling-orders/1'),
+        ORM\ManyToOne(targetEntity: Order::class),
+        Serializer\Groups(['read:bill', 'write:bill'])
+    ]
+    private ?Order $sellingOrder = null;
 
     public function __construct() {
         $this->billingDate = new DateTimeImmutable();
@@ -385,4 +406,23 @@ class Bill extends Entity {
         $this->vatMessage = $vatMessage;
         return $this;
     }
+
+    /**
+     * @return Order|null
+     */
+    public function getSellingOrder(): ?Order
+    {
+        return $this->sellingOrder;
+    }
+
+    /**
+     * @param Order|null $sellingOrder
+     * @return Bill
+     */
+    public function setSellingOrder(?Order $sellingOrder): Bill
+    {
+        $this->sellingOrder = $sellingOrder;
+        return $this;
+    }
+
 }

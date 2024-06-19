@@ -46,6 +46,9 @@
                             // console.log('target is not object')
                             url = props.item[field.target]
                         }
+                        if (typeof url === 'undefined') {
+                            return
+                        }
                         api(url, 'GET').then(
                             response => {
                                 multiSelectResults.value[field.name] = response[field.filteredProperty]
@@ -60,6 +63,9 @@
                     } else {
                         // console.log('name is not object')
                         url = props.item[field.name]
+                    }
+                    if (typeof url === 'undefined') {
+                        return
                     }
                     api(url, 'GET').then(
                         response => {

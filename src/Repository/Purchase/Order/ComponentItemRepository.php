@@ -115,7 +115,7 @@ final class ComponentItemRepository extends ItemRepository {
         'poi.confirmed_quantity_code as confirmedQuantityCode, poi.confirmed_quantity_denominator as confirmedQuantityDenominator, poi.confirmed_quantity_value as confirmedQuantityValue, ' .
         'poi.copper_price_code as copperPriceCode, poi.copper_price_denominator as copperPriceDenominator, poi.copper_price_value as copperPriceValue, '.
         'poi.emb_blocker_state as embBlockerState, poi.emb_state_state as embStateState, poi.notes as notes, '.
-        'poi.order_id as order_id, poi.price_code as priceCode, poi.price_denominator as priceDenominator, poi.price_value as priceValue, '.
+        'poi.parent_order_id as parent_order_id, poi.price_code as priceCode, poi.price_denominator as priceDenominator, poi.price_value as priceValue, '.
         'poi.product_id as product, poi.ref as ref, poi.requested_date as requestedDate, poi.requested_quantity_code as requestedQuantityCode, poi.requested_quantity_denominator as requestedQuantityDenominator, poi.requested_quantity_value as requestedQuantityValue, '.
         'poi.target_company_id as targetCompany, poi.type as type , po.id as idOrder, po.company_id as company, po.contact_id as contact, po.delivery_company_id as deliveryCompany, po.emb_blocker_state as embBlockerStatepo, po.emb_state_state as embStateStatepo, po.notes as notesPo, po.order_id as orderIdPo, '.
         'po.ref as refPo, po.supplement_fret as supplementFret, po.supplier_id as supplier, '.
@@ -161,7 +161,7 @@ final class ComponentItemRepository extends ItemRepository {
         $rsm->addScalarResult('codeComp', 'codeComp');
 
         $from = 'FROM purchase_order_item as poi '.
-        ' LEFT JOIN purchase_order as po ON poi.order_id = po.id '.
+        ' LEFT JOIN purchase_order as po ON poi.parent_order_id = po.id '.
         ' LEFT JOIN component ON poi.component_id = component.id AND component.deleted = 0 '.
         ' LEFT JOIN component_family AS cf ON component.family_id = cf.id AND cf.deleted = 0 '.
         ' WHERE poi.deleted = 0 AND po.deleted = 0 AND po.supplier_id = '. $supplierId;

@@ -272,6 +272,9 @@
                 <AppNavbarLink icon="user-tie" to="customer-list" :variant="variantSelling" @click="emit('close-menu')">
                     Liste des clients
                 </AppNavbarLink>
+                <AppNavbarLink icon="bullhorn" to="customer-order-list" :variant="variantSelling" @click="emit('close-menu')">
+                    Liste des ventes
+                </AppNavbarLink>
                 <template v-if="user.isSellingAdmin">
                     <AppDropdownItem disabled variant="danger">
                         <span class="text-white">Administration</span>

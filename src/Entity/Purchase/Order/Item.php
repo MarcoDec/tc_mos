@@ -39,7 +39,7 @@ use App\Validator as AppAssert;
  *
  */
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['order']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['parentOrder']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state']),
     ApiResource(
         description: 'Ligne de commande',
@@ -169,7 +169,7 @@ abstract class Item extends BaseItem {
         ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'items'),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    protected $order;
+    protected $parentOrder;
 
     #[
         ApiProperty(description: 'Employé', readableLink: false, example: '/api/companies/1'),
@@ -327,7 +327,7 @@ abstract class Item extends BaseItem {
         Serializer\Groups(['read:item', 'write:item'])
     ]
     final public function getSupplier(): ?Supplier {
-        return $this->order?->getSupplier();
+        return $this->parentOrder?->getSupplier();
     }
 
     /**

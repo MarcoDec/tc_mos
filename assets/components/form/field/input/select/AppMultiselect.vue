@@ -24,6 +24,12 @@
             emit('searchChange', data)
         }
     }
+    function deselect(data) {
+        console.log('deselect', data)
+        // On retire l'élément du tableau
+        localModelValue.value = localModelValue.value.filter(item => item !== data)
+        emit('searchChange', localModelValue.value)
+    }
     onErrorCaptured((err, compInst, errorInfo) => {
         console.log(props, err, compInst, errorInfo)
         return false
@@ -46,6 +52,7 @@
         label="text"
         :searchable="true"
         @search-change="updateSearch"
+        @deselect="deselect"
         @update:model-value="input">
         <template #afterlist>
             <input :name="field.name" :value="localModelValue" type="hidden"/>

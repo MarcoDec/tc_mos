@@ -1,9 +1,6 @@
 import {fieldValidator, generateLabelCols} from '../props'
 import {h, resolveComponent} from 'vue'
-// import AppFormGroupJS from './field/AppFormGroupJS'
-
 import AppFormField from './field/AppFormField.vue'
-// import AppFormFieldVue from './field/AppFormFieldVue.vue'
 
 function AppFormJS(props, context) {
     function generateSlot() {
@@ -20,54 +17,21 @@ function AppFormJS(props, context) {
         if (typeof context.slots.default === 'function')
             groups.push(generateSlot())
     } else {
-        //  for (const field of props.fields)
-        //     groups.push(h(AppFormField, {
-        //         disabled: props.disabled,
-        //         field,
-        //         form: props.id,
-        //         key: field.name,
-        //         labelCols: props.labelCols,
-        //         modelValue: props.modelValue[field.name],
-        //         'onUpdate:modelValue': value => context.emit('update:modelValue', {
-        //             ...props.modelValue,
-        //             [field.name]: value
-        //             // [field.children[1].name]: value
-        //         }),
-        //         violation: props.violations.find(violation => violation.propertyPath === field.name)
-        //     }))
         for (const field of props.fields) {
-            if (field.children) {
-                for (const child of field.children) {
-                    groups.push(h(AppFormField, {
-                        disabled: props.disabled,
-                        field: child,
-                        form: props.id,
-                        key: child.name,
-                        labelCols: props.labelCols,
-                        modelValue: props.modelValue[child.name],
-                        newField: field,
-                        'onUpdate:modelValue': value => context.emit('update:modelValue', {
-                            ...props.modelValue,
-                            [child.name]: value
-                        }),
-                        violation: props.violations.find(violation => violation.propertyPath === child.name)
-                    }))
-                }
-            } else {
-                groups.push(h(AppFormField, {
-                    disabled: props.disabled,
-                    field,
-                    form: props.id,
-                    key: field.name,
-                    labelCols: props.labelCols,
-                    modelValue: props.modelValue[field.name],
-                    'onUpdate:modelValue': value => context.emit('update:modelValue', {
-                        ...props.modelValue,
-                        [field.name]: value
-                    }),
-                    violation: props.violations.find(violation => violation.propertyPath === field.name)
-                }))
-            }
+            // console.log('field', field)
+            groups.push(h(AppFormField, {
+                disabled: props.disabled,
+                field,
+                form: props.id,
+                key: field.name,
+                labelCols: props.labelCols,
+                modelValue: props.modelValue[field.name],
+                'onUpdate:modelValue': value => context.emit('update:modelValue', {
+                    ...props.modelValue,
+                    [field.name]: value
+                }),
+                violation: props.violations.find(violation => violation.propertyPath === field.name)
+            }))
         }
 
         if (props.submitLabel !== null){
@@ -81,7 +45,15 @@ function AppFormJS(props, context) {
                         ? generateSlot()
                         : h(
                             resolveComponent('AppBtnJS'),
-                            {disabled: props.disabled, form: props.id, type: 'submit'},
+                            {
+                                disabled: props.disabled,
+                                form: props.id,
+                                type: 'submit',
+                                onClick: e => {
+                                    e.preventDefault()
+                                    context.emit('submit', e)
+                                }
+                            },
                             () => props.submitLabel
                         )
                 )
@@ -106,7 +78,6 @@ function AppFormJS(props, context) {
                         data.delete(key)
                 }
             }
-            context.emit('submit', data)
         }
     }
     if (props.inline)

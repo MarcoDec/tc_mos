@@ -2,6 +2,7 @@
     import {onMounted, onUnmounted, ref} from 'vue'
     import {Modal} from 'bootstrap'
 
+    const emits = defineEmits(['closed'])
     const props = defineProps({
         noInstantiate: {required: false, type: Boolean},
         title: {required: true, type: String}
@@ -22,7 +23,12 @@
             modal.value = new Modal(el.value)
         }
     }
-
+    function onModalClose() {
+        if (modal.value !== null) {
+            modal.value.hide()
+            emits('closed')
+        }
+    }
     onMounted(instantiate)
 
     onUnmounted(dispose)
@@ -41,7 +47,7 @@
                     <slot/>
                 </div>
                 <div class="modal-footer">
-                    <AppBtn data-bs-dismiss="modal" label="fermer" variant="danger">
+                    <AppBtn data-bs-dismiss="modal" label="fermer" variant="danger" @click="onModalClose">
                         Fermer
                     </AppBtn>
                     <slot name="buttons"/>

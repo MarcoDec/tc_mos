@@ -36,6 +36,7 @@ import {
     faCircleDollarToSlot,
     faCircleInfo,
     faCity,
+    faClipboard,
     faClipboardCheck,
     faClipboardList,
     faClock,
@@ -43,8 +44,6 @@ import {
     faCommentsDollar,
     faCubesStacked,
     faDatabase,
-    faDesktop,
-    faDownload,
     faEuroSign,
     faExclamationTriangle,
     faEye,
@@ -134,7 +133,7 @@ import {
     faUsers,
     faWallet,
     faWarehouse,
-    faWrench
+    faWrench, faDesktop, faDownload
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -176,6 +175,7 @@ library.add(faChevronUp)
 library.add(faCircleDollarToSlot)
 library.add(faCircleInfo)
 library.add(faCity)
+library.add(faClipboard)
 library.add(faClipboardCheck)
 library.add(faClipboardList)
 library.add(faClock)

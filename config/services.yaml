@@ -96,7 +96,7 @@ services:
         name: kernel.event_listener
         priority: 2
 
-  App\EventListener\FamilyListener:
+  App\EventListener\Project\Product\FamilyListener:
     autoconfigure: false
     tags:
       - entity: App\Entity\Family\Project\Product

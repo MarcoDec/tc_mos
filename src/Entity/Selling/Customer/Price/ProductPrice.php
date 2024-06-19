@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Selling\Customer;
+namespace App\Entity\Selling\Customer\Price;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -12,10 +12,13 @@ use App\Entity\Management\Unit;
 use App\Validator as AppAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[
+    ApiFilter(SearchFilter::class, properties: ['product' => 'exact']),
     ApiResource(
-        description: 'Prix',
+        description: 'Grille tarifaire produit',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -65,7 +68,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\Table(name: 'customer_product_price')
 ]
-class Price extends Entity implements MeasuredInterface {
+class ProductPrice extends Entity implements MeasuredInterface {
+    //region properties
     #[
         ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
@@ -75,7 +79,7 @@ class Price extends Entity implements MeasuredInterface {
 
     #[
         ApiProperty(description: 'Produit', readableLink: false, example: '/api/customer-products/1'),
-        ORM\ManyToOne,
+        ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'productPrices'),
         Serializer\Groups(['read:price', 'write:price'])
     ]
     private ?Product $product = null;
@@ -87,12 +91,12 @@ class Price extends Entity implements MeasuredInterface {
         Serializer\Groups(['read:price', 'write:price'])
     ]
     private Measure $quantity;
-
+    //endregion
     public function __construct() {
         $this->price = new Measure();
         $this->quantity = new Measure();
     }
-
+    //region getters & setters
     final public function getMeasures(): array {
         return [$this->price, $this->quantity];
     }
@@ -136,4 +140,5 @@ class Price extends Entity implements MeasuredInterface {
         $this->quantity = $quantity;
         return $this;
     }
+    //endregion
 }

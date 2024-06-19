@@ -4,8 +4,9 @@ import AppLabelJS from './AppLabelJS'
 
 function AppFormGroupJS(props, context) {
     const id = `${props.form}-${props.field.name}`
+    const isDisabled = props.disabled || props.field.readOnly
     const attrs = {
-        disabled: props.disabled,
+        disabled: isDisabled,
         field: props.field,
         form: props.form,
         id,

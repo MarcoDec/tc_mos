@@ -198,7 +198,7 @@ module.exports = {
         'prefer-spread': 'error',
         'prefer-template': 'error',
         'quote-props': ['error', 'as-needed'],
-        quotes: ['error', 'single', {avoidEscape: false}],
+        //quotes: ['error', 'single', {avoidEscape: false}],
         'require-atomic-updates': 'error',
         'rest-spread-spacing': 'error',
         semi: ['error', 'never'],

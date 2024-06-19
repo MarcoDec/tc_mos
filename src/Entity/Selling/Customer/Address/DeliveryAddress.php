@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Selling\Customer;
+namespace App\Entity\Selling\Customer\Address;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -9,7 +9,7 @@ use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['customer']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['customer', 'name' => 'partial']),
     ApiResource(
         description: 'Adresse de livraison',
         collectionOperations: [
@@ -29,7 +29,7 @@ use Doctrine\ORM\Mapping as ORM;
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
             ]
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        itemOperations: ['get', 'patch', 'delete'],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_SELLING_READER.'\')'
         ],

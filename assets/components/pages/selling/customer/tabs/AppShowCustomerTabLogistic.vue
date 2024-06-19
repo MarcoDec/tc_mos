@@ -11,15 +11,18 @@
     })
     const fetchSocietyStore = useSocietyStore()
     const fetchCustomerStore = useCustomerStore()
+    const localLogisticPortalData = ref({})
+    localLogisticPortalData.value = {
+        getPassword: props.dataCustomers.logisticPortal.password,
+        getUrl: props.dataCustomers.logisticPortal.url,
+        getUsername: props.dataCustomers.logisticPortal.username
+    }
     const localData = ref({})
     localData.value = {
         conveyanceDuration: {
             code: 'j',
             value: props.dataCustomers.conveyanceDuration.value
         },
-        getPassword: props.dataCustomers.logisticPortal.password,
-        getUrl: props.dataCustomers.logisticPortal.url,
-        getUsername: props.dataCustomers.logisticPortal.username,
         incotermsValue: props.dataSociety.incoterms,
         nbDeliveries: props.dataCustomers.nbDeliveries,
         orderMin: {
@@ -39,6 +42,11 @@
             const value = incoterm['@id']
             return {text, value}
         }))
+    const logisticPortalFields = computed(() => [
+        {label: 'Url *', name: 'getUrl', type: 'text'},
+        {label: 'Ident', name: 'getUsername', type: 'text'},
+        {label: 'Password', name: 'getPassword', type: 'text'}
+    ])
     const logisticFields = computed(() => [
         {
             label: 'Nombre de bons de livraison mensuel ',
@@ -58,11 +66,20 @@
                 options: optionsIncoterm.value
             },
             type: 'select'
-        },
-        {label: 'Url *', name: 'getUrl', type: 'text'},
-        {label: 'Ident', name: 'getUsername', type: 'text'},
-        {label: 'Password', name: 'getPassword', type: 'text'}
+        }
     ])
+    async function updatePortalLogistique() {
+        const data = {
+            logisticPortal: {
+                password: localData.value.getPassword,
+                url: localData.value.getUrl,
+                username: localData.value.getUsername
+            }
+        }
+        const item = generateCustomer(props.dataCustomers)
+        await item.updateLogistic(data)
+        await fetchCustomerStore.fetchOne(props.dataCustomers.id)
+    }
     async function updateLogistique() {
         //
         // const form = document.getElementById('addLogistique')
@@ -71,11 +88,6 @@
             conveyanceDuration: {
                 code: 'j',
                 value: parseFloat(localData.value.conveyanceDuration.value)
-            },
-            logisticPortal: {
-                password: localData.value.getPassword,
-                url: localData.value.getUrl,
-                username: localData.value.getUsername
             },
             nbDeliveries: localData.value.nbDeliveries,
             outstandingMax: {
@@ -101,16 +113,44 @@
         // await itemSoc.update(dataSociety)
         await fetchCustomerStore.fetchOne(props.dataCustomers.id)
     }
+    function updateLocalPortalData(value) {
+        localLogisticPortalData.value = value
+    }
     function updateLocalData(value) {
         localData.value = value
     }
 </script>
 
 <template>
-    <AppCardShow
-        id="addLogistique"
-        :fields="logisticFields"
-        :component-attribute="localData"
-        @update="updateLogistique"
-        @update:model-value="updateLocalData"/>
+    <div class="logisticTab">
+        <AppCardShow
+            id="addLogistique"
+            class="logiticForm"
+            :fields="logisticFields"
+            :component-attribute="localData"
+            title="Paramètres Logistiques"
+            @update="updateLogistique"
+            @update:model-value="updateLocalData"/>
+        <AppCardShow
+            id="addLogistiquePortal"
+            class="logiticForm"
+            :fields="logisticPortalFields"
+            :component-attribute="localLogisticPortalData"
+            title="Portail Logistique"
+            @update="updatePortalLogistique"
+            @update:model-value="updateLocalPortalData"/>
+    </div>
 </template>
+
+<style scoped>
+    div.logisticTab {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap
+    }
+    .logiticForm {
+        min-width: 500px;
+        margin-left: 20px;
+        margin-bottom: 20px;
+    }
+</style>

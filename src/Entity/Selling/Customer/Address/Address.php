@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Selling\Customer;
+namespace App\Entity\Selling\Customer\Address;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
@@ -9,6 +9,7 @@ use App\Doctrine\DBAL\Types\Selling\Customer\AddressType;
 use App\Entity\Embeddable\Address as EmbeddableAddress;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Selling\Customer\Customer;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -23,6 +24,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère les adresses clientes',
                     'summary' => 'Récupère les adresses clientes',
                 ]
+            ],
+            'post' => [
+                'openapi_context' => [
+                    'description' => 'Crée une adresse cliente',
+                    'summary' => 'Crée une adresse cliente',
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
             ]
         ],
         itemOperations: [

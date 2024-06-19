@@ -217,6 +217,7 @@
                     :pag="StoreComponents.pagination"
                     :previous-page="StoreComponents.previousPage?.toString() ?? ''"
                     :user="roleUser"
+                    top-offset="48px"
                     form="formComponentCardableTable"
                     @cancel-search="cancelSearch"
                     @deleted="deleted"

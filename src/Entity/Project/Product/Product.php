@@ -38,7 +38,7 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Entity\Selling\Customer\Product as ProductCustomer;
+use App\Entity\Selling\Customer\Price\Product as ProductCustomer;
 
 #[
     ApiFilter(filterClass: DateFilter::class, properties: ['endOfLife']),
@@ -46,7 +46,7 @@ use App\Entity\Selling\Customer\Product as ProductCustomer;
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial', 'price.code' => 'partial', 'price.value' => 'partial',
-        'index' => 'partial', 'forecastVolume.code' => 'partial', 'forecastVolume.value' => 'partial', 'kind' => 'partial', 'id' => 'partial'
+        'index' => 'partial', 'forecastVolume.code' => 'partial', 'forecastVolume.value' => 'partial', 'kind' => 'partial', 'id' => 'partial', 'productCustomers.customer' => 'exact',
     ]),
     ApiResource(
         description: 'Produit',
@@ -328,6 +328,13 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:project', 'read:supply'])
     ]
     private ?string $kind = KindType::TYPE_PROTOTYPE;
+
+    #[
+        ApiProperty(description: 'Type de Logo', required: false, example: 0),
+        ORM\Column(type: 'smallint', options: ['default' => 0]),
+        Serializer\Groups(['read:product', 'write:product', 'write:product:main'])
+    ]
+    private int $labelLogo = 0;
 
     #[
         ApiProperty(description: 'Gestion cuivre', required: false, example: true),
@@ -1021,4 +1028,16 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
         $this->filePath = $filePath;
         return $this;
     }
+
+    public function getLabelLogo(): int
+    {
+        return $this->labelLogo;
+    }
+
+    public function setLabelLogo(int $labelLogo): self
+    {
+        $this->labelLogo = $labelLogo;
+        return $this;
+    }
+
 }
