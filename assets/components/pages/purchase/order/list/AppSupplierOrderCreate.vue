@@ -56,11 +56,10 @@
             {label: 'Référence*', name: 'ref', type: 'text'},
             {
                 label: 'Site de livraison *',
-                name: 'destination',
+                name: 'deliveryCompany',
                 type: 'multiselect-fetch',
-                api: '/api/delivery-addresses',
+                api: '/api/companies',
                 filteredProperty: 'name',
-                permanentFilters: [addresseFilter],
                 min: true,
                 max: 1
             },
@@ -109,7 +108,7 @@
             supplier: null,
             orderFamily: 'fixed',
             ref: '',
-            destination: null,
+            deliveryCompany: null,
             contact: null,
             company: currentCompany
         }
@@ -152,19 +151,19 @@
             window.alert('Il existe déjà une commande fournisseur avec cette référence pour ce client. Veuillez en choisir une autre.')
             return
         }
-        if (typeof generalData.value.destination === 'undefined') {
+        if (typeof generalData.value.deliveryCompany === 'undefined') {
             window.alert('Veuillez sélectionner une adresse de livraison')
             return
         }
         /* eslint-disable require-atomic-updates */
-        supplierOrderData.value.destination = generalData.value.destination
+        supplierOrderData.value.deliveryCompany = generalData.value.deliveryCompany
         if (typeof generalData.value.contact !== 'undefined') {
             //Ajout d'un escape eslint require-atomic-updates
             /* eslint-disable require-atomic-updates */
             supplierOrderData.value.contact = generalData.value.contact
         }
         try {
-            await storeSupplierOrder.addSupplierOrder(supplierOrderData.value)
+            await storeSupplierOrder.addPurchaseOrder(supplierOrderData.value)
             isPopupVisible.value = false
             isCreatedPopupVisible.value = true
             success = 'Commande créée'

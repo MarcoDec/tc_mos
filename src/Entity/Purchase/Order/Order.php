@@ -30,6 +30,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[
+    ApiFilter(OrderFilter::class, properties: ['id', 'ref', 'orderFamily', 'kind', 'isOpenOrder', 'totalFixedPrice', 'totalForecastPrice', 'embState.state', 'embBlocker.state']),
     ApiFilter(SetFilter::class, properties: ['embState.state', 'embBlocker.state']),
     ApiFilter(SearchFilter::class, properties: ['id' => 'exact', 'ref' => 'partial', 'orderFamily' => 'partial', 'kind' => 'partial']),
     ApiFilter(RelationFilter::class, properties: ['company', 'contact', 'purchaseCompany', 'deliveryCompany', 'items', 'sellingOrder', 'supplier']),
