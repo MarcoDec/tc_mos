@@ -5,7 +5,6 @@ namespace App\Entity\Logistics\Order;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Logistics\Order\State;
 use App\Entity\Embeddable\Blocker;
@@ -28,13 +27,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiFilter;
 
 /**
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
     ApiFilter(filterClass: SetFilter::class, properties: ['item' => 'partial']),
-
     ApiResource(
         description: 'Réception',
         collectionOperations: [
