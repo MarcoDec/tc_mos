@@ -223,5 +223,27 @@ export default [
         meta: {title: 'Détails des Dépenses et Ventes — T-Concept GPAO'},
         name: 'suivi_depenses_ventes_show',
         path: '/suivi-depenses-ventes/show/:id'
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Gestion des devises'},
+        name: 'currencies',
+        path: '/currencies',
+        props: {
+            apiBaseRoute: 'currencies',
+            disableAdd: true,
+            disableRemove: true,
+            fields: [
+                {label: 'Nom', name: 'code', create: true, update: false, search: true, sort: true},
+                {label: 'Description', name: 'name', create: true, update: false, search: true, sort: true},
+                {label: 'Symbol', name: 'symbol', create: true, update: false, search: true, sort: true},
+                {label: 'Activé/Desactivé', name: 'active', type: 'boolean', create: true, update: true, search: true, sort: false},
+                {label: 'Devise parente', name: 'parent', type: 'select', options: {base: 'currencies'}, create: true, update: false, search: true, sort: false},
+                {label: 'Ratio / parent', name: 'base', type: 'number', step: 0.01, create: true, update: false, search: true, sort: true}
+            ],
+            icon: 'comments-dollar',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Gestion des devises'
+        }
     }
 ]

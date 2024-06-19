@@ -22,7 +22,8 @@ class Measure {
         'read:product-customer',
         'read:operation-employee:collection',
         'read:reference', 'write:reference',
-        'read:production-quality-value', 'write:production-quality-value'
+        'read:production-quality-value', 'write:production-quality-value',
+        'read:manufacturing-order',
     ];
     #[
         ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true, options: ['collation' => 'utf8mb3_bin']),
@@ -46,10 +47,23 @@ class Measure {
     private float $value = 0;
 
     final public function add(self $measure): self {
-//        dump(['Measure:add'=> ['this'=>$this, 'measure'=>$measure]]);
-        $measure = $this->convertToSame($measure);
-        $this->value = $this->value + $measure->value;
-        return $this;
+        if ($this->unit === null && $this->code === null) {
+            if ($measure->unit === null && $measure->code === null) {
+                $this->unit = null;
+                $this->code = '';
+                $this->value = 0.0;
+            } else {
+                $this->unit = $measure->unit;
+                $this->code = $measure->code;
+            }
+            return $this;
+        } else {
+            if ($measure->unit !== null && $measure->code !== null) {
+                $measure = $this->convertToSame($measure);
+                $this->value = $this->value + $measure->value;
+            }
+            return $this;
+        }
     }
 
     final public function convert(AbstractUnit $unit, ?AbstractUnit $denominator = null): self {
@@ -142,7 +156,6 @@ class Measure {
     }
 
     private function convertToSame(self $measure): self {
-        /** @var AbstractUnit $unit */
         $unit = $this->getSafeUnit()->getLess($measure->getSafeUnit());
 //        dump(['convertToSame','unit'=>$unit, 'this'=>$this, 'measure'=>$measure]);
         /** @var null|AbstractUnit $denominator */

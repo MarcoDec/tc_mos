@@ -8,6 +8,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /** @method static string getDefaultName() */
@@ -17,6 +18,9 @@ final class CurrencyRateCommand extends Command {
         parent::__construct();
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int {
         $this->currencyRepo->updateRates($this->getRates());
         return self::SUCCESS;
@@ -24,6 +28,7 @@ final class CurrencyRateCommand extends Command {
 
     /**
      * @return array{code: string, rate: float}[]
+     * @throws TransportExceptionInterface
      */
     private function getRates(): array {
         return $this->client->request('GET', 'https://www.floatrates.com/daily/eur.json')->toArray();

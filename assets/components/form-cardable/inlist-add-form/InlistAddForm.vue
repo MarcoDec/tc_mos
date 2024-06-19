@@ -21,7 +21,10 @@
     function normalizeLocalData() {
         const normalizedData = localData.value
         props.fields.forEach(field => {
-            if (field.type === 'multiselect-fetch' && field.max === 1) normalizedData[field.name] = localData.value[field.name][0]
+            // console.log('field', field.name, field.type, field.max, localData.value[field.name])
+            if (field.isGetter && typeof localData.value[field.name] !== 'undefined') normalizedData[field.target] = localData.value[field.name] ?? [0]
+            // console.log(normalizedData[field.name], normalizedData[field.target] )
+            if (field.type === 'multiselect-fetch' && field.max === 1 && typeof localData.value[field.name] !== 'undefined') normalizedData[field.name] = localData.value[field.name][0]
             if (field.type === 'measure') {
                 const currentCodeValue = localData.value[field.name].code
                 const newCodeValue = field.measure.code.options.options.filter(item => item.value === currentCodeValue)[0].text
@@ -48,7 +51,9 @@
     }
 
     async function onSubmit() {
+        // console.log('InListAddForm onSubmit()', localData.value, normalizeLocalData())
         if (props.apiMethod === 'POST') {
+            // console.log('props', props)
             try {
                 const result = await api(props.apiUrl, props.apiMethod, normalizeLocalData())
                 emits('submitted', result)

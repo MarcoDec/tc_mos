@@ -18,9 +18,15 @@
         user: {required: true, type: String},
         shouldDelete: {required: false, default: true},
         shouldSee: {required: false, default: true},
-        title: {default: null, required: false, type: String}
+        title: {default: null, required: false, type: String},
+        topOffset: {default: '0px', type: String}
     })
-    //console.log('props.fields', props.fields)
+    //Conversion des champs String en entier
+    const pageCurrent = computed(() => parseInt(props.currentPage))
+    const pageFirst = computed(() => parseInt(props.firstPage))
+    const pageLast = computed(() => parseInt(props.lastPage))
+    const pageNext = computed(() => parseInt(props.nextPage))
+    const pagePrevious = computed(() => parseInt(props.previousPage))
     const displayedFields = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
     const input = ref({})
     const emit = defineEmits(['deleted', 'getPage', 'update', 'trierAlphabet', 'update:modelValue', 'update:searchModelValue', 'search', 'cancelSearch'])
@@ -39,9 +45,9 @@
     function search(inputValues) {
         emit('search', inputValues)
     }
-    async function cancelSearch(inputValues) {
-        input.value = inputValues
-        emit('cancelSearch', inputValues)
+    async function cancelSearch() {
+        input.value = {}
+        emit('cancelSearch')
     }
     function onUpdateSearchModelValue(data) {
         input.value[data.field] = data.event
@@ -51,35 +57,41 @@
 
 <template>
     <table class="table table-bordered table-hover table-striped">
-        <AppCardableTableHeader :fields="displayedFields" :title="title" @trier-alphabet="trierAlphabet">
+        <AppCardableTableHeader :fields="displayedFields" :title="title" :top-offset="topOffset" @trier-alphabet="trierAlphabet">
             <template #title>
                 <slot name="title"/>
             </template>
+            <template #form>
+                <AppCardableTableBodyHeader :form="form" :fields="displayedFields" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch" @update:model-value="onUpdateSearchModelValue"/>
+            </template>
         </AppCardableTableHeader>
         <tbody>
-            <AppCardableTableBodyHeader :form="form" :fields="displayedFields" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch" @update:model-value="onUpdateSearchModelValue"/>
-            <tr class="bg-dark">
-                <td colspan="20"/>
-            </tr>
-            <AppCardableTableBodyItem :items="items" :fields="displayedFields" :current-page="currentPage" :pagine="pag" :should-delete="shouldDelete" :should-see="shouldSee" @update="update" @deleted="deleted"/>
+            <AppCardableTableBodyItem
+                :items="items"
+                :fields="displayedFields"
+                :should-delete="shouldDelete"
+                :should-see="shouldSee"
+                @update="update"
+                @deleted="deleted"/>
         </tbody>
     </table>
     <nav v-if="pag" aria-label="Page navigation example">
         <ul class="pagination">
-            <li v-if="firstPage && firstPage < currentPage" class="page-item">
-                <a class="page-link" href="#" @click.prevent="getPage(firstPage)">Début</a>
+            <li v-if="pageFirst && pageFirst < pageCurrent" class="page-item">
+                <a class="page-link" href="#" @click.prevent="getPage(pageFirst)">1</a>
             </li>
-            <li v-if="previousPage && previousPage < currentPage" class="page-item">
-                <a class="page-link" href="#" @click.prevent="getPage(previousPage)">Préc.</a>
+            <li v-if="pagePrevious && pagePrevious < pageCurrent && pagePrevious > 1" class="page-item">
+                <a class="page-link" href="#" @click.prevent="getPage(pagePrevious)">... {{ pagePrevious }}</a>
             </li>
             <li class="page-item">
-                <span class="bg-light page-link text-black">{{ currentPage }}</span>
+                <span v-if="pageCurrent" class="bg-light page-link text-black"><b>Page {{ pageCurrent }}</b></span>
+                <span v-else class="bg-light page-link text-black"><b>Aucun élément trouvé</b></span>
             </li>
-            <li v-if="nextPage && nextPage > currentPage" class="page-item">
-                <a class="page-link" href="#" @click.prevent="getPage(nextPage)">Suiv.</a>
+            <li v-if="pageNext && pageNext > pageCurrent && pageNext < pageLast" class="page-item">
+                <a class="page-link" href="#" @click.prevent="getPage(pageNext)">{{ pageNext }} ...</a>
             </li>
-            <li v-if="lastPage && lastPage > currentPage" class="page-item">
-                <a class="page-link" href="#" @click.prevent="getPage(lastPage)">Fin</a>
+            <li v-if="pageLast && pageLast > pageCurrent" class="page-item">
+                <a class="page-link" href="#" @click.prevent="getPage(pageLast)">{{ pageLast }}</a>
             </li>
         </ul>
     </nav>

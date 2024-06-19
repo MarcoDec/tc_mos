@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Logistics\Order\State;
+use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\MeasuredInterface;
@@ -57,13 +58,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['receipt'], 'type' => 'string']
+                            'schema' => ['enum' => ['receipt','blocker'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
@@ -101,6 +102,12 @@ class Receipt extends Entity implements MeasuredInterface {
         ORM\Embedded,
         Serializer\Groups(['read:receipt'])
     ]
+    private Blocker $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:receipt'])
+    ]
     private State $embState;
 
     /** @var Item<I>|null */
@@ -125,6 +132,7 @@ class Receipt extends Entity implements MeasuredInterface {
     public function __construct() {
         $this->checks = new ArrayCollection();
         $this->date = new DateTimeImmutable();
+        $this->embBlocker = new Blocker();
         $this->embState = new State();
         $this->quantity = new Measure();
         $this->stocks = new ArrayCollection();
@@ -177,6 +185,10 @@ class Receipt extends Entity implements MeasuredInterface {
         return $this->date;
     }
 
+    final public function getEmbBlocker(): Blocker {
+        return $this->embBlocker;
+    }
+
     final public function getEmbState(): State {
         return $this->embState;
     }
@@ -208,6 +220,10 @@ class Receipt extends Entity implements MeasuredInterface {
      */
     final public function getReceiptItem() {
         return $this->item?->getItem();
+    }
+
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
     }
 
     final public function getState(): string {
@@ -260,6 +276,13 @@ class Receipt extends Entity implements MeasuredInterface {
         $this->date = $date;
         return $this;
     }
+    /**
+     * @return $this
+     */
+    final public function setEmbBlocker(Blocker $embBlocker): self {
+        $this->embBlocker = $embBlocker;
+        return $this;
+    }
 
     /**
      * @return $this
@@ -286,7 +309,13 @@ class Receipt extends Entity implements MeasuredInterface {
         $this->quantity = $quantity;
         return $this;
     }
-
+    /**
+     * @return $this
+     */
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
+    }
     /**
      * @return $this
      */

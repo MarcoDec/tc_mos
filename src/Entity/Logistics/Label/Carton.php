@@ -154,7 +154,7 @@ class Carton extends Entity // implements MeasuredInterface, FileEntity
         ORM\Column(type: 'string', nullable: true),
         Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
-    private ?string $customerAddressName; // Nom du site client à livrer
+    private ?string $customerAddressName=''; // Nom du site client à livrer
     #[
         ApiProperty(description: 'Nom du site de départ'),
         ORM\Column(type: 'string', nullable: true),
@@ -249,6 +249,14 @@ class Carton extends Entity // implements MeasuredInterface, FileEntity
         Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
     ]
     private string $labelKind = 'TConcept';
+
+    #[
+        ApiProperty(description: 'Type de logo', example: 'Logo Réglementaire / Réglementaire et Securitaire'),
+        ORM\Column(type: 'integer', nullable: true, options: ['default' => 0]),
+        Serializer\Groups(['read:file', 'read:label-carton', 'create:label-carton', 'write:label-carton'])
+    ]
+    private int $logoType = 0; // 0=> aucun logo,  1=> Logo R, 2=> Logo R et S
+
     #[
         ApiProperty(description: 'Opérateur'),
         ORM\Column(type: 'string', nullable: true),
@@ -663,5 +671,22 @@ class Carton extends Entity // implements MeasuredInterface, FileEntity
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getLogoType(): int
+    {
+        return $this->logoType;
+    }
+
+    /**
+     * @param int $logoType
+     * @return Carton
+     */
+    public function setLogoType(int $logoType): Carton
+    {
+        $this->logoType = $logoType;
+        return $this;
+    }
 
 }

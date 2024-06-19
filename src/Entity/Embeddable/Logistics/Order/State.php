@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\Embeddable]
 class State extends AbstractState {
-    final public const TRANSITIONS = [self::TR_REJECT, self::TR_SUBMIT_VALIDATION, self::TR_VALIDATE];
+    final public const TRANSITIONS = [self::TR_REJECT, self::TR_RECEIVE, self::TR_VALIDATE];
 
     #[
         ApiProperty(description: 'état', openapiContext: ['enum' => ReceiptStateType::TYPES]),

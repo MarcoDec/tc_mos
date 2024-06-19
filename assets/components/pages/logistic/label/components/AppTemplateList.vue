@@ -17,19 +17,19 @@
             label: 'Désignation Etiquette Carton',
             type: 'text',
             required: true
-        },
-        {
-            name: 'customerAddressName',
-            label: 'DESTINATAIRE',
-            type: 'text',
-            required: true
-        },
-        {
-            name: 'manufacturer',
-            label: 'EXPEDITEUR',
-            type: 'text',
-            required: true
-        }
+        }//,
+        // {
+        //     name: 'customerAddressName',
+        //     label: 'DESTINATAIRE',
+        //     type: 'text',
+        //     required: true
+        // },
+        // {
+        //     name: 'manufacturer',
+        //     label: 'EXPEDITEUR',
+        //     type: 'text',
+        //     required: true
+        // }
         //,
         // {
         //     name: 'productDescription',
@@ -53,7 +53,7 @@
     const keyTC = ref(0)
     const localDataTC = ref({})
     function cancelTC() {
-        console.log('cancelTC')
+        //console.log('cancelTC')
         localDataTC.value = {
             labelName: '',
             customerAddressName: '',
@@ -68,11 +68,11 @@
         api(`/api/label-templates?labelKind=${props.labelKind}&templateFamilly=${props.templateFamilly}`, 'GET')
             .then(response => {
                 labeltemplatesTC.value = response['hydra:member']
-                console.log(labeltemplatesTC.value)
+                //console.log(labeltemplatesTC.value)
             })
     }
     function updateGeneralTC() {
-        console.log('updateGeneralTC', localDataTC.value)
+        //console.log('updateGeneralTC', localDataTC.value)
         //Récupération localDataTC et envoie via post pour ajout en base
         let width = 0 //inch
         let height = 0 //inch
@@ -107,7 +107,7 @@
         //localDataTC.value = tcTemplate
     }
     function generateLabels(tcTemplate) {
-        console.log('generateLabels', tcTemplate)
+        //console.log('generateLabels', tcTemplate)
         router.push({name: 'label-template-generate', params: {idLabelTemplate: tcTemplate.id}})
     }
     function removeTC(tcTemplate) {
@@ -162,8 +162,9 @@
         v-for="(tcTemplate, index) in labeltemplatesTC"
         :key="index"
         class="icon-with-text"
-        :label="tcTemplate.labelName"
-        :text="`${tcTemplate.manufacturer}`"
+        label=""
+        :show-edit="false"
+        :text="tcTemplate.labelName"
         icon="box"
         icon-color="#A4683BFF"
         :offset="15"

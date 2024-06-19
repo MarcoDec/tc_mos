@@ -1,25 +1,25 @@
 import {fieldValidator, generateLabelCols} from '../props'
 import {h, resolveComponent} from 'vue'
-// import AppFormGroupJS from './field/AppFormGroupJS'
-// import AppFormGroupJS from './field/AppFormGroupJS'
 import AppFormField from './field/AppFormField.vue'
 
 function AppFormJS(props, context) {
     function generateSlot() {
-        return context.slots['default']({
+        return context.slots.default({
             disabled: props.disabled,
             form: props.id,
             submitLabel: props.submitLabel,
             type: 'submit'
         })
     }
+
     const groups = []
     if (props.noContent) {
-        if (typeof context.slots['default'] === 'function')
+        if (typeof context.slots.default === 'function')
             groups.push(generateSlot())
     } else {
         for (const field of props.fields) {
-            const theProps = {
+            // console.log('field', field)
+            groups.push(h(AppFormField, {
                 disabled: props.disabled,
                 field,
                 form: props.id,
@@ -31,10 +31,9 @@ function AppFormJS(props, context) {
                     [field.name]: value
                 }),
                 violation: props.violations.find(violation => violation.propertyPath === field.name)
-            }
-            if (field.disabled) theProps.disabled = true
-            groups.push(h(AppFormField, theProps))
+            }))
         }
+
         if (props.submitLabel !== null){
             groups.push(h(
                 'div',
@@ -42,11 +41,19 @@ function AppFormJS(props, context) {
                 h(
                     'div',
                     {class: 'col d-inline-flex justify-content-end'},
-                    typeof context.slots['default'] === 'function'
+                    typeof context.slots.default === 'function'
                         ? generateSlot()
                         : h(
                             resolveComponent('AppBtnJS'),
-                            {disabled: props.disabled, form: props.id, type: 'submit'},
+                            {
+                                disabled: props.disabled,
+                                form: props.id,
+                                type: 'submit',
+                                onClick: e => {
+                                    e.preventDefault()
+                                    context.emit('submit', e)
+                                }
+                            },
                             () => props.submitLabel
                         )
                 )
@@ -63,17 +70,18 @@ function AppFormJS(props, context) {
             e.preventDefault()
             const data = new FormData(e.target)
             for (const [key, value] of Object.entries(Object.fromEntries(data))) {
-                if (typeof value === 'undefined' || value === null) data['delete'](key)
+                if (typeof value === 'undefined' || value === null)
+                    data.delete(key)
                 if (typeof value === 'string') {
                     data.set(key, value.trim())
                     if (!props.noIgnoreNull && data.get(key).length === 0)
-                        data['delete'](key)
+                        data.delete(key)
                 }
             }
-            context.emit('submit', data)
         }
     }
-    if (props.inline) attrs['class'] = 'd-inline m-0 p-0'
+    if (props.inline)
+        attrs.class = 'd-inline m-0 p-0'
     return h('form', attrs, groups)
 }
 
@@ -84,8 +92,11 @@ AppFormJS.props = {
         required: true,
         type: Array,
         validator(value) {
-            if (value.length === 0) return false
-            for (const field of value) if (!fieldValidator(field)) return false
+            if (value.length === 0)
+                return false
+            for (const field of value)
+                if (!fieldValidator(field))
+                    return false
             return true
         }
     },
@@ -98,4 +109,5 @@ AppFormJS.props = {
     submitLabel: {default: null, type: String},
     violations: {default: () => [], type: Array}
 }
+
 export default AppFormJS

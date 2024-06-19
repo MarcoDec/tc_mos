@@ -8,8 +8,8 @@ function AppRouterLinkJS(props, context) {
             default({navigate: onClick}) {
                 const attrs = {class: 'pointer', onClick}
                 if (props.css)
-                    attrs['class'] += ` ${props.css}`
-                return h('span', attrs, context.slots['default']())
+                    attrs.class += ` ${props.css}`
+                return h('span', attrs, context.slots.default())
             }
         }
     )

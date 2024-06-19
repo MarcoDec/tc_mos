@@ -2,7 +2,7 @@
 
 namespace App\Repository\Selling\Customer;
 
-use App\Entity\Selling\Customer\Product;
+use App\Entity\Selling\Customer\Price\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;

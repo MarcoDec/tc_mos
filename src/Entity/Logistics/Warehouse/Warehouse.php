@@ -21,8 +21,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'company' => 'exact', 'destination']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'id']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'company' => 'exact', 'destination', 'id' => 'exact']),
     ApiFilter(filterClass: SetFilter::class, properties: ['families' => 'partial']),
     ApiResource(
         description: 'Entrepôt',
@@ -128,6 +128,14 @@ class Warehouse extends Entity {
     ]
     private ?string $name = null;
 
+    #[
+        ApiProperty(description: 'Ancien identifiant', example: 1),
+        ORM\Column(name: 'old_id', type: 'integer', nullable: true),
+        Serializer\Groups(['read:warehouse'])
+    ]
+    private int $oldId;
+
+
     final public function addFamily(string $family): self {
         $this->families[] = $family;
         return $this;
@@ -191,6 +199,16 @@ class Warehouse extends Entity {
     {
         $this->attachments = $attachments;
         return $this;
+    }
+
+    public function getOldId(): int
+    {
+        return $this->oldId;
+    }
+
+    public function setOldId(int $oldId): void
+    {
+        $this->oldId = $oldId;
     }
 
 }

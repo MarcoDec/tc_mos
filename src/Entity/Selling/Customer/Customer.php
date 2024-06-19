@@ -6,6 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Blocker;
@@ -15,11 +16,17 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Selling\Customer\State;
 use App\Entity\Embeddable\Selling\Customer\WebPortal;
 use App\Entity\Entity;
+use App\Entity\Interfaces\FileEntity;
 use App\Entity\Management\Currency;
 use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
 use App\Entity\Selling\Customer\Attachment\CustomerAttachment;
+use App\Entity\Selling\Customer\Price\Component;
+use App\Entity\Selling\Customer\Price\Product;
+use App\Entity\Selling\Order\Order;
+use App\Entity\Traits\FileTrait;
+use App\Filter\SetFilter;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -28,7 +35,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial', 'id' => 'exact']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state', 'address.zipCode']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'address.zipCode', 'address.city', 'copper.index.value', 'id']),
     ApiResource(
         description: 'Client',
         collectionOperations: [
@@ -52,8 +61,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Créer un client',
                     'summary' => 'Créer un client'
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')',
-                'validation_groups' => ['Product-create']
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -70,6 +78,24 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Récupère un client',
                 ]
             ],
+            'patch image' => [
+                'openapi_context' => [
+                    'description' => 'Modifie le logo d\'un client',
+                    'summary' => 'Modifie le logo d\'un client'
+                ],
+                'denormalization_context' => [
+                    'groups' => ['write:customer:image'],
+                    'openapi_definition_name' => 'Customer-image'
+                ],
+                'normalization_context' => [
+                    'groups' => ['read:customer:image'],
+                    'openapi_definition_name' => 'Customer-image'
+                ],
+                'path' => '/customers/{id}/image',
+                'controller' => PlaceholderAction::class,
+                'method' => 'POST',
+                'input_formats' => ['multipart'],
+            ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un client',
@@ -78,7 +104,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                         'name' => 'process',
                         'required' => true,
                         'schema' => [
-                            'enum' => ['accounting', 'admin', 'logistics', 'main', 'quality'],
+                            'enum' => ['accounting', 'admin', 'logistics', 'main', 'quality', 'it', 'selling'],
                             'type' => 'string'
                         ]
                     ]],
@@ -124,14 +150,17 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Customer-write'
         ],
         normalizationContext: [
-            'groups' => ['read:address', 'read:copper', 'read:customer', 'read:id', 'read:measure', 'read:state'],
+            'groups' => ['read:address', 'read:copper', 'read:customer', 'read:id', 'read:measure', 'read:state', 'read:file'],
             'openapi_definition_name' => 'Customer-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\Entity
 ]
-class Customer extends Entity {
+class Customer extends Entity implements FileEntity {
+    use FileTrait;
+    //region propriétés
     #[
         ApiProperty(description: 'Portail de gestion'),
         ORM\Embedded,
@@ -150,7 +179,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
         ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'customers'),
-        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:main'])
+        Serializer\Groups(['create:customer', 'read:customer', 'write:customer', 'write:customer:main'])
     ]
     private Collection $administeredBy;
 
@@ -158,6 +187,12 @@ class Customer extends Entity {
        ORM\OneToMany(mappedBy: 'customer',targetEntity: CustomerAttachment::class)
        ]
     private Collection $attachments;
+
+    #[
+        ApiProperty(description: 'Grilles de prix Composant', readableLink: false, example: '/api/customer-components/1'),
+        ORM\OneToMany(mappedBy: 'customer', targetEntity: Component::class)
+    ]
+    private Collection $componentCustomers;
 
     #[
         ApiProperty(description: 'Temps de livraison', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
@@ -168,6 +203,7 @@ class Customer extends Entity {
 
     #[
         ApiProperty(description: 'Cuivre'),
+        Assert\NotNull,
         ORM\Embedded,
         Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:accounting'])
     ]
@@ -175,12 +211,33 @@ class Customer extends Entity {
 
     #[
         ApiProperty(description: 'Monnaie', readableLink: false, example: '/api/currencies/1'),
+        Assert\NotNull,
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['create:customer', 'read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private ?Currency $currency = null;
 
+    #[
+        ApiProperty(description: 'Type EDI', example: 'webEDI / integratedEDI'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:it'])
+    ]
+    private ?string $ediKind = null;
+
+    #[
+        ApiProperty(description: 'Maturité de définition EDI', example: 'test / production'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:it'])
+    ]
+    private ?string $ediOrdersMaturity = null;
+
+    #[
+        ApiProperty(description: 'Type de commande EDI', example: 'ORDERS/DELFOR'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:it'])
+    ]
+    private ?string $ediOrderType = null;
     #[
         ORM\Embedded,
         Serializer\Groups(['read:customer', 'read:customer:collection'])
@@ -201,11 +258,31 @@ class Customer extends Entity {
     private bool $equivalentEnabled = false;
 
     #[
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:customer:collection'])
+    ]
+    protected ?string $filePath = '';
+    #[
         ApiProperty(description: 'Factures par email', example: false),
         ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private bool $invoiceByEmail = false;
+
+    #[
+        ApiProperty(description: 'Commandes EDI ASN', example: false),
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:it'])
+    ]
+    private bool $isEdiAsn = false;
+
+    #[
+        ApiProperty(description: 'Commandes EDI', example: false),
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:it'])
+    ]
+    private bool $isEdiOrders = false;
 
     #[
         ApiProperty(description: 'Langue', example: 'Français'),
@@ -229,6 +306,7 @@ class Customer extends Entity {
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Kaporingol'),
+        Assert\NotBlank,
         ORM\Column,
         Serializer\Groups(['read:nomenclature', 'create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:admin', 'read:item'])
     ]
@@ -278,49 +356,40 @@ class Customer extends Entity {
     ]
     private WebPortal $qualityPortal;
 
-    /**
-     * @return Collection
-     */
-    public function getAttachments(): Collection
-    {
-        return $this->attachments;
-    }
+    #[
+        ApiProperty(description: 'Grilles de prix Produits', readableLink: false, example: '/api/customer-products/1'),
+        ORM\OneToMany(mappedBy: 'customer', targetEntity: Product::class)
+        ]
+    private Collection $productCustomers;
 
-    /**
-     * @param Collection $attachments
-     * @return Customer
-     */
-    public function setAttachments(Collection $attachments): Customer
-    {
-        $this->attachments = $attachments;
-        return $this;
-    }
+    #[
+        ORM\OneToMany(mappedBy: 'customer', targetEntity: Order::class)
+    ]
+    private Collection $sellingOrders;
 
-    /**
-     * @return WebPortal
-     */
-    public function getQualityPortal(): WebPortal
-    {
-        return $this->qualityPortal;
-    }
+    #[
+        ApiProperty(description: 'URL webEDI', example: 'https://www.webedi.com'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:selling'])
+    ]
+    private ?string $webEdiUrl = null;
 
-    /**
-     * @param WebPortal $qualityPortal
-     * @return Customer
-     */
-    public function setQualityPortal(WebPortal $qualityPortal): Customer
-    {
-        $this->qualityPortal = $qualityPortal;
-        return $this;
-    }
+    #[
+        ApiProperty(description: 'Informations de connexion webEDI', example: 'Lorem ipsum'),
+        ORM\Column(type: 'text', nullable: true),
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:selling'])
+    ]
+    private ?string $webEdiInfos = null;
+
     #[
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/1'),
+        Assert\NotNull,
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:admin'])
     ]
     private ?Society $society = null;
-
+    //endregion
     public function __construct() {
         $this->accountingPortal = new WebPortal();
         $this->address = new Address();
@@ -331,8 +400,11 @@ class Customer extends Entity {
         $this->embState = new State();
         $this->monthlyOutstanding = new Measure();
         $this->outstandingMax = new Measure();
+        $this->sellingOrders = new ArrayCollection();
+        $this->productCustomers = new ArrayCollection();
+        $this->componentCustomers = new ArrayCollection();
     }
-
+    //region getters et setters
     final public function addAdministeredBy(Company $administeredBy): self {
         if (!$this->administeredBy->contains($administeredBy)) {
             $this->administeredBy->add($administeredBy);
@@ -548,4 +620,227 @@ class Customer extends Entity {
 
         return $this;
     }
+    public function getSellingOrders(): Collection {
+
+        return $this->sellingOrders;
+
+    }
+
+
+    final public function setSellingOrders(Collection $sellingOrders): self {
+        $this->sellingOrders = $sellingOrders;
+
+        foreach ($sellingOrders as $sellingOrder) {
+            $sellingOrder->setCustomer($this);
+        }
+
+        return $this;
+    }
+    #[
+        ApiProperty(description: 'Icône', example: '/uploads/customer/1.jpg'),
+        Serializer\Groups(['read:file'])
+    ]
+    final public function getFilepath(): ?string {
+        return $this->filePath;
+    }
+    public function setFilePath(?string $filePath): void
+    {
+        $this->filePath = $filePath;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEdiKind(): ?string
+    {
+        return $this->ediKind;
+    }
+
+    /**
+     * @param string|null $ediKind
+     * @return Customer
+     */
+    public function setEdiKind(?string $ediKind): Customer
+    {
+        $this->ediKind = $ediKind;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEdiOrdersMaturity(): ?string
+    {
+        return $this->ediOrdersMaturity;
+    }
+
+    /**
+     * @param string|null $ediOrdersMaturity
+     * @return Customer
+     */
+    public function setEdiOrdersMaturity(?string $ediOrdersMaturity): Customer
+    {
+        $this->ediOrdersMaturity = $ediOrdersMaturity;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEdiOrderType(): ?string
+    {
+        return $this->ediOrderType;
+    }
+
+    /**
+     * @param string|null $ediOrderType
+     * @return Customer
+     */
+    public function setEdiOrderType(?string $ediOrderType): Customer
+    {
+        $this->ediOrderType = $ediOrderType;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEdiAsn(): bool
+    {
+        return $this->isEdiAsn;
+    }
+    /**
+     * @return bool
+     */
+    public function getIsEdiAsn(): bool
+    {
+        return $this->isEdiAsn;
+    }
+    /**
+     * @param bool $isEdiAsn
+     * @return Customer
+     */
+    public function setIsEdiAsn(bool $isEdiAsn): Customer
+    {
+        $this->isEdiAsn = $isEdiAsn;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsEdiOrders(): bool
+    {
+        return $this->isEdiOrders;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEdiOrders(): bool
+    {
+        return $this->isEdiOrders;
+    }
+
+    /**
+     * @param bool $isEdiOrders
+     * @return Customer
+     */
+    public function setIsEdiOrders(bool $isEdiOrders): Customer
+    {
+        $this->isEdiOrders = $isEdiOrders;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getWebEdiUrl(): ?string
+    {
+        return $this->webEdiUrl;
+    }
+
+    /**
+     * @param string|null $webEdiUrl
+     * @return Customer
+     */
+    public function setWebEdiUrl(?string $webEdiUrl): Customer
+    {
+        $this->webEdiUrl = $webEdiUrl;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getWebEdiInfos(): ?string
+    {
+        return $this->webEdiInfos;
+    }
+
+    /**
+     * @param string|null $webEdiInfos
+     * @return Customer
+     */
+    public function setWebEdiInfos(?string $webEdiInfos): Customer
+    {
+        $this->webEdiInfos = $webEdiInfos;
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
+
+    /**
+     * @param Collection $attachments
+     * @return Customer
+     */
+    public function setAttachments(Collection $attachments): Customer
+    {
+        $this->attachments = $attachments;
+        return $this;
+    }
+
+    /**
+     * @return WebPortal
+     */
+    public function getQualityPortal(): WebPortal
+    {
+        return $this->qualityPortal;
+    }
+
+    /**
+     * @param WebPortal $qualityPortal
+     * @return Customer
+     */
+    public function setQualityPortal(WebPortal $qualityPortal): Customer
+    {
+        $this->qualityPortal = $qualityPortal;
+        return $this;
+    }
+    public function getProductCustomers(): Collection
+    {
+        return $this->productCustomers;
+    }
+
+    public function setProductCustomers(Collection $productCustomers): void
+    {
+        $this->productCustomers = $productCustomers;
+    }
+
+    public function getComponentCustomers(): Collection
+    {
+        return $this->componentCustomers;
+    }
+
+    public function setComponentCustomers(Collection $componentCustomers): void
+    {
+        $this->componentCustomers = $componentCustomers;
+    }
+    //endregion
 }

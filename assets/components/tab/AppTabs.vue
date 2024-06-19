@@ -27,9 +27,6 @@
     <div :id="id" :class="css" class="d-flex">
         <ul class="bg-white nav" :class="{'nav-tabs-flex': formatNav === 'flex', 'nav-tabs-block': formatNav !== 'flex'}" role="tablist" :style="`--form: var(--form-${id})`">
             <li :class="cssLi" class="tab-icon" role="presentation" title="Icônes">
-                <label :for="icon" class="form-check-label">
-                    <Fa icon="icons"/>
-                </label>
                 <div class="form-check form-switch">
                     <input :id="icon" v-model="iconMode" class="form-check-input" type="checkbox"/>
                 </div>
@@ -47,7 +44,6 @@
         flex-direction: column;
         width: 100vw;
     }
-
     .nav-tabs-flex {
         display: flex;
         margin-top: 0px;

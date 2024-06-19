@@ -39,15 +39,15 @@
     const tabFields = ref([])
     const engineGroupsOptions = ref({})
     const skillsOptions = ref({})
-    const manufacturerEnginesOptions = ref({})
-    const employeesOptions = ref({})
+    // const manufacturerEnginesOptions = ref({})
+    //const employeesOptions = ref({})
     const outTrainersOptions = ref([])
-    const productsOptions = ref([])
+    // const productsOptions = ref([])
     onBeforeMount(() => {
-        console.log('Début chargement', new Date())
+        // console.log('Début chargement', new Date())
         const promiseEngineGroups = new Promise((resolve, reject) => {
             try {
-                const response = api('/api/engine-groups?pagination=false', 'GET')
+                const response = api('/api/workstation-groups?pagination=false', 'GET')
                 response.then(result => {
                     engineGroupsOptions.value = getOptions(result['hydra:member'], 'name')
                     resolve('promiseEngineGroups ok')
@@ -69,30 +69,30 @@
                 reject(e)
             }
         })
-        const promiseManufacturerEngines = new Promise((resolve, reject) => {
-            try {
-                const response = api('/api/manufacturer-engines?pagination=false', 'GET')
-                response.then(result => {
-                    manufacturerEnginesOptions.value = getOptions(result['hydra:member'], 'code')
-                    resolve('promiseManufacturerEngines ok')
-                })
-            } catch (e) {
-                console.log('error', e)
-                reject(e)
-            }
-        })
-        const promiseEmployees = new Promise((resolve, reject) => {
-            try {
-                const response = api('/api/employees?pagination=false', 'GET')
-                response.then(result => {
-                    employeesOptions.value = getOptions(result['hydra:member'], 'username')
-                    resolve('promiseEmployees ok')
-                })
-            } catch (e) {
-                console.log('error', e)
-                reject(e)
-            }
-        })
+        // const promiseManufacturerEngines = new Promise((resolve, reject) => {
+        //     try {
+        //         const response = api('/api/manufacturer-engines?pagination=false', 'GET')
+        //         response.then(result => {
+        //             manufacturerEnginesOptions.value = getOptions(result['hydra:member'], 'code')
+        //             resolve('promiseManufacturerEngines ok')
+        //         })
+        //     } catch (e) {
+        //         console.log('error', e)
+        //         reject(e)
+        //     }
+        // })
+        // const promiseEmployees = new Promise((resolve, reject) => {
+        //     try {
+        //         const response = api('/api/employees?pagination=false', 'GET')
+        //         response.then(result => {
+        //             employeesOptions.value = getOptions(result['hydra:member'], 'username')
+        //             resolve('promiseEmployees ok')
+        //         })
+        //     } catch (e) {
+        //         console.log('error', e)
+        //         reject(e)
+        //     }
+        // })
         const promiseOutTrainers = new Promise((resolve, reject) => {
             try {
                 const response = api('/api/out-trainers?pagination=false', 'GET')
@@ -105,22 +105,22 @@
                 reject(e)
             }
         })
-        const promiseProducts = new Promise((resolve, reject) => {
-            try {
-                const response = api('/api/products?pagination=false', 'GET')
-                response.then(result => {
-                    productsOptions.value = getOptions(result['hydra:member'], 'code')
-                    resolve('promiseProducts ok')
-                })
-            } catch (e) {
-                console.log('error', e)
-                reject(e)
-            }
-        })
-        const promises = [promiseEngineGroups, promiseSkillTypes, promiseManufacturerEngines, promiseEmployees, promiseOutTrainers, promiseProducts]
+        // const promiseProducts = new Promise((resolve, reject) => {
+        //     try {
+        //         const response = api('/api/products?pagination=false', 'GET')
+        //         response.then(result => {
+        //             productsOptions.value = getOptions(result['hydra:member'], 'code')
+        //             resolve('promiseProducts ok')
+        //         })
+        //     } catch (e) {
+        //         console.log('error', e)
+        //         reject(e)
+        //     }
+        // })
+        const promises = [promiseEngineGroups, promiseSkillTypes, /*promiseManufacturerEngines,*/ /*promiseEmployees, */promiseOutTrainers/*, promiseProducts*/]
         // eslint-disable-next-line array-callback-return
-        Promise.allSettled(promises).then(results => {
-            console.log('Chargement terminé', new Date(), results)
+        Promise.allSettled(promises).then(() => {
+            // console.log('Chargement terminé', new Date(), results)
             addFormField.value = [
                 {
                     label: 'Date',
@@ -139,7 +139,7 @@
                 },
                 {
                     label: 'Compétence',
-                    name: 'type',
+                    name: 'kind',
                     options: skillsOptions.value,
                     type: 'select'
                 },
@@ -156,22 +156,31 @@
                     options: engineGroupsOptions.value
                 },
                 {
-                    label: 'Machine',
+                    label: 'Type de Machine',
                     name: 'engine',
-                    type: 'select',
-                    options: manufacturerEnginesOptions.value
+                    api: '/api/manufacturer-engines',
+                    filteredProperty: 'code',
+                    type: 'multiselect-fetch',
+                    max: 1
                 },
                 {
                     label: 'Produit',
                     name: 'product',
-                    type: 'select',
-                    options: productsOptions.value
+                    api: '/api/products',
+                    filteredProperty: 'code',
+                    type: 'multiselect-fetch',
+                    max: 1
                 },
                 {
                     label: 'Formateur Interne',
-                    name: 'inTrainer',
-                    type: 'select',
-                    options: employeesOptions.value
+                    name: 'getterFilter',
+                    isGetter: true,
+                    target: 'inTrainer',
+                    // name: 'inTrainer',
+                    api: '/api/employees',
+                    filteredProperty: 'getterFilter',
+                    type: 'multiselect-fetch',
+                    max: 1
                 },
                 {
                     label: 'Formateur Externe',
@@ -202,7 +211,7 @@
                 },
                 {
                     label: 'Compétence',
-                    name: 'type',
+                    name: 'kind',
                     type: 'select',
                     options: skillsOptions.value,
                     min: true
@@ -221,24 +230,30 @@
                     min: false
                 },
                 {
-                    label: 'Machine',
+                    label: 'Type de Machine',
                     name: 'engine',
-                    type: 'select',
-                    options: manufacturerEnginesOptions.value,
+                    api: '/api/manufacturer-engines',
+                    filteredProperty: 'code',
+                    type: 'multiselect-fetch',
+                    max: 1,
                     min: false
                 },
                 {
                     label: 'Produit',
                     name: 'product',
-                    type: 'select',
-                    options: productsOptions.value,
+                    api: '/api/products',
+                    filteredProperty: 'code',
+                    type: 'multiselect-fetch',
+                    max: 1,
                     min: false
                 },
                 {
                     label: 'Formateur Interne',
                     name: 'inTrainer',
-                    type: 'select',
-                    options: employeesOptions.value,
+                    api: '/api/employees',
+                    filteredProperty: 'getterFilter',
+                    type: 'multiselect-fetch',
+                    max: 1,
                     min: false
                 },
                 {
@@ -284,12 +299,12 @@
         trierAlpha = computed(() => payload)
     }
     async function search(inputValues) {
-        console.log('search', inputValues)
+        // console.log('search', inputValues)
         resetFilter()
         if (inputValues.startedDate) employeesListFormationFetchCriteria.addFilter('startedDate', inputValues.startedDate, 'date')
         if (inputValues.endedDate) employeesListFormationFetchCriteria.addFilter('endedDate', inputValues.endedDate, 'date')
         if (inputValues.remindedDate) employeesListFormationFetchCriteria.addFilter('remindedDate', inputValues.remindedDate, 'date')
-        if (inputValues.type) employeesListFormationFetchCriteria.addFilter('type', inputValues.type)
+        if (inputValues.kind) employeesListFormationFetchCriteria.addFilter('kind', inputValues.kind)
         if (inputValues.level) employeesListFormationFetchCriteria.addFilter('level', inputValues.level)
         if (inputValues.family) employeesListFormationFetchCriteria.addFilter('family', inputValues.family)
         if (inputValues.engine) employeesListFormationFetchCriteria.addFilter('engine', inputValues.engine)

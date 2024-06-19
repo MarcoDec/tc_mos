@@ -2,8 +2,10 @@
 
 namespace App\Repository\Selling\Order;
 
+use App\Entity\Selling\Order\ComponentItem;
 use App\Entity\Selling\Order\ProductItem;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use ApiPlatform\Core\Annotation\ApiFilter;
@@ -69,13 +71,13 @@ final class ProductItemRepository extends ItemRepository {
             ->leftJoin('item.unit', 'u', Join::WITH, 'u.deleted = FALSE');
     }
 
-    /**
-     * @return ComponentItem[]
-     */
-    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array {
-        /** @phpstan-ignore-next-line */
-        return $this->createByQueryBuilder($criteria, $orderBy, $limit, $offset)->getQuery()->getResult();
-    }
+//    /**
+//     * @return ComponentItem[]
+//     */
+//    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array {
+//        /** @phpstan-ignore-next-line */
+//        return $this->createByQueryBuilder($criteria, $orderBy, $limit, $offset)->getQuery()->getResult();
+//    }
 
     public function findOneByCheck(int $id): ?ComponentItem {
         $query = $this->createCheckQueryBuilder($id)->getQuery();

@@ -49,7 +49,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'security' => 'is_granted(\''.Roles::ROLE_IT_WRITER.'\')'
             ]
         ],
-        itemOperations: ['get']
+        itemOperations: ['get', 'patch', 'delete'],
     ),
     ORM\Entity
     ]
@@ -100,6 +100,20 @@ class Edi extends Entity implements FileEntity
         Serializer\Groups(['edi:read'])
     ]
     private string $ediType;
+
+    #[
+        ApiProperty(description: 'ID GP|AN du fournisseur', example: '1'),
+        ORM\Column(type: 'integer', nullable: true),
+        Serializer\Groups(['read:edi', 'write:edi'])
+    ]
+    private ?int $supplierOldId;
+
+    #[
+        ApiProperty(description: 'ID GP|AN de la commande fournisseur', example: '1'),
+        ORM\Column(type: 'integer', nullable: true),
+        Serializer\Groups(['read:edi', 'write:edi'])
+    ]
+    private ?int $orderSupplierOldId;
 
     public function getFilePath(): ?string
     {
@@ -217,4 +231,41 @@ class Edi extends Entity implements FileEntity
         $this->ediMode = $ediMode;
         return $this;
     }
+
+    /**
+     * @return int|null
+     */
+    public function getSupplierOldId(): ?int
+    {
+        return $this->supplierOldId;
+    }
+
+    /**
+     * @param int|null $supplierOldId
+     * @return Edi
+     */
+    public function setSupplierOldId(?int $supplierOldId): Edi
+    {
+        $this->supplierOldId = $supplierOldId;
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getOrderSupplierOldId(): ?int
+    {
+        return $this->orderSupplierOldId;
+    }
+
+    /**
+     * @param int|null $orderSupplierOldId
+     * @return Edi
+     */
+    public function setOrderSupplierOldId(?int $orderSupplierOldId): Edi
+    {
+        $this->orderSupplierOldId = $orderSupplierOldId;
+        return $this;
+    }
+
 }

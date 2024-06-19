@@ -51,6 +51,7 @@
         store.showRouteName = `${route.name}/show`
     }
     //endregion
+    store.fields = props.fields
     await store.fetch()
 
     const storedFields = useFields(route.name, props.fields)

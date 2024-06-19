@@ -1,0 +1,13 @@
+diff --git a/vendor/api-platform/core/src/Identifier/Normalizer/IntegerDenormalizer.php b/patches/tmp/IntegerDenormalizer.php
+index 808889728..4bce4be0e 100644
+--- a/vendor/api-platform/core/src/Identifier/Normalizer/IntegerDenormalizer.php
++++ b/patches/tmp/IntegerDenormalizer.php
+@@ -32,7 +32,7 @@ final class IntegerDenormalizer implements DenormalizerInterface, CacheableSuppo
+     /**
+      * {@inheritdoc}
+      */
+-    public function supportsDenormalization($data, $type, $format = null): bool
++    public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
+     {
+         return Type::BUILTIN_TYPE_INT === $type && \is_string($data);
+     }

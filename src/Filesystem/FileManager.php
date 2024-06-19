@@ -76,6 +76,61 @@ final class FileManager {
         $familySubFolder = $family instanceof \App\Entity\Project\Product\Family ? 'product-families' : 'component-families';
         $family->setFilePath($host.'/uploads/'.$familySubFolder.'/'.$family->getId().'.'.$extension);
     }
+    public function uploadFileEntityImage(FileEntity $entity): void {
+        $host = $this->requestStack->getCurrentRequest()->getSchemeAndHttpHost();
+//        dump($_FILES);
+        if (isset($_FILES['file']) && $_FILES['file']['error'] == UPLOAD_ERR_OK) {
+            // Créer une instance de UploadedFile
+            $file = new UploadedFile(
+                $_FILES['file']['tmp_name'],
+                $_FILES['file']['name'],
+                $_FILES['file']['type'],
+                $_FILES['file']['error']
+            );
+        } else {
+            $file = $entity->getFile();
+        }
+        $dashedName = $this->getSubFolderNameFromClassName($entity::class);
+//        dump(['dashName' => $dashedName]);
+        if (
+            empty($file)
+            || !($file instanceof UploadedFile)
+            || empty($dashedName)
+        ) {
+//            dump('uploadFileEntityImage::empty');
+            return;
+        }
+        $dir = $this->scandir($dashedName);
+        if (!empty($first = $dir->firstStartsWith("{$entity->getId()}."))) {
+            $this->fs->remove($first);
+        }
+        $extension = $file->getExtension() ?: $file->guessExtension();
+        if (empty($extension)) {
+            throw new InvalidArgumentException("Cannot guess extension of {$file->getClientOriginalName()}.");
+        }
+        $entity->setFile($file->move($dir, "{$entity->getId()}.{$extension}"));
+        $entitySubFolder = $this->getSubFolderNameFromClassName($entity::class);
+        $entity->setFilePath($host.'/uploads/'.$entitySubFolder.'/'.$entity->getId().'.'.$extension);
+    }
+    private function getSubFolderNameFromClassName(string $className): string {
+        // Étape 1: Supprimer le namespace de base
+//        dump(['className' => $className]);
+        $chaineSansNamespace = str_replace('App\Entity\\', '', $className);
+//        dump(['chaineSansNamespace' => $chaineSansNamespace]);
+        // Étape 2: Séparer les mots sur les majuscules
+        $parties = preg_split('/(?=[A-Z])/', $chaineSansNamespace, -1, PREG_SPLIT_NO_EMPTY);
+        $parties = array_map(function ($partie) {
+            return str_replace('\\', '', $partie);
+        }, $parties);
+//        dump(['parties' => $parties]);
+        // Étape 3: Convertir en minuscules
+        $partiesMinuscules = array_map('strtolower', $parties);
+//        dump(['partiesMinuscules' => $partiesMinuscules]);
+        // Étape 4: Concaténer avec des traits d'union
+        $resultat = implode('-', $partiesMinuscules);
+//        dump(['resultat' => $resultat]);
+        return $resultat;
+    }
 
     private function checkFolderAndCreateIfNeeded(string $folder): void {
         if (!file_exists($folder)) {

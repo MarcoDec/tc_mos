@@ -7,6 +7,7 @@
         of: {default: () => ({}), required: true, type: Object},
         operateur: {default: () => ({}), required: true, type: Object}
     })
+    //console.log('AppStepProduit', props)
     const checkResult = ref({
         class: '',
         text: '',
@@ -36,19 +37,36 @@
         if (test === false) return
         if (check()) {
             //Avant de passer à l'impression il faut créer l'étiquette avec l'ensemble des données
+            const manufacturer = props.of.data.customer.id_soc_gest_customer === 2 ? 'MG2C' : 'TCONCEPT'
+            const destinataire = props.of.data.customerName
+            let prefix = ''
+            switch (props.operateur.data.id_society) {
+                case '611':
+                    prefix = 'PR'
+                    break
+                case '5':
+                    prefix = 'WE'
+                    break
+                default:
+                    prefix = 'TC'
+                    break
+            }
             const dataTosend = {
                 labelKind: props.modeleEtiquette.labelKind,
                 labelName: props.modeleEtiquette.labelName,
                 templateFamily: props.modeleEtiquette.templateFamily,
-                manufacturer: props.modeleEtiquette.manufacturer,
-                customerAddressName: props.modeleEtiquette.customerAddressName,
-                operator: props.operateur.matricule,
+                manufacturer,
+                customerAddressName: destinataire,
+                operator: prefix + props.operateur.data.matricule,
                 batchnumber: `${props.of.data.ofnumber}.${props.of.data.indice}`,
                 productDescription: props.of.data.productDescription,
                 productReference: props.of.data.productRef,
                 productIndice: props.of.data.productIndice,
-                quantity: nbProduit.value
+                quantity: nbProduit.value,
+                logoType: parseInt(props.of.data.productLabelLogo),
+                date: new Date().toISOString()
             }
+            //console.log('dataTosend', dataTosend, props.modeleEtiquette)
             const response = api('/api/label-cartons', 'post', dataTosend)
             // et récupérer le code ZPL
             response.then(data => {
@@ -73,7 +91,7 @@
     }
     function next() {
         if (product.value === '') return
-        checkResult.value['class'] = ''
+        checkResult.value.class = ''
         checkResult.value.text = ''
         checkResult.value.state = true
         // On vérifie que la valeur product.value correspond à la valeur de props.of.data.productRef
@@ -81,16 +99,14 @@
             scannedProducts.value.push(product.value)
             nbProduit.value = scannedProducts.value.length
             const diff = nbProduit.value - Number(props.of.data.productConditionnement)
-            //console.log('nbProduit', nbProduit.value, props.of.data.productConditionnement, typeof nbProduit.value, typeof Number(props.of.data.productConditionnement), diff)
+            emits('changeProducts', nbProduit.value)
             if (diff === 0) {
                 validate()
-                return
             }
-            emits('changeProducts', nbProduit.value)
             product.value = ''
             return
         }
-        checkResult.value['class'] = 'bg-danger'
+        checkResult.value.class = 'bg-danger'
         checkResult.value.text = `Le dernier produit scanné ne correspond pas à celui attendu ${props.of.data.productRef}, veuillez recommencer`
         checkResult.value.state = false
         product.value = ''
@@ -113,7 +129,7 @@
         <div class="step-title">
             Scan Produits
         </div>
-        <div class="align-items-stretch align-self-stretch d-flex flex-row justify-content-between" :class="checkResult['class']">
+        <div class="align-items-stretch align-self-stretch d-flex flex-row justify-content-between" :class="checkResult.class">
             <input
                 id="product"
                 ref="inputProduitRef"

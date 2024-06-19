@@ -9,14 +9,14 @@ function AppNavbarLink(props, context) {
             ? h(
                 'span',
                 {class: `text-${props.variant}`},
-                [h(resolveComponent('Fa'), {icon: 'triangle-exclamation'}), context.slots['default']()]
+                [h(resolveComponent('Fa'), {icon: 'triangle-exclamation'}), context.slots.default()]
             )
             : h(
                 resolveComponent('AppRouterLink'),
                 {css: `text-${props.variant}`, to: props.to},
                 () => [
                     h(resolveComponent('Fa'), {brands: props.brands, icon: props.icon}),
-                    context.slots['default']()
+                    context.slots.default()
                 ]
             ))
     )

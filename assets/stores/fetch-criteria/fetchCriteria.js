@@ -4,6 +4,7 @@ export default function useFetchCriteria(id) {
     return defineStore(`fetchCriteria_${id}`, {
         actions: {
             addFilter(field, value, dateType = '') {
+                if (typeof field === 'undefined' || typeof value === 'undefined') return
                 if (dateType === '') { //Si le champ à filtrer n'est pas une date
                     const filteredFilters = this.filters.filter(element => element.field === field)
                     if (filteredFilters.length > 0) { // Si l'élément fait déjà parti des filtres existant on mets juste la valeur à jour
@@ -57,16 +58,15 @@ export default function useFetchCriteria(id) {
                 this.page = 1
             },
             resetFilter(field) {
-                const filteredFilters = this.filters.filter(element => element.field === field)
-                filteredFilters.forEach(filter => {
-                    this.filters.remove(filter)
-                })
+                this.filters = this.filters.filter(filter => filter.field !== field)
             },
             resetSort(field) {
-                const filteredSorts = this.sorts.filter(element => element.field === field)
-                filteredSorts.forEach(sortElement => {
-                    this.sorts.remove(sortElement)
-                })
+                this.sorts = this.sorts.filter(sortElement => sortElement.field !== field)
+            },
+            reset() {
+                this.filters = []
+                this.sorts = []
+                this.page = 1
             }
         },
         getters: {

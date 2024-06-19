@@ -43,6 +43,7 @@
     //endregion
     //region initialisation des éléments pour le tableau de liste
     const tabFields = [
+        {label: 'ID', name: 'id', trie: true, type: 'text', filter: true, width: 50},
         {
             label: 'Nom', name: 'name', trie: true, type: 'text'
         },
@@ -76,7 +77,7 @@
     //region Fonctions relatives à la liste
     function update(item) {
         const itemId = item['@id'].match(getId)[1]
-        console.log(item, itemId)
+        //console.log(item, itemId)
         // eslint-disable-next-line quote-props
         router.push({name: 'company', params: {'id_company': itemId}})
     }
@@ -87,6 +88,7 @@
     async function search(inputValues) {
         companyListCriteria.resetAllFilter()
         if (inputValues.name) companyListCriteria.addFilter('name', inputValues.name)
+        if (inputValues.id) companyListCriteria.addFilter('id', inputValues.id)
         if (inputValues.society) companyListCriteria.addFilter('society.id', inputValues.society.match(getId)[1])
         if (inputValues.currency) companyListCriteria.addFilter('currency.id', inputValues.currency.match(getId)[1])
         if (inputValues.workTimeTable) companyListCriteria.addFilter('workTimeTable', inputValues.workTimeTable)

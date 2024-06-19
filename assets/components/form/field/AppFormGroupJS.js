@@ -4,8 +4,9 @@ import AppLabelJS from './AppLabelJS'
 
 function AppFormGroupJS(props, context) {
     const id = `${props.form}-${props.field.name}`
+    const isDisabled = props.disabled || props.field.readOnly
     const attrs = {
-        disabled: props.disabled,
+        disabled: isDisabled,
         field: props.field,
         form: props.form,
         id,
@@ -14,13 +15,13 @@ function AppFormGroupJS(props, context) {
     }
     const children = []
     if (props.violation) {
-        attrs['class'] = 'is-invalid'
+        attrs.class = 'is-invalid'
         children.push(h(resolveComponent('AppInputGuesserJS'), attrs))
         children.push(h('div', {class: 'invalid-feedback'}, props.violation.message))
     } else {
         children.push(h(resolveComponent('AppInputGuesserJS'), attrs))
     }
-    return h('div', {class: 'row mb-3'}, [
+    return h('div', {class: 'row mb-1'}, [
         h(AppLabelJS, {cols: props.labelCols, field: props.field, for: id}),
         h('div', {class: 'col'}, children)
     ])

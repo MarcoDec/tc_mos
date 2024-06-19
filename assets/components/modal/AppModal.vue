@@ -1,8 +1,8 @@
 <script setup>
     import {onMounted, onUnmounted, ref} from 'vue'
-    import AppBtnJS from '../AppBtnJS'
     import {Modal} from 'bootstrap'
 
+    const emits = defineEmits(['closed'])
     const props = defineProps({
         noInstantiate: {required: false, type: Boolean},
         title: {required: true, type: String}
@@ -23,7 +23,12 @@
             modal.value = new Modal(el.value)
         }
     }
-
+    function onModalClose() {
+        if (modal.value !== null) {
+            modal.value.hide()
+            emits('closed')
+        }
+    }
     onMounted(instantiate)
 
     onUnmounted(dispose)
@@ -31,7 +36,7 @@
 
 <template>
     <div ref="el" class="modal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
@@ -42,9 +47,9 @@
                     <slot/>
                 </div>
                 <div class="modal-footer">
-                    <AppBtnJS data-bs-dismiss="modal" variant="danger">
+                    <AppBtn data-bs-dismiss="modal" label="fermer" variant="danger" @click="onModalClose">
                         Fermer
-                    </AppBtnJS>
+                    </AppBtn>
                     <slot name="buttons"/>
                 </div>
             </div>

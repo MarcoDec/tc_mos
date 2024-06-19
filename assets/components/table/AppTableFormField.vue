@@ -26,7 +26,9 @@
             //console.log(props.field.name, props.modelValue[props.field.name])
             const res = props.field.options.options.find(e => {
                 const iri = e.value ? e.value : e['@id']
-                const searchedIri = typeof get(props.modelValue, props.field.name) === 'object' ? get(props.modelValue, props.field.name)['@id'] : get(props.modelValue, props.field.name)
+                const data = get(props.modelValue, props.field.name)
+                if (typeof data === 'undefined' || data === null) return false
+                const searchedIri = typeof data === 'object' ? data['@id'] : data
                 return iri === searchedIri
             })
             //console.log('res', res)
@@ -45,9 +47,9 @@
     const css = computed(() => ({'is-invalid': hasViolation.value}))
 
     const localField = ref(props.field)
-    if (props.initialField.type === 'multiselect-fetch') {
+    if (props.initialField && props.initialField.type === 'multiselect-fetch') {
         localField.value = {...localField.value, ...props.initialField}
-        console.log('localField', localField.value)
+        // console.log('localField', localField.value)
     }
     function dispose() {
         if (tooltip.value !== null) {

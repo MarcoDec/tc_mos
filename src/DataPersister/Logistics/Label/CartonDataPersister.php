@@ -17,6 +17,7 @@ class CartonDataPersister implements DataPersisterInterface
 
     public function persist($data): void
     {
+        dump($data);
         $this->labelCartonManager->generateZPL($data);
     }
 

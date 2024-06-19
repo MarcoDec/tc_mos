@@ -66,7 +66,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère une unité',
+                    'summary' => 'Récupère une unité'
+                ]
+            ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une unité',
@@ -86,7 +91,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'groups' => ['read:id', 'read:unit'],
             'openapi_definition_name' => 'Unit-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     Base,
     ORM\Entity(repositoryClass: UnitRepository::class),

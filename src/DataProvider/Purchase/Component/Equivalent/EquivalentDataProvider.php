@@ -15,11 +15,16 @@ class EquivalentDataProvider implements ItemDataProviderInterface, RestrictedDat
     }
 
     /**
+     * @param string $resourceClass
+     * @param $id
+     * @param string|null $operationName
+     * @param array $context
+     * @return ComponentEquivalent|null
      */
-    public function getItem(string $resourceClass, $id, string $operationName = null, array $context = [])
+    public function getItem(string $resourceClass, $id, string $operationName = null, array $context = []): ?ComponentEquivalent
     {
         $loadedItem = $this->em->getRepository($resourceClass)->find($id);
-        dump($loadedItem->getComponents()->getValues());
+//        dump($loadedItem->getComponents()->getValues());
         return $loadedItem;
     }
 

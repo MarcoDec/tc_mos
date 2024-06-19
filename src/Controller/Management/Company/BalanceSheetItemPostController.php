@@ -44,11 +44,11 @@ class BalanceSheetItemPostController
     public function __invoke(Request $request):BalanceSheetItem {
         $this->getEntity($request);
         $requestParameters = $request->request->all();
-        dump([
-            'request' => $request,
-            'requestParameters' => $requestParameters,
-            'entity' => $this->entity
-        ]);
+//        dump([
+//            'request' => $request,
+//            'requestParameters' => $requestParameters,
+//            'entity' => $this->entity
+//        ]);
         $currencyProperties = ['amount', 'unitPrice', 'vat'];
         $unitProperties = ['quantity'];
         foreach ($currencyProperties as $property) {
@@ -61,7 +61,7 @@ class BalanceSheetItemPostController
                 $this->entity->{'set'.ucfirst($property)}($this->getMeasureUnit($requestParameters, $property.'-value', $property.'-code'));
             }
         }
-        dump(['entity' => $this->entity]);
+//        dump(['entity' => $this->entity]);
         $this->getFileAndPersist($request);
         return $this->entity;
     }

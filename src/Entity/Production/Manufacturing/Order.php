@@ -12,6 +12,7 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Production\Manufacturing\Order\State;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
+use App\Entity\Logistics\Component\Preparation;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Project\Product\Product;
 use App\Entity\Selling\Order\Order as SellingOrder;
@@ -21,6 +22,8 @@ use App\Filter\SetFilter;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Controller\Manufacturing\Component\ItemManufacturingComponentController;
@@ -28,11 +31,31 @@ use App\Controller\Manufacturing\Component\ItemManufacturingComponentController;
 
 
 #[
-    ApiFilter(filterClass: OrderFilter::class, properties: ['deliveryDate' => 'DESC']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['company']),
+    ApiFilter(filterClass: OrderFilter::class, properties: [
+        'deliveryDate' => 'DESC',
+        'manufacturingDate' => 'DESC',
+        'quantityRequested.value' => 'DESC',
+        'embState.state' => 'DESC',
+        'manufacturingCompany' => 'DESC',
+        'embBlocker.state' => 'DESC'
+    ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'sellingOrder', 'manufacturingCompany', 'product']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['product.product.code'=> 'exact', 'embState.state','embBlocker.state', 'product.customer.id' => 'exact', 'product.product.name' => 'partial', 'deliveryDate' => 'partial', 'ref' => 'partial', 'product.product.index' => 'partial', 'quantityRequested.value' => 'partial', 'quantityRequested.code' => 'partial', 'product.product.price.code' => 'exact', 'product.product.price.value' => 'partial']),
-    
+    ApiFilter(filterClass: SearchFilter::class, properties: [
+        'product.product.code'=> 'exact',
+        'embState.state','embBlocker.state',
+        'product.customer.id' => 'exact',
+        'product.product.name' => 'partial',
+        'deliveryDate' => 'partial',
+        'manufacturingDate' => 'partial',
+        'ref' => 'partial',
+        'product.product.index' => 'partial',
+        'quantityRequested.value' => 'partial',
+        'quantityRequested.code' => 'partial',
+        'product.product.price.code' => 'exact',
+        'product.product.price.value' => 'partial'
+    ]),
+
     ApiResource(
         description: 'OF',
         collectionOperations: [
@@ -48,7 +71,7 @@ use App\Controller\Manufacturing\Component\ItemManufacturingComponentController;
                     'summary' => 'Créer un OF',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
-            ], 
+            ],
             'filtreComponent' => [
                 'controller' => ItemManufacturingComponentController::class,
                 'method' => 'GET',
@@ -197,11 +220,11 @@ class Order extends Entity implements BarCodeInterface {
         ORM\ManyToOne,
         Serializer\Groups(['read:production-quality', 'read:manufacturing-order', 'write:manufacturing-order'])
     ]
-    private ?SellingOrder $order = null;
+    private ?SellingOrder $sellingOrder = null;
 
     #[
-        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
-        ORM\ManyToOne,
+        ApiProperty(description: 'Produit', readableLink: true, example: '/api/products/1'),
+        ORM\ManyToOne(inversedBy:'productorders'),
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?Product $product = null;
@@ -220,10 +243,22 @@ class Order extends Entity implements BarCodeInterface {
     ]
     private ?string $ref = null;
 
+    #[
+        ORM\OneToMany(targetEntity: Operation::class, mappedBy: 'order')
+    ]
+    private Collection $operationOrders;
+
+    #[ORM\OneToMany(targetEntity: Preparation::class, mappedBy: 'ofnumber')]
+
+    private Collection $preparationOrders;
+
     public function __construct() {
         $this->embBlocker = new Closer();
         $this->embState = new State();
         $this->quantityRequested = new Measure();
+        $this->operationOrders = new ArrayCollection();
+        $this->preparationOrders = new ArrayCollection();
+
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -266,8 +301,8 @@ class Order extends Entity implements BarCodeInterface {
         return $this->notes;
     }
 
-    final public function getOrder(): ?SellingOrder {
-        return $this->order;
+    final public function getSellingOrder(): ?SellingOrder {
+        return $this->sellingOrder;
     }
 
     final public function getProduct(): ?Product {
@@ -284,6 +319,14 @@ class Order extends Entity implements BarCodeInterface {
 
     final public function getState(): string {
         return $this->embState->getState();
+    }
+
+    public function getOperationOrders(): Collection {
+        return $this->operationOrders;
+    }
+
+    public function getPreparationOrders(): Collection {
+        return $this->preparationOrders;
     }
 
     final public function setBlocker(string $state): self {
@@ -331,8 +374,8 @@ class Order extends Entity implements BarCodeInterface {
         return $this;
     }
 
-    final public function setOrder(?SellingOrder $order): self {
-        $this->order = $order;
+    final public function setSellingOrder(?SellingOrder $sellingOrder): self {
+        $this->sellingOrder = $sellingOrder;
         return $this;
     }
 

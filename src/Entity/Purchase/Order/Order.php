@@ -145,7 +145,8 @@ class Order extends Entity {
     private State $embState;
 
     /** @var Collection<int, Item<Component|Product>> */
-    #[ORM\OneToMany(mappedBy: 'order', targetEntity: Item::class)]
+    #[ORM\OneToMany(mappedBy: 'parentOrder', targetEntity: Item::class, fetch: 'EAGER')]
+    
     private Collection $items;
 
     #[
@@ -195,7 +196,7 @@ class Order extends Entity {
     final public function addItem(Item $item): self {
         if (!$this->items->contains($item)) {
             $this->items->add($item);
-            $item->setOrder($this);
+            $item->setParentOrder($this);
         }
         return $this;
     }
@@ -227,7 +228,7 @@ class Order extends Entity {
     /**
      * @return Collection<int, Item<Component|Product>>
      */
-    final public function getItems(): Collection {
+    public function getItems(): Collection {
         return $this->items;
     }
 
@@ -285,8 +286,8 @@ class Order extends Entity {
     final public function removeItem(Item $item): self {
         if ($this->items->contains($item)) {
             $this->items->removeElement($item);
-            if ($item->getOrder() === $this) {
-                $item->setOrder(null);
+            if ($item->getParentOrder() === $this) {
+                $item->setParentOrder(null);
             }
         }
         return $this;

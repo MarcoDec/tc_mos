@@ -1,19 +1,4 @@
 services:
-#  traefik:
-#    image: "traefik:v2.9"
-#    container_name: "traefik"
-#    command:
-#      #- "--log.level=DEBUG"
-#      - "--api.insecure=true"
-#      - "--providers.docker=true"
-#      - "--providers.docker.exposedbydefault=false"
-#      - "--entrypoints.web.address=:80"
-#    ports:
-#      - "80:80"
-#      - "8080:8080"
-#    restart: always
-#    volumes:
-#      - "/var/run/docker.sock:/var/run/docker.sock:ro"
   apache:
     container_name: tconcept_gpao_apache
     depends_on:
@@ -74,6 +59,7 @@ services:
       - ./var:/var/www/html/TConcept-GPAO/var:delegated
       - ./vendor:/var/www/html/TConcept-GPAO/vendor:delegated
       - ./docker/php/client.conf:/etc/cups/client.conf
+      - ./edi:/var/www/html/TConcept-GPAO/edi:delegated
     environment:
       - CUPS_SERVER=cups:631
 #      - CUPS_SERVER=cups.newgp.localhost:631
@@ -186,4 +172,4 @@ services:
 networks:
   traefik_reseau_tc:
     external: true
-version: '3.3'
+###version: '3.3'
