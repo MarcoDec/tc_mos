@@ -165,7 +165,7 @@
         await storeProductsList.fetch(productListCriteria.getFetchCriteria)
     }
     function onProductShowRequest(item) {
-        console.log('onProductShowRequest', item)
+        //console.log('onProductShowRequest', item)
         /* eslint-disable camelcase */
         router.push({name: 'product', params: {id_product: item.id}})
     }

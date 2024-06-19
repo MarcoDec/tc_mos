@@ -78,7 +78,7 @@
         background-color: white;
         border: 1px solid #ccc;
         border-radius: 5px;
-        //width: 100%;
+        /*width: 100%;*/
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         z-index: 10;
     }

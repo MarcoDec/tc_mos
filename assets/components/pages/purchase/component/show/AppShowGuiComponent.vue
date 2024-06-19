@@ -28,7 +28,7 @@
     //region Chargement des données
     onBeforeMount(() => {
         const promises = []
-        console.log('onBeforeMount')
+        //console.log('onBeforeMount')
         promises.push(fetchUnits.fetchOp())
         promises.push(useFetchComponentStore.fetchOne(idComponent))
         Promise.all(promises).then(() => {

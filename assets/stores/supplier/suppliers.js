@@ -31,18 +31,18 @@ export default defineStore('suppliers', {
         // }
         async fetch() {
             const response = await api('/api/suppliers', 'GET')
-            console.log('response', response)
+            //console.log('response', response)
             this.suppliers = await this.updatePagination(response)
-            console.log('this.suppliers', this.suppliers)
+            // console.log('this.suppliers', this.suppliers)
         },
         async delated(payload){
             await api(`/api/suppliers/${payload}`, 'DELETE')
             this.suppliers = this.suppliers.filter(supplier => Number(supplier['@id'].match(/\d+/)[0]) !== payload)
         },
         async itemsPagination(nPage) {
-            console.log('nPage', nPage)
+            // console.log('nPage', nPage)
             const response = await api(`/api/suppliers?page=${nPage}`, 'GET')
-            console.log('response', response)
+            // console.log('response', response)
             this.suppliers = await this.updatePagination(response)
         },
         async updatePagination(response) {

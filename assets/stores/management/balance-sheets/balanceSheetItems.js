@@ -21,7 +21,7 @@ export default function useBalanceSheetItemStore(base = 'base') {
                 await api(`/api/balance-sheet-items/${id}`, 'PATCH', data)
             },
             async remove(id) {
-                console.log('balanceSheetItems.remove', id)
+                //console.log('balanceSheetItems.remove', id)
                 await api(`/api/balance-sheet-items/${id}`, 'DELETE')
             },
             resetState() {

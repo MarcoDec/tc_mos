@@ -21,25 +21,25 @@ class NewFileEventListener
         $fileName = $event->getFileName();
         // On analyse le chemin du fichier de la forme '/{mode_edi}/{type_edi}/{filename}'
         $pathParts = explode('/', $fileName);
-        $modeEdi = $pathParts[1];
-        $typeEdi = $pathParts[2];
-        $fileName = $pathParts[3];
+        $modeEdi = $pathParts[0];
+        $typeEdi = $pathParts[1];
+        $fileName = $pathParts[2];
         /**
          * En fonction du type EDI, on déclenche un événement spécifique
          */
         switch ($typeEdi) {
-            case 'orders':
-                $this->dispatchOrderEvent($modeEdi, $fileName, $event);
-                break;
-            case 'ordchg':
-                $this->dispatchOrderChgEvent($modeEdi, $fileName, $event);
-                break;
+//            case 'orders':
+//                $this->dispatchOrderEvent($modeEdi, $fileName, $event);
+//                break;
+//            case 'ordchg':
+//                $this->dispatchOrderChgEvent($modeEdi, $fileName, $event);
+//                break;
             case 'desadv':
                 $this->dispatchDesadvEvent($modeEdi, $fileName, $event);
                 break;
-            case 'delfor':
-                $this->dispatchDelforEvent($modeEdi, $fileName, $event);
-                break;
+//            case 'delfor':
+//                $this->dispatchDelforEvent($modeEdi, $fileName, $event);
+//                break;
             default:
                 break;
         }

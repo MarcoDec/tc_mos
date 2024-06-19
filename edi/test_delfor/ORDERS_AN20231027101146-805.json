@@ -1,0 +1,185 @@
+{
+  "generationEngineRelease": "20231027",
+  "messageId": "AN20231027101146-805",
+  "generationDate": "2023-10-27 10:11:46",
+  "supplierDetails": {
+    "ID": "805",
+    "Name": "FICOSA"
+  },
+  "orders": [
+    {
+      "buyersDetails": {
+        "ID": "1",
+        "Name": "TCONCEPT"
+      },
+      "orderDetails": {
+        "ID": "AN500163",
+        "purchaseOrderRef": "",
+        "purchaseOrderOpenRef": null,
+        "buyerID": "1",
+        "incotermsCode": "DDP",
+        "incotermsLabel": "Delivered Duty Paid",
+        "timeToDelivery": "0"
+      },
+      "deliverySites": [
+        {
+          "deliverySiteDetails": {
+            "ID": "611",
+            "Name": "STE PROD-ELEC TUNISIE",
+            "deliverySiteAddress1": "Rue de 1er Juin Kala\u00e2-Kebira",
+            "deliverySiteAddress2": "",
+            "deliverySiteZip": "4060",
+            "deliverySiteCity": "SOUSSE",
+            "deliveryCountry": "Tunisia",
+            "deliveryCountryCode": "TN"
+          },
+          "components": [
+            {
+              "componentDetails": {
+                "componentInternalRef": "PRO-17881",
+                "componentDesignation": "TUYAU DE LAVE-VITRES TLVE 9858421580",
+                "componentSupplierRef": "311837520",
+                "componentPrice": "2.020000",
+                "componentWeight": "47.0000"
+              },
+              "deliveryRequests": [
+                {
+                  "id": "AN100019",
+                  "lastItemChangeDate": "2023-09-04 11:46:28",
+                  "deliveryExpectedDate": "2023-10-17",
+                  "expectedQuantity": "5000",
+                  "receivedQuantity": "0",
+                  "quantityUnit": "U"
+                },
+                {
+                  "id": "AN100054",
+                  "lastItemChangeDate": "2023-09-08 14:42:38",
+                  "deliveryExpectedDate": "2023-10-10",
+                  "expectedQuantity": "5000",
+                  "receivedQuantity": "0",
+                  "quantityUnit": "U"
+                },
+                {
+                  "id": "AN100093",
+                  "lastItemChangeDate": "2023-09-14 09:52:28",
+                  "deliveryExpectedDate": "2023-10-31",
+                  "expectedQuantity": "5000",
+                  "receivedQuantity": "0",
+                  "quantityUnit": "U"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "buyersDetails": {
+        "ID": "1",
+        "Name": "TCONCEPT"
+      },
+      "orderDetails": {
+        "ID": "AN500184",
+        "purchaseOrderRef": "",
+        "purchaseOrderOpenRef": null,
+        "buyerID": "1",
+        "incotermsCode": "DDP",
+        "incotermsLabel": "Delivered Duty Paid",
+        "timeToDelivery": "0"
+      },
+      "deliverySites": [
+        {
+          "deliverySiteDetails": {
+            "ID": "611",
+            "Name": "STE PROD-ELEC TUNISIE",
+            "deliverySiteAddress1": "Rue de 1er Juin Kala\u00e2-Kebira",
+            "deliverySiteAddress2": "",
+            "deliverySiteZip": "4060",
+            "deliverySiteCity": "SOUSSE",
+            "deliveryCountry": "Tunisia",
+            "deliveryCountryCode": "TN"
+          },
+          "components": [
+            {
+              "componentDetails": {
+                "componentInternalRef": "PRO-17885",
+                "componentDesignation": "TUYAU  LAVE-VITRE 311837570  9853753980",
+                "componentSupplierRef": "TUYAU  LAVE-VITRE 311837570  9853753980",
+                "componentPrice": "1.576000",
+                "componentWeight": "62.5000"
+              },
+              "deliveryRequests": [
+                {
+                  "id": "AN100146",
+                  "lastItemChangeDate": "2023-10-02 14:37:06",
+                  "deliveryExpectedDate": "2023-10-24",
+                  "expectedQuantity": "5000",
+                  "receivedQuantity": "0",
+                  "quantityUnit": "U"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "buyersDetails": {
+        "ID": "1",
+        "Name": "TCONCEPT"
+      },
+      "orderDetails": {
+        "ID": "AN500226",
+        "purchaseOrderRef": "",
+        "purchaseOrderOpenRef": null,
+        "buyerID": "1",
+        "incotermsCode": "DDP",
+        "incotermsLabel": "Delivered Duty Paid",
+        "timeToDelivery": "0"
+      },
+      "deliverySites": [
+        {
+          "deliverySiteDetails": {
+            "ID": "611",
+            "Name": "STE PROD-ELEC TUNISIE",
+            "deliverySiteAddress1": "Rue de 1er Juin Kala\u00e2-Kebira",
+            "deliverySiteAddress2": "",
+            "deliverySiteZip": "4060",
+            "deliverySiteCity": "SOUSSE",
+            "deliveryCountry": "Tunisia",
+            "deliveryCountryCode": "TN"
+          },
+          "components": [
+            {
+              "componentDetails": {
+                "componentInternalRef": "PRO-17885",
+                "componentDesignation": "TUYAU  LAVE-VITRE 311837570  9853753980",
+                "componentSupplierRef": "TUYAU  LAVE-VITRE 311837570  9853753980",
+                "componentPrice": "1.576000",
+                "componentWeight": "62.5000"
+              },
+              "deliveryRequests": [
+                {
+                  "id": "AN100252",
+                  "lastItemChangeDate": "2023-10-25 15:35:26",
+                  "deliveryExpectedDate": "2023-11-07",
+                  "expectedQuantity": "5000",
+                  "receivedQuantity": "0",
+                  "quantityUnit": "U"
+                },
+                {
+                  "id": "AN100253",
+                  "lastItemChangeDate": "2023-10-25 15:35:58",
+                  "deliveryExpectedDate": "2023-11-14",
+                  "expectedQuantity": "5000",
+                  "receivedQuantity": "0",
+                  "quantityUnit": "U"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

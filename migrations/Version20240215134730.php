@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DoctrineMigrations;
 
-use App\Entity\Hr\Employee\Employee;
 use App\Entity\Production\Engine\CounterPart\CounterPart;
 use App\Entity\Production\Engine\Engine;
 use App\Entity\Production\Engine\Tool\Tool;
@@ -36,12 +35,12 @@ final class Version20240215134730 extends AbstractMigration implements Container
     {
         $jsonFilePath =  __DIR__ . '/../migrations-data/exportjson_table_attachment.json';
         if (!file_exists($jsonFilePath)) {
-            $this->write('Fichier de données non trouvé.');
+            $this->write('Fichier de données non trouvé. '.$jsonFilePath);
             return;
         }
         $data = json_decode(file_get_contents($jsonFilePath), true);
         if ($data === null && json_last_error() != JSON_ERROR_NONE) {
-            $this->write('Erreur lors de la lecture du fichier de données JSON.');
+            $this->write('Erreur lors de la lecture du fichier de données JSON. '.$jsonFilePath);
             return;
         }
         foreach ($data as $item) {
@@ -50,7 +49,7 @@ final class Version20240215134730 extends AbstractMigration implements Container
                 $filename = basename($item['filename']);
                 $extension = pathinfo($filename, PATHINFO_EXTENSION);
                 $sourcePath = __DIR__ . "/../migrations-files/engine/{$oldId}/{$filename}";
-                $this->write(sprintf('Fichier pour la machine source %d : %s', $oldId, $sourcePath));
+//                $this->write(sprintf('Fichier pour la machine source %d : %s', $oldId, $sourcePath));
                 if (file_exists($sourcePath)) {
                     $pattern = '%-' . $oldId; // Prépare le pattern pour la recherche SQL LIKE
                     $query = $this->entityManager->createQueryBuilder()
@@ -72,22 +71,26 @@ final class Version20240215134730 extends AbstractMigration implements Container
                             $basePath = '/uploads/production-engine-counter-part-counter-part/';
                         }
                         $destinationFolder = __DIR__ . "/../public{$basePath}";
-                        $this->write(sprintf('Dossier de destination : %s', $destinationFolder));
+//                        $this->write(sprintf('Dossier de destination : %s', $destinationFolder));
+                        if (!file_exists($destinationFolder)) {
+                            mkdir($destinationFolder, 0777, true);
+                        }
                         $newFilename = "{$engine->getId()}.{$extension}";
-                        $this->write(sprintf('Nouveau nom de fichier : %s', $newFilename));
+//                        $this->write(sprintf('Nouveau nom de fichier : %s', $newFilename));
                         $destinationPath = $destinationFolder . $newFilename;
-                        $this->write(sprintf('Nouveau chemin : %s', $destinationPath));
+//                        $this->write(sprintf('Nouveau chemin : %s', $destinationPath));
                         //Récupère la variable d'environnement pour le domaine
                         $domain = $_ENV['DESKTOP_HOST'];
                         if (copy($sourcePath, $destinationPath)) {
                             $engine->setFilePath("http://{$domain}{$basePath}{$newFilename}");
+//                            $this->write(sprintf('Engine : %s', json_encode($engine)));
                             $this->entityManager->flush();
 //                            $this->write(sprintf('Fichier pour la machine ID %d migré et mis à jour.', $engine->getId()));
                         } else {
                             $this->write(sprintf('Erreur lors de la copie du fichier pour la machine ID %d.', $engine->getId()));
                         }
                     } else {
-//                        $this->write(sprintf('Machine source %d non trouvé.', $oldId));
+                        $this->write(sprintf('Machine source %d non trouvé.', $oldId));
                     }
                 } else {
                     $this->write(sprintf('Fichier pour la machine source %d non trouvé.', $sourcePath));

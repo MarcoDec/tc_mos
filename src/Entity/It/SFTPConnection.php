@@ -17,11 +17,8 @@ class SFTPConnection implements \IteratorAggregate
     /**
      * @throws Exception
      */
-    public function __construct($host, $port=22)
+    public function __construct(private $host, private $port=22)
     {
-        $this->connection = @ssh2_connect($host, $port);
-        if (! $this->connection)
-            throw new Exception("Could not connect to $host on port $port.");
     }
 
     /**
@@ -29,6 +26,10 @@ class SFTPConnection implements \IteratorAggregate
      */
     public function login($username, $password): void
     {
+        $this->connection = @ssh2_connect($this->host, $this->port);
+        if (! $this->connection)
+            throw new Exception("Could not connect to $this->host on port $this->port.");
+
         if (! @ssh2_auth_password($this->connection, $username, $password))
             throw new Exception("Could not authenticate with username $username " .
                                 "and password $password.");
@@ -44,19 +45,22 @@ class SFTPConnection implements \IteratorAggregate
     public function uploadFile($local_file, $remote_file): void
     {
         $sftp = $this->sftp;
-        $stream = @fopen("ssh2.sftp://".intval($sftp)."$remote_file", 'r');
-
-        if (! $stream)
-            throw new Exception("Could not open file: $remote_file");
-
-        $data_to_send = @file_get_contents($local_file);
-        if ($data_to_send === false)
+        if (!$sftp) {
+            throw new Exception("SFTP connection is not established.");
+        }
+        $remote_path = "ssh2.sftp://{$sftp}/{$remote_file}";
+        $local_stream = fopen($local_file, 'rb');
+        if (!$local_stream) {
             throw new Exception("Could not open local file: $local_file.");
-
-        if (@fwrite($stream, $data_to_send) === false)
-            throw new Exception("Could not send data from file: $local_file.");
-
-        @fclose($stream);
+        }
+        $remote_stream = fopen($remote_path, 'wb');
+        if (!$remote_stream) {
+            fclose($local_stream); // Fermeture du flux local en cas d'échec
+            throw new Exception("Could not open remote file: $remote_file.");
+        }
+        stream_copy_to_stream($local_stream, $remote_stream);
+        fclose($local_stream);
+        fclose($remote_stream);
     }
     public function renameFile($remote_file, $new_remote_file): bool
     {
@@ -127,5 +131,13 @@ class SFTPConnection implements \IteratorAggregate
             @ssh2_exec($this->connection, 'exit');
             @ssh2_disconnect($this->connection);
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function pushFile($remote_dir, $local_file, $remote_file): void
+    {
+        $this->uploadFile($local_file, $remote_dir.'/'.$remote_file);
     }
 }

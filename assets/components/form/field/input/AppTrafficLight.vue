@@ -14,8 +14,8 @@ body {
 #traffic-light {
   position: absolute;
   display: block;
-  //margin-left: 127px;
-  //margin-top: -58px;
+  /* margin-left: 127px; */
+  /* margin-top: -58px; */
   background-color: #333;
   width: 40px;
   height: 50px;
@@ -24,47 +24,47 @@ body {
 }
 @media only screen and (max-width: 1px) {
 #traffic-light {
-    //margin-left: 37px;
-    //margin-top: -36px;
+    /* margin-left: 37px; */
+    /* margin-top: -36px; */
     width: 38px;
     height: 50px;
 
 }
 input {
     appearance: none;
-    //position: relative;
-    //left: 20%;
+    /* position: relative; */
+    /*left: 20%;*/
     width: 20px;
     height: 20px;
-    //margin-top: 10px;
-    //margin-right: -23px;
+    /*margin-top: 10px;*/
+    /*margin-right: -23px;*/
 }
 }
 @media screen and (min-width: 1000px)   {
 #traffic-light {
-    //margin-top: -60px;
+    /*margin-top: -60px;*/
     width: 33px;
-    //height: 150px;
+    /*height: 150px;*/
 
 }
 input {
     appearance: none;
-    //position: relative;
-    //left: 20%;
+    /*position: relative;*/
+    /*left: 20%;*/
     width: 20px;
     height: 20px;
-    //margin-top: 10px;
-    //margin-right: -23px;
+    /*margin-top: 10px;*/
+    /*margin-right: -23px;*/
 }
 }
 input {
   appearance: none;
-  //position: relative;
-  //left: 20%;
+  /*position: relative;*/
+  /*left: 20%;*/
   width: 20px;
   height: 20px;
-  //margin-top: 22px;
-  //margin-left: 0px;
+  /*margin-top: 22px;*/
+  /*margin-left: 0px;*/
   background-color: grey;
   vertical-align: middle;
   border-radius: 100%;

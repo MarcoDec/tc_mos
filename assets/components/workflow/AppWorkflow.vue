@@ -274,7 +274,7 @@
     margin-left: 10px;
 }
 .border-1 {
-    //border: 1px solid #000;
+    /*border: 1px solid #000;*/
     border-radius: 10px;
 }
 .btn-sm {
