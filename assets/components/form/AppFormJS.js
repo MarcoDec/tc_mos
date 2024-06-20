@@ -18,7 +18,6 @@ function AppFormJS(props, context) {
             groups.push(generateSlot())
     } else {
         for (const field of props.fields) {
-            // console.log('field', field)
             groups.push(h(AppFormField, {
                 disabled: props.disabled,
                 field,
