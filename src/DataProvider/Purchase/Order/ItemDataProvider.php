@@ -12,7 +12,7 @@ use App\Entity\Purchase\Order\ProductItem;
 use App\Repository\Purchase\Order\ItemRepository;
 
 /**
- * @phpstan-type ItemContext array{filters?: array{'embState.state'?: string[], order?: string, page?: string, pagination?: string}}
+ * @template I of Item
  */
 final class ItemDataProvider implements ContextAwareCollectionDataProviderInterface, RestrictedDataProviderInterface {
     /**
@@ -26,7 +26,9 @@ final class ItemDataProvider implements ContextAwareCollectionDataProviderInterf
     }
 
     /**
-     * @param ItemContext $context
+     * @param string $resourceClass
+     * @param string|null $operationName
+     * @param array $context
      *
      * @return (ComponentItem|ProductItem)[]
      */
@@ -36,10 +38,10 @@ final class ItemDataProvider implements ContextAwareCollectionDataProviderInterf
             if (isset($context['filters']['embState.state'])) {
                 $filters['embState.state'] = $context['filters']['embState.state'];
             }
-            if (isset($context['filters']['order'])) {
+            if (isset($context['filters']['parentOrder'])) {
                 /** @var Order $order */
-                $order = $this->iriConverter->getItemFromIri($context['filters']['order']);
-                $filters['order'] = $order;
+                $order = $this->iriConverter->getItemFromIri($context['filters']['parentOrder']);
+                $filters['parentOrder'] = $order;
             }
         }
         return isset($context['filters']['page'])
@@ -52,7 +54,10 @@ final class ItemDataProvider implements ContextAwareCollectionDataProviderInterf
     }
 
     /**
-     * @param ItemContext $context
+     * @param string $resourceClass
+     * @param string|null $operationName
+     * @param array $context
+     * @return bool
      */
     public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool {
         return $resourceClass === Item::class && $operationName === 'get';

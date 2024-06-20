@@ -1,8 +1,8 @@
 <script setup>
-    import AppTable from '../../../table/AppTablePage.vue'
-    import generateItems from '../../../../../stores/table/items'
+    import AppTable from '../../../../table/AppTablePage.vue'
+    import generateItems from '../../../../../../stores/table/items'
     import {onMounted} from 'vue'
-    import {useTableMachine} from '../../../../../machine'
+    import {useTableMachine} from '../../../../../../machine'
 
     const machineSupp = useTableMachine('machine-supplier-items')
     const suppliersItems = generateItems('supplier-items-qualite')

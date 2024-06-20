@@ -221,11 +221,4 @@ abstract class Item extends Entity implements MeasuredInterface {
         $this->requestedQuantity = $requestedQuantity;
         return $this;
     }
-    public final function getOrder() {
-        return $this->parentOrder;
-    }
-    final protected function setOrder($order): self {
-        $this->parentOrder = $order;
-        return $this;
-    }
 }

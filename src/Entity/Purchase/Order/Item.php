@@ -32,7 +32,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use App\Validator as AppAssert;
 
 /**
- * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
+ * @template I of Component|Product
  *    ApiFilter(filterClass: SearchFilter::class, properties: ['confirmedDate' => 'partial', 'requestedDate' => 'partial', 'confirmedQuantity' => 'partial', 'requestedQuantity' => 'partial']),
 
  * @template-extends BaseItem<I, Order>

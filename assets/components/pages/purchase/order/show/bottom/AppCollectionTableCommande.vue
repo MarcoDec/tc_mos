@@ -1,18 +1,19 @@
 <script setup>
-    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
-    import useUser from '../../../../../stores/security'
-    import {computed, nextTick, ref} from 'vue'
-    import {useCustomerOrderItemsStore} from '../../../../../stores/customer/customerOrderItems'
-    import AppFixedItemAddForm from './itemsForms/AppFixedItemAddForm.vue'
-    import AppForeCastItemAddForm from './itemsForms/AppForeCastItemAddForm.vue'
-    import useOptions from '../../../../../stores/option/options'
-    import AppForeCastUpdateForm from './itemsForms/AppForeCastUpdateForm.vue'
     import {Modal} from 'bootstrap'
-    import AppFixedUpdateForm from "./itemsForms/AppFixedUpdateForm.vue"
+    import {computed, nextTick, ref} from 'vue'
+    import {useCustomerOrderItemsStore} from '../../../../../../stores/customer/customerOrderItems'
+    import useUser from '../../../../../../stores/security'
+    import { usePurchaseOrderItemComponentsStore } from '../../../../../../stores/purchase/order/purchaseOrderItem'
+    import useFetchCriteria from '../../../../../../stores/fetch-criteria/fetchCriteria'
+    import useOptions from '../../../../../../stores/option/options'
+    import AppFixedItemAddForm from './itemsForms/AppFixedItemAddForm.vue'
+    import AppFixedUpdateForm from './itemsForms/AppFixedUpdateForm.vue'
+    import AppForeCastItemAddForm from './itemsForms/AppForeCastItemAddForm.vue'
+    import AppForeCastUpdateForm from './itemsForms/AppForeCastUpdateForm.vue'
 
     const props = defineProps({
         order: {default: () => ({}), required: true, type: Object},
-        customer: {default: () => ({}), required: true, type: Object}
+        supplier: {default: () => ({}), required: true, type: Object}
     })
     //Si l'utilisateur courant a les droits admin ou writer, il peut ajouter/modifier et supprimer des items de commande
     const showForeCastUpdateForm = ref(false)
@@ -20,9 +21,9 @@
     //region initialisation des constantes et variables
     const fetchUser = useUser()
     const isLoaded = ref(false)
-    const isSellingAdmin = fetchUser.isSellingAdmin
-    const isSellingWriterOrAdmin = fetchUser.isSellingWriter || isSellingAdmin
-    const roleUser = ref(isSellingWriterOrAdmin ? 'writer' : 'reader')
+    const isPurchaseAdmin = fetchUser.isPurchaseAdmin
+    const isPurchaseWriterOrAdmin = fetchUser.isPurchaseWriter || isPurchaseAdmin
+    const roleUser = ref(isPurchaseWriterOrAdmin ? 'writer' : 'reader')
     const fetchUnitOptions = useOptions('units')
     const fetchCurrencyOptions = useOptions('currencies')
     const formKeys = ref(0)
@@ -45,8 +46,8 @@
             const value = op.value
             return {text, value}
         }))
-    const storeCustomerOrderItems = useCustomerOrderItemsStore()
-    const customerOrderItemsCriteria = useFetchCriteria('customer-order-items-criteria')
+    const storePurchaseOrderItems = usePurchaseOrderItemComponentsStore()
+    const purchaseOrderItemsCriteria = useFetchCriteria('purchase-order-items-criteria')
     const tableKey = ref(0)
 
     const stateOptions = [
@@ -56,7 +57,7 @@
     ]
     const fixedFamilies = ['fixed', 'edi_orders', 'free']
     //region      initialisation des données computed
-    const customerOrderItems = computed(() => storeCustomerOrderItems.itemsCustomerOrders)
+    const customerOrderItems = computed(() => storePurchaseOrderItems.itemsPurchaseOrderItemComponents)
 
     const fieldsCommande = computed(() => [
         {label: 'Forecast', name: 'isForecast', type: 'boolean', width: 50},
@@ -163,75 +164,75 @@
     //region Methods
 
     async function refreshTableCustomerOrders() {
-        await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
+        await storePurchaseOrderItems.fetch(purchaseOrderItemsCriteria.getFetchCriteria)
     }
-    async function deletedCustomerOrderItem(idRemove) {
+    async function deletedPurchaseOrderItem(idRemove) {
         //On demande une confirmation avant de supprimer
         const confirmation = window.confirm('Voulez-vous vraiment supprimer cet item de commande ?')
         if (!confirmation) return
-        await storeCustomerOrderItems.remove(idRemove)
+        await storePurchaseOrderItems.remove(idRemove)
         await refreshTableCustomerOrders()
     }
-    async function getPageCustomerOrders(nPage) {
-        customerOrderItemsCriteria.gotoPage(parseFloat(nPage))
-        await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
+    async function getPagePurchaseOrders(nPage) {
+        purchaseOrderItemsCriteria.gotoPage(parseFloat(nPage))
+        await storePurchaseOrderItems.fetch(purchaseOrderItemsCriteria.getFetchCriteria)
     }
     function addPermanentFilters() {
-        customerOrderItemsCriteria.addFilter('parentOrder', props.order['@id'])
+        purchaseOrderItemsCriteria.addFilter('parentOrder', props.order['@id'])
     }
-    async function searchCustomerOrders(inputValues) {
-        customerOrderItemsCriteria.resetAllFilter()
+    async function searchPurchaseOrders(inputValues) {
+        purchaseOrderItemsCriteria.resetAllFilter()
         addPermanentFilters()
-        if (inputValues.product) customerOrderItemsCriteria.addFilter('item', inputValues.product)
-        if (inputValues.component) customerOrderItemsCriteria.addFilter('item', inputValues.component)
-        if (inputValues.ref) customerOrderItemsCriteria.addFilter('ref', inputValues.ref)
-        if (inputValues.requestedQuantity) customerOrderItemsCriteria.addFilter('requestedQuantity.value', inputValues.requestedQuantity.value)
+        if (inputValues.product) purchaseOrderItemsCriteria.addFilter('item', inputValues.product)
+        if (inputValues.component) purchaseOrderItemsCriteria.addFilter('item', inputValues.component)
+        if (inputValues.ref) purchaseOrderItemsCriteria.addFilter('ref', inputValues.ref)
+        if (inputValues.requestedQuantity) purchaseOrderItemsCriteria.addFilter('requestedQuantity.value', inputValues.requestedQuantity.value)
         if (inputValues.requestedQuantity) {
             const requestedUnit = optionsUnit.value.find(unit => unit['@id'] === inputValues.requestedQuantity.code)
-            customerOrderItemsCriteria.addFilter('requestedQuantity.code', requestedUnit.code)
+            purchaseOrderItemsCriteria.addFilter('requestedQuantity.code', requestedUnit.code)
         }
-        if (inputValues.requestedDate) customerOrderItemsCriteria.addFilter('requestedDate', inputValues.requestedDate)
-        if (inputValues.confirmedQuantity) customerOrderItemsCriteria.addFilter('confirmedQuantity.value', inputValues.confirmedQuantity.value)
+        if (inputValues.requestedDate) purchaseOrderItemsCriteria.addFilter('requestedDate', inputValues.requestedDate)
+        if (inputValues.confirmedQuantity) purchaseOrderItemsCriteria.addFilter('confirmedQuantity.value', inputValues.confirmedQuantity.value)
         if (inputValues.confirmedQuantity) {
             const requestedUnit = optionsUnit.value.find(unit => unit['@id'] === inputValues.confirmedQuantity.code)
-            customerOrderItemsCriteria.addFilter('confirmedQuantity.code', requestedUnit.code)
+            purchaseOrderItemsCriteria.addFilter('confirmedQuantity.code', requestedUnit.code)
         }
-        if (inputValues.confirmedDate) customerOrderItemsCriteria.addFilter('confirmedDate', inputValues.confirmedDate)
-        if (inputValues.state) customerOrderItemsCriteria.addFilter('embState.state', inputValues.state)
-        if (inputValues.notes) customerOrderItemsCriteria.addFilter('notes', inputValues.notes)
+        if (inputValues.confirmedDate) purchaseOrderItemsCriteria.addFilter('confirmedDate', inputValues.confirmedDate)
+        if (inputValues.state) purchaseOrderItemsCriteria.addFilter('embState.state', inputValues.state)
+        if (inputValues.notes) purchaseOrderItemsCriteria.addFilter('notes', inputValues.notes)
         if (inputValues.product && !inputValues.component) {
-            await storeCustomerOrderItems.fetchAllProduct(customerOrderItemsCriteria.getFetchCriteria)
+            await storePurchaseOrderItems.fetchAllProduct(purchaseOrderItemsCriteria.getFetchCriteria)
             return
         }
         if (!inputValues.product && inputValues.component) {
-            await storeCustomerOrderItems.fetchAllComponent(customerOrderItemsCriteria.getFetchCriteria)
+            await storePurchaseOrderItems.fetchAllComponent(purchaseOrderItemsCriteria.getFetchCriteria)
             return
         }
         if (inputValues.product && inputValues.component) {
             window.alert('Vous ne pouvez pas rechercher à la fois un produit et un composant')
             return
         }
-        await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
+        await storePurchaseOrderItems.fetch(purchaseOrderItemsCriteria.getFetchCriteria)
     }
-    async function cancelSearchCustomerOrders() {
-        customerOrderItemsCriteria.resetAllFilter()
+    async function cancelSearchPurchaseOrderItems() {
+        purchaseOrderItemsCriteria.resetAllFilter()
         addPermanentFilters()
-        await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
+        await storePurchaseOrderItems.fetch(purchaseOrderItemsCriteria.getFetchCriteria)
         //On réinitialise les données du formulaire
-        document.getElementById('formCustomerOrdersTable').reset()
+        document.getElementById('formPurchaseOrderItemsTable').reset()
     }
-    async function trierAlphabetCustomerOrders(payload) {
+    async function trierAlphabetPurchaseOrderItems(payload) {
         addPermanentFilters()
         if (payload.name === 'requestedQuantity') {
-            customerOrderItemsCriteria.addSort('requestedQuantity.value', payload.direction)
+            purchaseOrderItemsCriteria.addSort('requestedQuantity.value', payload.direction)
         } else if (payload.name === 'confirmedQuantity') {
-            customerOrderItemsCriteria.addSort('confirmedQuantity.value', payload.direction)
+            purchaseOrderItemsCriteria.addSort('confirmedQuantity.value', payload.direction)
         } else if (payload.name === 'state') {
-            customerOrderItemsCriteria.addSort('embState.state', payload.direction)
+            purchaseOrderItemsCriteria.addSort('embState.state', payload.direction)
         } else {
-            customerOrderItemsCriteria.addSort(payload.name, payload.direction)
+            purchaseOrderItemsCriteria.addSort(payload.name, payload.direction)
         }
-        await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
+        await storePurchaseOrderItems.fetch(purchaseOrderItemsCriteria.getFetchCriteria)
     }
     async function updateTable() {
         await refreshTableCustomerOrders()
@@ -241,18 +242,18 @@
     //endregion
     //chargement des données
     addPermanentFilters()
-    await storeCustomerOrderItems.fetchAll(customerOrderItemsCriteria.getFetchCriteria)
+    await storePurchaseOrderItems.fetch(purchaseOrderItemsCriteria.getFetchCriteria)
     isLoaded.value = true
     //endregion
     const canModifyForm = ref(true)
     function updateItemToUpdate(item) {
-        storeCustomerOrderItems.setCurrentUnitOptions(optionsUnit.value)
-        storeCustomerOrderItems.setCurrentCurrencyOptions(optionsCurrency.value)
-        storeCustomerOrderItems.setCurrentItem(item)
+        storePurchaseOrderItems.setCurrentUnitOptions(optionsUnit.value)
+        storePurchaseOrderItems.setCurrentCurrencyOptions(optionsCurrency.value)
+        storePurchaseOrderItems.setCurrentItem(item)
         formUpdateKeys.value++
         // console.log('updatedStore', storePurchaseOrderItems.currentUnitOptions, storePurchaseOrderItems.currentCurrencyOptions)
         // Si l'item n'est pas à l'état "draft" et que l'utilisateur n'est pas "administrateur" alors on ne peut pas modifier l'item
-        if (item.state !== 'draft' && !isSellingAdmin && !item.isForecast) {
+        if (item.state !== 'draft' && !isPurchaseAdmin && !item.isForecast) {
             canModifyForm.value = false
             return
         }
@@ -290,90 +291,92 @@
 </script>
 
 <template>
-    <AppFixedItemAddForm
-        v-if="isLoaded"
-        :key="`addFixedItem_${formKeys}`"
-        :customer="customer"
-        modal-id="modalAddNewFixedItem"
-        :order="order"
-        :options-currency="optionsCurrency"
-        :options-unit="optionsUnit"
-        @updated="updateTable"
-        @closed="() => console.log('fixed add form closed')"
-        @submit="onFormSubmitted"/>
-    <AppForeCastItemAddForm
-        v-if="isLoaded && !fixedFamilies.includes(order.orderFamily)"
-        :key="`addForecastItem_${formKeys}`"
-        :customer="customer"
-        modal-id="modalAddNewForecastItem"
-        :order="order"
-        :options-currency="optionsCurrency"
-        :options-unit="optionsUnit"
-        @updated="updateTable"
-        @closed="() => console.log('forecast add form closed')"
-        @submit="onFormSubmitted"/>
-    <AppForeCastUpdateForm
-        v-if="isLoaded && !fixedFamilies.includes(order.orderFamily) && showForeCastUpdateForm"
-        :key="`updateForecastItem_${formUpdateKeys}`"
-        :can-modify="canModifyForm"
-        :model-value="storeCustomerOrderItems.currentItem"
-        :customer="customer"
-        modal-id="modalUpdateForecastItem"
-        :order="order"
-        :options-currency="optionsCurrency"
-        :options-unit="optionsUnit"
-        @updated="updateTable"
-        @closed="() => console.log('forecast update form closed')"
-        @submit="onFormSubmitted"/>
-    <AppFixedUpdateForm
-        v-if="isLoaded && showFixedUpdateForm"
-        :key="`updateFixedItem_${formUpdateKeys}`"
-        :can-modify="canModifyForm"
-        :model-value="storeCustomerOrderItems.currentItem"
-        :customer="customer"
-        modal-id="modalUpdateFixedItem"
-        :order="order"
-        :options-currency="optionsCurrency"
-        :options-unit="optionsUnit"
-        @updated="updateTable"
-        @closed="() => console.log('fixed update form closed')"
-        @submit="onFormSubmitted"/>
-    <AppCardableTable
-        v-if="isLoaded"
-        :key="tableKey"
-        :should-delete="isSellingWriterOrAdmin"
-        :should-see="isSellingWriterOrAdmin"
-        :current-page="storeCustomerOrderItems.currentPage"
-        :fields="fieldsCommande"
-        :first-page="storeCustomerOrderItems.firstPage"
-        :items="customerOrderItems"
-        :last-page="storeCustomerOrderItems.lastPage"
-        :next-page="storeCustomerOrderItems.nextPage"
-        :pag="storeCustomerOrderItems.pagination"
-        :previous-page="storeCustomerOrderItems.previousPage"
-        :user="roleUser"
-        title
-        form="formCustomerOrdersTable"
-        @deleted="deletedCustomerOrderItem"
-        @get-page="getPageCustomerOrders"
-        @trier-alphabet="trierAlphabetCustomerOrders"
-        @update="updateItemToUpdate"
-        @search="searchCustomerOrders"
-        @cancel-search="cancelSearchCustomerOrders">
-        <template #title>
-            <span>Items de commande {{ order.ref }}</span>
-            <button
-                v-if="isSellingWriterOrAdmin"
-                class="btn btn-success btn-float-right m-1"
-                @click="openModalAddNewOrderItem">
-                Ajouter Item en Ferme
-            </button>
-            <button
-                v-if="!fixedFamilies.includes(order.orderFamily) && isSellingWriterOrAdmin"
-                class="btn btn-success btn-float-right m-1"
-                @click="openModalAddNewForecastItem">
-                Ajouter Item en Prévisionnel {{ order.orderFamily }}
-            </button>
-        </template>
-    </AppCardableTable>
+    <AppSuspense>
+        <AppFixedItemAddForm
+            v-if="isLoaded"
+            :key="`addFixedItem_${formKeys}`"
+            :supplier="supplier"
+            modal-id="modalAddNewFixedItem"
+            :order="order"
+            :options-currency="optionsCurrency"
+            :options-unit="optionsUnit"
+            @updated="updateTable"
+            @closed="() => console.log('fixed add form closed')"
+            @submit="onFormSubmitted"/>
+        <AppForeCastItemAddForm
+            v-if="isLoaded && !fixedFamilies.includes(order.orderFamily)"
+            :key="`addForecastItem_${formKeys}`"
+            :supplier="supplier"
+            modal-id="modalAddNewForecastItem"
+            :order="order"
+            :options-currency="optionsCurrency"
+            :options-unit="optionsUnit"
+            @updated="updateTable"
+            @closed="() => console.log('forecast add form closed')"
+            @submit="onFormSubmitted"/>
+        <AppForeCastUpdateForm
+            v-if="isLoaded && !fixedFamilies.includes(order.orderFamily) && showForeCastUpdateForm"
+            :key="`updateForecastItem_${formUpdateKeys}`"
+            :can-modify="canModifyForm"
+            :model-value="storePurchaseOrderItems.currentItem"
+            :supplier="supplier"
+            modal-id="modalUpdateForecastItem"
+            :order="order"
+            :options-currency="optionsCurrency"
+            :options-unit="optionsUnit"
+            @updated="updateTable"
+            @closed="() => console.log('forecast update form closed')"
+            @submit="onFormSubmitted"/>
+        <AppFixedUpdateForm
+            v-if="isLoaded && showFixedUpdateForm"
+            :key="`updateFixedItem_${formUpdateKeys}`"
+            :can-modify="canModifyForm"
+            :model-value="storePurchaseOrderItems.currentItem"
+            :supplier="supplier"
+            modal-id="modalUpdateFixedItem"
+            :order="order"
+            :options-currency="optionsCurrency"
+            :options-unit="optionsUnit"
+            @updated="updateTable"
+            @closed="() => console.log('fixed update form closed')"
+            @submit="onFormSubmitted"/>
+        <AppCardableTable
+            v-if="isLoaded"
+            :key="tableKey"
+            :should-delete="isPurchaseWriterOrAdmin"
+            :should-seek="isPurchaseWriterOrAdmin"
+            :current-page="storePurchaseOrderItemComponentItems.currentPage"
+            :fields="fields"
+            :first-page="storePurchaseOrderItemComponentItems.firstPage"
+            :items="itemsPurchaseOrderItemComponents"
+            :last-page="storePurchaseOrderItemComponentItems.lastPage"
+            :next-page="storePurchaseOrderItemComponentItems.nextPage"
+            :pag="storePurchaseOrderItemComponentItems.pagination"
+            :previous-page="storePurchaseOrderItemComponentItems.previousPage"
+            :user="roleuser"
+            title
+            form="formPurchaseOrderItemsTable"
+            @deleted="deletedItemPurchaseOrderItemComponent"
+            @get-page="getPagePurchaseOrderItemComponent"
+            @update="updateItemToUpdate"
+            @trier-alphabet="trierPurchaseOrderItemComponent"
+            @search="searchPurchaseOrderItemComponent"
+            @cancel-search="cancelPurchaseOrderItemComponent">
+            <template #title>
+                <span>Items de commande {{ order.ref }}</span>
+                <button
+                    v-if="isPurchaseWriterOrAdmin"
+                    class="btn btn-success btn-float-right m-1"
+                    @click="openModalAddNewOrderItem">
+                    Ajouter Item en Ferme
+                </button>
+                <button
+                    v-if="!fixedFamilies.includes(order.orderFamily) && isPurchaseWriterOrAdmin"
+                    class="btn btn-success btn-float-right m-1"
+                    @click="openModalAddNewForecastItem">
+                    Ajouter Item en Prévisionnel {{ order.orderFamily }}
+                </button>
+            </template>
+        </AppCardableTable>
+    </AppSuspense>
 </template>

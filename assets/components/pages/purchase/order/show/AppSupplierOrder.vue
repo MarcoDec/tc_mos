@@ -2,11 +2,12 @@
     import api from '../../../../../api'
     import useOptions from '../../../../../stores/option/options'
     import useUser from '../../../../../stores/security'
-    import AppCollectionTableCommande from './AppCollectionTableCommande.vue'
+    import AppPurchaseOrderBottom from './AppPurchaseOrderBottom.vue'
+    import AppCollectionTableCommande from './bottom/AppCollectionTableCommande.vue'
     // import AppCollectionTableEchange from './AppCollectionTableEchange.vue'
     // import AppCollectionTableGestion from './AppCollectionTableGestion.vue'
     // import AppCollectionTableQualite from './AppCollectionTableQualite.vue'
-    import AppCollectionTableReception from './AppCollectionTableReception.vue'
+    import AppCollectionTableReception from './bottom/AppCollectionTableReception.vue'
     import AppSuspense from '../../../../AppSuspense.vue'
     import AppUnderDevelopment from "../../../../gui/AppUnderDevelopment.vue"
     import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome"
@@ -255,7 +256,7 @@
 <template>
     <AppSuspense>
         <AppShowGuiGen>
-            <template #gui-left>
+            <template v-if="beforeMountDataLoaded" #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
                     <div class="d-flex flex-row">
                         <div>
@@ -290,72 +291,26 @@
                 </div>
             </template>
             <template #gui-bottom>
-                <AppCard title="" class="cardOrderSupplier">
-                    <AppTabs id="gui-start" class="gui-start-content">
-                        <AppTab
-                            id="gui-start-detail"
-                            active
-                            icon="sitemap"
-                            tabs="gui-start"
-                            title="Détail de la commande">
-                            <AppSuspense>
-                                <AppCollectionTableCommande/>
-                            </AppSuspense>
-                        </AppTab>
-                        <AppTab
-                            id="gui-start-purchase-rec"
-                            icon="truck-moving"
-                            tabs="gui-start"
-                            title="Réception">
-                            <AppSuspense>
-                                <AppCollectionTableReception/>
-                            </AppSuspense>
-                        </AppTab>
-                        <AppTab
-                            id="gui-start-bl"
-                            icon="clipboard-check"
-                            tabs="gui-start"
-                            title="BL">
-                            <AppUnderDevelopment/>
-                        </AppTab>
-                        <AppTab
-                            id="gui-start-purchase-quantite"
-                            icon="chart-line"
-                            tabs="gui-start"
-                            title="Qualité">
-                            <AppUnderDevelopment/>
-                            <!-- <AppCollectionTableQualite/> -->
-                        </AppTab>
-                        <AppTab id="gui-start-notes" icon="clipboard-list" tabs="gui-start" title="Notes">
-                            <AppUnderDevelopment/>
-                        </AppTab>
-                        <AppTab id="gui-start-echanges" icon="file-pdf" tabs="gui-start" title="Echanges">
-                            <AppUnderDevelopment/>
-                            <!-- <AppCollectionTableEchange/> -->
-                        </AppTab>
-                    </AppTabs>
-                </AppCard>
-<!--                <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small">-->
-<!--                    <div class="full-visible-width">-->
-<!--                        <AppSuspense>-->
-<!--                            <AppEmployeeFormShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100"/>-->
-<!--                            <AppEmployeeShowInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>-->
-<!--                        </AppSuspense>-->
-<!--                    </div>-->
-<!--                    <span>-->
-<!--                        <FontAwesomeIcon v-if="isFullScreen" icon="fa-solid fa-magnifying-glass-minus" @click="deactivateFullScreen"/>-->
-<!--                        <FontAwesomeIcon v-else icon="fa-solid fa-magnifying-glass-plus" @click="activateFullScreen"/>-->
-<!--                    </span>-->
-<!--                </div>-->
+                <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small">
+                    <div class="full-visible-width">
+                        <AppSuspense>
+                            <AppPurchaseOrderBottom
+                                v-if="isLoaded"
+                                v-show="modeDetail"
+                                :key="`formtab-${keyTabs}`"
+                                :order="fetchPurchaseOrderStore.purchaseOrder"
+                                :supplier="supplier"/>
+                        </AppSuspense>
+                    </div>
+                    <span>
+                        <FontAwesomeIcon v-if="isFullScreen" icon="fa-solid fa-magnifying-glass-minus" @click="deactivateFullScreen"/>
+                        <FontAwesomeIcon v-else icon="fa-solid fa-magnifying-glass-plus" @click="activateFullScreen"/>
+                    </span>
+                </div>
             </template>
-            <template #gui-right>
+            <template v-if="beforeMountDataLoaded" #gui-right>
                 RIGHT
-                <!--            {{ route.params.id_employee }}-->
             </template>
         </AppShowGuiGen>
     </AppSuspense>
-
 </template>
-
-<style scoped>
-</style>

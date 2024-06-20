@@ -38,7 +38,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ]
             ]
         ],
-        itemOperations: ['get'],
+        itemOperations: ['get', 'patch', 'delete'],
         shortName: 'PurchaseOrderItemComponent',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
@@ -54,8 +54,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'item'),
-    ORM\Entity(repositoryClass: ComponentItemRepository::class)
-]
+    ORM\Entity()
+] /*repositoryClass: ComponentItemRepository::class*/
 /**
  * Item de commande fournisseur de type composant
  * @template-extends Item<Component>
