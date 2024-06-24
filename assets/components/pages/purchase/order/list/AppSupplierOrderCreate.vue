@@ -25,13 +25,13 @@
     const optionsOrderFamily = computed(() => storeSupplierOrder.orderFamilyOptions())
 
     const fields = computed(() => {
-        let addresseFilter = null
+        // let addresseFilter = null
         let contactFilter = null
         if (typeof generalData.value.supplier !== 'undefined') {
             // on peut alors filtrer les types de commandes, les adresses de livraison et les contacts du client
             // Le filtre des commandes se fait dans le store
             // Le filtre des adresses de livraison et des contacts se fait ici via les paramètres du multiselect-fetch
-            addresseFilter = {field: 'sypplier', value: generalData.value.supplier}
+            //addresseFilter = {field: 'sypplier', value: generalData.value.supplier}
             contactFilter = {field: 'society', value: generalData.value.supplier}
         }
         return [

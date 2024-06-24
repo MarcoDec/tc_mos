@@ -1,9 +1,8 @@
 <script setup>
     import {Modal} from 'bootstrap'
     import {computed, nextTick, ref} from 'vue'
-    import {useCustomerOrderItemsStore} from '../../../../../../stores/customer/customerOrderItems'
     import useUser from '../../../../../../stores/security'
-    import { usePurchaseOrderItemComponentsStore } from '../../../../../../stores/purchase/order/purchaseOrderItem'
+    import {usePurchaseOrderItemComponentsStore} from '../../../../../../stores/purchase/order/purchaseOrderItem'
     import useFetchCriteria from '../../../../../../stores/fetch-criteria/fetchCriteria'
     import useOptions from '../../../../../../stores/option/options'
     import AppFixedItemAddForm from './itemsForms/AppFixedItemAddForm.vue'
@@ -28,6 +27,8 @@
     const fetchCurrencyOptions = useOptions('currencies')
     const formKeys = ref(0)
     const formUpdateKeys = ref(0)
+    const storePurchaseOrderItems = usePurchaseOrderItemComponentsStore()
+    const purchaseOrderItemsCriteria = useFetchCriteria('purchase-order-items-criteria')
     const promises = []
     promises.push(fetchUnitOptions.fetchOp())
     promises.push(fetchCurrencyOptions.fetchOp())
@@ -46,8 +47,6 @@
             const value = op.value
             return {text, value}
         }))
-    const storePurchaseOrderItems = usePurchaseOrderItemComponentsStore()
-    const purchaseOrderItemsCriteria = useFetchCriteria('purchase-order-items-criteria')
     const tableKey = ref(0)
 
     const stateOptions = [
@@ -57,7 +56,7 @@
     ]
     const fixedFamilies = ['fixed', 'edi_orders', 'free']
     //region      initialisation des données computed
-    const customerOrderItems = computed(() => storePurchaseOrderItems.itemsPurchaseOrderItemComponents)
+    const customerOrderItems = computed(() => storePurchaseOrderItems.itemsPurchaseOrders)
 
     const fieldsCommande = computed(() => [
         {label: 'Forecast', name: 'isForecast', type: 'boolean', width: 50},
@@ -345,23 +344,23 @@
             :key="tableKey"
             :should-delete="isPurchaseWriterOrAdmin"
             :should-seek="isPurchaseWriterOrAdmin"
-            :current-page="storePurchaseOrderItemComponentItems.currentPage"
-            :fields="fields"
-            :first-page="storePurchaseOrderItemComponentItems.firstPage"
-            :items="itemsPurchaseOrderItemComponents"
-            :last-page="storePurchaseOrderItemComponentItems.lastPage"
-            :next-page="storePurchaseOrderItemComponentItems.nextPage"
-            :pag="storePurchaseOrderItemComponentItems.pagination"
-            :previous-page="storePurchaseOrderItemComponentItems.previousPage"
-            :user="roleuser"
+            :current-page="storePurchaseOrderItems.currentPage"
+            :fields="fieldsCommande"
+            :first-page="storePurchaseOrderItems.firstPage"
+            :items="customerOrderItems"
+            :last-page="storePurchaseOrderItems.lastPage"
+            :next-page="storePurchaseOrderItems.nextPage"
+            :pag="storePurchaseOrderItems.pagination"
+            :previous-page="storePurchaseOrderItems.previousPage"
+            :user="roleUser"
             title
             form="formPurchaseOrderItemsTable"
-            @deleted="deletedItemPurchaseOrderItemComponent"
-            @get-page="getPagePurchaseOrderItemComponent"
+            @deleted="deletedPurchaseOrderItem"
+            @get-page="getPagePurchaseOrders"
             @update="updateItemToUpdate"
-            @trier-alphabet="trierPurchaseOrderItemComponent"
-            @search="searchPurchaseOrderItemComponent"
-            @cancel-search="cancelPurchaseOrderItemComponent">
+            @trier-alphabet="trierAlphabetPurchaseOrderItems"
+            @search="searchPurchaseOrders"
+            @cancel-search="cancelSearchPurchaseOrderItems">
             <template #title>
                 <span>Items de commande {{ order.ref }}</span>
                 <button

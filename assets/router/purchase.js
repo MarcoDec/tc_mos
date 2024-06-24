@@ -1,4 +1,3 @@
-import AppShowGui from '../components/pages/AppShowGui.vue'
 import AppShowGuiComponent from '../components/pages/purchase/component/show/AppShowGuiComponent.vue'
 import AppShowGuiSupplier from '../components/pages/purchase/supplier/show/AppShowGuiSupplier.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
@@ -156,5 +155,5 @@ export default [
             icon: 'bullhorn',
             title: 'Commandes Fournisseurs'
         }
-    },
+    }
 ]

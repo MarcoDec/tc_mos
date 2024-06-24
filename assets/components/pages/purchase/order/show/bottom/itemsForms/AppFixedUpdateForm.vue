@@ -132,7 +132,7 @@
     <AppGenOrderItemForm
         btn-label="Enregistrer"
         :can-modify="canModify"
-        :customer="customer"
+        :supplier="supplier"
         :fields="fieldsFixedOrderItem"
         :form-data="localForecastData"
         form-id="formUpdateFixedOrderItem"

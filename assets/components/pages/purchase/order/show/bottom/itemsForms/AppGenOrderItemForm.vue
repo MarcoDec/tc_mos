@@ -1,8 +1,8 @@
 <script setup>
-    import AppModal from '../../../../../modal/AppModal.vue'
-    import AppFormJS from '../../../../../form/AppFormJS'
+    import AppModal from '../../../../../../../components/modal/AppModal.vue'
+    import AppFormJS from '../../../../../../../components/form/AppFormJS'
     import {computed, defineEmits, ref} from 'vue'
-    import api from '../../../../../../api'
+    import api from '../../../../../../../api'
     import {Modal} from 'bootstrap'
     import Measure from './measure'
 

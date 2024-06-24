@@ -8,7 +8,7 @@
 
     const fetchUser = useUser()
     const isPurchaseWriterOrAdmin = fetchUser.isPurchaseWriter || fetchUser.isPurchaseAdmin
-    const roleuser = ref(isPurchaseWriterOrAdmin ? 'writer' : 'reader')
+    const roleUser = ref(isPurchaseWriterOrAdmin ? 'writer' : 'reader')
     const fetchUnitOptions = useOptions('units')
     await fetchUnitOptions.fetchOp()
     const optionsUnit = computed(() =>
@@ -121,6 +121,7 @@
     }
 
     async function extraireItems(itemsReceipts2) {
+        console.log('itemsReceipts2', itemsReceipts2)
         const promises = itemsReceipts2.map(async item => {
             const parties = item.requestedDate.split('T')
             const date = parties[0]
@@ -142,7 +143,7 @@
         return Promise.all(promises)
     }
 
-    const resultat = await extraireItems(itemsReceipts)
+    const resultat = await extraireItems(itemsReceipts.value)
     // console.log('resultat',resultat);
 
     // async function trierReceipts(payload) {
@@ -204,7 +205,7 @@
             :next-page="storeReceiptsItems.nextPage"
             :pag="storeReceiptsItems.pagination"
             :previous-page="storeReceiptsItems.previousPage"
-            :user="roleuser"
+            :user="roleUser"
             form="receptionCardableTable"
             @get-page="getPageReceipts"
             @trier-alphabet="trierReceipts"

@@ -4,7 +4,7 @@
     import AppCollectionTableCommande from './bottom/AppCollectionTableCommande.vue'
     import AppCollectionTableReception from './bottom/AppCollectionTableReception.vue'
 
-    const props = defineProps({
+    /*const props = */defineProps({
         order: {required: true, type: Object},
         supplier: {required: true, type: Object}
     })
@@ -55,7 +55,3 @@
         </AppTab>
     </AppTabs>
 </template>
-
-<style scoped>
-
-</style>

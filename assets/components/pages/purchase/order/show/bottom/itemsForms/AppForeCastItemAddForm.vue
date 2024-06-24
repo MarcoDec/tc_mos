@@ -1,6 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useCustomerOrderItemsStore} from '../../../../../../stores/customer/customerOrderItems'
+    import {usePurchaseOrderItemComponentsStore as usePurchaseOrderItemsStore} from "../../../../../../../stores/purchase/order/purchaseOrderItem"
     import AppGenOrderItemForm from './AppGenOrderItemForm.vue'
 
     const emits = defineEmits(['updated', 'closed', 'submit'])
@@ -11,7 +11,7 @@
         optionsUnit: {default: () => ({}), type: Object},
         optionsCurrency: {default: () => ({}), type: Object}
     })
-    const storeCustomerOrderItems = useCustomerOrderItemsStore()
+    const storeCustomerOrderItems = usePurchaseOrderItemsStore()
     const localForecastData = ref(
         {
             product: null,

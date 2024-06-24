@@ -3,13 +3,13 @@
     import useOptions from '../../../../../stores/option/options'
     import useUser from '../../../../../stores/security'
     import AppPurchaseOrderBottom from './AppPurchaseOrderBottom.vue'
-    import AppCollectionTableCommande from './bottom/AppCollectionTableCommande.vue'
+    // import AppCollectionTableCommande from './bottom/AppCollectionTableCommande.vue'
     // import AppCollectionTableEchange from './AppCollectionTableEchange.vue'
     // import AppCollectionTableGestion from './AppCollectionTableGestion.vue'
     // import AppCollectionTableQualite from './AppCollectionTableQualite.vue'
-    import AppCollectionTableReception from './bottom/AppCollectionTableReception.vue'
+    // import AppCollectionTableReception from './bottom/AppCollectionTableReception.vue'
     import AppSuspense from '../../../../AppSuspense.vue'
-    import AppUnderDevelopment from "../../../../gui/AppUnderDevelopment.vue"
+    // import AppUnderDevelopment from "../../../../gui/AppUnderDevelopment.vue"
     import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome"
     import AppWorkflowShow from "../../../../workflow/AppWorkflowShow.vue"
     import AppBtn from "../../../../AppBtn.vue"
@@ -149,20 +149,6 @@
     const requestExploitation = () => {
         modeDetail.value = false
     }
-    const onUpdated = () => {
-        updateStores()
-    }
-    const activateFullScreen = () => {
-        isFullScreen.value = true
-    }
-    const deactivateFullScreen = () => {
-        isFullScreen.value = false
-    }
-    const router = useRouter()
-    const order = computed(() => fetchPurchaseOrderStore.purchaseOrder)
-    const goBack = () => {
-        router.push({name: 'purchaseOrderList'})
-    }
     async function updateGeneralityDataFromApi(data) {
         //Si customer est défini, on le charge afin de pouvoir identifier le type de commande possible
         if (data.supplier){
@@ -202,6 +188,17 @@
             generalityKey.value++
             beforeMountDataLoaded.value = true
         })
+    }
+    const activateFullScreen = () => {
+        isFullScreen.value = true
+    }
+    const deactivateFullScreen = () => {
+        isFullScreen.value = false
+    }
+    const router = useRouter()
+    const order = computed(() => fetchPurchaseOrderStore.purchaseOrder)
+    const goBack = () => {
+        router.push({name: 'purchaseOrderList'})
     }
     async function updateGeneralityDataFromAppCardShow(data) {
         // console.log('current GeneralityData', generalityData.value)
@@ -280,7 +277,7 @@
                         </span>
                     </div>
                 </div>
-                <div :key="generalityKey" v-if="isLoaded" class="row">
+                <div v-if="isLoaded" :key="generalityKey" class="row">
                     <AppCardShow
                         id="Generality"
                         :fields="fieldsGenerality"
