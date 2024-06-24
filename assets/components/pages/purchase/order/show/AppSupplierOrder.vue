@@ -290,14 +290,12 @@
             <template #gui-bottom>
                 <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small">
                     <div class="full-visible-width">
-                        <AppSuspense>
-                            <AppPurchaseOrderBottom
-                                v-if="isLoaded"
-                                v-show="modeDetail"
-                                :key="`formtab-${keyTabs}`"
-                                :order="fetchPurchaseOrderStore.purchaseOrder"
-                                :supplier="supplier"/>
-                        </AppSuspense>
+                        <AppPurchaseOrderBottom
+                            v-if="isLoaded"
+                            v-show="modeDetail"
+                            :key="`formtab-${keyTabs}`"
+                            :order="fetchPurchaseOrderStore.purchaseOrder"
+                            :supplier="supplier"/>
                     </div>
                     <span>
                         <FontAwesomeIcon v-if="isFullScreen" icon="fa-solid fa-magnifying-glass-minus" @click="deactivateFullScreen"/>

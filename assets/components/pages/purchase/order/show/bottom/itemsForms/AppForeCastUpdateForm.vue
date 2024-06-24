@@ -6,7 +6,7 @@
     const emits = defineEmits(['updated', 'closed', 'submit'])
     const props = defineProps({
         canModify: {required: true, type: Boolean},
-        customer: {required: true, type: Object},
+        supplier: {required: true, type: Object},
         modalId: {required: true, type: String},
         modelValue: {required: true, type: Object},
         order: {required: true, type: Object},
@@ -102,7 +102,7 @@
     <AppGenOrderItemForm
         btn-label="Enregistrer"
         :can-modify="canModify"
-        :customer="customer"
+        :supplier="supplier"
         :fields="fieldsOpenOrderItem"
         :form-data="localForecastData"
         form-id="formAddNewForecastOrderItem"

@@ -209,4 +209,7 @@
     .tab-pane {
         padding: 10px;
     }
+    .four {
+        z-index: max(1000, 1000);
+    }
 </style>

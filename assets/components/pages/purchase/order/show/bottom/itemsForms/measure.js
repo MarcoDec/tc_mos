@@ -49,6 +49,10 @@ class Measure {
     static async getAndSetComponentPrice(component, supplier, order, quantity, localData, formKey) {
         try {
             const price = await Measure.getComponentGridPrice(component, supplier, order, quantity)
+            console.log('price', price)
+            if (price === null) {
+                throw new Error('Le prix du composant n\'a pas été trouvé')
+            }
             if (typeof price === 'string') window.alert(price)
             else {
                 const currency = await api(`/api/currencies?code=${price.code}`)
@@ -62,10 +66,9 @@ class Measure {
     }
 
     static async getComponentGridPrice(component, supplier, order, quantity) {
+        const componentIri = component['@id']
         // on récupère le type de produit associé à la commande
         const kind = order.kind
-        // on récupère les iri produit et fournisseur
-        const componentIri = component['@id']
         const supplierIri = supplier['@id']
         // on récupère le componentSupplier associé au composant et au fournisseur
         const componentSupplier = await api(`/api/supplier-components?component=${componentIri}&supplier=${supplierIri}&kind=${kind}`, 'GET')
@@ -83,7 +86,10 @@ class Measure {
                 // On tri les éléments par ordre décroissant de quantité
                 componentSupplierPrices['hydra:member'].sort((a, b) => b.quantity.value - a.quantity.value)
                 // on récupère le premier élément dont la quantité est supérieure ou égale à la quantité demandée
-                return componentSupplierPrices['hydra:member'].find(price => price.quantity.value <= quantity.value)
+                const quantityMoreThan1 = quantity.value >= 1 ? quantity.value : 1
+                const componentSupplierPricesItems = componentSupplierPrices['hydra:member'].find(price => price.quantity.value <= quantityMoreThan1)
+                if (typeof componentSupplierPricesItems === 'undefined') return null
+                return componentSupplierPricesItems.price
             }
             return 'Il n\'y a pas de grille de prix pour ce composant et ce fournisseur'
         }

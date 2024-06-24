@@ -9,6 +9,8 @@
     import AppFixedUpdateForm from './itemsForms/AppFixedUpdateForm.vue'
     import AppForeCastItemAddForm from './itemsForms/AppForeCastItemAddForm.vue'
     import AppForeCastUpdateForm from './itemsForms/AppForeCastUpdateForm.vue'
+    import AppModal from "../../../../../modal/AppModal.vue";
+    import {Portal, PortalTarget} from "portal-vue";
 
     const props = defineProps({
         order: {default: () => ({}), required: true, type: Object},
@@ -245,6 +247,8 @@
     isLoaded.value = true
     //endregion
     const canModifyForm = ref(true)
+    const fixedUpdateModalId = 'modalUpdateFixedItem'
+    const forecastUpdateModalId = 'modalUpdateForecastItem'
     function updateItemToUpdate(item) {
         storePurchaseOrderItems.setCurrentUnitOptions(optionsUnit.value)
         storePurchaseOrderItems.setCurrentCurrencyOptions(optionsCurrency.value)
@@ -259,7 +263,7 @@
         if (item.isForecast) {
             showForeCastUpdateForm.value = true
             nextTick(() => {
-                const modalElement = document.getElementById('modalUpdateForecastItem')
+                const modalElement = document.getElementById(forecastUpdateModalId)
                 const bootstrapModal = Modal.getInstance(modalElement)
                 bootstrapModal.show()
             })
@@ -267,22 +271,46 @@
         }
         showFixedUpdateForm.value = true
         nextTick(() => {
-            const modalElement = document.getElementById('modalUpdateFixedItem')
+            const modalElement = document.getElementById(fixedUpdateModalId)
             const bootstrapModal = Modal.getInstance(modalElement)
             bootstrapModal.show()
         })
     }
+    const fixedAddModalId = 'modalAddNewFixedPurchaseItem'
+    let modalEventListener = null
     function openModalAddNewOrderItem() {
         // On récupère la modale d'ajout
-        const modalElement = document.getElementById('modalAddNewFixedItem')
+        const modalElement = document.getElementById(fixedAddModalId)
         const bootstrapModal = Modal.getInstance(modalElement)
         bootstrapModal.show()
     }
+    const forecastAddModalId = 'modalAddNewForecastPurchaseItem'
     function openModalAddNewForecastItem() {
         // On récupère la modale d'ajout
-        const modalElement = document.getElementById('modalAddNewForecastItem')
+        const modalElement = document.getElementById(forecastAddModalId)
+        modalEventListener = function (e) {
+            var modalBackdrop = document.querySelector('.modal-backdrop')
+            if (modalBackdrop) {
+                modalBackdrop.style.zIndex = '1050'
+            }
+            modalElement.style.zIndex = '1500'
+            var modalContent = modalElement.querySelector('.modal-content')
+            if (modalContent) {
+                modalContent.style.zIndex = '1500'
+            }
+        }
+        modalElement.addEventListener('shown.bs.modal', modalEventListener);
         const bootstrapModal = Modal.getInstance(modalElement)
         bootstrapModal.show()
+    }
+    function onModalClose(modalName) {
+        const modalElement = document.getElementById(modalName)
+        if (modalEventListener) {
+            modalElement.removeEventListener('shown.bs.modal', modalEventListener)
+            modalEventListener = null
+        }
+        const bootstrapModal = Modal.getOrCreateInstance(modalElement)
+        bootstrapModal.hide()
     }
     function onFormSubmitted() {
         updateTable()
@@ -290,55 +318,56 @@
 </script>
 
 <template>
-    <AppSuspense>
+    <portal to="modals">
         <AppFixedItemAddForm
-            v-if="isLoaded"
             :key="`addFixedItem_${formKeys}`"
             :supplier="supplier"
-            modal-id="modalAddNewFixedItem"
+            :modal-id="fixedAddModalId"
             :order="order"
             :options-currency="optionsCurrency"
             :options-unit="optionsUnit"
             @updated="updateTable"
-            @closed="() => console.log('fixed add form closed')"
+            @closed="() => onModalClose(fixedAddModalId)"
             @submit="onFormSubmitted"/>
         <AppForeCastItemAddForm
-            v-if="isLoaded && !fixedFamilies.includes(order.orderFamily)"
+            v-if="!fixedFamilies.includes(order.orderFamily)"
             :key="`addForecastItem_${formKeys}`"
             :supplier="supplier"
-            modal-id="modalAddNewForecastItem"
+            :modal-id="forecastAddModalId"
             :order="order"
             :options-currency="optionsCurrency"
             :options-unit="optionsUnit"
             @updated="updateTable"
-            @closed="() => console.log('forecast add form closed')"
+            @closed="() => onModalClose(forecastAddModalId)"
             @submit="onFormSubmitted"/>
         <AppForeCastUpdateForm
-            v-if="isLoaded && !fixedFamilies.includes(order.orderFamily) && showForeCastUpdateForm"
+            v-if="!fixedFamilies.includes(order.orderFamily) && showForeCastUpdateForm"
             :key="`updateForecastItem_${formUpdateKeys}`"
             :can-modify="canModifyForm"
             :model-value="storePurchaseOrderItems.currentItem"
             :supplier="supplier"
-            modal-id="modalUpdateForecastItem"
+            :modal-id="forecastUpdateModalId"
             :order="order"
             :options-currency="optionsCurrency"
             :options-unit="optionsUnit"
             @updated="updateTable"
-            @closed="() => console.log('forecast update form closed')"
+            @closed="() => onModalClose(forecastUpdateModalId)"
             @submit="onFormSubmitted"/>
         <AppFixedUpdateForm
-            v-if="isLoaded && showFixedUpdateForm"
+            v-if="showFixedUpdateForm"
             :key="`updateFixedItem_${formUpdateKeys}`"
             :can-modify="canModifyForm"
             :model-value="storePurchaseOrderItems.currentItem"
             :supplier="supplier"
-            modal-id="modalUpdateFixedItem"
+            :modal-id="fixedUpdateModalId"
             :order="order"
             :options-currency="optionsCurrency"
             :options-unit="optionsUnit"
             @updated="updateTable"
-            @closed="() => console.log('fixed update form closed')"
+            @closed="() => onModalClose(fixedUpdateModalId)"
             @submit="onFormSubmitted"/>
+    </portal>
+
         <AppCardableTable
             v-if="isLoaded"
             :key="tableKey"
@@ -377,5 +406,4 @@
                 </button>
             </template>
         </AppCardableTable>
-    </AppSuspense>
 </template>

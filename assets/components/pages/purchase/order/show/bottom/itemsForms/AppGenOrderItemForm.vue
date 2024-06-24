@@ -116,21 +116,35 @@
             localData.value.product = null
             await api(value.component, 'GET').then(async response => {
                 await Measure.setQuantityToUnit(localData.value, response)
+                console.log('before getAndSetComponentPrice', response, props.supplier, props.order, localData.value.requestedQuantity, localData.value, formKey)
                 await Measure.getAndSetComponentPrice(response, props.supplier, props.order, localData.value.requestedQuantity, localData.value, formKey)
             })
         }
         // Si la quantité demandée a été modifiée
         if (value.requestedQuantity && value.requestedQuantity !== initialLocalData.requestedQuantity) {
-            // console.log('value', value)
-            await api(value.product, 'GET').then(async response => {
-                await Measure.getAndSetProductPrice(response, props.supplier, props.order, localData.value.requestedQuantity, localData.value, formKey)
-            })
+            if (value.product) {
+                await api(value.product, 'GET').then(async response => {
+                    await Measure.getAndSetProductPrice(response, props.supplier, props.order, localData.value.requestedQuantity, localData.value, formKey)
+                })
+            }
+            if (value.component) {
+                await api(value.component, 'GET').then(async response => {
+                    await Measure.getAndSetComponentPrice(response, props.supplier, props.order, localData.value.requestedQuantity, localData.value, formKey)
+                })
+            }
         }
         if (props.variant === 'fixed') {
             if (value.confirmedQuantity && value.confirmedQuantity !== initialLocalData.confirmedQuantity) {
-                await api(value.product, 'GET').then(async response => {
-                    await Measure.getAndSetProductPrice(response, props.supplier, props.order, localData.value.confirmedQuantity, localData.value, formKey)
-                })
+                if (value.product) {
+                    await api(value.product, 'GET').then(async response => {
+                        await Measure.getAndSetProductPrice(response, props.supplier, props.order, localData.value.confirmedQuantity, localData.value, formKey)
+                    })
+                }
+                if (value.component) {
+                    await api(value.component, 'GET').then(async response => {
+                        await Measure.getAndSetComponentPrice(response, props.supplier, props.order, localData.value.confirmedQuantity, localData.value, formKey)
+                    })
+                }
             }
         }
         loaderShow.value = false

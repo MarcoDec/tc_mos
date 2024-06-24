@@ -13,8 +13,11 @@ use App\Validator as AppAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use App\Entity\Purchase\Supplier\Component as SupplierComponent;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use App\Filter\RelationFilter;
 
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['component']),
     ApiResource(
         description: 'Prix',
         collectionOperations: [

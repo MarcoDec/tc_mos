@@ -3,6 +3,7 @@
     import AppUnderDevelopment from '../../../../gui/AppUnderDevelopment.vue'
     import AppCollectionTableCommande from './bottom/AppCollectionTableCommande.vue'
     import AppCollectionTableReception from './bottom/AppCollectionTableReception.vue'
+    import {PortalTarget} from "portal-vue"
 
     /*const props = */defineProps({
         order: {required: true, type: Object},
@@ -11,6 +12,7 @@
 </script>
 
 <template>
+    <portal-target name="modals"></portal-target>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab
             id="gui-start-detail"
