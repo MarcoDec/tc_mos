@@ -9,8 +9,7 @@
     import AppFixedUpdateForm from './itemsForms/AppFixedUpdateForm.vue'
     import AppForeCastItemAddForm from './itemsForms/AppForeCastItemAddForm.vue'
     import AppForeCastUpdateForm from './itemsForms/AppForeCastUpdateForm.vue'
-    import AppModal from "../../../../../modal/AppModal.vue";
-    import {Portal, PortalTarget} from "portal-vue";
+    import {Portal} from "portal-vue"
 
     const props = defineProps({
         order: {default: () => ({}), required: true, type: Object},
@@ -288,18 +287,18 @@
     function openModalAddNewForecastItem() {
         // On récupère la modale d'ajout
         const modalElement = document.getElementById(forecastAddModalId)
-        modalEventListener = function (e) {
-            var modalBackdrop = document.querySelector('.modal-backdrop')
+        modalEventListener = () => {
+            const modalBackdrop = document.querySelector('.modal-backdrop')
             if (modalBackdrop) {
                 modalBackdrop.style.zIndex = '1050'
             }
             modalElement.style.zIndex = '1500'
-            var modalContent = modalElement.querySelector('.modal-content')
+            const modalContent = modalElement.querySelector('.modal-content')
             if (modalContent) {
                 modalContent.style.zIndex = '1500'
             }
         }
-        modalElement.addEventListener('shown.bs.modal', modalEventListener);
+        modalElement.addEventListener('shown.bs.modal', modalEventListener)
         const bootstrapModal = Modal.getInstance(modalElement)
         bootstrapModal.show()
     }
@@ -318,7 +317,7 @@
 </script>
 
 <template>
-    <portal to="modals">
+    <Portal to="modals">
         <AppFixedItemAddForm
             :key="`addFixedItem_${formKeys}`"
             :supplier="supplier"
@@ -366,44 +365,43 @@
             @updated="updateTable"
             @closed="() => onModalClose(fixedUpdateModalId)"
             @submit="onFormSubmitted"/>
-    </portal>
-
-        <AppCardableTable
-            v-if="isLoaded"
-            :key="tableKey"
-            :should-delete="isPurchaseWriterOrAdmin"
-            :should-seek="isPurchaseWriterOrAdmin"
-            :current-page="storePurchaseOrderItems.currentPage"
-            :fields="fieldsCommande"
-            :first-page="storePurchaseOrderItems.firstPage"
-            :items="customerOrderItems"
-            :last-page="storePurchaseOrderItems.lastPage"
-            :next-page="storePurchaseOrderItems.nextPage"
-            :pag="storePurchaseOrderItems.pagination"
-            :previous-page="storePurchaseOrderItems.previousPage"
-            :user="roleUser"
-            title
-            form="formPurchaseOrderItemsTable"
-            @deleted="deletedPurchaseOrderItem"
-            @get-page="getPagePurchaseOrders"
-            @update="updateItemToUpdate"
-            @trier-alphabet="trierAlphabetPurchaseOrderItems"
-            @search="searchPurchaseOrders"
-            @cancel-search="cancelSearchPurchaseOrderItems">
-            <template #title>
-                <span>Items de commande {{ order.ref }}</span>
-                <button
-                    v-if="isPurchaseWriterOrAdmin"
-                    class="btn btn-success btn-float-right m-1"
-                    @click="openModalAddNewOrderItem">
-                    Ajouter Item en Ferme
-                </button>
-                <button
-                    v-if="!fixedFamilies.includes(order.orderFamily) && isPurchaseWriterOrAdmin"
-                    class="btn btn-success btn-float-right m-1"
-                    @click="openModalAddNewForecastItem">
-                    Ajouter Item en Prévisionnel {{ order.orderFamily }}
-                </button>
-            </template>
-        </AppCardableTable>
+    </Portal>
+    <AppCardableTable
+        v-if="isLoaded"
+        :key="tableKey"
+        :should-delete="isPurchaseWriterOrAdmin"
+        :should-seek="isPurchaseWriterOrAdmin"
+        :current-page="storePurchaseOrderItems.currentPage"
+        :fields="fieldsCommande"
+        :first-page="storePurchaseOrderItems.firstPage"
+        :items="customerOrderItems"
+        :last-page="storePurchaseOrderItems.lastPage"
+        :next-page="storePurchaseOrderItems.nextPage"
+        :pag="storePurchaseOrderItems.pagination"
+        :previous-page="storePurchaseOrderItems.previousPage"
+        :user="roleUser"
+        title
+        form="formPurchaseOrderItemsTable"
+        @deleted="deletedPurchaseOrderItem"
+        @get-page="getPagePurchaseOrders"
+        @update="updateItemToUpdate"
+        @trier-alphabet="trierAlphabetPurchaseOrderItems"
+        @search="searchPurchaseOrders"
+        @cancel-search="cancelSearchPurchaseOrderItems">
+        <template #title>
+            <span>Items de commande {{ order.ref }}</span>
+            <button
+                v-if="isPurchaseWriterOrAdmin"
+                class="btn btn-success btn-float-right m-1"
+                @click="openModalAddNewOrderItem">
+                Ajouter Item en Ferme
+            </button>
+            <button
+                v-if="!fixedFamilies.includes(order.orderFamily) && isPurchaseWriterOrAdmin"
+                class="btn btn-success btn-float-right m-1"
+                @click="openModalAddNewForecastItem">
+                Ajouter Item en Prévisionnel {{ order.orderFamily }}
+            </button>
+        </template>
+    </AppCardableTable>
 </template>

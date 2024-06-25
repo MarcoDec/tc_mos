@@ -13,7 +13,7 @@
         optionsUnit: {default: () => ({}), required: true, type: Object},
         optionsCurrency: {default: () => ({}), required: true, type: Object}
     })
-    const storeCustomerOrderItems = usePurchaseOrderItemsStore()
+    const storePurchaseOrderItems = usePurchaseOrderItemsStore()
     const localForecastData = ref(props.modelValue)
     const fieldsOpenOrderItem = computed(() => [
         {
@@ -24,7 +24,7 @@
             api: '/api/products',
             filteredProperty: 'code',
             permanentFilters: [
-                {field: 'productCustomers.customer', value: props.customer['@id']},
+                {field: 'productSuppliers.supplier', value: props.supplier['@id']},
                 {field: 'kind', value: props.order.kind}
             ],
             max: 1
@@ -111,7 +111,7 @@
         :order="order"
         :options-unit="optionsUnit"
         :options-currency="optionsCurrency"
-        :store="storeCustomerOrderItems"
+        :store="storePurchaseOrderItems"
         title="Modifier Item en Prévisionnel"
         variant="forecast"
         @updated="value => emits('updated', value)"

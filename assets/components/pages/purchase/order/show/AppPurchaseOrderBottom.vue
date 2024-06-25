@@ -12,7 +12,7 @@
 </script>
 
 <template>
-    <portal-target name="modals"></portal-target>
+    <PortalTarget name="modals"/>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab
             id="gui-start-detail"
