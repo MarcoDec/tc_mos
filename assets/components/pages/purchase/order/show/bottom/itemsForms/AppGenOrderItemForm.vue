@@ -7,44 +7,32 @@
     import Measure from './measure'
 
     const checkData = async data => {
+        // Règle n°1: Ne jamais faire confiance aux données provenant de l'utilisateur
         violations.value = []
         if (typeof data === 'undefined' || data === null) {
             violations.value.push({propertyPath: 'product', message: 'Veuillez remplir le formulaire'})
             return false
         }
-        // on retire d'éventuelles violations précédentes liées à la propriété product
-        violations.value = violations.value.filter(violation => violation.propertyPath !== 'product')
         if (data.product === null && data.component === null) {
             violations.value.push({propertyPath: 'product', message: 'Vous devez sélectionner un produit ou un composant'})
             return false
         }
-        // on retire d'éventuelles violations précédentes liées à la propriété product
-        violations.value = violations.value.filter(violation => violation.propertyPath !== 'product')
         if (typeof data.requestedQuantity === 'undefined' || data.requestedQuantity === null) {
             violations.value.push({propertyPath: 'requestedQuantity', message: 'Vous devez saisir une quantité'})
             return false
         }
-        // on retire d'éventuelles violations précédentes liées à la propriété requestedQuantity
-        violations.value = violations.value.filter(violation => violation.propertyPath !== 'requestedQuantity')
         if (data.requestedQuantity.code === null || data.requestedQuantity.value === null) {
             violations.value.push({propertyPath: 'requestedQuantity', message: 'Vous devez saisir une quantité'})
             return false
         }
-        // on retire d'éventuelles violations précédentes liées à la propriété requestedQuantity
-        violations.value = violations.value.filter(violation => violation.propertyPath !== 'requestedQuantity')
         if (data.requestedDate === null) {
             violations.value.push({propertyPath: 'requestedDate', message: 'Vous devez saisir une date'})
             return false
         }
-        // on retire d'éventuelles violations précédentes liées à la propriété requestedDate
-        violations.value = violations.value.filter(violation => violation.propertyPath !== 'requestedDate')
         if (data.price.code === null || data.price.value === null) {
             violations.value.push({propertyPath: 'price', message: 'Vous devez saisir un prix'})
             return false
         }
-        // on retire d'éventuelles violations précédentes liées à la propriété price
-        violations.value = violations.value.filter(violation => violation.propertyPath !== 'price')
-        // console.log('checkData return true')
         return true
     }
 
