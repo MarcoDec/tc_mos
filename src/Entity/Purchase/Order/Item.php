@@ -30,6 +30,8 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use App\Validator as AppAssert;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 
 /**
  * @template I of Component|Product
@@ -39,7 +41,9 @@ use App\Validator as AppAssert;
  *
  */
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['parentOrder']),
+    ApiFilter(filterClass: SearchFilter::class, properties:['id' => 'exact', 'item.id' => 'exact', 'parentOrder.id' => 'exact', 'ref' => 'partial', 'embState.state' => 'exact', 'confirmedDate' => 'exact', 'confirmedQuantity.value' => 'exact', 'confirmedQuantity.code' => 'exact', 'requestedDate' => 'exact', 'requestedQuantity.value' => 'exact', 'requestedQuantity.code' => 'exact', 'notes' => 'partial']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['item' , 'parentOrder']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['id', 'item.id', 'ref', 'embState.state', 'confirmedDate', 'confirmedQuantity.value', 'requestedDate', 'requestedQuantity.value', 'notes']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state']),
     ApiResource(
         description: 'Ligne de commande',
@@ -136,7 +140,6 @@ use App\Validator as AppAssert;
 ]
 abstract class Item extends BaseItem {
     final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
-
     #[
         ApiProperty(description: 'Accusé réception reçue', readableLink: false, example: 'true'),
         ORM\Column(type: 'boolean', options: ['default' => false]),
@@ -482,5 +485,13 @@ abstract class Item extends BaseItem {
     public function setTotalItemPrice(Measure $totalItemPrice): void
     {
         $this->totalItemPrice = $totalItemPrice;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsForecast(): bool
+    {
+        return $this->isForecast;
     }
 }

@@ -124,7 +124,7 @@ class Measure {
             }
             return 'Il n\'y a pas de grille de prix pour ce produit et ce fournisseur'
         }
-        return 'Ce produit n\'est pas associé à ce fournisseur'
+        return 'Ce produit n\'est pas associé à ce fournisseur, il n\'y a pas de grille de prix'
     }
     //endregion
 
