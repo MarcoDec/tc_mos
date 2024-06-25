@@ -35,6 +35,8 @@ final class ItemDataProvider implements ContextAwareCollectionDataProviderInterf
     public function getCollection(string $resourceClass, ?string $operationName = null, array $context = []): array {
         $filters = [];
         if (isset($context['filters'])) {
+            // On filtre par défault les items dont le champ deleted = true
+            $filters['deleted'] = false;
             if (isset($context['filters']['embState.state'])) {
                 $filters['embState.state'] = $context['filters']['embState.state'];
             }
