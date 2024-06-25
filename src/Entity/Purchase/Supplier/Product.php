@@ -10,30 +10,29 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
-use App\Entity\Purchase\Component\Component as TechnicalSheet;
+use App\Entity\Project\Product\Product as TechnicalSheet;
 use App\Filter\RelationFilter;
-use App\Repository\Purchase\Supplier\ComponentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use App\Entity\Purchase\Supplier\Price\ComponentPrice as SupplierComponentPrice;
+use App\Entity\Purchase\Supplier\Price\ProductPrice as SupplierProductPrice;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['component', 'supplier']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['product', 'supplier']),
     ApiResource(
-        description: 'Composant',
+        description: 'Produit Fournisseur',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les composants',
-                    'summary' => 'Récupère les composants'
+                    'description' => 'Récupère les produits fournisseur',
+                    'summary' => 'Récupère les produits fournisseur'
                 ]
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer un composant',
-                    'summary' => 'Créer un composant'
+                    'description' => 'Créer un produit fournisseur',
+                    'summary' => 'Créer un produit fournisseur'
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
             ]
@@ -41,116 +40,116 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime un composant',
-                    'summary' => 'Supprime un composant'
+                    'description' => 'Supprime un produit fournisseur',
+                    'summary' => 'Supprime un produit fournisseur'
                 ]
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get',
             'patch' => [
                 'openapi_context' => [
-                    'description' => 'Modifier un composant',
-                    'summary' => 'Modifier un composant',
+                    'description' => 'Modifier un produit fournisseur',
+                    'summary' => 'Modifier un produit fournisseur',
                 ]
             ],
         ],
-        shortName: 'SupplierComponent',
+        shortName: 'SupplierProduct',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:measure', 'write:supplier-component'],
-            'openapi_definition_name' => 'SupplierComponent-write'
+            'groups' => ['write:measure', 'write:supplier-product'],
+            'openapi_definition_name' => 'SupplierProduct-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:measure', 'read:supplier-component'],
-            'openapi_definition_name' => 'SupplierComponent-read',
+            'groups' => ['read:id', 'read:measure', 'read:supplier-product'],
+            'openapi_definition_name' => 'SupplierProduct-read',
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity(repositoryClass: ComponentRepository::class),
-    ORM\Table(name: 'supplier_component')
+    ORM\Entity(),
+    ORM\Table(name: 'supplier_product')
 ]
-class Component extends Entity {
+class Product extends Entity {
     #[
         ApiProperty(description: 'Référence', example: 'DH544G'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
+        Serializer\Groups(['read:supplier-product', 'write:supplier-product'])
     ]
     private ?string $code = null;
 
     #[
-        ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
-        ORM\ManyToOne(targetEntity: TechnicalSheet::class, inversedBy: 'supplierComponents'),
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
+        ApiProperty(description: 'Produit', readableLink: false, example: '/api/product/1'),
+        ORM\ManyToOne(targetEntity: TechnicalSheet::class, inversedBy: 'supplierProducts'),
+        Serializer\Groups(['read:supplier-product', 'write:supplier-product'])
     ]
-    private ?TechnicalSheet $component = null;
+    private ?TechnicalSheet $product = null;
 
     #[
         ApiProperty(description: 'Poids cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-linear-density']),
         ORM\Embedded,
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
+        Serializer\Groups(['read:supplier-product', 'write:supplier-product'])
     ]
     private Measure $copperWeight;
 
     #[
         ApiProperty(description: 'Temps de livraison', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
         ORM\Embedded,
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
+        Serializer\Groups(['read:supplier-product', 'write:supplier-product'])
     ]
     private Measure $deliveryTime;
 
     #[
         ApiProperty(description: 'Incoterms', readableLink: false, example: '/api/incoterms/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
+        Serializer\Groups(['read:supplier-product', 'write:supplier-product'])
     ]
     private ?Incoterms $incoterms = null;
 
     #[
         ApiProperty(description: 'Indice', example: '0'),
         ORM\Column(name: '`index`', options: ['default' => '0']),
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
+        Serializer\Groups(['read:supplier-product', 'write:supplier-product'])
     ]
     private string $index = '0';
 
     #[
         ApiProperty(description: 'MOQ (Minimal Order Quantity)', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
+        Serializer\Groups(['read:supplier-product', 'write:supplier-product'])
     ]
     private Measure $moq;
 
     #[
         ApiProperty(description: 'Conditionnement', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
+        Serializer\Groups(['read:supplier-product', 'write:supplier-product'])
     ]
     private Measure $packaging;
 
     #[
         ApiProperty(description: 'Type de packaging', example: 'Palette'),
         ORM\Column(length: 30, nullable: true),
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
+        Serializer\Groups(['read:supplier-product', 'write:supplier-product'])
     ]
     private ?string $packagingKind = null;
 
-    /** @var DoctrineCollection<int, SupplierComponentPrice> */
+    /** @var DoctrineCollection<int, SupplierProductPrice> */
     #[
-        ORM\OneToMany(targetEntity: SupplierComponentPrice::class, mappedBy:'component', fetch: 'EAGER')
+        ORM\OneToMany(mappedBy: 'product', targetEntity: SupplierProductPrice::class, fetch: 'EAGER')
     ]
     private DoctrineCollection $prices;
 
     #[
         ApiProperty(description: 'Proportion', example: '99'),
         ORM\Column(options: ['default' => 100, 'unsigned' => true]),
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
+        Serializer\Groups(['read:supplier-product', 'write:supplier-product'])
     ]
     private float $proportion = 100;
 
     #[
         ApiProperty(description: 'Fournisseur', readableLink: false, example: '/api/suppliers/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
+        Serializer\Groups(['read:supplier-product', 'write:supplier-product'])
     ]
     private ?Supplier $supplier = null;
    
@@ -165,7 +164,7 @@ class Component extends Entity {
 
     #[
         ApiProperty(description: 'Meilleur prix'),
-        Serializer\Groups(['read:id', 'read:supplier-component'])
+        Serializer\Groups(['read:id', 'read:supplier-product'])
     ]
     final public function getBestPrice():Measure {
         $bestPrice=new Measure();
@@ -173,11 +172,11 @@ class Component extends Entity {
         $prices = $this->getPrices();
         //dump(['prices'=>$prices]);
         if (count($prices)>0) {
-            /** @var SupplierComponentPrice $supplierComponentPrice */
+            /** @var SupplierProductPrice $supplierProductPrice */
             $filteredPrices = $prices
-            ->filter(function($supplierComponentPrice){ // On retire tous les enregistrements qui ont une quantité à zéro ou un prix à zéro
-                $quantity = $supplierComponentPrice->getQuantity()->getValue();
-                $price = $supplierComponentPrice->getPrice()->getValue();
+            ->filter(function($supplierProductPrice){ // On retire tous les enregistrements qui ont une quantité à zéro ou un prix à zéro
+                $quantity = $supplierProductPrice->getQuantity()->getValue();
+                $price = $supplierProductPrice->getPrice()->getValue();
                 return $price >0;
             })->toArray();
             usort($filteredPrices, function( $a,  $b){
@@ -192,8 +191,8 @@ class Component extends Entity {
         return $this->code;
     }
 
-    final public function getComponent(): ?TechnicalSheet {
-        return $this->component;
+    final public function getProduct(): ?TechnicalSheet {
+        return $this->product;
     }
 
     final public function getCopperWeight(): Measure {
@@ -238,7 +237,7 @@ class Component extends Entity {
     }
 
     final public function getUnit(): ?Unit {
-        return $this->component?->getUnit();
+        return $this->product?->getUnit();
     }
 
     final public function setCode(?string $code): self {
@@ -246,8 +245,8 @@ class Component extends Entity {
         return $this;
     }
 
-    final public function setComponent(?TechnicalSheet $component): self {
-        $this->component = $component;
+    final public function setProduct(?TechnicalSheet $product): self {
+        $this->product = $product;
         return $this;
     }
 

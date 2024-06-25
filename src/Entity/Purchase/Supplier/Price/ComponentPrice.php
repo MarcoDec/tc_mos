@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Purchase\Supplier;
+namespace App\Entity\Purchase\Supplier\Price;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -69,7 +69,7 @@ use App\Filter\RelationFilter;
     ORM\Entity,
     ORM\Table(name: 'supplier_component_price')
 ]
-class Price extends Entity implements MeasuredInterface {
+class ComponentPrice extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Référence', example: 'DJZ54'),
         ORM\Column(nullable: true),
@@ -82,7 +82,7 @@ class Price extends Entity implements MeasuredInterface {
         ORM\ManyToOne(targetEntity: SupplierComponent::class, inversedBy: 'prices'),
         Serializer\Groups(['read:price', 'write:price'])
     ]
-    private ?Component $component = null;
+    private ?SupplierComponent $component = null;
 
     #[
         ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
