@@ -2,17 +2,13 @@
 
 namespace App\Entity\Purchase\Order;
 
-use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Purchase\Component\Component;
-use App\Filter\RelationFilter;
-use App\Repository\Purchase\Order\ComponentItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -74,4 +70,11 @@ class ComponentItem extends Item {
         return ItemType::TYPE_COMPONENT;
     }
 
+    #[
+        ApiProperty(description: 'Supprimé', example: 'true'),
+        Serializer\Groups('read:item')
+    ]
+    public function getDeleted() : bool {
+        return $this->isDeleted();
+    }
 }
