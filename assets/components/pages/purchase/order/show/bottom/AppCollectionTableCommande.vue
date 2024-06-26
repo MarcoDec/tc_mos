@@ -49,7 +49,7 @@
         {text: 'agreed', value: 'agreed'},
         {text: 'partially_received', value: 'partially_received'},
         {text: 'received', value: 'received'},
-        {text: 'paid', value: 'paid'},
+        {text: 'paid', value: 'paid'}
     ]
     const fixedFamilies = ['fixed', 'edi_orders', 'free']
     //region      initialisation des données computed
@@ -204,7 +204,7 @@
             return
         }
         if (typeof inputValues.isForecast !== 'undefined') {
-            purchaseOrderItemsCriteria.addFilter('isForecast', inputValues.isForecast ? 1: 0)
+            purchaseOrderItemsCriteria.addFilter('isForecast', inputValues.isForecast ? 1 : 0)
         }
         if (inputValues.product && inputValues.component) {
             window.alert('Vous ne pouvez pas rechercher à la fois un produit et un composant')
