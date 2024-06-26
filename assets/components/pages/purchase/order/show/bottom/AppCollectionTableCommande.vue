@@ -42,9 +42,14 @@
     const tableKey = ref(0)
 
     const stateOptions = [
-        {text: 'partially_delivered', value: 'partially_delivered'},
-        {text: 'delivered', value: 'delivered'},
-        {text: 'agreed', value: 'agreed'}
+        {text: 'initial', value: 'initial'},
+        {text: 'draft', value: 'draft'},
+        {text: 'monthly', value: 'monthly'},
+        {text: 'forecast', value: 'forecast'},
+        {text: 'agreed', value: 'agreed'},
+        {text: 'partially_received', value: 'partially_received'},
+        {text: 'received', value: 'received'},
+        {text: 'paid', value: 'paid'},
     ]
     const fixedFamilies = ['fixed', 'edi_orders', 'free']
     //region      initialisation des données computed
@@ -58,7 +63,7 @@
             label: 'Quantité souhaitée',
             name: 'requestedQuantity',
             info: 'La quantité doit être supérieure à la quantité minimale de livraison définie sur la fiche produit',
-            filter: true,
+            filter: false,
             min: true,
             measure: {
                 code: {
@@ -84,7 +89,7 @@
         {
             label: 'Quantité confirmée',
             name: 'confirmedQuantity',
-            filter: true,
+            filter: false,
             min: true,
             measure: {
                 code: {
@@ -114,6 +119,7 @@
             name: 'price',
             trie: false,
             type: 'measure',
+            filter: false,
             measure: {
                 code: {
                     label: 'Code',
@@ -171,6 +177,7 @@
     async function searchPurchaseOrders(inputValues) {
         purchaseOrderItemsCriteria.resetAllFilter()
         addPermanentFilters()
+        console.log('inputValues', inputValues)
         if (inputValues.product) purchaseOrderItemsCriteria.addFilter('item', inputValues.product)
         if (inputValues.component) purchaseOrderItemsCriteria.addFilter('item', inputValues.component)
         if (inputValues.ref) purchaseOrderItemsCriteria.addFilter('ref', inputValues.ref)
@@ -186,7 +193,7 @@
             purchaseOrderItemsCriteria.addFilter('confirmedQuantity.code', requestedUnit.code)
         }
         if (inputValues.confirmedDate) purchaseOrderItemsCriteria.addFilter('confirmedDate', inputValues.confirmedDate)
-        if (inputValues.state) purchaseOrderItemsCriteria.addFilter('embState.state', inputValues.state)
+        if (inputValues.state) purchaseOrderItemsCriteria.addFilter('embState.state[]', inputValues.state)
         if (inputValues.notes) purchaseOrderItemsCriteria.addFilter('notes', inputValues.notes)
         if (inputValues.product && !inputValues.component) {
             await storePurchaseOrderItems.fetchAllProduct(purchaseOrderItemsCriteria.getFetchCriteria)
@@ -195,6 +202,9 @@
         if (!inputValues.product && inputValues.component) {
             await storePurchaseOrderItems.fetchAllComponent(purchaseOrderItemsCriteria.getFetchCriteria)
             return
+        }
+        if (typeof inputValues.isForecast !== 'undefined') {
+            purchaseOrderItemsCriteria.addFilter('isForecast', inputValues.isForecast ? 1: 0)
         }
         if (inputValues.product && inputValues.component) {
             window.alert('Vous ne pouvez pas rechercher à la fois un produit et un composant')
@@ -206,8 +216,6 @@
         purchaseOrderItemsCriteria.resetAllFilter()
         addPermanentFilters()
         await storePurchaseOrderItems.fetch(purchaseOrderItemsCriteria.getFetchCriteria)
-        //On réinitialise les données du formulaire
-        document.getElementById('formPurchaseOrderItemsTable').reset()
     }
     async function trierAlphabetPurchaseOrderItems(payload) {
         addPermanentFilters()

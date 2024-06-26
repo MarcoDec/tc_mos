@@ -15,7 +15,6 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 
 #[
-    ApiFilter(filterClass: OrderFilter::class, properties: ['confirmedDate', 'confirmedQuantity.value', 'item.code', 'item.manufacturerCode','requestedQuantity.value', 'requestedDate', 'targetCompany']),
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [

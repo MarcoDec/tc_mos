@@ -51,7 +51,8 @@ class Measure {
             const price = await Measure.getComponentGridPrice(component, supplier, order, quantity)
             console.log('price', price)
             if (price === null) {
-                throw new Error('Le prix du composant n\'a pas été trouvé')
+                window.alert('Le prix du composant n\'a pas été trouvé pour cette quantité')
+                return
             }
             if (typeof price === 'string') window.alert(price)
             else {
@@ -89,6 +90,7 @@ class Measure {
                 const quantityMoreThan1 = quantity.value >= 1 ? quantity.value : 1
                 const componentSupplierPricesItems = componentSupplierPrices['hydra:member'].find(price => price.quantity.value <= quantityMoreThan1)
                 if (typeof componentSupplierPricesItems === 'undefined') return null
+                console.log('componentSupplierPricesItems', componentSupplierPricesItems)
                 return componentSupplierPricesItems.price
             }
             return 'Il n\'y a pas de grille de prix pour ce composant et ce fournisseur'

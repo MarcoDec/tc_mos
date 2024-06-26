@@ -41,9 +41,11 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
  *
  */
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties:['id' => 'exact', 'item.id' => 'exact', 'parentOrder.id' => 'exact', 'ref' => 'partial', 'embState.state' => 'exact', 'confirmedDate' => 'exact', 'confirmedQuantity.value' => 'exact', 'confirmedQuantity.code' => 'exact', 'requestedDate' => 'exact', 'requestedQuantity.value' => 'exact', 'requestedQuantity.code' => 'exact', 'notes' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties:[
+        'isForecast' => 'exact', 'requestedDate' => 'partial', 'confirmedDate' => 'partial'
+    ]),
     ApiFilter(filterClass: RelationFilter::class, properties: ['item' , 'parentOrder']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['id', 'item.id', 'ref', 'embState.state', 'confirmedDate', 'confirmedQuantity.value', 'requestedDate', 'requestedQuantity.value', 'notes']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['requestedQuantity.value', 'confirmedQuantity.value', 'requestedDate', 'confirmedDate', 'embState.state']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state']),
     ApiResource(
         description: 'Ligne de commande',

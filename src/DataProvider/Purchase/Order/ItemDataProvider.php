@@ -35,17 +35,24 @@ final class ItemDataProvider implements ContextAwareCollectionDataProviderInterf
     public function getCollection(string $resourceClass, ?string $operationName = null, array $context = []): array {
         $filters = [];
         if (isset($context['filters'])) {
-            // On filtre par défault les items dont le champ deleted = true
-            $filters['deleted'] = false;
-            if (isset($context['filters']['embState.state'])) {
-                $filters['embState.state'] = $context['filters']['embState.state'];
+            $filters = $context['filters'];
+            if (isset($filters['page'])) {
+                unset($filters['page']);
             }
+            if (isset($filters['isForecast'])) {
+                $filters['isForecast'] = $filters['isForecast'] === 'true';
+            }
+//            if (isset($context['filters']['embState.state'])) {
+//                $filters['embState.state'] = $context['filters']['embState.state'];
+//            }
             if (isset($context['filters']['parentOrder'])) {
                 /** @var Order $order */
                 $order = $this->iriConverter->getItemFromIri($context['filters']['parentOrder']);
                 $filters['parentOrder'] = $order;
             }
         }
+        if (!isset($filters['deleted'])) $filters['deleted'] = false;
+
         return isset($context['filters']['page'])
             ? $this->repo->findBy(
                 criteria: $filters,
@@ -62,6 +69,6 @@ final class ItemDataProvider implements ContextAwareCollectionDataProviderInterf
      * @return bool
      */
     public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool {
-        return $resourceClass === Item::class && $operationName === 'get';
+        return $resourceClass === Item::class && $operationName === 'get' && false;
     }
 }
