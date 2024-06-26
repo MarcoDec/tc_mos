@@ -3,13 +3,10 @@
 namespace App\Repository\Purchase\Order;
 
 use App\Entity\Purchase\Order\ComponentItem;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Entity\Purchase\Order\Order;
-use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\ResultSetMapping;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Copper;
@@ -23,8 +20,6 @@ use App\Entity\Embeddable\EventState;
  * @method ComponentItem|null findOneBy(array $criteria, ?array $orderBy = null)
  * @method ComponentItem[]    findAll()
  */
-
-
 final class ComponentItemRepository extends ItemRepository {
 
     const ITEMS_PER_PAGE = 15;
@@ -65,13 +60,13 @@ final class ComponentItemRepository extends ItemRepository {
             ->leftJoin('item.unit', 'u', Join::WITH, 'u.deleted = FALSE');
     }
 
-    /**
-     * @return ComponentItem[]
-     */
-    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array {
-        /** @phpstan-ignore-next-line */
-        return $this->createByQueryBuilder($criteria, $orderBy, $limit, $offset)->getQuery()->getResult();
-    }
+//    /**
+//     * @return ComponentItem[]
+//     */
+//    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array {
+//        /** @phpstan-ignore-next-line */
+//        return $this->createByQueryBuilder($criteria, $orderBy, $limit, $offset)->getQuery()->getResult();
+//    }
 
     public function findOneByCheck(int $id): ?ComponentItem {
         $query = $this->createCheckQueryBuilder($id)->getQuery();
@@ -83,7 +78,7 @@ final class ComponentItemRepository extends ItemRepository {
         }
     }
 
-    public function findOneByReceipt(int $id, string $ressourceClass): ?ComponentItem {
+    public function findOneByReceipt(int $id, string $resourceClass): ?ComponentItem {
         $query = $this->createReceiptQueryBuilder($id)->getQuery();
         try {
             /** @phpstan-ignore-next-line */
@@ -99,27 +94,48 @@ final class ComponentItemRepository extends ItemRepository {
         $currentPage = $tab['currentPage'];
         // $first = 0;
         $max = 15;
-        if ($currentPage !== null && $currentPage !== '1' && isset($currentPage)){
-            // $currentPage = 15 * $currentPage -1;
-            $currentPage = $currentPage;
-        } else{
-            // $currentPage = 0;
-            $currentPage = 1;
-        }
+        if (!isset($currentPage) && $currentPage !== '1') $currentPage = 1;
 
         $sqlCount = 'SELECT COUNT(poi.id) as count ';
         $rsmCount = new ResultSetMapping();
         $rsmCount->addScalarResult('count', 'count');
 
-        $sql =  'SELECT DISTINCT poi.id as id, poi.component_id as component, poi.confirmed_date as confirmedDate, '. 
-        'poi.confirmed_quantity_code as confirmedQuantityCode, poi.confirmed_quantity_denominator as confirmedQuantityDenominator, poi.confirmed_quantity_value as confirmedQuantityValue, ' . 
-        'poi.copper_price_code as copperPriceCode, poi.copper_price_denominator as copperPriceDenominator, poi.copper_price_value as copperPriceValue, '.
-        'poi.emb_blocker_state as embBlockerState, poi.emb_state_state as embStateState, poi.notes as notes, '.
-        'poi.order_id as order_id, poi.price_code as priceCode, poi.price_denominator as priceDenominator, poi.price_value as priceValue, '.
-        'poi.product_id as product, poi.ref as ref, poi.requested_date as requestedDate, poi.requested_quantity_code as requestedQuantityCode, poi.requested_quantity_denominator as requestedQuantityDenominator, poi.requested_quantity_value as requestedQuantityValue, '.
-        'poi.target_company_id as targetCompany, poi.type as type , po.id as idOrder, po.company_id as company, po.contact_id as contact, po.delivery_company_id as deliveryCompany, po.emb_blocker_state as embBlockerStatepo, po.emb_state_state as embStateStatepo, po.notes as notesPo, po.order_id as orderIdPo, '.
-        'po.ref as refPo, po.supplement_fret as supplementFret, po.supplier_id as supplier, '.
-        'component.id as idComp , cf.code as codeComp ';
+        $sql =  'SELECT DISTINCT poi.id as id, 
+        poi.component_id as component, 
+        poi.confirmed_date as confirmedDate, '.
+        'poi.confirmed_quantity_code as confirmedQuantityCode, 
+        poi.confirmed_quantity_denominator as confirmedQuantityDenominator, 
+        poi.confirmed_quantity_value as confirmedQuantityValue, ' .
+        'poi.copper_price_code as copperPriceCode, 
+        poi.copper_price_denominator as copperPriceDenominator, 
+        poi.copper_price_value as copperPriceValue, '.
+        'poi.emb_blocker_state as embBlockerState, 
+        poi.emb_state_state as embStateState, 
+        poi.notes as notes, '.
+        'poi.parent_order_id as parentOrder, 
+        poi.price_code as priceCode, 
+        poi.price_denominator as priceDenominator, 
+        poi.price_value as priceValue, '.
+        'poi.product_id as product, 
+        poi.ref as ref, 
+        poi.requested_date as requestedDate, 
+        poi.requested_quantity_code as requestedQuantityCode, 
+        poi.requested_quantity_denominator as requestedQuantityDenominator, 
+        poi.requested_quantity_value as requestedQuantityValue, '.
+        'poi.target_company_id as targetCompany, 
+        poi.type as type , 
+        po.id as idOrder,
+         po.company_id as company, 
+         po.contact_id as contact, 
+         po.delivery_company_id as deliveryCompany, 
+         po.emb_blocker_state as embBlockerStatepo, 
+         po.emb_state_state as embStateStatepo, 
+         po.notes as notesPo, po.id as orderIdPo, '.
+        'po.ref as refPo, 
+        po.supplement_fret as supplementFret, 
+        po.supplier_id as supplier, '.
+        'component.id as idComp , 
+        cf.code as codeComp ';
 
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('id', 'id');
@@ -134,7 +150,7 @@ final class ComponentItemRepository extends ItemRepository {
         $rsm->addScalarResult('embBlockerState', 'embBlockerState');
         $rsm->addScalarResult('embStateState', 'embStateState');
         $rsm->addScalarResult('notes', 'notes');
-        $rsm->addScalarResult('order_id', 'order_id');
+        $rsm->addScalarResult('parentOrder', 'parentOrder');
         $rsm->addScalarResult('priceCode', 'priceCode');
         $rsm->addScalarResult('priceDenominator', 'priceDenominator');
         $rsm->addScalarResult('priceValue', 'priceValue');
@@ -161,7 +177,7 @@ final class ComponentItemRepository extends ItemRepository {
         $rsm->addScalarResult('codeComp', 'codeComp');
 
         $from = 'FROM purchase_order_item as poi '.
-        ' LEFT JOIN purchase_order as po ON poi.order_id = po.id '.
+        ' LEFT JOIN purchase_order as po ON poi.parent_order_id = po.id '.
         ' LEFT JOIN component ON poi.component_id = component.id AND component.deleted = 0 '.
         ' LEFT JOIN component_family AS cf ON component.family_id = cf.id AND cf.deleted = 0 '.
         ' WHERE poi.deleted = 0 AND po.deleted = 0 AND po.supplier_id = '. $supplierId;
@@ -200,9 +216,9 @@ final class ComponentItemRepository extends ItemRepository {
                 $where .= ' AND poi.requested_quantity_value >= poi.confirmed_quantity_value';
             } else{
                 $retard = $tab['retard'];
-     
+
                 $parts = explode(' ', $retard);
-        
+
                 $retard = array('0', '0', '0');
                 foreach ($parts as $part) {
                     if (strpos($part, 'y') !== false) {
@@ -214,15 +230,15 @@ final class ComponentItemRepository extends ItemRepository {
                     }
                 }
                 $retard = implode('-', $retard);
-                
+
                 $partRetard = explode('-', $retard);
                 $partRetard = array_map('intval', $partRetard);
                 $currentDate = date('Y-m-d');
                 $partCurrentDate = explode('-', $currentDate);
-        
-        
+
+
                 $partRetard[0] = $partCurrentDate[0] - $partRetard[0];
-                
+
                 $diffMois = $partCurrentDate[1] - $partRetard[1];
                 if($diffMois < 0 ){
                     $partRetard[0]--;
@@ -231,7 +247,7 @@ final class ComponentItemRepository extends ItemRepository {
                     $partRetard[1] = $diffMois;
                 }
                 $tabMoisJour = [31, 30, 28, 31, 30, 31, 30, 31, 30, 31, 30, 31];
-        
+
                 $diffJour = $partCurrentDate[2] - $partRetard[2];
                 if($diffJour < 0){
                     if($partRetard[1] == 1) {
@@ -255,7 +271,7 @@ final class ComponentItemRepository extends ItemRepository {
             $where .= " AND poi.price_code LIKE '%" . $tab['prixCode'] . "%'";
         }
 
-        
+
         if ($tab['ref'] !== null && isset($tab['ref'])) {
             $where .= " AND poi.ref LIKE '%" . $tab['ref'] . "%'";
         }
@@ -280,7 +296,7 @@ final class ComponentItemRepository extends ItemRepository {
         $resultsCount = $queryCount->getResult();
         $countElement = $resultsCount[0]['count'];
         if($countElement > $max){
-        
+
             $limitCurrent = ' LIMIT ' . $currentPage . ', ' . $max;
 
             $sql .= $from .$where. $limitCurrent;
@@ -296,7 +312,7 @@ final class ComponentItemRepository extends ItemRepository {
             $element['@type'] = 'PurchaseOrderItemComponent';
             $element['@id'] =  '/api/purchase-order-components/' . $element['id'];
             unset($element['id']);
-            
+
 
             $item = [];
             $item['@context'] = '/api/contexts/Component';
@@ -380,7 +396,7 @@ final class ComponentItemRepository extends ItemRepository {
             $order['supplier'] = '/api/suppliers/'.$element['supplier'];
             unset($element['supplier']);
             $idorder = '/api/selling-orders/' . $element['orderIdPo'];
-            $order['order'] = $idorder;
+            $order['parentOrder'] = $idorder;
             unset($element['orderIdPo']);
             $order['ref'] = $element['refPo'];
             unset($element['refPo']);
@@ -397,7 +413,7 @@ final class ComponentItemRepository extends ItemRepository {
             $order['embBlocker'] = $block;
             unset($element['embBlockerStatepo']);
 
-            $element['order'] = $order;
+            $element['parentOrder'] = $order;
         };
         $list = [];
         if($countElement > $max){
@@ -408,7 +424,7 @@ final class ComponentItemRepository extends ItemRepository {
                 'nbPage' => $nbPage,
                 'current' => $results
             ];
-        } else { 
+        } else {
             $list = [
                 'page' => $currentPage,
                 'nbPage' => 1,
@@ -417,5 +433,15 @@ final class ComponentItemRepository extends ItemRepository {
         };
 
         return $list;
+    }
+    public function findByComponentId(int $componentId): array
+    {
+        $query = $this->createQueryBuilder('ci')
+            ->join('ci.item', 'c')  // Assuming 'item' is the property in ComponentItem that maps to Component
+            ->where('c.id = :componentId')
+            ->setParameter('componentId', $componentId)
+            ->getQuery();
+
+        return $query->getResult();
     }
 }

@@ -6,6 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Management\VatMessageForce;
+use App\Entity\Accounting\Item as AccountingItem;
 use App\Entity\Embeddable\Accounting\State;
 use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -15,21 +16,37 @@ use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\VatMessage;
 use App\Entity\Selling\Customer\Contact;
 use App\Entity\Selling\Customer\Customer;
+use App\Entity\Selling\Order\Order;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Core\Annotation\ApiFilter;
-use App\Filter\RelationFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Filter\RelationFilter;
 
 #[          
-    ApiFilter(filterClass: OrderFilter::class, properties: ['dueDate']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['ref' => 'partial', 'billingDate' => 'partial', 'dueDate' => 'partial', 'forceVat' => 'partial', 'notes' => 'partial', 'vatMessage.name' => 'partial',
-        'exclTax.value' => 'partial', 'exclTax.code' => 'partial', 'inclTax.value' => 'partial', 'inclTax.code' => 'partial', 'vat.value' => 'partial', 'vat.code' => 'partial', 'customer' => 'exact'
+    ApiFilter(filterClass: OrderFilter::class, properties: ['dueDate', 'ref', 'billingDate', 'dueDate', 'exclTax.value', 'inclTax.value', 'vat.value', 'customer', 'sellingOrder.ref']),
+    ApiFilter(filterClass: SearchFilter::class, properties: [
+        'ref' => 'partial',
+        'billingDate' => 'partial',
+        'dueDate' => 'partial',
+        'forceVat' => 'partial',
+        'notes' => 'partial','v
+        atMessage.name' => 'partial',
+        'exclTax.value' => 'partial',
+        'exclTax.code' => 'partial',
+        'inclTax.value' => 'partial',
+        'inclTax.code' => 'partial',
+        'vat.value' => 'partial',
+        'vat.code' => 'partial',
+        'customer' => 'exact',
+        'embState.state' =>'partial'
     ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'customer', 'sellingOrder']),
     ApiResource(
         description: 'Facture',
         collectionOperations: [
@@ -113,6 +130,18 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 ]
 class Bill extends Entity {
     #[
+        ORM\Embedded,
+        Serializer\Groups(['read:bill', 'write:bill'])
+    ]
+    public Blocker $embBlocker;
+
+    #[
+        ORM\OneToMany(mappedBy: 'bill', targetEntity: AccountingItem::class),
+        Serializer\Groups(['read:bill', 'write:bill'])
+    ]
+    private Collection $bill_items;
+
+    #[
         ApiProperty(description: 'Date de facturation', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:bill', 'write:bill'])
@@ -149,13 +178,7 @@ class Bill extends Entity {
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:bill'])
-    ]
-    private Blocker $embBlocker;
-
-    #[
-        ORM\Embedded,
-        Serializer\Groups(['read:bill'])
+        Serializer\Groups(['read:bill', 'write:bill'])
     ]
     private State $embState;
 
@@ -209,6 +232,13 @@ class Bill extends Entity {
     ]
     private ?VatMessage $vatMessage = null;
 
+    #[
+        ApiProperty(description: 'Commande de vente associée', example: '/api/selling-orders/1'),
+        ORM\ManyToOne(targetEntity: Order::class),
+        Serializer\Groups(['read:bill', 'write:bill'])
+    ]
+    private ?Order $sellingOrder = null;
+
     public function __construct() {
         $this->billingDate = new DateTimeImmutable();
         $this->embBlocker = new Blocker();
@@ -216,10 +246,15 @@ class Bill extends Entity {
         $this->exclTax = new Measure();
         $this->inclTax = new Measure();
         $this->vat = new Measure();
+        $this->bill_items = new ArrayCollection();
     }
 
     final public function getBillingDate(): ?DateTimeImmutable {
         return $this->billingDate;
+    }
+
+    public function getBillItems(): Collection {
+        return $this->bill_items;
     }
 
     final public function getBlocker(): string {
@@ -284,6 +319,16 @@ class Bill extends Entity {
 
     final public function setBillingDate(?DateTimeImmutable $billingDate): self {
         $this->billingDate = $billingDate;
+        return $this;
+    }
+
+    final public function setBillItems(Collection $billItems): self {
+        $this->bill_items = $billItems;
+
+        foreach ($billItems as $billItem) {
+            $billItem->setBill($this);
+        }
+
         return $this;
     }
 
@@ -361,4 +406,23 @@ class Bill extends Entity {
         $this->vatMessage = $vatMessage;
         return $this;
     }
+
+    /**
+     * @return Order|null
+     */
+    public function getSellingOrder(): ?Order
+    {
+        return $this->sellingOrder;
+    }
+
+    /**
+     * @param Order|null $sellingOrder
+     * @return Bill
+     */
+    public function setSellingOrder(?Order $sellingOrder): Bill
+    {
+        $this->sellingOrder = $sellingOrder;
+        return $this;
+    }
+
 }

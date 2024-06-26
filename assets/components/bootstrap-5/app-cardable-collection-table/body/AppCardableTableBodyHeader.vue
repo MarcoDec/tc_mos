@@ -22,9 +22,11 @@
     function search() {
         emit('search', inputValues.value)
     }
+    const headerKey = ref(0)
     async function cancelSearch() {
         inputValues.value = []
-        emit('cancelSearch', inputValues.value)
+        headerKey.value++
+        emit('cancelSearch')
     }
     function onUpdateModelValue(event, fieldName) {
         emit('update:model-value', {field: fieldName, event})
@@ -32,10 +34,7 @@
 </script>
 
 <template>
-    <tr class="header">
-        <th scope="row" class="px50">
-            <Fa icon="filter"/>
-        </th>
+    <tr :key="headerKey" class="header">
         <td class="px100">
             <button class="btngris" @click="search">
                 <Fa icon="search"/>
@@ -47,7 +46,7 @@
 
         <td v-for="field in tabFields" :key="field.name" :style="{width: field.width ? `${field.width}px` : null}">
             <template v-if="field.filter !== false">
-                <AppInputGuesser v-if="!field.searchDisabled" :id="field.name" v-model="inputValues[field.name]" :form="form" :field="field" @update:model-value="onUpdateModelValue($event, field.name)"/>
+                <AppInputGuesser v-if="!field.searchDisabled" :id="field.name" v-model="inputValues[field.name]" :form="form" :field="field" @update:model-value="onUpdateModelValue($event, field.name)" @keyup.enter="search"/>
             </template>
             <template v-else>
                 {{ inputValues[field.name] }}

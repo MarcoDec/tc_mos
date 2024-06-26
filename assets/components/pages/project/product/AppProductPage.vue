@@ -66,6 +66,7 @@
         }))
 
     const fields = computed(() => [
+        {label: 'ID', name: 'id', trie: true, type: 'text', width: 50, filter: true},
         {
             label: 'Img',
             name: 'filePath',
@@ -146,6 +147,7 @@
         if (inputValues.code) productListCriteria.addFilter('code', inputValues.code)
         if (inputValues.index) productListCriteria.addFilter('index', inputValues.index)
         if (inputValues.name) productListCriteria.addFilter('name', inputValues.name)
+        if (inputValues.id) productListCriteria.addFilter('id', inputValues.id)
         if (inputValues.family) productListCriteria.addFilter('family', inputValues.family)
         if (inputValues.kind) productListCriteria.addFilter('kind', inputValues.kind)
         // if (inputValues.endOfLife) productListCriteria.addFilter('endOfLife', inputValues.endOfLife)
@@ -163,7 +165,7 @@
         await storeProductsList.fetch(productListCriteria.getFetchCriteria)
     }
     function onProductShowRequest(item) {
-        console.log('onProductShowRequest', item)
+        //console.log('onProductShowRequest', item)
         /* eslint-disable camelcase */
         router.push({name: 'product', params: {id_product: item.id}})
     }
@@ -227,6 +229,7 @@
                     :pag="storeProductsList.pagination"
                     :previous-page="storeProductsList.previousPage"
                     :user="roleuser"
+                    top-offset="48px"
                     form="formProductCardableTable"
                     @cancel-search="cancelSearch"
                     @deleted="deleted"

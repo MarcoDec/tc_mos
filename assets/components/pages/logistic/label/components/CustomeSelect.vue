@@ -45,7 +45,7 @@
     .custom-select {
         position: relative;
         border: 1px solid #a0a0a0;
-        //border: 1px solid black;
+        /*border: 1px solid black;*/
         cursor: pointer;
         user-select: none;
     }

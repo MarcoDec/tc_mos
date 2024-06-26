@@ -26,6 +26,31 @@ export default function useZonesStore() {
                 this.zones = await this.fetch(url)
                 this.isLoading = false
                 this.isLoaded = true
+            },
+            async fetchZones($filter = null) {
+                let url = '/api/zones'
+                if ($filter !== null) url = String(url).concat($filter)
+                this.isLoaded = false
+                this.isLoading = true
+                this.zones = []
+                this.zones = await this.fetch(url)
+                this.isLoading = false
+                this.isLoaded = true
+            },
+            async postNewZone(data) {
+                return api('/api/zones', 'post', data)
+            },
+            async patchZone(zoneIri, data) {
+                return api(zoneIri, 'patch', data)
+            },
+            async getZone(zoneIri) {
+                return api(zoneIri).then(response => {
+                    //console.log('response', response)
+                    this.zone = response
+                })
+            },
+            async deleteZone(zoneIri) {
+                return api(zoneIri, 'DELETE')
             }
         },
         getters: {
@@ -33,7 +58,9 @@ export default function useZonesStore() {
         state: () => ({
             isLoaded: false,
             isLoading: false,
-            zones: []
+            zones: [],
+            zone: null,
+            warehouseID: 0
         })
     })()
 }

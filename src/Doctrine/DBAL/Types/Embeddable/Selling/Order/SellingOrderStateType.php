@@ -10,7 +10,8 @@ final class SellingOrderStateType extends StateType {
         self::TYPE_STATE_DELIVERED,
         self::TYPE_STATE_DRAFT,
         self::TYPE_STATE_PARTIALLY_DELIVERED,
-        self::TYPE_STATE_TO_VALIDATE
+        self::TYPE_STATE_TO_VALIDATE,
+        self::TYPE_STATE_PAID
     ];
 
     public function getName(): string {

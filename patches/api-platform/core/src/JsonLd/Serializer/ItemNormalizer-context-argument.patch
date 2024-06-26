@@ -1,0 +1,37 @@
+diff --git a/vendor/api-platform/core/src/JsonLd/Serializer/ItemNormalizer.php b/patches/tmp/ItemNormalizer.php
+index 4a87887d3..071dbd111 100644
+--- a/vendor/api-platform/core/src/JsonLd/Serializer/ItemNormalizer.php
++++ b/patches/tmp/ItemNormalizer.php
+@@ -53,8 +53,12 @@ final class ItemNormalizer extends AbstractItemNormalizer
+ 
+     /**
+      * {@inheritdoc}
++     * @param mixed $data
++     * @param null $format
++     * @param array $context
++     * @return bool
+      */
+-    public function supportsNormalization($data, $format = null): bool
++    public function supportsNormalization($data, $format = null, array $context = []): bool
+     {
+         return self::FORMAT === $format && parent::supportsNormalization($data, $format);
+     }
+@@ -94,11 +98,15 @@ final class ItemNormalizer extends AbstractItemNormalizer
+     }
+ 
+     /**
+-     * {@inheritdoc}
++     * @param $data
++     * @param $type
++     * @param $format
++     * @param array $context
++     * @return bool
+      */
+-    public function supportsDenormalization($data, $type, $format = null): bool
++    public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
+     {
+-        return self::FORMAT === $format && parent::supportsDenormalization($data, $type, $format);
++        return self::FORMAT === $format && parent::supportsDenormalization($data, $type, $format, $context);
+     }
+ 
+     /**

@@ -10,10 +10,13 @@
     import {useRoute} from 'vue-router'
     import AppComponentShowInlist from './AppComponentShowInlist.vue'
     import AppShowComponentTabGeneral from './left/AppShowComponentTabGeneral.vue'
+    import AppSuspense from '../../../../AppSuspense.vue'
+    import AppWorkflowShow from '../../../../workflow/AppWorkflowShow.vue'
 
     //region définition des constantes
     const route = useRoute()
     const idComponent = Number(route.params.id_component)
+    const iriComponent = ref('')
     const fetchUnits = useOptions('units')
     const useFetchComponentStore = useComponentListStore()
     const modeDetail = ref(true)
@@ -25,10 +28,11 @@
     //region Chargement des données
     onBeforeMount(() => {
         const promises = []
-        console.log('onBeforeMount')
+        //console.log('onBeforeMount')
         promises.push(fetchUnits.fetchOp())
         promises.push(useFetchComponentStore.fetchOne(idComponent))
         Promise.all(promises).then(() => {
+            iriComponent.value = useFetchComponentStore.component['@id']
             beforeMountDataLoaded.value = true
         })
     })
@@ -74,12 +78,19 @@
         <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <FontAwesomeIcon icon="puzzle-piece"/>
-                    <b>{{ useFetchComponentStore.component.code }}</b>: {{ useFetchComponentStore.component.name }}
-                    <span class="btn-float-right">
-                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
-                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
-                    </span>
+                    <div class="d-flex flex-row">
+                        <div>
+                            <FontAwesomeIcon icon="puzzle-piece"/>
+                            <b>{{ useFetchComponentStore.component.code }}</b>: {{ useFetchComponentStore.component.name }}
+                        </div>
+                        <AppSuspense>
+                            <AppWorkflowShow :workflow-to-show="['component', 'blocker']" :item-iri="iriComponent"/>
+                        </AppSuspense>
+                        <span class="ml-auto">
+                            <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
+                            <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
+                        </span>
+                    </div>
                 </div>
                 <div class="d-flex flex-row">
                     <AppImg

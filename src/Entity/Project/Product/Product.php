@@ -21,6 +21,7 @@ use App\Entity\Interfaces\FileEntity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
+use App\Entity\Production\Manufacturing\Order;
 use App\Entity\Project\Product\Attachment\ProductAttachment;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Selling\ProductReference;
@@ -37,15 +38,15 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Entity\Selling\Customer\Product as ProductCustomer;
+use App\Entity\Selling\Customer\Price\Product as ProductCustomer;
 
 #[
     ApiFilter(filterClass: DateFilter::class, properties: ['endOfLife']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'index', 'kind', 'name']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'index', 'kind', 'name', 'id']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial', 'price.code' => 'partial', 'price.value' => 'partial',
-        'index' => 'partial', 'forecastVolume.code' => 'partial', 'forecastVolume.value' => 'partial', 'kind' => 'partial'
+        'index' => 'partial', 'forecastVolume.code' => 'partial', 'forecastVolume.value' => 'partial', 'kind' => 'partial', 'id' => 'partial', 'productCustomers.customer' => 'exact',
     ]),
     ApiResource(
         description: 'Produit',
@@ -208,12 +209,18 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
 
     /** @var DoctrineCollection<int, ProductCustomer> */
     #[
-        ApiProperty(description: 'Relations Clients', readableLink: false, example: ['/api/customer-products/1']),
+        ApiProperty(description: 'Association produit-client', readableLink: false, example: ['/api/customer-products/1']),
         Serializer\Groups(['read:product', 'read:product:collection']),
         ORM\OneToMany(mappedBy: 'product', targetEntity: ProductCustomer::class)
     ]
     private DoctrineCollection $productCustomers;
 
+    #[
+        ApiProperty(description: 'Association produit-fournisseur', required: false, example: ['/api/supplier-products/1']),
+        ORM\OneToMany(mappedBy: 'product', targetEntity: \App\Entity\Purchase\Supplier\Product::class),
+        Serializer\Groups(['read:product'])
+    ]
+    private DoctrineCollection $supplierProducts;
     #[
         ApiProperty(description: 'Temps auto', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
         Serializer\Groups(['read:item', 'read:product','write:product', 'write:product:production', 'write:product:clone']),
@@ -327,6 +334,13 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:project', 'read:supply'])
     ]
     private ?string $kind = KindType::TYPE_PROTOTYPE;
+
+    #[
+        ApiProperty(description: 'Type de Logo', required: false, example: 0),
+        ORM\Column(type: 'smallint', options: ['default' => 0]),
+        Serializer\Groups(['read:product', 'write:product', 'write:product:main'])
+    ]
+    private int $labelLogo = 0;
 
     #[
         ApiProperty(description: 'Gestion cuivre', required: false, example: true),
@@ -469,6 +483,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
     ]
     private Measure $weight;
 
+    #[
+        ORM\OneToMany(targetEntity: Order::class, mappedBy: 'product')
+    ]
+    private DoctrineCollection $productorders;
+
     public function __construct() {
         $this->autoDuration = new Measure();
         $this->children = new ArrayCollection();
@@ -490,7 +509,9 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
         $this->transfertPriceSupplies = new Measure();
         $this->transfertPriceWork = new Measure();
         $this->weight = new Measure();
+        $this->productorders = new ArrayCollection();
         $this->productCustomers = new ArrayCollection();
+        $this->supplierProducts = new ArrayCollection();
     }
 
     public function __clone() {
@@ -528,6 +549,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
 
     final public function getBlocker(): string {
         return $this->embBlocker->getState();
+    }
+
+    public function getProductOrders(): DoctrineCollection {
+        return $this->productorders;
     }
 
     /**
@@ -1008,6 +1033,35 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
     public function setFilePath(?string $filePath): Product
     {
         $this->filePath = $filePath;
+        return $this;
+    }
+
+    public function getLabelLogo(): int
+    {
+        return $this->labelLogo;
+    }
+
+    public function setLabelLogo(int $labelLogo): self
+    {
+        $this->labelLogo = $labelLogo;
+        return $this;
+    }
+
+    /**
+     * @return DoctrineCollection
+     */
+    public function getSupplierProducts(): DoctrineCollection
+    {
+        return $this->supplierProducts;
+    }
+
+    /**
+     * @param DoctrineCollection $supplierProducts
+     * @return Product
+     */
+    public function setSupplierProducts(DoctrineCollection $supplierProducts): Product
+    {
+        $this->supplierProducts = $supplierProducts;
         return $this;
     }
 }

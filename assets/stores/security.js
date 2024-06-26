@@ -60,25 +60,25 @@ function defineUserStore() {
                 const url = new URL(window.location.href)
                 const token = url.searchParams.get('token')
                 if (token) {
-                    console.log('token trouvé dans l\'url', token)
+                    //console.log('token trouvé dans l\'url', token)
                     url.searchParams.delete('token')
                     window.history.replaceState({}, '', url)
                     cookies.set('token', token)
-                    console.log('ajout token dans cookie')
+                    //console.log('ajout token dans cookie')
                 } else {
-                    console.log('token pas trouvé dans l\'url')
+                    //console.log('token pas trouvé dans l\'url')
                 }
                 if (cookies.get('token')) {
-                    console.log('token trouvé dans les cookies')
+                    //console.log('token trouvé dans les cookies')
                     try {
                         save(await api('/api/user'))
-                        console.log('Utilisateur authentifié')
+                        //console.log('Utilisateur authentifié')
                         return
                     } catch {
-                        console.log('erreur d\'authentification')
+                        //console.log('erreur d\'authentification')
                     }
                 } else {
-                    console.log('Token pas trouvé dans les cookies')
+                    //console.log('Token pas trouvé dans les cookies')
                 }
                 clear()
             },
@@ -87,6 +87,8 @@ function defineUserStore() {
             isHrReader: computed(() => isHrWriter.value || roles.value.includes('ROLE_HR_READER')),
             isHrWriter,
             isItAdmin: computed(() => roles.value.includes('ROLE_IT_ADMIN')),
+            isItReader: computed(() => roles.value.includes('ROLE_IT_READER')),
+            isItWriter: computed(() => roles.value.includes('ROLE_IT_WRITER')),
             isLogged: computed(() => id.value > 0),
             isLogisticsAdmin,
             isLogisticsReader: computed(() => isLogisticsWriter.value || roles.value.includes('ROLE_LOGISTICS_READER')),

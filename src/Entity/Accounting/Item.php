@@ -73,7 +73,7 @@ abstract class Item extends Entity implements MeasuredInterface {
 
     #[
         ApiProperty(description: 'Facture', readableLink: false, example: '/api/bills/1'),
-        ORM\ManyToOne,
+        ORM\ManyToOne(inversedBy: 'bill_items'),
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected ?Bill $bill = null;
@@ -81,7 +81,7 @@ abstract class Item extends Entity implements MeasuredInterface {
     /** @var Expedition<I>|null */
     #[
         ApiProperty(description: 'Commande', readableLink: false, example: '/api/expeditions/1'),
-        ORM\ManyToOne,
+        ORM\ManyToOne(targetEntity: Expedition::class, inversedBy: 'expedition_items'),
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected ?Expedition $expedition = null;

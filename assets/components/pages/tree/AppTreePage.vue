@@ -19,7 +19,7 @@
     <div class="row">
         <h1 class="col">
             <Fa icon="layer-group"/>
-            Familles de {{ label }}
+            {{ label }}
         </h1>
     </div>
     <AppTree :fields="fields" :tree="tree">

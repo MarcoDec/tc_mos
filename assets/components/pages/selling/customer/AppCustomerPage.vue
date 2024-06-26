@@ -13,7 +13,7 @@
         title: {required: true, type: String}
     })
 
-    const modalId = computed(() => 'target')
+    const modalId = computed(() => 'customerCreateModal')
     const target = computed(() => `#${modalId.value}`)
     const customerCreateModal = ref(null)
 
@@ -47,6 +47,7 @@
         {text: 'warning', value: 'warning'}
     ]
     const fields = computed(() => [
+        {label: 'ID', name: 'id', trie: true, type: 'text', width: 50, filter: true},
         {
             label: 'Img',
             name: 'filePath',
@@ -87,6 +88,7 @@
         customerListCriteria.resetAllFilter()
         customerListCriteria.addFilter('company', currentCompany)
         if (inputValues.name) customerListCriteria.addFilter('name', inputValues.name)
+        if (inputValues.id) customerListCriteria.addFilter('id', inputValues.id)
         if (inputValues.state) customerListCriteria.addFilter('embState.state[]', inputValues.state)
         if (inputValues['address.zipCode']) customerListCriteria.addFilter('address.zipCode', inputValues['address.zipCode'])
         await storeCustomersList.fetch(customerListCriteria.getFetchCriteria)
@@ -110,7 +112,7 @@
         }
     }
     function onCustomerDetailsOpenRequest(customer) {
-        //console.log('onCustomerDetailsOpenRequest', customer)
+        console.log('onCustomerDetailsOpenRequest', customer)
         /* eslint-disable camelcase */
         router.push({name: 'customer', params: {id_customer: customer.id}})
     }
@@ -149,6 +151,7 @@
                     :pag="storeCustomersList.pagination"
                     :previous-page="storeCustomersList.previousPage"
                     :user="roleuser"
+                    top-offset="48px"
                     form="formCustomerCardableTable"
                     @deleted="deleted"
                     @get-page="getPage"

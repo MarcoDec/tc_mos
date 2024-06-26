@@ -2,24 +2,18 @@
 
 namespace App\Entity\Purchase\Order;
 
-use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Purchase\Component\Component;
-use App\Filter\RelationFilter;
-use App\Repository\Purchase\Order\ComponentItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 
 
-/**
- * @template-extends Item<Component>  ApiFilter(filterClass: SearchFilter::class, properties: ['confirmedDate' => 'partial', 'requestedDate' => 'partial', 'confirmedQuantity' => 'partial', 'requestedQuantity' => 'partial']),
- */
 #[
     ApiResource(
         description: 'Ligne de commande',
@@ -39,7 +33,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ]
             ]
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        itemOperations: ['get', 'patch', 'delete'],
         shortName: 'PurchaseOrderItemComponent',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
@@ -55,14 +49,18 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'item'),
-    ORM\Entity(repositoryClass: ComponentItemRepository::class)
-]
+    ORM\Entity()
+] /*repositoryClass: ComponentItemRepository::class*/
+/**
+ * Item de commande fournisseur de type composant
+ * @template-extends Item<Component>
+ */
 class ComponentItem extends Item {
 
     #[
         ApiProperty(description: 'Composant', example: '/api/components/1'),
         ORM\JoinColumn(name: 'component_id'),
-        ORM\ManyToOne(targetEntity: Component::class, fetch: 'EAGER'),
+        ORM\ManyToOne(targetEntity: Component::class, fetch: 'EAGER', inversedBy: "componentItems"),
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $item;
@@ -71,4 +69,11 @@ class ComponentItem extends Item {
         return ItemType::TYPE_COMPONENT;
     }
 
+    #[
+        ApiProperty(description: 'Supprimé', example: 'true'),
+        Serializer\Groups('read:item')
+    ]
+    public function getDeleted() : bool {
+        return $this->isDeleted();
+    }
 }

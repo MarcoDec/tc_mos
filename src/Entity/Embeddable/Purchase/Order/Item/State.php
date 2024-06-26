@@ -12,11 +12,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 class State extends AbstractState {
     final public const TRANSITIONS = [
         self::TR_CREATE,
-        self::TR_DELIVER,
+        self::TR_RECEIVE,
         self::TR_FORECAST,
         self::TR_MONTH,
-        self::TR_PARTIALLY_DELIVER,
-        self::TR_VALIDATE
+        self::TR_PARTIALLY_RECEIVE,
+        self::TR_VALIDATE,
+        self::TR_PAY
     ];
 
     #[

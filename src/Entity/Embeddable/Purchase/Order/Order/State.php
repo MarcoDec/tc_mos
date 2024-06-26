@@ -13,9 +13,10 @@ class State extends AbstractState {
     final public const TRANSITIONS = [
         self::TR_BUY,
         self::TR_CREATE,
-        self::TR_DELIVER,
-        self::TR_PARTIALLY_DELIVER,
-        self::TR_VALIDATE
+        self::TR_RECEIVE,
+        self::TR_PARTIALLY_RECEIVE,
+        self::TR_VALIDATE,
+        self::TR_PAY
     ];
 
     #[

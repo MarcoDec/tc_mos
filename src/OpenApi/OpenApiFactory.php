@@ -209,7 +209,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                         'type' => 'string'
                     ],
                     'embBlocker' => ['$ref' => '#/components/schemas/Blocker.jsonld-Employee-read'],
-                    'embState' => ['$ref' => '#/components/schemas/EmployeeEngineState.jsonld-Employee-read'],
+                    'embState' => ['$ref' => '#/components/schemas/Employee.jsonld-Employee-read'],
                     'id' => [
                         'description' => 'id',
                         'example' => 1,

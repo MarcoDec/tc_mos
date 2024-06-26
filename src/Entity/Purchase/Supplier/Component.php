@@ -15,10 +15,9 @@ use App\Filter\RelationFilter;
 use App\Repository\Purchase\Supplier\ComponentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use App\Entity\Purchase\Supplier\Price as SupplierComponentPrice;
+use App\Entity\Purchase\Supplier\Price\ComponentPrice as SupplierComponentPrice;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
-use App\Collection;
 
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['component', 'supplier']),
@@ -157,6 +156,7 @@ class Component extends Entity {
         Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
     private ?Supplier $supplier = null;
+   
 
     public function __construct() {
         $this->copperWeight = new Measure();

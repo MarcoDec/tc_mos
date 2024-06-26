@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Logistics\Order\State;
+use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\MeasuredInterface;
@@ -18,18 +19,28 @@ use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
 use App\Entity\Purchase\Component\Family as ComponentFamily;
 use App\Entity\Purchase\Order\Item;
+use App\Entity\Purchase\Order\Order;
 use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Quality\Reception\Check;
+use App\Filter\SetFilter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Filter\RelationFilter;
+use App\Filter\CustomGetterFilter;
 
 /**
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state' => 'partial', 'embBlocker.state' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['date' => 'exact']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['item', 'stocks', 'checks']),
+    ApiFilter(filterClass: CustomGetterFilter::class, properties: ['getterFilter'=>['fields'=>['item']]]),
     ApiResource(
         description: 'Réception',
         collectionOperations: [
@@ -41,7 +52,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             ]
         ],
         itemOperations: [
-            'get' => NO_ITEM_GET_OPERATION,
+            'get',
             'promote' => [
                 'controller' => PlaceholderAction::class,
                 'deserialize' => false,
@@ -53,13 +64,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['receipt'], 'type' => 'string']
+                            'schema' => ['enum' => ['receipt','blocker'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
@@ -97,6 +108,12 @@ class Receipt extends Entity implements MeasuredInterface {
         ORM\Embedded,
         Serializer\Groups(['read:receipt'])
     ]
+    private Blocker $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:receipt'])
+    ]
     private State $embState;
 
     /** @var Item<I>|null */
@@ -121,11 +138,25 @@ class Receipt extends Entity implements MeasuredInterface {
     public function __construct() {
         $this->checks = new ArrayCollection();
         $this->date = new DateTimeImmutable();
+        $this->embBlocker = new Blocker();
         $this->embState = new State();
         $this->quantity = new Measure();
         $this->stocks = new ArrayCollection();
     }
-
+    #[
+        ApiProperty(description: 'Nom complet', example: 'Roosevelt Super'),
+        Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection'])
+    ]
+    final public function getGetterFilter(): string {
+        return $this->getPurchaseOrder()?->getId();
+    }
+    #[
+        ApiProperty(description: 'Commande', example: '/api/purchase-order/1'),
+        Serializer\Groups(['read:receipt', 'write:receipt'])
+    ]
+    public function getPurchaseOrder(){
+        return $this->item?->getParentOrder();
+    }
     /**
      * @param Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier> $check
      *
@@ -167,6 +198,10 @@ class Receipt extends Entity implements MeasuredInterface {
         return $this->date;
     }
 
+    final public function getEmbBlocker(): Blocker {
+        return $this->embBlocker;
+    }
+
     final public function getEmbState(): State {
         return $this->embState;
     }
@@ -198,6 +233,10 @@ class Receipt extends Entity implements MeasuredInterface {
      */
     final public function getReceiptItem() {
         return $this->item?->getItem();
+    }
+
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
     }
 
     final public function getState(): string {
@@ -250,6 +289,13 @@ class Receipt extends Entity implements MeasuredInterface {
         $this->date = $date;
         return $this;
     }
+    /**
+     * @return $this
+     */
+    final public function setEmbBlocker(Blocker $embBlocker): self {
+        $this->embBlocker = $embBlocker;
+        return $this;
+    }
 
     /**
      * @return $this
@@ -276,7 +322,13 @@ class Receipt extends Entity implements MeasuredInterface {
         $this->quantity = $quantity;
         return $this;
     }
-
+    /**
+     * @return $this
+     */
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
+    }
     /**
      * @return $this
      */

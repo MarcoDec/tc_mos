@@ -4,11 +4,12 @@ namespace App\Serializer;
 
 use App\Entity\Embeddable\Measure;
 use App\Service\MeasureHydrator;
-use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
+//use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-final class MeasureDenormalizer implements ContextAwareDenormalizerInterface, DenormalizerAwareInterface {
+final class MeasureDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface {
     use DenormalizerAwareTrait;
 
     public function __construct(private readonly MeasureHydrator $hydrator) {

@@ -42,22 +42,27 @@ doctrine:
       check_kind: App\Doctrine\DBAL\Types\Quality\Reception\Check\KindType
       check_state: App\Doctrine\DBAL\Types\Embeddable\Quality\Reception\CheckStateType
       closer_state: App\Doctrine\DBAL\Types\Embeddable\CloserStateType
-      component_manufacturing_operation_state: App\Doctrine\DBAL\Types\Embeddable\ComponentManufacturingOperationStateType
+      component_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Component\ComponentStateType
       copper: App\Doctrine\DBAL\Types\Embeddable\CopperType
       contact: App\Doctrine\DBAL\Types\Management\Society\ContactType
       customer_address: App\Doctrine\DBAL\Types\Selling\Customer\AddressType
       customer_state: App\Doctrine\DBAL\Types\Embeddable\Selling\Customer\CustomerStateType
+      delivery_note_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\DeliveryNoteStateType
       !php/const Doctrine\DBAL\Types\Types::SIMPLE_ARRAY: App\Doctrine\DBAL\Types\SimpleArrayType
       !php/const Doctrine\DBAL\Types\Types::TEXT: App\Doctrine\DBAL\Types\TextType
-      employee_engine_state: App\Doctrine\DBAL\Types\Embeddable\EmployeeEngineStateType
+      employee_state: App\Doctrine\DBAL\Types\Embeddable\Hr\Employee\EmployeeStateType
       employee_event_state: App\Doctrine\DBAL\Types\Embeddable\Hr\Event\EventStateType
+      engine_state: App\Doctrine\DBAL\Types\Embeddable\Production\Engine\EngineStateType
       engine_event: App\Doctrine\DBAL\Types\Production\Engine\EventType
       engine: App\Doctrine\DBAL\Types\Production\Engine\EngineType
       event_state: App\Doctrine\DBAL\Types\Embeddable\EventStateType
+      expedition_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\ExpeditionStateType
       gender_place: App\Doctrine\DBAL\Types\Hr\Employee\GenderType
       item: App\Doctrine\DBAL\Types\ItemType
+      manufacturing_operation_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\OperationStateType
       manufacturing_order_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\OrderStateType
       notification_category: App\Doctrine\DBAL\Types\Hr\Employee\NotificationCategoryType
+      preparation_state: App\Doctrine\DBAL\Types\Embeddable\Logistics\Component\PreparationStateType
       printer_color: App\Doctrine\DBAL\Types\Management\PrinterColorType
       product_state: App\Doctrine\DBAL\Types\Embeddable\Project\Product\ProductStateType
       product_kind: App\Doctrine\DBAL\Types\Project\Product\KindType
@@ -76,6 +81,7 @@ doctrine:
   orm:
     auto_generate_proxy_classes: true
     default_entity_manager: default
+    enable_lazy_ghost_objects: true
     entity_managers:
       default:
         connection: default
@@ -126,3 +132,5 @@ when@test:
   doctrine:
     dbal:
       dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+    orm:
+      enable_lazy_ghost_objects: true

@@ -62,7 +62,7 @@
     .text {
         position: absolute;
         top: 70%; /* Centrer verticalement */
-        //left: 50px; /* Centrer horizontalement */
+        /*left: 50px; Centrer horizontalement */
         transform: translate(-50%, -50%); /* Ajustement fin pour le centrage */
         font-size: 12px;
         text-align: center;
@@ -71,11 +71,11 @@
     .label {
         position: absolute;
         top: 20%; /* Centrer verticalement */
-        //left: 55px; /* Centrer horizontalement */
+        /*left: 55px; Centrer horizontalement */
         transform: translate(-50%, -50%); /* Ajustement fin pour le centrage */
         font-weight: bold;
         font-size: 15px;
-        //border: 1px solid red;
+        /*border: 1px solid red;*/
         min-width: 120px;
         max-width: 120px;
         text-align: center;
@@ -86,16 +86,20 @@
         padding: 3px;
         display: flex;
         flex-direction: row;
-        justify-content: space-around;
+        justify-content: flex-end;
         min-width: 100px;
         top: 90%; /* Centrer verticalement */
-        //left: 50px; /* Centrer horizontalement */
+        /* left: 50px; /* Centrer horizontalement */
         transform: translate(-50%, -50%); /* Ajustement fin pour le centrage */
         /* Autres styles pour le texte */
     }
     .myButton:hover {
-        //box-shadow: #212529 0px 0px 10px 0px;
-        font-size: 25px;
-        box-shadow: inset white 0px 0px 10px 0px;
+        /*box-shadow: #212529 0px 0px 10px 0px; */
+        font-size: 15px;
+        box-shadow: white 0px 0px 10px 0px;
+        cursor: crosshair;
+    }
+    .myButton {
+        box-shadow: white 0px 0px 10px 0px;
     }
 </style>

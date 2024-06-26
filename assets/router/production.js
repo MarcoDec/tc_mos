@@ -6,6 +6,9 @@ import AppShowGuiWorkstation from '../components/pages/production/equipment/show
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTablePageType from '../components/pages/table/AppTablePageType.vue'
 import {readonly} from 'vue'
+import AppShowGuiMachine from '../components/pages/production/equipment/show/machine/AppShowGuiMachine.vue'
+import AppShowGuiSparePart from '../components/pages/production/equipment/show/spare-part/AppShowGuiSparePart.vue'
+import AppShowGuiInfra from '../components/pages/production/equipment/show/infrastructure/AppShowGuiInfra.vue'
 
 const myOptions = [
     {iri: 'counter-part', text: 'Contrepartie de test', value: 'counter-part'},
@@ -74,7 +77,19 @@ export default [
         path: '/zones',
         props: {
             apiBaseRoute: 'zones',
-            fields: [{label: 'Nom', name: 'name'}],
+            fields: [
+                {label: 'Nom', name: 'name'},
+                {
+                    label: 'Entrepôt',
+                    name: 'warehouse',
+                    type: 'multiselect-fetch',
+                    api: '/api/warehouses',
+                    filteredProperty: 'name',
+                    permanentFilters: [],
+                    max: 1,
+                    sort: false
+                }
+            ],
             icon: 'map-marked',
             isCompanyFiltered: true,
             sort: readonly({label: 'Nom', name: 'name'}),
@@ -121,12 +136,68 @@ export default [
     },
     {
         component: AppEngineList,
-        meta: {title: 'Equipement — T-Concept GPAO'},
-        name: 'engines',
-        path: '/engines',
+        meta: {title: 'Outils — T-Concept GPAO'},
+        name: 'tools',
+        path: '/tools',
         props: {
-            icon: 'city',
-            title: 'Equipement'
+            icon: 'toolbox',
+            title: 'Outils',
+            engineType: 'tool'
+        }
+    },
+    {
+        component: AppEngineList,
+        meta: {title: 'Postes de travail — T-Concept GPAO'},
+        name: 'workstations',
+        path: '/workstations',
+        props: {
+            icon: 'desktop',
+            title: 'Postes de travail',
+            engineType: 'workstation'
+        }
+    },
+    {
+        component: AppEngineList,
+        meta: {title: 'Contre-partie de test — T-Concept GPAO'},
+        name: 'counter-parts',
+        path: '/counter-parts',
+        props: {
+            icon: 'flask',
+            title: 'Contre-partie de test',
+            engineType: 'counter-part'
+        }
+    },
+    {
+        component: AppEngineList,
+        meta: {title: 'Machines — T-Concept GPAO'},
+        name: 'machines',
+        path: '/machines',
+        props: {
+            icon: 'cogs',
+            title: 'Machines',
+            engineType: 'machine'
+        }
+    },
+    {
+        component: AppEngineList,
+        meta: {title: 'Pièces de rechange — T-Concept GPAO'},
+        name: 'spare-parts',
+        path: '/spare-parts',
+        props: {
+            icon: 'puzzle-piece',
+            title: 'Pièces de rechange',
+            engineType: 'spare-part'
+        }
+    },
+    {
+        component: AppEngineList,
+        meta: {title: 'Infrastructure — T-Concept GPAO'},
+        name: 'infrastructures',
+        path: '/infrastructures',
+        props: {
+            icon: 'building',
+            title: 'Elément d\'infrastructure',
+            engineType: 'infra'
         }
     },
     {
@@ -146,7 +217,27 @@ export default [
         meta: {container: false, title: 'Tool — T-Concept GPAO'},
         name: 'toolShow',
         path: '/tool/:id_engine'
-    }//,
+    },
+    { //screwdriver-wrench
+        component: AppShowGuiMachine,
+        meta: {container: false, title: 'Machine — T-Concept GPAO'},
+        name: 'machineShow',
+        path: '/machine/:id_engine'
+    },
+    { //screwdriver-wrench
+        component: AppShowGuiSparePart,
+        meta: {container: false, title: 'Pièce de rechange — T-Concept GPAO'},
+        name: 'sparePartShow',
+        path: '/spare-part/:id_engine'
+    },
+    { //screwdriver-wrench
+        component: AppShowGuiInfra,
+        meta: {container: false, title: 'Equipement d\'infrastructure — T-Concept GPAO'},
+        name: 'infraShow',
+        path: '/infra/:id_engine'
+    }
+
+    //,
     // {
     //     component: AppEquipementListEvent,
     //     meta: {container: false, title: 'Evénements Equipements — T-Concept GPAO'},

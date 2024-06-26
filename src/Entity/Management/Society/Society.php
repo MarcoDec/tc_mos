@@ -18,9 +18,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'id' => 'exact']),
     ApiFilter(filterClass: SearchFilter::class, id: 'address', properties: ['address.address'=>'partial', 'address.address2'=>'partial','address.city' => 'partial','address.country' => 'partial']),
-    ApiFilter(filterClass: OrderFilter::class, id: 'address-sorter', properties: ['address.address', 'address.address2', 'address.city', 'address.country']),
+    ApiFilter(filterClass: OrderFilter::class, id: 'address-sorter', properties: ['address.address', 'address.address2', 'address.city', 'address.country', 'id']),
     ApiFilter(OrderFilter::class, properties: ['name']),
     ApiResource(
         description: 'Société',

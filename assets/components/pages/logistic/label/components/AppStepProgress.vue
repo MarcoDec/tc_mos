@@ -44,7 +44,7 @@
         padding: 5px 10px; /* Espacement autour du texte */
         position: relative;
         margin-right: 11px; /* Ajustez en fonction de la taille du chevron */
-        //box-shadow: lightgrey 0px 5px 3px 3px;
+        /*box-shadow: lightgrey 0px 5px 3px 3px;*/
     }
     .step::after {
         content: '';

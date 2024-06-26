@@ -4,26 +4,29 @@
     import AppSuspense from '../../../AppSuspense.vue'
     import {useCustomerStore} from '../../../../stores/selling/customers/customers'
     import AppCustomerShowInlist from './bottom/AppCustomerShowInlist.vue'
-    import {useRoute} from 'vue-router'
+    import {useRoute, useRouter} from 'vue-router'
     import {onBeforeMount, ref} from 'vue'
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
     import AppBtn from '../../../AppBtn.vue'
     import AppImg from '../../../AppImg.vue'
     import AppShowCustomerTabGeneral from './tabs/AppShowCustomerTabGeneral.vue'
+    import AppWorkflowShow from '../../../workflow/AppWorkflowShow.vue'
 
     const route = useRoute()
+    const router = useRouter()
     const idCustomer = Number(route.params.id_customer)
+    const iriCustomer = ref('')
     const fetchCustomerStore = useCustomerStore()
-    const beforeMountDataLoaded = ref(false)
     const keyTitle = ref(0)
     const modeDetail = ref(true)
     const isFullScreen = ref(false)
     const keyTabs = ref(0)
     const imageUpdateUrl = `/api/customers/${idCustomer}/image`
 
-    onBeforeMount(() => {
-        fetchCustomerStore.fetchOne(idCustomer).then(() => {
-            beforeMountDataLoaded.value = true
+    onBeforeMount(async () => {
+        await fetchCustomerStore.fetchOne(idCustomer).then(() => {
+            iriCustomer.value = fetchCustomerStore.customer['@id']
+            //beforeMountDataLoaded.value = true
         })
     })
     const onUpdated = () => {
@@ -44,19 +47,31 @@
     const deactivateFullScreen = () => {
         isFullScreen.value = false
     }
+    function goToTheList() {
+        router.push({name: 'customer-list'})
+    }
 </script>
 
 <template>
     <AppSuspense>
-        <AppShowGuiGen v-if="beforeMountDataLoaded">
+        <AppShowGuiGen>
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <FontAwesomeIcon icon="user-tie"/>
-                    <b>{{ fetchCustomerStore.customer.id }}</b>: {{ fetchCustomerStore.customer.name }}
-                    <span class="btn-float-right">
-                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
-                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
-                    </span>
+                    <div class="d-flex flex-row">
+                        <div>
+                            <button class="text-dark" @click="goToTheList">
+                                <FontAwesomeIcon icon="user-tie"/>
+                            </button>
+                            <b>{{ fetchCustomerStore.customer.id }}</b>: {{ fetchCustomerStore.customer.name }}
+                        </div>
+                        <AppSuspense>
+                            <AppWorkflowShow :workflow-to-show="['customer', 'blocker']" :item-iri="iriCustomer"/>
+                        </AppSuspense>
+                        <span class="ml-auto">
+                            <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
+                            <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
+                        </span>
+                    </div>
                 </div>
                 <div class="d-flex flex-row">
                     <AppImg

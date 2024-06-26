@@ -242,7 +242,7 @@
 </script>
 
 <template>
-    <AppTabs id="achats_tabs" format-nav="block" :icon-mode="true">
+    <AppTabs id="achats_tabs">
         <AppTab
             v-for="(table, index) in purchaseTablesFields"
             :id="table.id"

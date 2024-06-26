@@ -4,6 +4,7 @@ namespace App\Entity\Hr\Employee;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
 use App\Entity\Interfaces\FileEntity;
+use App\Entity\Logistics\Warehouse\Warehouse;
 use App\Entity\Traits\FileTrait;
 use App\Validator as AppAssert;
 use ApiPlatform\Core\Annotation\ApiFilter;
@@ -18,7 +19,7 @@ use App\Doctrine\DBAL\Types\Hr\Employee\SituationType;
 use App\Entity\Api\Token;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Blocker;
-use App\Entity\Embeddable\EmployeeEngineState;
+use App\Entity\Embeddable\Hr\Employee\State;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Attachment\EmployeeAttachment;
@@ -132,7 +133,7 @@ use App\Filter\CustomGetterFilter;
                         'name' => 'process',
                         'required' => true,
                         'schema' => [
-                            'enum' => ['main', 'hr', 'it', 'production'],
+                            'enum' => ['main', 'hr', 'it', 'production', 'logistics', 'quality'],
                             'type' => 'string'
                         ]
                     ]],
@@ -155,13 +156,13 @@ use App\Filter\CustomGetterFilter;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => [...EmployeeEngineState::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['employee_engine', 'blocker'], 'type' => 'string']
+                            'schema' => ['enum' => ['employee', 'blocker'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
@@ -204,7 +205,8 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[
         ApiProperty(description: 'Ancien_Identifiant', example: 1),
-        ORM\Column(type: 'integer', nullable: true)
+        ORM\Column(type: 'integer', nullable: true),
+        Serializer\Groups(['read:employee', 'read:employee:collection', 'read:user'])
     ]
     private ?int $oldId = 0;
     #[
@@ -266,7 +268,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         ORM\Embedded,
         Serializer\Groups(['read:employee', 'read:employee:collection', 'read:user'])
     ]
-    private EmployeeEngineState $embState;
+    private State $embState;
 
     #[
         ApiProperty(description: 'Date d\'arrivée', example: '2021-01-12'),
@@ -313,6 +315,13 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     private ?self $manager = null;
 
     #[
+        ApiProperty(description: 'Matricule', example: '65465224'),
+        ORM\Column(type: 'string', length: 20, nullable: true),
+        Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection', 'write:employee', 'write:employee:it'])
+    ]
+    private ?string $matricule = null;
+
+    #[
         ApiProperty(description: 'Prénom', required: true, example: 'Super'),
         ORM\Column(length: 30),
         Serializer\Groups(['read:production-quality', 'create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation', 'read:skill'])
@@ -338,6 +347,13 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         Serializer\Groups(['create:employee', 'write:employee', 'write:employee:it'])
     ]
     private ?string $plainPassword = null;
+
+    #[
+        ApiProperty(description: 'Entrepôt préféré', readableLink: false, example: '/api/warehouses/1'),
+        ORM\ManyToOne(targetEntity: Warehouse::class),
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:logistics', 'write:employee:production'])
+    ]
+    private ?Warehouse $preferredWarehouse = null;
 
     #[
         ApiProperty(description: 'Situation', example: SituationType::TYPE_SINGLE, openapiContext: ['enum' => SituationType::TYPES]),
@@ -406,7 +422,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         $this->embBlocker = new Blocker();
         $this->embRoles = new Roles();
         $this->attachments = new ArrayCollection();
-        $this->embState = new EmployeeEngineState();
+        $this->embState = new State();
         $this->address = new Address();
         $this->clockings = new ArrayCollection();
         $this->operationEmployees = new ArrayCollection();
@@ -497,7 +513,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->embRoles;
     }
 
-    final public function getEmbState(): EmployeeEngineState {
+    final public function getEmbState(): State {
         return $this->embState;
     }
 
@@ -679,7 +695,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
-    final public function setEmbState(EmployeeEngineState $embState): self {
+    final public function setEmbState(State $embState): self {
         $this->embState = $embState;
         return $this;
     }
@@ -807,10 +823,47 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->clockings;
     }
 
-    public function setClockings(Collection $clockings): void
+    public function setClockings(Collection $clockings): Employee
     {
         $this->clockings = $clockings;
+        return $this;
     }
 
+    public function getPreferredWarehouse(): ?Warehouse
+    {
+        return $this->preferredWarehouse;
+    }
+
+    public function setPreferredWarehouse(?Warehouse $preferredWarehouse): Employee
+    {
+        $this->preferredWarehouse = $preferredWarehouse;
+        return $this;
+    }
+    #[
+        ApiProperty(description: 'oldId Entrepôt préféré', example: 1),
+        Serializer\Groups(['read:employee', 'read:employee:collection', 'read:user'])
+    ]
+    public function getOldWarehouseId(): ?int
+    {
+        return $this->getPreferredWarehouse()?->getOldId();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMatricule(): ?string
+    {
+        return $this->matricule;
+    }
+
+    /**
+     * @param string|null $matricule
+     * @return Employee
+     */
+    public function setMatricule(?string $matricule): Employee
+    {
+        $this->matricule = $matricule;
+        return $this;
+    }
 
 }

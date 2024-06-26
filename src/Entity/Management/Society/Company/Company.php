@@ -16,7 +16,7 @@ use App\Entity\Purchase\Component\Component;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Management\CompanyReference;
 use App\Entity\Selling\Customer\Customer;
-use App\Entity\Selling\Customer\Product as CustomerProduct;
+use App\Entity\Selling\Customer\Price\Product as CustomerProduct;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
@@ -26,19 +26,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\Management\Company\CompanyPatchController;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Entity\Selling\Customer\Price\Component as ComponentCustomer;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'deliveryTime' => 'partial',
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'deliveryTime' => 'partial', 'id' => 'exact',
         'deliveryTimeOpenDays' => 'partial', 'engineHourRate' => 'partial', 'generalMargin' => 'partial', 'handlingHourRate' => 'partial',
         'managementFees' => 'partial', 'numberOfTeamPerDay' => 'partial', 'workTimetable' => 'partial', 'currency.id' => 'exact'
     ]),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'workTimetable']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'workTimetable', 'id']),
     ApiResource(
         description: 'Compagnie',
         collectionOperations: [
             'get' => [
                 'normalization_context' => [
-                    'groups' => 'read:company:collection',
+                    'groups' => ['read:id', 'read:company:collection'],
                     'openapi_definition_name' => 'Company-collection',
                     'skip_null_values' => false
                 ],
@@ -118,6 +119,12 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
     ORM\Entity
 ]
 class Company extends Entity {
+    #[
+        ApiProperty(description: 'Grilles tarifaires gérées', example: '/api/companies/1'),
+        ORM\OneToMany(mappedBy: 'administeredBy', targetEntity: ComponentCustomer::class),
+        Serializer\Groups(['read:company', 'read:company:collection'])
+        ]
+    private DoctrineCollection $components;
     #[
         ApiProperty(description: 'Monnaie', readableLink: true, example: '/api/currencies/2'),
         ORM\ManyToOne(targetEntity: Currency::class, fetch: "EAGER"),
@@ -233,6 +240,7 @@ class Company extends Entity {
         $this->customers = new ArrayCollection();
         $this->products = new ArrayCollection();
         $this->references = new ArrayCollection();
+        $this->components = new ArrayCollection();
     }
 
     final public function addCustomer(Customer $customer): self {
@@ -437,4 +445,23 @@ class Company extends Entity {
         $this->workTimetable = $workTimetable;
         return $this;
     }
+
+    /**
+     * @return DoctrineCollection
+     */
+    public function getComponents(): DoctrineCollection
+    {
+        return $this->components;
+    }
+
+    /**
+     * @param DoctrineCollection $components
+     * @return Company
+     */
+    public function setComponents(DoctrineCollection $components): Company
+    {
+        $this->components = $components;
+        return $this;
+    }
+
 }

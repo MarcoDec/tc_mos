@@ -52,6 +52,7 @@
     ]
 
     const fields = computed(() => [
+        {label: 'ID', name: 'id', trie: true, type: 'text', width: 50, filter: true},
         {
             label: 'Img',
             name: 'filePath',
@@ -91,6 +92,7 @@
         supplierListCriteria.resetAllFilter()
         supplierListCriteria.addFilter('company', currentCompany)
         if (inputValues.name) supplierListCriteria.addFilter('name', inputValues.name)
+        if (inputValues.id) supplierListCriteria.addFilter('id', inputValues.id)
         if (inputValues.state) supplierListCriteria.addFilter('embState.state[]', inputValues.state)
         if (inputValues.zipCode) supplierListCriteria.addFilter('address.zipCode[]', inputValues.zipCode)
         if (inputValues.city) supplierListCriteria.addFilter('address.city[]', inputValues.city)
@@ -165,6 +167,7 @@
                     :pag="storeSuppliersList.pagination"
                     :previous-page="storeSuppliersList.previousPage"
                     :user="roleuser"
+                    top-offset="48px"
                     form="formSupplierCardableTable"
                     @deleted="deleted"
                     @get-page="getPage"

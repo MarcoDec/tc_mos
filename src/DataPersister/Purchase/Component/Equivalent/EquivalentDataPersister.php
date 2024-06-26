@@ -26,7 +26,12 @@ class EquivalentDataPersister implements ContextAwareDataPersisterInterface
             );
     }
 
-    public function persist($data, array $context = [])
+    /**
+     * @param $data
+     * @param array $context
+     * @return ComponentEquivalent
+     */
+    public function persist($data, array $context = []): ComponentEquivalent
     {
         /** @var Request $request */
         $request = $this->requests->getCurrentRequest();

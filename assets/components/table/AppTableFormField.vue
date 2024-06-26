@@ -49,7 +49,7 @@
     const localField = ref(props.field)
     if (props.initialField && props.initialField.type === 'multiselect-fetch') {
         localField.value = {...localField.value, ...props.initialField}
-        console.log('localField', localField.value)
+        // console.log('localField', localField.value)
     }
     function dispose() {
         if (tooltip.value !== null) {

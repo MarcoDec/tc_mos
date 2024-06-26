@@ -44,6 +44,7 @@
     ]
 
     const fields = computed(() => [
+        {label: 'ID', name: 'id', trie: true, type: 'text', width: 50, filter: true},
         {
             label: 'Img',
             name: 'filePath',
@@ -88,6 +89,7 @@
         if (inputValues.timeCard) employeeListCriteria.addFilter('timeCard', inputValues.timeCard)
         if (inputValues.surname) employeeListCriteria.addFilter('surname', inputValues.surname)
         if (inputValues.name) employeeListCriteria.addFilter('name', inputValues.name)
+        if (inputValues.id) employeeListCriteria.addFilter('id', inputValues.id)
         if (inputValues.initials) employeeListCriteria.addFilter('initials', inputValues.initials)
         if (inputValues.username) employeeListCriteria.addFilter('username', inputValues.username)
         if (typeof inputValues.userEnabled !== 'undefined') employeeListCriteria.addFilter('userEnabled', inputValues.userEnabled)
@@ -118,7 +120,7 @@
         }
     }
     function onEmployeeShow(item) {
-        console.log('onEmployeeShow', item)
+        // console.log('onEmployeeShow', item)
         /* eslint-disable camelcase */
         router.push({name: 'employee', params: {id_employee: item.id}})
     }

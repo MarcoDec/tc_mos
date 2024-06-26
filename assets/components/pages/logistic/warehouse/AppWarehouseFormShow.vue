@@ -7,7 +7,6 @@
     import {useRoute} from 'vue-router'
     import useOptions from '../../../../stores/option/options'
     import {useWarehouseAttachmentStore} from '../../../../stores/logistic/warehouses/warehouseAttachements'
-    import AppTabFichiers from '../../../tab/AppTabFichiers.vue'
 
     const maRoute = useRoute()
     const warehouseId = maRoute.params.id_warehouse
@@ -168,38 +167,18 @@
 </script>
 
 <template>
-    <AppTabs id="gui-start" class="gui-start-content">
+    <div>
         <AppSuspense>
-            <AppTab
-                id="gui-start-main"
-                active
-                title="Généralité"
-                icon="pencil"
-                tabs="gui-start">
-                <AppSuspense>
-                    <AppCardShow
-                        id="addGeneralites"
-                        :key="key"
-                        :fields="Generalitesfields"
-                        :component-attribute="localData"
-                        @cancel="cancel"
-                        @update="updateGeneral"
-                        @update:model-value="localDataChange"/>
-                </AppSuspense>
-            </AppTab>
-            <AppTab id="gui-start-files" title="Fichiers" icon="folder" tabs="gui-start">
-                <AppSuspense>
-                    <AppTabFichiers
-                        attachment-element-label="warehouse"
-                        :element-api-url="`/api/warehouses/${warehouseId}`"
-                        :element-attachment-store="warehouseAttachmentStore"
-                        :element-id="warehouseId"
-                        element-parameter-name="WAREHOUSE_ATTACHMENT_CATEGORIES"
-                        :element-store="warehouseStore"/>
-                </AppSuspense>
-            </AppTab>
+            <AppCardShow
+                id="addGeneralites"
+                :key="key"
+                :fields="Generalitesfields"
+                :component-attribute="localData"
+                @cancel="cancel"
+                @update="updateGeneral"
+                @update:model-value="localDataChange"/>
         </AppSuspense>
-    </AppTabs>
+    </div>
 </template>
 
 <style scoped>

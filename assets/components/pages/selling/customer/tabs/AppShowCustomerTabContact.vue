@@ -3,6 +3,7 @@
     import generateCustomerContact from '../../../../../stores/selling/customers/customerContact'
     import {useCustomerContactsStore} from '../../../../../stores/selling/customers/customerContacts'
     import {useCustomerStore} from '../../../../../stores/selling/customers/customers'
+    import {AppCollectionTable} from '../../../../bootstrap-5/app-collection-table'
 
     const emit = defineEmits(['error'])
     const fetchCustomersStore = useCustomerStore()
@@ -152,6 +153,13 @@
         :allowed-actions="{add: true, cancel: true, search: false}"
         :fields="fieldsSupp"
         :items="itemsTable"
+        current-page=""
+        first-page=""
+        form=""
+        last-page=""
+        next-page=""
+        previous-page=""
+        user=""
         @ajout="ajout"
         @deleted="deleted"
         @update="updateCustomer"/>

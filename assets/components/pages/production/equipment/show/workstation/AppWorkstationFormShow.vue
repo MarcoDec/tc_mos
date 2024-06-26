@@ -7,6 +7,8 @@
     import useUser from '../../../../../../stores/security'
     import {useWorkstationsStore} from '../../../../../../stores/production/engine/workstation/workstations'
     import useZonesStore from '../../../../../../stores/production/company/zones'
+    import AppWorkstationTabMaintenance from './tabs/AppWorkstationTabMaintenance.vue'
+    import AppWorkstationTabHistMaintenance from './tabs/AppWorkstationTabHistMaintenance.vue'
     const currentCompany = useUser().company
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
@@ -38,6 +40,18 @@
                     element-parameter-name="ENGINE_ATTACHMENT_CATEGORIES"
                     :element-store="useWorkstationsStore"/>
             </AppSuspense>
+        </AppTab>
+        <AppTab id="gui-start-maintenances" icon="paint-roller" title="Types de maintenances" tabs="gui-start">
+            <AppSuspense><AppWorkstationTabMaintenance/></AppSuspense>
+        </AppTab>
+        <AppTab id="gui-start-history" icon="history" title="Historique des maintenances" tabs="gui-start">
+            <AppSuspense><AppWorkstationTabHistMaintenance/></AppSuspense>
+        </AppTab>
+        <AppTab id="gui-machines" icon="cogs" title="Machines" tabs="gui-start">
+            TODO
+        </AppTab>
+        <AppTab id="gui-spareParts" icon="puzzle-piece" title="Pièces de rechange" tabs="gui-start">
+            TODO
         </AppTab>
         <!--        <AppTab id="gui-start-quality" title="Qualité" icon="certificate" tabs="gui-start">-->
         <!--            <AppCardShow id="addQualite" :fields="qualityFields" :component-attribute="fetchEngineStore.engine"/>-->

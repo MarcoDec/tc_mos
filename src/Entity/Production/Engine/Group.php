@@ -76,7 +76,11 @@ abstract class Group extends Entity {
     final public const TYPES = [
         EngineType::TYPE_COUNTER_PART => CounterPartGroup::class,
         EngineType::TYPE_TOOL => ToolGroup::class,
-        EngineType::TYPE_WORKSTATION => WorkstationGroup::class
+        EngineType::TYPE_WORKSTATION => WorkstationGroup::class,
+        EngineType::TYPE_MACHINE => Machine\Group::class,
+        EngineType::TYPE_INFRA => Infra\Group::class,
+        EngineType::TYPE_INFORMATIQUE => Informatique\Group::class,
+        EngineType::TYPE_SPARE_PART => SparePart\Group::class,
     ];
 
     #[

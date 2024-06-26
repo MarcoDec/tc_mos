@@ -5,7 +5,6 @@
         fields: {required: true, type: Array}
         // trier: {required: true, type: String}
     })
-
     function trierAlphabet(payload) {
         emit('trierAlphabet', payload)
     }

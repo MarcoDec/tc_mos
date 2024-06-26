@@ -37,7 +37,7 @@ class ApiRequest {
     }
 
     get #contentType() {
-        return this.#method === 'PATCH' ? 'application/merge-patch+json' : 'application/json'
+        return this.#method.toUpperCase() === 'PATCH' ? 'application/merge-patch+json' : 'application/json'
     }
 
     set #formDataBody(body) {
@@ -59,7 +59,7 @@ class ApiRequest {
 
     set #jsonBody(body) {
         for (const [key, value] of Object.entries(body)) {
-            if (typeof value === 'undefined' || value === null)
+            if (typeof value === 'undefined')
                 delete body[key]
             else if (typeof value === 'string') {
                 body[key] = value.trim()
