@@ -104,7 +104,8 @@ class ComponentPrice extends Entity implements MeasuredInterface {
         $this->quantity = new Measure();
     }
 
-    final public function getComponent(): ?Component {
+    final public function getComponent(): SupplierComponent
+    {
         return $this->component;
     }
 
@@ -136,7 +137,7 @@ class ComponentPrice extends Entity implements MeasuredInterface {
         return $this->component?->getUnit();
     }
 
-    final public function setComponent(?Component $component): self {
+    final public function setComponent(?SupplierComponent $component): self {
         $this->component = $component;
         return $this;
     }
