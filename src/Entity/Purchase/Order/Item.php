@@ -42,10 +42,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
  */
 #[
     ApiFilter(filterClass: SearchFilter::class, properties:[
-        'isForecast' => 'exact', 'requestedDate' => 'partial', 'confirmedDate' => 'partial'
+        'isForecast' => 'exact', 'requestedDate' => 'partial', 'confirmedDate' => 'partial', 'ref' => 'partial', 'notes' => 'partial'
     ]),
     ApiFilter(filterClass: RelationFilter::class, properties: ['item' , 'parentOrder']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['requestedQuantity.value', 'confirmedQuantity.value', 'requestedDate', 'confirmedDate', 'embState.state']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['requestedQuantity.value', 'confirmedQuantity.value', 'requestedDate', 'confirmedDate', 'embState.state', 'ref', 'notes']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state']),
     ApiResource(
         description: 'Ligne de commande',

@@ -124,6 +124,16 @@
                     step: 0.0001
                 }
             }
+        },
+        {
+            label: 'Réference personnalisée de l\'item',
+            name: 'ref',
+            type: 'text'
+        },
+        {
+            label: 'Commentaires',
+            name: 'notes',
+            type: 'textarea'
         }
     ])
 </script>
