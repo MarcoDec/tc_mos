@@ -256,7 +256,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:item', 'read:component', 'read:component:collection'])
+        Serializer\Groups(['read:item', 'read:component', 'read:component:collection', 'read:state'])
     ]
     private State $embState;
 
@@ -312,7 +312,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         ApiProperty(description: 'Fabricant', required: false, example: 'scapa'),
         Assert\NotBlank(groups: ['Component-create', 'Component-purchase']),
         ORM\Column(nullable: true),
-        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:purchase'])
+        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:purchase', 'read:item'])
     ]
     private ?string $manufacturer = null;
 
@@ -320,7 +320,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         ApiProperty(description: 'Référence fabricant', required: false, example: '103078'),
         Assert\NotBlank(groups: ['Component-create', 'Component-purchase']),
         ORM\Column(nullable: true),
-        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:purchase'])
+        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:purchase', 'read:item'])
     ]
     private ?string $manufacturerCode = null;
 

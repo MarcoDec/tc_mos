@@ -120,14 +120,14 @@ use App\Filter\RelationFilter;
 ]
 class Order extends Entity implements MeasuredInterface {
     #[
-        ApiProperty(description: 'Destinataire de la commande', readableLink: false, example: '/api/billing-addresses/1'),
+        ApiProperty(description: 'Adresse de facturation de la commande', readableLink: false, example: '/api/billing-addresses/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?BillingAddress $billedTo = null;
 
     #[
-        ApiProperty(description: 'Contact', example: '/api/customer-contacts/1'),
+        ApiProperty(description: 'Contact client', example: '/api/customer-contacts/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:order', 'write:order'])
     ]

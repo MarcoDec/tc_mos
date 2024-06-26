@@ -44,12 +44,15 @@ import {
     faCommentsDollar,
     faCubesStacked,
     faDatabase,
+    faDesktop,
+    faDownload,
     faEuroSign,
     faExclamationTriangle,
     faEye,
     faFileContract,
     faFileInvoice,
     faFileInvoiceDollar,
+    faFilePdf,
     faFilter,
     faFlask,
     faFolder,
@@ -125,6 +128,7 @@ import {
     faTruck,
     faTruckField,
     faTruckLoading,
+    faTruckMoving,
     faUnlock,
     faUserCircle,
     faUserGraduate,
@@ -133,7 +137,7 @@ import {
     faUsers,
     faWallet,
     faWarehouse,
-    faWrench, faDesktop, faDownload
+    faWrench
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -192,6 +196,7 @@ library.add(faEye)
 library.add(faFileContract)
 library.add(faFileInvoice)
 library.add(faFileInvoiceDollar)
+library.add(faFilePdf)
 library.add(faFilter)
 library.add(faFlask)
 library.add(faFolder)
@@ -277,3 +282,12 @@ library.add(faUsers)
 library.add(faWallet)
 library.add(faWarehouse)
 library.add(faWrench)
+library.add(faCubesStacked)
+library.add(faRulerVertical)
+library.add(faStar)
+library.add(faGaugeHigh)
+library.add(faMoneyBill1)
+library.add(faRightToBracket)
+library.add(faTruck)
+library.add(faTruckMoving)
+library.add(faBusinessTime)

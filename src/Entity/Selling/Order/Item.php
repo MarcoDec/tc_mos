@@ -12,13 +12,11 @@ use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Selling\Order\Item\State;
-use App\Entity\Management\Currency;
 use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
 use App\Entity\Selling\Customer\Customer;
 use App\Entity\Item as BaseItem;
 use App\Entity\Production\Manufacturing\Expedition;
-use App\Entity\Selling\Customer\Price;
 use App\Filter\RelationFilter;
 use App\Repository\Selling\Order\ItemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -35,7 +33,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  */
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['id' => 'exact', 'item.id' => 'exact', 'parentOrder.id' => 'exact', 'ref' => 'partial', 'embState.state' => 'exact', 'confirmedDate' => 'exact', 'confirmedQuantity.value' => 'exact', 'confirmedQuantity.code' => 'exact', 'requestedDate' => 'exact', 'requestedQuantity.value' => 'exact', 'requestedQuantity.code' => 'exact', 'notes' => 'partial']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['item', 'parentOrder', 'ref', 'embState.state', 'confirmedDate', 'confirmedQuantity.value', 'confirmedQuantity.code', 'requestedDate', 'requestedQuantity.value', 'requestedQuantity.code', 'notes']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['item', 'parentOrder']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['id', 'item.id', 'ref', 'embState.state', 'confirmedDate', 'confirmedQuantity.value', 'requestedDate', 'requestedQuantity.value', 'notes']),
 
     ApiResource(
@@ -54,7 +52,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                     'description' => 'Supprime une ligne',
                     'summary' => 'Supprime une ligne',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
@@ -87,13 +85,13 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                     'summary' => 'Transite la ligne à son prochain statut de workflow'
                 ],
                 'path' => '/selling-order-items/{id}/promote/{workflow}/to/{transition}',
-                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')',
                 'validate' => false
             ]
         ],
         shortName: 'SellingOrderItem',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_SELLING_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:item', 'write:measure'],

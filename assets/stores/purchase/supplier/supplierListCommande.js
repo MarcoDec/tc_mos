@@ -274,13 +274,14 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
     },
     getters: {
         itemsSupplierCommande: state => state.supplierCommande.map(item => {
+            console.log('item', item)
             const newObject = {
                 '@id': item['@id'],
-                reference: item.order.ref,
+                reference: item.parentOrder.ref,
                 statutFournisseur: item.embState.state,
-                supplementFret: item.order.supplementFret,
+                supplementFret: item.parentOrder.supplementFret,
                 commentaire: item.notes,
-                infoPublic: item.order.notes
+                infoPublic: item.parentOrder.notes
             }
             return newObject
         }),

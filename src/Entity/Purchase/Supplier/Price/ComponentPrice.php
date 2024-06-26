@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Purchase\Supplier;
+namespace App\Entity\Purchase\Supplier\Price;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -13,8 +13,11 @@ use App\Validator as AppAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use App\Entity\Purchase\Supplier\Component as SupplierComponent;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use App\Filter\RelationFilter;
 
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['component']),
     ApiResource(
         description: 'Prix',
         collectionOperations: [
@@ -66,7 +69,7 @@ use App\Entity\Purchase\Supplier\Component as SupplierComponent;
     ORM\Entity,
     ORM\Table(name: 'supplier_component_price')
 ]
-class Price extends Entity implements MeasuredInterface {
+class ComponentPrice extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Référence', example: 'DJZ54'),
         ORM\Column(nullable: true),
@@ -79,7 +82,7 @@ class Price extends Entity implements MeasuredInterface {
         ORM\ManyToOne(targetEntity: SupplierComponent::class, inversedBy: 'prices'),
         Serializer\Groups(['read:price', 'write:price'])
     ]
-    private ?Component $component = null;
+    private ?SupplierComponent $component = null;
 
     #[
         ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
@@ -101,7 +104,8 @@ class Price extends Entity implements MeasuredInterface {
         $this->quantity = new Measure();
     }
 
-    final public function getComponent(): ?Component {
+    final public function getComponent(): SupplierComponent
+    {
         return $this->component;
     }
 
@@ -133,7 +137,7 @@ class Price extends Entity implements MeasuredInterface {
         return $this->component?->getUnit();
     }
 
-    final public function setComponent(?Component $component): self {
+    final public function setComponent(?SupplierComponent $component): self {
         $this->component = $component;
         return $this;
     }

@@ -34,6 +34,7 @@ import AppOverlayJS from './components/AppOverlayJS'
 import AppPaginationItem from './components/table/pagination/AppPaginationItem'
 import AppRadio from './components/form/field/input/AppRadio'
 import AppRadioGroup from './components/form/field/input/AppRadioGroup.vue'
+import PortalVue from 'portal-vue'
 // import AppOverlay from './components/AppOverlayJS'
 import AppRouterLink from './components/nav/link/AppRouterLink.vue'
 import AppRouterLinkJS from './components/nav/link/AppRouterLinkJS'
@@ -150,4 +151,5 @@ const app = createApp(App)
     .component('CountryFlag', CountryFlag)
     .component('Fa', Fa)
     .use(pinia)
+    .use(PortalVue)
 useUser().fetch().then(() => app.use(router).mount('#vue'))

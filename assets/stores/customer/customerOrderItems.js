@@ -198,7 +198,7 @@ export const useCustomerOrderItemsStore = defineStore('customerOrderItems', {
         search: {},
         total: 0,
         customerOrders: {},
-        customerOrdersItems: {},
+        customerOrdersItems: [],
         currentPage: '',
         firstPage: '',
         lastPage: '',

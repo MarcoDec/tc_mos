@@ -187,7 +187,7 @@
     //     }))
     const optionsDestination = computed(() => [
         {text: '', value: null},
-        ...optionsCompany
+        ...optionsCompany.value
     ])
     //endregion
 </script>

@@ -209,12 +209,18 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
 
     /** @var DoctrineCollection<int, ProductCustomer> */
     #[
-        ApiProperty(description: 'Relations Clients', readableLink: false, example: ['/api/customer-products/1']),
+        ApiProperty(description: 'Association produit-client', readableLink: false, example: ['/api/customer-products/1']),
         Serializer\Groups(['read:product', 'read:product:collection']),
         ORM\OneToMany(mappedBy: 'product', targetEntity: ProductCustomer::class)
     ]
     private DoctrineCollection $productCustomers;
 
+    #[
+        ApiProperty(description: 'Association produit-fournisseur', required: false, example: ['/api/supplier-products/1']),
+        ORM\OneToMany(mappedBy: 'product', targetEntity: \App\Entity\Purchase\Supplier\Product::class),
+        Serializer\Groups(['read:product'])
+    ]
+    private DoctrineCollection $supplierProducts;
     #[
         ApiProperty(description: 'Temps auto', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
         Serializer\Groups(['read:item', 'read:product','write:product', 'write:product:production', 'write:product:clone']),
@@ -505,6 +511,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
         $this->weight = new Measure();
         $this->productorders = new ArrayCollection();
         $this->productCustomers = new ArrayCollection();
+        $this->supplierProducts = new ArrayCollection();
     }
 
     public function __clone() {
@@ -1040,4 +1047,21 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
         return $this;
     }
 
+    /**
+     * @return DoctrineCollection
+     */
+    public function getSupplierProducts(): DoctrineCollection
+    {
+        return $this->supplierProducts;
+    }
+
+    /**
+     * @param DoctrineCollection $supplierProducts
+     * @return Product
+     */
+    public function setSupplierProducts(DoctrineCollection $supplierProducts): Product
+    {
+        $this->supplierProducts = $supplierProducts;
+        return $this;
+    }
 }
