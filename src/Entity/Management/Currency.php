@@ -127,4 +127,8 @@ class Currency extends AbstractUnit {
         $this->active = $active;
         return $this;
     }
+    #[Serializer\Groups(['read:currency:option'])]
+    final public function getCode(): ?string {
+        return $this->code;
+    }
 }

@@ -110,7 +110,7 @@ export const usePurchaseOrderItemComponentsStore = defineStore('purchaseOrderIte
         async addComponents(data){
             await api('/api/purchase-order-item-components', 'POST', data)
         },
-        setCurrentItem(item) {
+        async setCurrentItem(item) {
             // On clone l'item afin que les modifications ne soient pas répercutées sur l'item original
             this.currentItem = {
                 confirmedDate: item.confirmedDate,
@@ -151,8 +151,16 @@ export const usePurchaseOrderItemComponentsStore = defineStore('purchaseOrderIte
             }
             // On remplace price.code par l'iri de la devise correspondante
             if (item.price.code !== null) {
+                console.log('this.currentCurrencyOptions', this.currentCurrencyOptions)
                 if (!item.price.code.includes('/api/currencies')) {
-                    this.currentItem.price.code = this.currentCurrencyOptions.find(currency => currency.text === item.price.code).value
+                    console.log('Recherche selon le text de currentCurrencyOptions', item.price.code)
+                    let theCurrency = this.currentCurrencyOptions.find(currency => currency.text === item.price.code)
+                    if (theCurrency === null || typeof theCurrency === 'undefined') {
+                        console.log('Recherche selon le code de de currentCurrencyOptions', item.price.code)
+                        theCurrency = this.currentCurrencyOptions.find(currency => currency.code === item.price.code)
+                    }
+                    console.log('final theCurrency', theCurrency)
+                    this.currentItem.price.code = theCurrency === null ? null : theCurrency.value
                 }
             }
         },

@@ -5,13 +5,13 @@
 
     const emits = defineEmits(['updated', 'closed', 'submit'])
     const props = defineProps({
-        customer: {default: () => ({}), type: Object},
+        supplier: {default: () => ({}), type: Object},
         modalId: {required: true, type: String},
         order: {default: () => ({}), type: Object},
         optionsUnit: {default: () => ({}), type: Object},
         optionsCurrency: {default: () => ({}), type: Object}
     })
-    const storeCustomerOrderItems = usePurchaseOrderItemsStore()
+    const storeSupplierOrderItems = usePurchaseOrderItemsStore()
     const localForecastData = ref(
         {
             product: null,
@@ -36,7 +36,7 @@
             api: '/api/products',
             filteredProperty: 'code',
             permanentFilters: [
-                {field: 'productCustomers.customer', value: props.customer['@id']},
+                {field: 'productSuppliers.supplier', value: props.supplier['@id']},
                 {field: 'kind', value: props.order.kind}
             ],
             max: 1
@@ -112,7 +112,7 @@
 
 <template>
     <AppGenOrderItemForm
-        :customer="customer"
+        :supplier="supplier"
         :fields="fieldsOpenOrderItem"
         :form-data="localForecastData"
         form-id="formAddNewForecastOrderItem"
@@ -121,7 +121,7 @@
         :order="order"
         :options-unit="optionsUnit"
         :options-currency="optionsCurrency"
-        :store="storeCustomerOrderItems"
+        :store="storeSupplierOrderItems"
         title="Ajouter Item en Prévisionnel"
         variant="forecast"
         @updated="value => emits('updated', value)"

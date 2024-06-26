@@ -185,7 +185,7 @@
 
         //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
         const currency = getCurrencyFromMeasureCode(dataToSend.price.code)
-        dataToSend.price.code = currency.text
+        dataToSend.price.code = currency.code
 
         //On ajoute l'item en base
         await itemStore.add(dataToSend)
@@ -223,7 +223,7 @@
 
         //On remplace la valeur du code qui contient actuellement l'id de l'unité par le code de l'unité
         const currency = getCurrencyFromMeasureCode(dataToSend.price.code)
-        dataToSend.price.code = currency.text
+        dataToSend.price.code = currency.code
         //On ajoute l'item en base
         await itemStore.update(dataToSend, dataToSend['@id'])
         //On ferme la modale

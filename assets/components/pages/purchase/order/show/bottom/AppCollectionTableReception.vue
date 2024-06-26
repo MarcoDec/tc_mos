@@ -121,7 +121,7 @@
     }
 
     async function extraireItems(itemsReceipts2) {
-        console.log('itemsReceipts2', itemsReceipts2)
+        // console.log('itemsReceipts2', itemsReceipts2)
         const promises = itemsReceipts2.map(async item => {
             const parties = item.requestedDate.split('T')
             const date = parties[0]

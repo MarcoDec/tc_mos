@@ -109,7 +109,7 @@
             </div>
             <div v-else-if="field.type === 'measure'">
                 <div class="text-center">
-                    {{ item[field.name].value }} {{ item[field.name].code }}
+                    {{ item[field.name].value }} {{ field.measure.code.options.label(item[field.name].code) }}
                 </div>
             </div>
             <div v-else-if="field.type === 'date'">

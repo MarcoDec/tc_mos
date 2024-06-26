@@ -33,18 +33,8 @@
     await Promise.all(promises).then(() => {
         formKeys.value++
     })
-    const optionsUnit = computed(() =>
-        fetchUnitOptions.options.map(op => {
-            const text = op.text
-            const value = op.value
-            return {text, value}
-        }))
-    const optionsCurrency = computed(() =>
-        fetchCurrencyOptions.options.map(op => {
-            const text = op.text
-            const value = op.value
-            return {text, value}
-        }))
+    const optionsUnit = computed(() => fetchUnitOptions.getOptionsMap())
+    const optionsCurrency = computed(() => fetchCurrencyOptions.getOptionsMap())
     const storeCustomerOrderItems = useCustomerOrderItemsStore()
     const customerOrderItemsCriteria = useFetchCriteria('customer-order-items-criteria')
     const tableKey = ref(0)
@@ -73,8 +63,7 @@
                     label: 'Code',
                     name: 'requestedQuantity.code',
                     options: {
-                        label: value =>
-                            optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                        label: value => fetchUnitOptions.getLabel(value),
                         options: optionsUnit.value
                     },
                     type: 'select'
@@ -100,8 +89,7 @@
                     label: 'Code',
                     name: 'confirmedQuantity.code',
                     options: {
-                        label: value =>
-                            optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                        label: value => fetchUnitOptions.getLabel(value),
                         options: optionsUnit.value
                     },
                     type: 'select'
@@ -129,8 +117,7 @@
                     label: 'Code',
                     name: 'price.code',
                     options: {
-                        label: value =>
-                            optionsCurrency.value.find(option => option.type === value)?.text ?? null,
+                        label: value => fetchCurrencyOptions.getLabel(value),
                         options: optionsCurrency.value
                     },
                     type: 'select'
