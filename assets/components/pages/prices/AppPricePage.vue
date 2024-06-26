@@ -5,6 +5,9 @@
 
 <template>
     <AppSuspense>
-        <AppPricesTablePage/>
+        <AppPricesTablePage
+            component="/api/components/667"
+            title="Component Supplier Prices"
+        />
     </AppSuspense>
 </template>

@@ -5,18 +5,18 @@ import useOptions from '../option/options'
 
 export const useComponentSuppliersStore = defineStore('componentSuppliers', {
     actions: {
-        async fetch() {
-            const response = await api('/api/supplier-components', 'GET')
+        async fetch(criteria = '') {
+            const response = await api(`/api/supplier-components${criteria}`, 'GET')
             this.items = await response['hydra:member']
         },
-        async fetchByComponent(idComponent){
-            const response = await api(`/api/supplier-components?component=${idComponent}`, 'GET')
-            this.items = await response['hydra:member']
-        },
-        async fetchBySupplier(idSupplier){
-            const response = await api(`/api/supplier-components?supplier=${idSupplier}`, 'GET')
-            this.items = await response['hydra:member']
-        },
+        // async fetchByComponent(idComponent){
+        //     const response = await api(`/api/supplier-components?component=${idComponent}`, 'GET')
+        //     this.items = await response['hydra:member']
+        // },
+        // async fetchBySupplier(idSupplier){
+        //     const response = await api(`/api/supplier-components?supplier=${idSupplier}`, 'GET')
+        //     this.items = await response['hydra:member']
+        // },
         async fetchPricesById(id) {
             const pricesStore = useComponentSuppliersPricesStore()
             const prices = await pricesStore.fetchPricesByComponent(id)
@@ -98,8 +98,7 @@ export const useComponentSuppliersStore = defineStore('componentSuppliers', {
         }
     },
     getters: {
-        componentSuppliersItems: state => state.itemsPrices.map(item => {
-            const componentSupplier = {
+        componentSuppliersItems: state => state.itemsPrices.map(item => ({
                 '@id': item['@id'],
                 id: item.id,
                 proportion: item.proportion,
@@ -124,9 +123,7 @@ export const useComponentSuppliersStore = defineStore('componentSuppliers', {
                 reference: item.code,
                 indice: item.index,
                 prices: item.prices
-            }
-            return componentSupplier
-        })
+            }))
 
     },
     state: () => ({

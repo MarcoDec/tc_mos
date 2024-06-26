@@ -3,9 +3,10 @@
     import AppSuspense from '../../AppSuspense.vue'
 
     defineProps({
-        fieldsComponenentSuppliers: {required: true, type: Array},
-        fieldsComponenentSuppliersPrices: {required: true, type: Array},
-        items: {required: true, type: Object}
+        fieldsComponentSuppliers: {required: true, type: Array},
+        fieldsComponentSuppliersPrices: {required: true, type: Array},
+        items: {required: true, type: Object},
+        title: {required: true, type: String}
     })
     const emit = defineEmits(['addItem', 'addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updateItemsPrices'])
 
@@ -35,11 +36,11 @@
 
 <template>
     <AppSuspense>
-        <h1>Component Suppliers Prices</h1>
+        <h1>{{ title }}</h1>
         <AppPricesTable
             id="prices"
-            :fields-componenent-suppliers="fieldsComponenentSuppliers"
-            :fields-componenent-suppliers-prices="fieldsComponenentSuppliersPrices"
+            :fields-component-suppliers="fieldsComponentSuppliers"
+            :fields-component-suppliers-prices="fieldsComponentSuppliersPrices"
             :items="items"
             form="formComponentSuppliersPricesTable"
             @add-item="addItem"

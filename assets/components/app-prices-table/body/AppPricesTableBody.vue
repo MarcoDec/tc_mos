@@ -4,8 +4,8 @@
     import AppPricesTableItems from './AppPricesTableItems.vue'
 
     defineProps({
-        fieldsComponenentSuppliers: {required: true, type: Array},
-        fieldsComponenentSuppliersPrices: {required: true, type: Array},
+        fieldsComponentSuppliers: {required: true, type: Array},
+        fieldsComponentSuppliersPrices: {required: true, type: Array},
         form: {required: true, type: String},
         items: {required: true, type: Object}
     })
@@ -36,7 +36,7 @@
 
 <template>
     <tbody>
-        <AppPricesTableItems :fields-componenent-suppliers="fieldsComponenentSuppliers" :fields-componenent-suppliers-prices="fieldsComponenentSuppliersPrices" :form="form" :items="items" @deleted="deleted" @deleted-prices="deletedPrices" @add-item-price="addItemPrice" @annule-update="annuleUpdated" @update-items="updateItems" @update-items-prices="updateItemsPrices"/>
-        <AppPricesTableAddItems :fields="fieldsComponenentSuppliers" :form="form" @add-item="addItem"/>
+        <AppPricesTableItems :fields-component-suppliers="fieldsComponentSuppliers" :fields-component-suppliers-prices="fieldsComponentSuppliersPrices" :form="form" :items="items" @deleted="deleted" @deleted-prices="deletedPrices" @add-item-price="addItemPrice" @annule-update="annuleUpdated" @update-items="updateItems" @update-items-prices="updateItemsPrices"/>
+        <AppPricesTableAddItems :fields="fieldsComponentSuppliers" :form="form" @add-item="addItem"/>
     </tbody>
 </template>

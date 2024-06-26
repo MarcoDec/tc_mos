@@ -3,12 +3,12 @@
     import AppPricesTableFields from './AppPricesTableFields.vue'
 
     const props = defineProps({
-        fieldsComponenentSuppliers: {required: true, type: Array}
+        fieldsComponentSuppliers: {required: true, type: Array}
     })
 
     const rows = computed(() => {
         const ranks = []
-        let current = props.fieldsComponenentSuppliers
+        let current = props.fieldsComponentSuppliers
         do {
             ranks.push(current)
             current = current.map(field => (Array.isArray(field.children) && field.children.length > 0 ? field.children : [])).flat()

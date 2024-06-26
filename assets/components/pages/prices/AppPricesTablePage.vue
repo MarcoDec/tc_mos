@@ -1,19 +1,46 @@
 <script setup>
     import AppRowsTablePage from './AppRowsTablePage.vue'
-    import {computed} from 'vue'
+    import {computed, ref} from 'vue'
     import AppSuspense from '../../../components/AppSuspense.vue'
     import useOptions from '../../../stores/option/options'
     import {useCurrenciesStore} from '../../../stores/currencies/currencies'
     import {useComponentSuppliersStore} from '../../../stores/prices/componentSuppliers'
     import {useComponentSuppliersPricesStore} from '../../../stores/prices/componentSuppliersPrices'
+    import useFetchCriteria from "../../../stores/fetch-criteria/fetchCriteria"
 
+    const props = defineProps({
+        supplier: {
+            type: String,
+            required: false,
+            default: () => null
+        },
+        component: {
+            type: String,
+            required: false,
+            default: () => null
+        },
+        product: {
+            type: String,
+            required: false,
+            default: () => null
+        },
+        title: {
+            type: String,
+            required: false,
+            default: 'Tableau des prix des composants'
+        }
+    })
+    // Si supplier et component sont nulls, on affiche une erreur
+    const inputError = computed(() => !props.supplier && !props.component)
+
+    function getIdFromIri(iri) {
+        return iri.split('/').pop()
+    }
+    //region fetch options
     const fetchUnitOptions = useOptions('units')
     await fetchUnitOptions.fetchOp()
-    const optionsUnit = fetchUnitOptions.options.map(op => {
-        const text = op.text
-        const value = op.value
-        return {text, value}
-    })
+    const optionsUnit = fetchUnitOptions.getOptionsMap()
+
     const fetchIncotermsOptions = useOptions('incoterms')
     await fetchIncotermsOptions.fetchOp()
     const incotermsOptions = fetchIncotermsOptions.options.map(op => {
@@ -22,11 +49,26 @@
         return {text, value}
     })
 
-    const storecurrencies = useCurrenciesStore()
-    await storecurrencies.fetch()
-    const currenciesOption = computed(() => storecurrencies.currenciesOption)
+    const storeCurrencies = useCurrenciesStore()
+    await storeCurrencies.fetch()
+    const currenciesOption = computed(() => storeCurrencies.currenciesOption)
+    //endregion
 
-    const fieldsComponenentSuppliers = [
+    const fieldsComponentSuppliers = [
+        {
+            label: 'Fournisseur',
+            name: 'supplier',
+            type: 'multiselect-fetch',
+            api: '/api/suppliers',
+            filteredProperty: 'name'
+        },
+        {
+            label: 'Composant',
+            name: 'component',
+            type: 'multiselect-fetch',
+            api: '/api/components',
+            filteredProperty: 'code'
+        },
         {
             create: true,
             filter: true,
@@ -198,8 +240,7 @@
             update: true
         }
     ]
-
-    const fieldsComponenentSuppliersPrices = [
+    const fieldsComponentSuppliersPrices = [
         {
             create: true,
             filter: true,
@@ -266,14 +307,8 @@
         }
     ]
 
-    const storeComponentSuppliers = useComponentSuppliersStore()
-    await storeComponentSuppliers.fetchByComponent(667)
-    await storeComponentSuppliers.fetchPricesForItems()
-    const componentSuppliersItems = computed(() => storeComponentSuppliers.componentSuppliersItems)
-    const storeComponentSuppliersPrices = useComponentSuppliersPricesStore()
-
-    function transformItems(ItemscomponentSuppliers, optionsUnits, currenciesOptions) {
-        return ItemscomponentSuppliers.map(item => {
+    function transformItems(ItemsComponentSuppliers, optionsUnits, currenciesOptions) {
+        return ItemsComponentSuppliers.map(item => {
             const foundUnitDelai = optionsUnits.find(unit => unit.text === item.delai.code)
             const foundUnitMoq = optionsUnits.find(unit => unit.text === item.moq.code)
             const foundUnitPackaging = optionsUnits.find(unit => unit.text === item.packaging.code)
@@ -305,16 +340,31 @@
             }
         })
     }
-    const localItems = computed(() => transformItems(componentSuppliersItems.value, optionsUnit, currenciesOption))
 
-    async function refreshTable() {
-        await storeComponentSuppliers.fetchByComponent(667)
-        await storeComponentSuppliers.fetchPricesForItems()
-        const componentSuppliersItem = computed(() => storeComponentSuppliers.componentSuppliersItems)
-        localItems.value = computed(() => transformItems(componentSuppliersItem.value, optionsUnit, currenciesOption))
+    const storeComponentSuppliers = useComponentSuppliersStore()
+    const componentSupplierFetchCriteria = useFetchCriteria('componentSuppliers')
+    const componentId = ref(0)
+    const storeComponentSuppliersPrices = useComponentSuppliersPricesStore()
+    const componentSuppliersItems = computed(() => storeComponentSuppliers.componentSuppliersItems)
+    const localItems = computed(() => transformItems(componentSuppliersItems.value, optionsUnit, currenciesOption))
+    function initializePermanentFilters() {
+        if (props.component) {
+            componentId.value = getIdFromIri(props.component)
+            componentSupplierFetchCriteria.addFilter('component', props.component)
+        }
+        if (props.supplier) {
+            componentSupplierFetchCriteria.addFilter('supplier', props.supplier)
+        }
     }
+    async function refreshTable() {
+        initializePermanentFilters()
+        await storeComponentSuppliers.fetch(componentSupplierFetchCriteria.getFetchCriteria)
+        await storeComponentSuppliers.fetchPricesForItems()
+   }
+    refreshTable()
+
     async function addItem(formData) {
-        const component = '/api/components/667'
+        const component = props.component
         await storeComponentSuppliers.addComponentSuppliers({formData, component})
         await refreshTable()
     }
@@ -346,9 +396,11 @@
 <template>
     <AppSuspense>
         <AppRowsTablePage
-            :fields-componenent-suppliers="fieldsComponenentSuppliers"
-            :fields-componenent-suppliers-prices="fieldsComponenentSuppliersPrices"
+            v-if="!inputError"
+            :fields-component-suppliers="fieldsComponentSuppliers"
+            :fields-component-suppliers-prices="fieldsComponentSuppliersPrices"
             :items="localItems"
+            :title="title"
             @add-item="addItem"
             @add-item-price="addItemPrice"
             @deleted="deleted"
@@ -356,5 +408,6 @@
             @annule-update="annuleUpdated"
             @update-items="updateItems"
             @update-items-prices="updateItemsPrices"/>
+        <div v-else class="bg-danger text-white text-center m-5 p-5">Impossible d'afficher une grille de prix car aucun composant et/ou aucun fournisseur n'a été sélectionné</div>
     </AppSuspense>
 </template>

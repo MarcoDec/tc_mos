@@ -4,8 +4,8 @@
 
     defineProps({
         items: {required: true, type: Object},
-        fieldsComponenentSuppliers: {required: true, type: Array},
-        fieldsComponenentSuppliersPrices: {required: true, type: Array},
+        fieldsComponentSuppliers: {required: true, type: Array},
+        fieldsComponentSuppliersPrices: {required: true, type: Array},
         form: {required: true, type: String}
     })
     const emit = defineEmits(['addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updateItemsPrices'])
@@ -36,8 +36,8 @@
         :item="item"
         :items="items"
         :form="form"
-        :fields-componenent-suppliers="fieldsComponenentSuppliers"
-        :fields-componenent-suppliers-prices="fieldsComponenentSuppliersPrices"
+        :fields-componenent-suppliers="fieldsComponentSuppliers"
+        :fields-componenent-suppliers-prices="fieldsComponentSuppliersPrices"
         @add-item-price="addItemPrice"
         @deleted="deleted"
         @deleted-prices="deletedPrices"
