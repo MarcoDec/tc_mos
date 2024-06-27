@@ -1,9 +1,9 @@
 <script setup>
+    import api from '../../../api'
     import AppRowsTablePage from './AppRowsTablePage.vue'
     import {computed, ref} from 'vue'
     import AppSuspense from '../../../components/AppSuspense.vue'
     import useOptions from '../../../stores/option/options'
-    import {useCurrenciesStore} from '../../../stores/currencies/currencies'
     import {useComponentSuppliersStore} from '../../../stores/prices/componentSuppliers'
     import {useComponentSuppliersPricesStore} from '../../../stores/prices/componentSuppliersPrices'
     import useFetchCriteria from "../../../stores/fetch-criteria/fetchCriteria"
@@ -24,22 +24,26 @@
             required: false,
             default: () => null
         },
+        customer: {
+            type: String,
+            required: false,
+            default: () => null
+        },
         title: {
             type: String,
             required: false,
             default: 'Tableau des prix des composants'
         }
     })
-    // Si supplier et component sont nulls, on affiche une erreur
-    const inputError = computed(() => !props.supplier && !props.component)
 
-    function getIdFromIri(iri) {
-        return iri.split('/').pop()
-    }
     //region fetch options
-    const fetchUnitOptions = useOptions('units')
-    await fetchUnitOptions.fetchOp()
-    const optionsUnit = fetchUnitOptions.getOptionsMap()
+    const storeUnits = useOptions('units')
+    const optionsUnits = computed(() => storeUnits.getOptionsMap())
+    storeUnits.fetchOp()
+
+    const storeCurrencies = useOptions('currencies')
+    const currenciesOptions = computed(() => storeCurrencies.getOptionsMap())
+    storeCurrencies.fetchOp()
 
     const fetchIncotermsOptions = useOptions('incoterms')
     await fetchIncotermsOptions.fetchOp()
@@ -48,50 +52,107 @@
         const value = op['@id']
         return {text, value}
     })
+    //endregion
+    // Si supplier et component sont nulls, on affiche une erreur
+    const inputError = ref(false)
+    const errorMessage = ref('')
 
-    const storeCurrencies = useCurrenciesStore()
-    await storeCurrencies.fetch()
-    const currenciesOption = computed(() => storeCurrencies.currenciesOption)
+    const component = ref(null)
+    const supplier = ref(null)
+    const product = ref(null)
+    const customer = ref(null)
+
+    //TODO: remplacer les stores spécifiques par des fonctions génériques
+    const storeComponentSuppliers = useComponentSuppliersStore()
+    const storeComponentSuppliersPrices = useComponentSuppliersPricesStore()
+
+    const mainItems1 = ref([])
+    const mainItems2 = ref([])
+
+    const mainItems = computed(() => storeComponentSuppliers.componentSuppliersItems)
+    const fetchCriteria = useFetchCriteria('componentProductSuppliersCustomer')
+
+    const componentId = ref(0)
+    //region chargement des inputs
+    if (props.component) {
+        component.value = await api(props.component, 'GET')
+        console.log('Chargement du composant', component.value)
+    }
+    if (props.supplier) {
+        supplier.value = await api(props.supplier, 'GET')
+        console.log('Chargement du fournisseur', supplier.value)
+    }
+    if (props.product) {
+        product.value = await api(props.product, 'GET')
+        console.log('Chargement du produit', product.value)
+    }
+    if (props.customer) {
+        customer.value = await api(props.customer, 'GET')
+        console.log('Chargement du client', customer.value)
+    }
+    console.log('props', props)
+    console.log('component', component.value)
+    console.log('supplier', supplier.value)
+    console.log('product', product.value)
+    console.log('customer', customer.value)
+    //endregion
+    //region controle des inputs et génération des erreurs correspondantes
+    if (supplier.value !== null && customer.value !== null) {
+        inputError.value = true
+        errorMessage.value = 'Le contexte Client/Fournisseur de la grille de prix est invalide car les 2 sont renseignés'
+    }
+    if (component.value !== null && product.value !== null) {
+        inputError.value = true
+        errorMessage.value = 'Le contexte Produit/Composant de la grille de prix est invalide car les 2 sont renseignés'
+    }
+    //endregion
+    //region génération des routes nécessaires pour l'affichage des prix
+    const apis = ref([])
+    if (
+        (component.value !== null && customer.value === null)
+        || (supplier.value !== null && product.value === null)
+    ) {
+
+    }
+    if (
+        (component.value !== null && supplier.value === null)
+        || (customer.value !== null && product.value === null)
+    ) {
+    }
+    if (
+        (product.value !== null && customer.value === null)
+        || (supplier.value !== null && component.value === null)
+    ) {
+    }
+    if (
+        (product.value !== null && supplier.value === null)
+        || (customer.value !== null && component.value === null)
+    ) {
+    }
+    console.log('apis', apis.value)
     //endregion
 
-    const fieldsComponentSuppliers = [
+
+    function getIdFromIri(iri) {
+        return iri.split('/').pop()
+    }
+    // Liste des champs communs à toutes les grilles de prix (partie principale)
+    const commonFields = [
         {
-            label: 'Fournisseur',
-            name: 'supplier',
-            type: 'multiselect-fetch',
-            api: '/api/suppliers',
-            filteredProperty: 'name'
-        },
-        {
-            label: 'Composant',
-            name: 'component',
-            type: 'multiselect-fetch',
-            api: '/api/components',
-            filteredProperty: 'code'
-        },
-        {
-            create: true,
-            filter: true,
             label: 'Proportion',
             name: 'proportion',
-            prefix: 'componentSuppliers',
-            sort: false,
-            type: 'number',
-            update: true
+            type: 'number'
         },
         {
-            create: true,
             label: 'Délai',
             name: 'delai',
-            prefix: 'componentSuppliers',
             measure: {
                 code: {
                     label: 'Code',
                     name: 'delai.code',
                     options: {
-                        label: value =>
-                            optionsUnit.find(option => option.value === value)?.text ?? null,
-                        options: optionsUnit
+                        label: value => storeUnits.getLabel(value),
+                        options: optionsUnits.value
                     },
                     type: 'select'
                 },
@@ -102,22 +163,18 @@
                     step: 0.1
                 }
             },
-            type: 'measure',
-            update: true
+            type: 'measure'
         },
         {
-            create: false,
             label: 'Moq',
             name: 'moq',
-            prefix: 'componentSuppliers',
             measure: {
                 code: {
                     label: 'Code',
                     name: 'moq.code',
                     options: {
-                        label: value =>
-                            optionsUnit.find(option => option.value === value)?.text ?? null,
-                        options: optionsUnit
+                        label: value => storeUnits.getLabel(value),
+                        options: optionsUnits.value
                     },
                     type: 'select'
                 },
@@ -128,22 +185,18 @@
                     step: 0.1
                 }
             },
-            type: 'measure',
-            update: true
+            type: 'measure'
         },
         {
-            filter: true,
             label: 'Poids cu',
             name: 'poidsCu',
-            prefix: 'componentSuppliers',
             measure: {
                 code: {
                     label: 'Code',
                     name: 'poidsCu.code',
                     options: {
-                        label: value =>
-                            optionsUnit.find(option => option.value === value)?.text ?? null,
-                        options: optionsUnit
+                        label: value => storeUnits.getLabel(value),
+                        options: optionsUnits.value
                     },
                     type: 'select'
                 },
@@ -154,55 +207,38 @@
                     step: 0.1
                 }
             },
-            type: 'measure',
-            update: true
+            type: 'measure'
         },
         {
-            create: false,
-            filter: true,
             label: 'Référence',
             name: 'reference',
-            prefix: 'componentSuppliers',
-            sort: false,
-            type: 'text',
-            update: true
+            type: 'text'
         },
         {
-            create: true,
-            filter: true,
             label: 'Indice',
             name: 'indice',
-            prefix: 'componentSuppliers',
-            sort: false,
             type: 'text',
-            update: true
         },
         {
-            create: true,
             label: 'incoterms',
             name: 'incoterms',
-            prefix: 'componentSuppliers',
             options: {
                 label: value =>
                     incotermsOptions.find(option => option.value === value)?.text ?? null,
                 options: incotermsOptions
             },
-            type: 'select',
-            update: true
+            type: 'select'
         },
         {
-            filter: true,
             label: 'packaging',
             name: 'packaging',
-            prefix: 'componentSuppliers',
             measure: {
                 code: {
                     label: 'Code',
                     name: 'packaging.code',
                     options: {
-                        label: value =>
-                            optionsUnit.find(option => option.value === value)?.text ?? null,
-                        options: optionsUnit
+                        label: value => storeUnits.getLabel(value),
+                        options: optionsUnits.value
                     },
                     type: 'select'
                 },
@@ -213,48 +249,221 @@
                     step: 0.1
                 }
             },
-            type: 'measure',
-            update: true
+            type: 'measure'
         },
         {
-            create: true,
             label: 'packagingKind',
             name: 'packagingKind',
-            prefix: 'componentSuppliers',
-            type: 'text',
-            update: true
+            type: 'text'
         },
         {
             children: [
-                {create: true, filter: true, label: '€', name: 'price', prefix: 'componentSupplierPrices', sort: false, type: 'number', update: true},
-                {create: true, filter: true, label: 'Q', name: 'quantite', prefix: 'componentSupplierPrices', sort: false, type: 'number', update: true},
-                {create: true, filter: true, label: 'ref', name: 'ref', prefix: 'componentSupplierPrices', sort: false, type: 'text', update: true}
+                {
+                    label: '€',
+                    name: 'price',
+                    type: 'number'
+                },
+                {
+
+                    label: 'Q',
+                    name: 'quantite',
+                    type: 'number'
+                },
+                {
+                    label: 'ref',
+                    name: 'ref',
+                    type: 'text',
+                }
             ],
-            create: false,
-            filter: true,
             label: 'Prix',
             name: 'prices',
-            prefix: 'componentSuppliers',
-            sort: false,
-            type: 'text',
-            update: true
+            type: 'text'
         }
     ]
-    const fieldsComponentSuppliersPrices = [
+    const componentFields = [
         {
-            create: true,
-            filter: true,
+            label: 'Composant',
+            name: 'component',
+            type: 'multiselect-fetch',
+            api: '/api/components',
+            filteredProperty: 'code'
+        }
+    ]
+    const supplierFields = [
+        {
+            label: 'Fournisseur',
+            name: 'supplier',
+            type: 'multiselect-fetch',
+            api: '/api/suppliers',
+            filteredProperty: 'name'
+        }
+    ]
+    const customerFields = [
+        {
+            label: 'Client',
+            name: 'customer',
+            type: 'multiselect-fetch',
+            api: '/api/customers',
+            filteredProperty: 'name'
+        }
+    ]
+    const productFields = [
+        {
+            label: 'Produit',
+            name: 'product',
+            type: 'multiselect-fetch',
+            api: '/api/products',
+            filteredProperty: 'name'
+        }
+    ]
+    // en fonction des données passées en props, on ajoute les champs correspondants dans les propriétés mainFields et pricesFields des tableaux 1 et 2
+    const fieldsMain1 = ref([])
+    const fieldsMain2 = ref([])
+    const showTable2 = ref(false)
+    const title1 = ref('')
+    const title2 = ref('')
+    if (customer.value !== null) { // Si on a un client [B]
+        if (component.value === null) { // Et si aucun composant n'est renseigné, alors on affiche la grille de prix produit [4]
+            fieldsMain1.value = [
+                ...customerFields,
+                ...productFields,
+                ...commonFields
+            ]
+            title1.value = 'Tableau des prix Client - Produits'
+            apis.value[0] = {
+                main: '/api/customer-products',
+                prices: '/api/customer-product-prices'
+            }
+            if (product.value === null) { // Et si aucun produit n'est renseigné, alors on affiche la grille de prix composant [3]
+                fieldsMain2.value = [
+                    ...customerFields,
+                    ...componentFields,
+                    ...commonFields
+                ]
+                title2.value = 'Tableau des prix Client - Composants'
+                apis.value[1] = {
+                    main: '/api/customer-components',
+                    prices: '/api/customer-component-prices'
+                }
+                showTable2.value = true
+            } else {
+                fieldsMain2.value = []
+                showTable2.value = false
+            }
+        } else { // Sinon, on affiche la grille de prix composant [3]
+            fieldsMain1.value = [
+                ...customerFields,
+                ...componentFields,
+                ...commonFields
+            ]
+            title1.value = 'Tableau des prix Client - Composants'
+            apis.value[0] = {
+                main: '/api/customer-components',
+                prices: '/api/customer-component-prices'
+            }
+            showTable2.value = false
+        }
+    } else if (supplier.value !== null) { // Sinon si on a un fournisseur de renseigné [A]
+        if (product.value === null) { // Et si aucun produit n'est renseigné, alors on affiche la grille de prix composant [1]
+            fieldsMain1.value = [
+                ...supplierFields,
+                ...componentFields,
+                ...commonFields
+            ]
+            title1.value = 'Tableau des prix Fournisseur - Composants'
+            apis.value[0] ={
+                main: '/api/supplier-components',
+                prices: '/api/supplier-component-prices'
+            }
+            if (component.value === null) { // Et si aucun composant n'est renseigné, alors on affiche la grille de prix produit [2]
+                fieldsMain2.value = [
+                    ...supplierFields,
+                    ...productFields,
+                    ...commonFields
+                ]
+                title2.value = 'Tableau des prix Fournisseur - Produits'
+                apis.value[1] = {
+                    main: '/api/supplier-products',
+                    prices: '/api/supplier-product-prices'
+                }
+                showTable2.value = true
+            } else {
+                fieldsMain2.value = []
+                showTable2.value = false
+            }
+        } else { // Sinon, on affiche la grille de prix produit [2]
+            fieldsMain1.value = [
+                ...supplierFields,
+                ...productFields,
+                ...commonFields
+            ]
+            title1.value = 'Tableau des prix Fournisseur - Produits'
+            apis.value[0] = {
+                main: '/api/supplier-products',
+                prices: '/api/supplier-product-prices'
+            }
+            showTable2.value = false
+        }
+
+    } else if (component.value !== null) { // Uniquement un composant de renseigné [C]
+        fieldsMain1.value = [
+            ...componentFields,
+            ...supplierFields,
+            ...commonFields
+        ]
+        title1.value = 'Tableau des prix Composant - Fournisseurs'
+        apis.value[0] ={
+            main: '/api/supplier-components',
+            prices: '/api/supplier-component-prices'
+        }
+        fieldsMain2.value = [
+            ...componentFields,
+            ...customerFields,
+            ...commonFields
+        ]
+        title2.value = 'Tableau des prix Composant - Clients'
+        apis.value[1] = {
+            main: '/api/customer-components',
+            prices: '/api/customer-component-prices'
+        }
+        showTable2.value = true
+    } else { // Uniquement un produit est renseigné [D]
+        fieldsMain1.value = [
+            ...productFields,
+            ...customerFields,
+            ...commonFields
+        ]
+        title1.value = 'Tableau des prix Produit - Clients'
+        apis.value[0] = {
+            main: '/api/customer-products',
+            prices: '/api/customer-product-prices'
+        }
+        fieldsMain2.value = [
+            ...productFields,
+            ...supplierFields,
+            ...commonFields
+        ]
+        title2.value = 'Tableau des prix Produit - Fournisseurs'
+        apis.value[1] = {
+            main: '/api/supplier-products',
+            prices: '/api/supplier-product-prices'
+        }
+
+    }
+    console.log('title1', title1.value)
+    console.log('title2', title2.value)
+    console.log('apis', apis.value)
+    const fieldsPrices = [
+        {
             label: '€',
             name: 'price',
-            prefix: 'componentSupplierPrices',
             measure: {
                 code: {
                     label: 'Code',
                     name: 'price.code',
                     options: {
-                        label: value =>
-                            currenciesOption.value.find(option => option.value === value)?.text ?? null,
-                        options: currenciesOption.value
+                        label: value => storeCurrencies.getLabel(value),
+                        options: currenciesOptions.value
                     },
                     type: 'select'
                 },
@@ -265,23 +474,18 @@
                     step: 0.1
                 }
             },
-            type: 'measure',
-            update: true
+            type: 'measure'
         },
         {
-            create: true,
-            filter: true,
             label: 'Q',
             name: 'quantity',
-            prefix: 'componentSupplierPrices',
             measure: {
                 code: {
                     label: 'Code',
                     name: 'quantity.code',
                     options: {
-                        label: value =>
-                            optionsUnit.find(option => option.value === value)?.text ?? null,
-                        options: optionsUnit
+                        label: value => storeUnits.getLabel(value),
+                        options: optionsUnits.value
                     },
                     type: 'select'
                 },
@@ -292,30 +496,27 @@
                     step: 0.1
                 }
             },
-            type: 'measure',
-            update: true
+            type: 'measure'
         },
         {
-            create: true,
-            filter: true,
             label: 'ref',
             name: 'ref',
-            prefix: 'componentSupplierPrices',
-            sort: false,
             type: 'text',
-            update: true
         }
     ]
 
-    function transformItems(ItemsComponentSuppliers, optionsUnits, currenciesOptions) {
-        return ItemsComponentSuppliers.map(item => {
-            const foundUnitDelai = optionsUnits.find(unit => unit.text === item.delai.code)
-            const foundUnitMoq = optionsUnits.find(unit => unit.text === item.moq.code)
-            const foundUnitPackaging = optionsUnits.find(unit => unit.text === item.packaging.code)
-            const foundUnitPoidsCu = optionsUnits.find(unit => unit.text === item.poidsCu.code)
+    console.log('fieldsMain1', fieldsMain1.value)
+    console.log('fieldsMain2', fieldsMain2.value)
+    function transformItems(items) {
+        console.log('items', items)
+        return items.map(item => {
+            const foundUnitDelai = optionsUnits.value.find(unit => unit.text === item.delai.code)
+            const foundUnitMoq = optionsUnits.value.find(unit => unit.text === item.moq.code)
+            const foundUnitPackaging = optionsUnits.value.find(unit => unit.text === item.packaging.code)
+            const foundUnitPoidsCu = optionsUnits.value.find(unit => unit.text === item.poidsCu.code)
 
             const transformedPrices = item.prices.map(price => {
-                const foundUnitQuantity = optionsUnits.find(unit => unit.text === price.quantity.code)
+                const foundUnitQuantity = optionsUnits.value.find(unit => unit.text === price.quantity.code)
                 const foundCurrencietPrice = currenciesOptions.value.find(currencie => currencie.text === price.price.code)
                 return {
                     ...price,
@@ -340,25 +541,27 @@
             }
         })
     }
+    const localItems1 = computed(() => transformItems(mainItems1.value))
+    const localItems2 = computed(() => transformItems(mainItems2.value))
 
-    const storeComponentSuppliers = useComponentSuppliersStore()
-    const componentSupplierFetchCriteria = useFetchCriteria('componentSuppliers')
-    const componentId = ref(0)
-    const storeComponentSuppliersPrices = useComponentSuppliersPricesStore()
-    const componentSuppliersItems = computed(() => storeComponentSuppliers.componentSuppliersItems)
-    const localItems = computed(() => transformItems(componentSuppliersItems.value, optionsUnit, currenciesOption))
     function initializePermanentFilters() {
-        if (props.component) {
+        if (component.value !== null) {
             componentId.value = getIdFromIri(props.component)
-            componentSupplierFetchCriteria.addFilter('component', props.component)
+            fetchCriteria.addFilter('component', props.component)
         }
-        if (props.supplier) {
-            componentSupplierFetchCriteria.addFilter('supplier', props.supplier)
+        if (product.value !== null) {
+            fetchCriteria.addFilter('product', props.product)
+        }
+        if (supplier.value !== null) {
+            fetchCriteria.addFilter('supplier', props.supplier)
+        }
+        if (customer.value !== null) {
+            fetchCriteria.addFilter('customer', props.customer)
         }
     }
     async function refreshTable() {
         initializePermanentFilters()
-        await storeComponentSuppliers.fetch(componentSupplierFetchCriteria.getFetchCriteria)
+        await storeComponentSuppliers.fetch(fetchCriteria.getFetchCriteria)
         await storeComponentSuppliers.fetchPricesForItems()
    }
     refreshTable()
@@ -395,19 +598,34 @@
 
 <template>
     <AppSuspense>
-        <AppRowsTablePage
-            v-if="!inputError"
-            :fields-component-suppliers="fieldsComponentSuppliers"
-            :fields-component-suppliers-prices="fieldsComponentSuppliersPrices"
-            :items="localItems"
-            :title="title"
-            @add-item="addItem"
-            @add-item-price="addItemPrice"
-            @deleted="deleted"
-            @deleted-prices="deletedPrices"
-            @annule-update="annuleUpdated"
-            @update-items="updateItems"
-            @update-items-prices="updateItemsPrices"/>
-        <div v-else class="bg-danger text-white text-center m-5 p-5">Impossible d'afficher une grille de prix car aucun composant et/ou aucun fournisseur n'a été sélectionné</div>
+        <div
+            v-if="!inputError">
+            <AppRowsTablePage
+                :main-fields="fieldsMain1"
+                :price-fields="fieldsPrices"
+                :items="localItems1"
+                :title="title1"
+                @add-item="addItem"
+                @add-item-price="addItemPrice"
+                @deleted="deleted"
+                @deleted-prices="deletedPrices"
+                @annule-update="annuleUpdated"
+                @update-items="updateItems"
+                @update-items-prices="updateItemsPrices"/>
+            <AppRowsTablePage
+                v-if="showTable2"
+                :main-fields="fieldsMain2"
+                :price-fields="fieldsPrices"
+                :items="localItems2"
+                :title="title2"
+                @add-item="addItem"
+                @add-item-price="addItemPrice"
+                @deleted="deleted"
+                @deleted-prices="deletedPrices"
+                @annule-update="annuleUpdated"
+                @update-items="updateItems"
+                @update-items-prices="updateItemsPrices"/>
+        </div>
+        <div v-else class="bg-danger text-white text-center m-5 p-5">{{ errorMessage }}</div>
     </AppSuspense>
 </template>

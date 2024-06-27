@@ -3,8 +3,8 @@
     import AppSuspense from '../../AppSuspense.vue'
 
     defineProps({
-        fieldsComponentSuppliers: {required: true, type: Array},
-        fieldsComponentSuppliersPrices: {required: true, type: Array},
+        mainFields: {required: true, type: Array},
+        priceFields: {required: true, type: Array},
         items: {required: true, type: Object},
         title: {required: true, type: String}
     })
@@ -39,8 +39,8 @@
         <h1>{{ title }}</h1>
         <AppPricesTable
             id="prices"
-            :fields-component-suppliers="fieldsComponentSuppliers"
-            :fields-component-suppliers-prices="fieldsComponentSuppliersPrices"
+            :fields-component-suppliers="mainFields"
+            :fields-component-suppliers-prices="priceFields"
             :items="items"
             form="formComponentSuppliersPricesTable"
             @add-item="addItem"
