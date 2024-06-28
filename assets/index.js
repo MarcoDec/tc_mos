@@ -77,6 +77,7 @@ import {createApp} from 'vue'
 import pinia from './stores'
 import router from './router'
 import useUser from './stores/security'
+import { PDFPlugin } from 'vue3-pdfmake';
 
 const app = createApp(App)
     .component('AppBtn', AppBtn)
@@ -150,4 +151,5 @@ const app = createApp(App)
     .component('CountryFlag', CountryFlag)
     .component('Fa', Fa)
     .use(pinia)
+    .use(PDFPlugin)
 useUser().fetch().then(() => app.use(router).mount('#vue'))
