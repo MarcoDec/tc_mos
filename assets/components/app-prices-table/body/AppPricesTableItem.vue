@@ -8,10 +8,11 @@
 
     const props = defineProps({
         item: {required: true, type: Object},
-        fieldsComponenentSuppliers: {required: true, type: Array},
-        fieldsComponenentSuppliersPrices: {required: true, type: Array},
+        mainFields: {required: true, type: Array},
+        priceFields: {required: true, type: Array},
         form: {required: true, type: String}
     })
+    console.log('AppPricesTableItem.vue', props)
     const emit = defineEmits(['addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'update', 'updateItems', 'updatePrices', 'updateItemsPrices'])
     const updated = ref(false)
     const priceModified = ref(Array(props.item.prices.length).fill(false))
@@ -46,8 +47,8 @@
         emit('annuleUpdate')
         priceModified.value[index] = false
     }
-    function deletedPrices(id){
-        emit('deletedPrices', id)
+    function deletedPrices(iri){
+        emit('deletedPrices', iri)
     }
 
     const nbTr = computed(() => {
@@ -72,13 +73,13 @@
                         <Fa icon="trash"/>
                     </button>
                 </td>
-                <template v-for="field in fieldsComponenentSuppliers" :key="field.name">
+                <template v-for="field in mainFields" :key="field.name">
                     <AppPricesTableItemsComponentSuppliers :field="field" :item="item" :rowspan="range(nbTr).length + 1" :index="index"/>
                     <td v-if="field.name === 'prices' && priceModified[index] === false">
                         <button class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.prices[index].id" @click="updatePrices(index)">
                             <Fa icon="pencil"/>
                         </button>
-                        <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deletedPrices(item.prices[index].id)">
+                        <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deletedPrices(item.prices[index]['@id'])">
                             <Fa icon="trash"/>
                         </button>
                     </td>
@@ -93,7 +94,7 @@
                 </template>
             </template>
             <template v-else>
-                <AppPricesTableUpdateItem v-if="(index === 0)" :fields="fieldsComponenentSuppliers" :form="form" :item="item" :rowspan="range(nbTr).length + 1" :index="index" @annule-update="annuleUpdated" @update-items="updateItems"/>
+                <AppPricesTableUpdateItem v-if="(index === 0)" :fields="mainFields" :form="form" :item="item" :rowspan="range(nbTr).length + 1" :index="index" @annule-update="annuleUpdated" @update-items="updateItems"/>
                 <td v-if="priceModified[index] === false">
                     <button class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.prices[index].id" @click="updatePrices(index)">
                         <Fa icon="pencil"/>
@@ -111,7 +112,7 @@
                     </button>
                 </td>
             </template>
-            <template v-for="field in fieldsComponenentSuppliersPrices" :key="field.name">
+            <template v-for="field in priceFields" :key="field.name">
                 <template v-if="priceModified[index] === false">
                     <td>
                         <AppPricesTableItemsPrices :field="field" :item="item" :index="index"/>
@@ -122,7 +123,7 @@
                 </template>
             </template>
         </tr>
-        <AppPricesTableAddItems :fields="fieldsComponenentSuppliersPrices" :form="form" @add-item="addItemPrice"/>
+        <AppPricesTableAddItems :fields="priceFields" :form="form" @add-item="addItemPrice"/>
     </template>
     <template v-if="priceModified.length === 0 ">
         <tr v-for="(i, index) in range(nbTr)" :key="index">
@@ -135,14 +136,14 @@
                         <Fa icon="trash"/>
                     </button>
                 </td>
-                <template v-for="field in fieldsComponenentSuppliers" :key="field.name">
+                <template v-for="field in mainFields" :key="field.name">
                     <AppPricesTableItemsComponentSuppliers :field="field" :item="item" :rowspan="range(nbTr).length + 1" :index="index"/>
                 </template>
             </template>
             <template v-else>
-                <AppPricesTableUpdateItem v-if="(index === 0)" :fields="fieldsComponenentSuppliers" :form="form" :item="item" :rowspan="range(nbTr).length + 1" :index="index" @annule-update="annuleUpdated" @update-items="updateItems"/>
+                <AppPricesTableUpdateItem v-if="(index === 0)" :fields="mainFields" :form="form" :item="item" :rowspan="range(nbTr).length + 1" :index="index" @annule-update="annuleUpdated" @update-items="updateItems"/>
             </template>
         </tr>
-        <AppPricesTableAddItems :fields="fieldsComponenentSuppliersPrices" :form="form" @add-item="addItemPrice"/>
+        <AppPricesTableAddItems :fields="priceFields" :form="form" @add-item="addItemPrice"/>
     </template>
 </template>

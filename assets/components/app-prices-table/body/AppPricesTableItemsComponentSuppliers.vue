@@ -1,15 +1,24 @@
 <script setup>
-    import {computed, defineProps, ref} from 'vue'
-    import {isObject} from '@vueuse/core'
-    import AppSwitch from '../../form-cardable/fieldCardable/input/AppSwitch.vue'
+import {computed, defineProps, ref} from 'vue'
+import {isObject} from '@vueuse/core'
+import AppSwitch from '../../form-cardable/fieldCardable/input/AppSwitch.vue'
+import api from "../../../api";
 
-    const props = defineProps({
+const props = defineProps({
         item: {required: true, type: Object},
         field: {required: true, type: Object},
         rowspan: {required: true, type: Number},
         index: {required: true, type: Number}
     })
     const multiSelectResults = ref([])
+    if (props.field.type === 'multiselect-fetch') {
+        console.log('props.item[props.field.name] field', props.field)
+        if (typeof props.item[props.field.name] === 'object') {
+            multiSelectResults.value = await api(props.item[props.field.name]['@id'], 'GET')
+        } else {
+            multiSelectResults.value =await api(props.item[props.field.name], 'GET')
+        }
+    }
     const id = computed(() => Number(props.item['@id'].match(/\d+/)[0]))
 </script>
 
@@ -41,7 +50,7 @@
                     <AppSwitch :id="`${field.name}_${id}`" :disabled="true" :field="field" form="" :model-value="item[field.name]"/>
                 </div>
                 <div v-else-if="field.type === 'multiselect-fetch'">
-                    {{ multiSelectResults[field.name] }}
+                    {{ multiSelectResults[field.filteredProperty] }}
                 </div>
                 <div v-else-if="field.type === 'link'">
                     <a v-if="item[field.name] !== null && item[field.name] !== ''" :href="item[field.name]" target="_blank">Download file</a>

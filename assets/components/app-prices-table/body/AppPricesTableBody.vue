@@ -3,12 +3,13 @@
     import AppPricesTableAddItems from './AppPricesTableAddItems.vue'
     import AppPricesTableItems from './AppPricesTableItems.vue'
 
-    defineProps({
-        fieldsComponentSuppliers: {required: true, type: Array},
-        fieldsComponentSuppliersPrices: {required: true, type: Array},
+    const props = defineProps({
+        mainFields: {required: true, type: Array},
+        priceFields: {required: true, type: Array},
         form: {required: true, type: String},
         items: {required: true, type: Object}
     })
+    console.log('AppPricesTableBody.vue', props)
     const emit = defineEmits(['addItem', 'addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updateItemsPrices'])
     async function updateItems(item) {
         emit('updateItems', item)
@@ -36,7 +37,7 @@
 
 <template>
     <tbody>
-        <AppPricesTableItems :fields-component-suppliers="fieldsComponentSuppliers" :fields-component-suppliers-prices="fieldsComponentSuppliersPrices" :form="form" :items="items" @deleted="deleted" @deleted-prices="deletedPrices" @add-item-price="addItemPrice" @annule-update="annuleUpdated" @update-items="updateItems" @update-items-prices="updateItemsPrices"/>
-        <AppPricesTableAddItems :fields="fieldsComponentSuppliers" :form="form" @add-item="addItem"/>
+        <AppPricesTableItems :main-fields="mainFields" :price-fields="priceFields" :form="form" :items="items" @deleted="deleted" @deleted-prices="deletedPrices" @add-item-price="addItemPrice" @annule-update="annuleUpdated" @update-items="updateItems" @update-items-prices="updateItemsPrices"/>
+        <AppPricesTableAddItems :fields="mainFields" :form="form" @add-item="addItem"/>
     </tbody>
 </template>

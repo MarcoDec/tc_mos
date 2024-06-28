@@ -1,7 +1,7 @@
 <script setup>
     import api from '../../../api'
     import AppRowsTablePage from './AppRowsTablePage.vue'
-    import {computed, ref} from 'vue'
+    import {computed, ref, watchEffect} from 'vue'
     import AppSuspense from '../../../components/AppSuspense.vue'
     import useOptions from '../../../stores/option/options'
     import {useComponentSuppliersStore} from '../../../stores/prices/componentSuppliers'
@@ -70,31 +70,38 @@
     const mainItems2 = ref([])
 
     const mainItems = computed(() => storeComponentSuppliers.componentSuppliersItems)
-    const fetchCriteria = useFetchCriteria('componentProductSuppliersCustomer')
+    const fetchCriteria1 = useFetchCriteria('table1Criteria')
+    const fetchCriteria2 = useFetchCriteria('table2Criteria')
 
     const componentId = ref(0)
+    const mainTitle = ref("Grille de prix")
+    const apis = ref([])
     //region chargement des inputs
     if (props.component) {
         component.value = await api(props.component, 'GET')
-        console.log('Chargement du composant', component.value)
+        // console.log('Chargement du composant', component.value)
+        mainTitle.value += ' pour ' + component.value.code
     }
     if (props.supplier) {
         supplier.value = await api(props.supplier, 'GET')
-        console.log('Chargement du fournisseur', supplier.value)
+        // console.log('Chargement du fournisseur', supplier.value)
+        mainTitle.value += ' pour ' + supplier.value.name
     }
     if (props.product) {
         product.value = await api(props.product, 'GET')
-        console.log('Chargement du produit', product.value)
+        // console.log('Chargement du produit', product.value)
+        mainTitle.value += ' pour ' + product.value.name
     }
     if (props.customer) {
         customer.value = await api(props.customer, 'GET')
-        console.log('Chargement du client', customer.value)
+        // console.log('Chargement du client', customer.value)
+        mainTitle.value += ' pour ' + customer.value.name
     }
-    console.log('props', props)
-    console.log('component', component.value)
-    console.log('supplier', supplier.value)
-    console.log('product', product.value)
-    console.log('customer', customer.value)
+    // console.log('props', props)
+    // console.log('component', component.value)
+    // console.log('supplier', supplier.value)
+    // console.log('product', product.value)
+    // console.log('customer', customer.value)
     //endregion
     //region controle des inputs et génération des erreurs correspondantes
     if (supplier.value !== null && customer.value !== null) {
@@ -106,33 +113,6 @@
         errorMessage.value = 'Le contexte Produit/Composant de la grille de prix est invalide car les 2 sont renseignés'
     }
     //endregion
-    //region génération des routes nécessaires pour l'affichage des prix
-    const apis = ref([])
-    if (
-        (component.value !== null && customer.value === null)
-        || (supplier.value !== null && product.value === null)
-    ) {
-
-    }
-    if (
-        (component.value !== null && supplier.value === null)
-        || (customer.value !== null && product.value === null)
-    ) {
-    }
-    if (
-        (product.value !== null && customer.value === null)
-        || (supplier.value !== null && component.value === null)
-    ) {
-    }
-    if (
-        (product.value !== null && supplier.value === null)
-        || (customer.value !== null && component.value === null)
-    ) {
-    }
-    console.log('apis', apis.value)
-    //endregion
-
-
     function getIdFromIri(iri) {
         return iri.split('/').pop()
     }
@@ -141,24 +121,26 @@
         {
             label: 'Proportion',
             name: 'proportion',
-            type: 'number'
+            type: 'number',
+            width: '70'
         },
         {
             label: 'Délai',
-            name: 'delai',
+            name: 'deliveryTime',
+            width: '100',
             measure: {
                 code: {
                     label: 'Code',
-                    name: 'delai.code',
+                    name: 'deliveryTime.code',
                     options: {
-                        label: value => storeUnits.getLabel(value),
+                        label: value => storeUnits.getLabelFromValue(value),
                         options: optionsUnits.value
                     },
                     type: 'select'
                 },
                 value: {
                     label: 'Valeur',
-                    name: 'delai.value',
+                    name: 'deliveryTime.value',
                     type: 'number',
                     step: 0.1
                 }
@@ -168,12 +150,13 @@
         {
             label: 'Moq',
             name: 'moq',
+            width: '100',
             measure: {
                 code: {
                     label: 'Code',
                     name: 'moq.code',
                     options: {
-                        label: value => storeUnits.getLabel(value),
+                        label: value => storeUnits.getLabelFromValue(value),
                         options: optionsUnits.value
                     },
                     type: 'select'
@@ -189,20 +172,21 @@
         },
         {
             label: 'Poids cu',
-            name: 'poidsCu',
+            name: 'copperWeight',
+            width: '100',
             measure: {
                 code: {
                     label: 'Code',
-                    name: 'poidsCu.code',
+                    name: 'copperWeight.code',
                     options: {
-                        label: value => storeUnits.getLabel(value),
+                        label: value => storeUnits.getLabelFromValue(value),
                         options: optionsUnits.value
                     },
                     type: 'select'
                 },
                 value: {
                     label: 'Valeur',
-                    name: 'poidsCu.value',
+                    name: 'copperWeight.value',
                     type: 'number',
                     step: 0.1
                 }
@@ -212,16 +196,19 @@
         {
             label: 'Référence',
             name: 'reference',
-            type: 'text'
+            type: 'text',
+            width: '100'
         },
         {
             label: 'Indice',
-            name: 'indice',
+            name: 'index',
             type: 'text',
+            width: '50'
         },
         {
             label: 'incoterms',
             name: 'incoterms',
+            width: '150',
             options: {
                 label: value =>
                     incotermsOptions.find(option => option.value === value)?.text ?? null,
@@ -232,12 +219,13 @@
         {
             label: 'packaging',
             name: 'packaging',
+            width: '100',
             measure: {
                 code: {
                     label: 'Code',
                     name: 'packaging.code',
                     options: {
-                        label: value => storeUnits.getLabel(value),
+                        label: value => storeUnits.getLabelFromValue(value),
                         options: optionsUnits.value
                     },
                     type: 'select'
@@ -254,20 +242,23 @@
         {
             label: 'packagingKind',
             name: 'packagingKind',
-            type: 'text'
+            type: 'text',
+            width: '70'
         },
         {
             children: [
                 {
                     label: '€',
                     name: 'price',
-                    type: 'number'
+                    type: 'number',
+                    width: '150'
                 },
                 {
 
                     label: 'Q',
                     name: 'quantite',
-                    type: 'number'
+                    type: 'number',
+                    width: '150'
                 },
                 {
                     label: 'ref',
@@ -323,6 +314,8 @@
     const title1 = ref('')
     const title2 = ref('')
     if (customer.value !== null) { // Si on a un client [B]
+        fetchCriteria1.addFilter('customer', props.customer)
+        fetchCriteria2.addFilter('customer', props.customer)
         if (component.value === null) { // Et si aucun composant n'est renseigné, alors on affiche la grille de prix produit [4]
             fieldsMain1.value = [
                 ...customerFields,
@@ -347,10 +340,12 @@
                 }
                 showTable2.value = true
             } else {
+                fetchCriteria1.addFilter('product', props.product)
                 fieldsMain2.value = []
                 showTable2.value = false
             }
         } else { // Sinon, on affiche la grille de prix composant [3]
+            fetchCriteria1.addFilter('component', props.component)
             fieldsMain1.value = [
                 ...customerFields,
                 ...componentFields,
@@ -364,6 +359,8 @@
             showTable2.value = false
         }
     } else if (supplier.value !== null) { // Sinon si on a un fournisseur de renseigné [A]
+        fetchCriteria1.addFilter('supplier', props.supplier)
+        fetchCriteria2.addFilter('supplier', props.supplier)
         if (product.value === null) { // Et si aucun produit n'est renseigné, alors on affiche la grille de prix composant [1]
             fieldsMain1.value = [
                 ...supplierFields,
@@ -388,10 +385,12 @@
                 }
                 showTable2.value = true
             } else {
+                fetchCriteria1.addFilter('component', props.component)
                 fieldsMain2.value = []
                 showTable2.value = false
             }
         } else { // Sinon, on affiche la grille de prix produit [2]
+            fetchCriteria1.addFilter('product', props.product)
             fieldsMain1.value = [
                 ...supplierFields,
                 ...productFields,
@@ -404,8 +403,9 @@
             }
             showTable2.value = false
         }
-
     } else if (component.value !== null) { // Uniquement un composant de renseigné [C]
+        fetchCriteria1.addFilter('component', props.component)
+        fetchCriteria2.addFilter('component', props.component)
         fieldsMain1.value = [
             ...componentFields,
             ...supplierFields,
@@ -428,6 +428,8 @@
         }
         showTable2.value = true
     } else { // Uniquement un produit est renseigné [D]
+        fetchCriteria1.addFilter('product', props.product)
+        fetchCriteria2.addFilter('product', props.product)
         fieldsMain1.value = [
             ...productFields,
             ...customerFields,
@@ -453,6 +455,14 @@
     console.log('title1', title1.value)
     console.log('title2', title2.value)
     console.log('apis', apis.value)
+    // Chargement des données
+    const response1 = await api(apis.value[0].main + fetchCriteria1.getFetchCriteria, 'GET')
+    mainItems1.value = response1['hydra:member']
+    const response2 = await api(apis.value[1].main + fetchCriteria2.getFetchCriteria, 'GET')
+    mainItems2.value = response2['hydra:member']
+    console.log('mainItems1', mainItems1.value)
+    console.log('mainItems2', mainItems2.value)
+
     const fieldsPrices = [
         {
             label: '€',
@@ -462,10 +472,11 @@
                     label: 'Code',
                     name: 'price.code',
                     options: {
-                        label: value => storeCurrencies.getLabel(value),
+                        label: value => storeCurrencies.getLabelFromCode(value),
                         options: currenciesOptions.value
                     },
-                    type: 'select'
+                    type: 'select',
+                    disabled: true
                 },
                 value: {
                     label: 'Valeur',
@@ -484,7 +495,7 @@
                     label: 'Code',
                     name: 'quantity.code',
                     options: {
-                        label: value => storeUnits.getLabel(value),
+                        label: value => storeUnits.getLabelFromValue(value),
                         options: optionsUnits.value
                     },
                     type: 'select'
@@ -505,105 +516,88 @@
         }
     ]
 
-    console.log('fieldsMain1', fieldsMain1.value)
-    console.log('fieldsMain2', fieldsMain2.value)
-    function transformItems(items) {
-        console.log('items', items)
-        return items.map(item => {
-            const foundUnitDelai = optionsUnits.value.find(unit => unit.text === item.delai.code)
+    async function transformItems(items) {
+        return await Promise.all(items.map(async item => {
+            const foundUnitDelai = optionsUnits.value.find(unit => unit.text === item.deliveryTime.code)
             const foundUnitMoq = optionsUnits.value.find(unit => unit.text === item.moq.code)
             const foundUnitPackaging = optionsUnits.value.find(unit => unit.text === item.packaging.code)
-            const foundUnitPoidsCu = optionsUnits.value.find(unit => unit.text === item.poidsCu.code)
-
-            const transformedPrices = item.prices.map(price => {
-                const foundUnitQuantity = optionsUnits.value.find(unit => unit.text === price.quantity.code)
-                const foundCurrencietPrice = currenciesOptions.value.find(currencie => currencie.text === price.price.code)
-                return {
-                    ...price,
-                    quantity: {
-                        ...price.quantity,
-                        code: foundUnitQuantity ? foundUnitQuantity.value : price.quantity.code
-                    },
-                    price: {
-                        ...price.price,
-                        code: foundCurrencietPrice ? foundCurrencietPrice.value : price.price.code
-                    }
-                }
+            const foundUnitPoidsCu = optionsUnits.value.find(unit => unit.text === item.copperWeight.code)
+            //On charge les prix via l'API en utilisant le champ '@id' de l'item de prix
+            const promises = item.prices.map(price => {
+                return api(price['@id'], 'GET')
             })
-
+            const values = await Promise.all(promises)
+            console.log('values', values)
+            // On attend le retour de toutes les promesses
+            const transformedPrices = values.map(price => {
+                    const foundUnitQuantity = optionsUnits.value.find(unit => unit.text === price.quantity.code)
+                    const foundCurrencietPrice = currenciesOptions.value.find(currencie => currencie.text === price.price.code)
+                    return {
+                        ...price,
+                        quantity: {
+                            ...price.quantity,
+                            code: foundUnitQuantity ? foundUnitQuantity.value : price.quantity.code
+                        },
+                        price: {
+                            ...price.price,
+                            code: foundCurrencietPrice ? foundCurrencietPrice.value : price.price.code
+                        }
+                    }
+                })
             return {
                 ...item,
-                delai: {value: item.delai.value, code: foundUnitDelai ? foundUnitDelai.value : item.delai.code},
+                deliveryTime: {value: item.deliveryTime.value, code: foundUnitDelai ? foundUnitDelai.value : item.deliveryTime.code},
                 moq: {value: item.moq.value, code: foundUnitMoq ? foundUnitMoq.value : item.moq.code},
                 packaging: {value: item.packaging.value, code: foundUnitPackaging ? foundUnitPackaging.value : item.packaging.code},
-                poidsCu: {value: item.poidsCu.value, code: foundUnitPoidsCu ? foundUnitPoidsCu.value : item.poidsCu.code},
+                copperWeight: {value: item.copperWeight.value, code: foundUnitPoidsCu ? foundUnitPoidsCu.value : item.copperWeight.code},
                 prices: transformedPrices
             }
-        })
+        }))
     }
-    const localItems1 = computed(() => transformItems(mainItems1.value))
-    const localItems2 = computed(() => transformItems(mainItems2.value))
 
-    function initializePermanentFilters() {
-        if (component.value !== null) {
-            componentId.value = getIdFromIri(props.component)
-            fetchCriteria.addFilter('component', props.component)
-        }
-        if (product.value !== null) {
-            fetchCriteria.addFilter('product', props.product)
-        }
-        if (supplier.value !== null) {
-            fetchCriteria.addFilter('supplier', props.supplier)
-        }
-        if (customer.value !== null) {
-            fetchCriteria.addFilter('customer', props.customer)
-        }
-    }
-    async function refreshTable() {
-        initializePermanentFilters()
-        await storeComponentSuppliers.fetch(fetchCriteria.getFetchCriteria)
-        await storeComponentSuppliers.fetchPricesForItems()
-   }
-    refreshTable()
+    const resolvedItems1 = ref([])
+    const resolvedItems2 = ref([])
 
+    watchEffect(async () => {
+        resolvedItems1.value = await transformItems(mainItems1.value)
+    })
+
+    watchEffect(async () => {
+        resolvedItems2.value = await transformItems(mainItems2.value)
+    })
     async function addItem(formData) {
+        console.log('addItem formData', formData)
         const component = props.component
-        await storeComponentSuppliers.addComponentSuppliers({formData, component})
-        await refreshTable()
     }
     async function annuleUpdated() {
-        await refreshTable()
+        console.log('annuleUpdated')
     }
     async function updateItems(item) {
-        await storeComponentSuppliers.updateComponentSuppliers(item)
-        await refreshTable()
+        console.log('updateItems', item)
     }
     async function addItemPrice(formData) {
-        await storeComponentSuppliersPrices.addPrices(formData)
-        await refreshTable()
+        console.log('addItemPrice formData', formData)
     }
     async function updateItemsPrices(item) {
-        await storeComponentSuppliersPrices.updatePrices(item)
-        await refreshTable()
+        console.log('updateItemsPrices', item)
     }
     async function deleted(id){
-        await storeComponentSuppliers.remove(id)
-        await refreshTable()
+        console.log('deleted', id)
     }
     async function deletedPrices(id){
-        await storeComponentSuppliersPrices.removePrice(id)
-        await refreshTable()
+        console.log('deletedPrices', id)
     }
 </script>
 
 <template>
     <AppSuspense>
+        <h1>{{ mainTitle}}</h1>
         <div
             v-if="!inputError">
             <AppRowsTablePage
                 :main-fields="fieldsMain1"
                 :price-fields="fieldsPrices"
-                :items="localItems1"
+                :items="resolvedItems1"
                 :title="title1"
                 @add-item="addItem"
                 @add-item-price="addItemPrice"
@@ -616,7 +610,7 @@
                 v-if="showTable2"
                 :main-fields="fieldsMain2"
                 :price-fields="fieldsPrices"
-                :items="localItems2"
+                :items="resolvedItems2"
                 :title="title2"
                 @add-item="addItem"
                 @add-item-price="addItemPrice"

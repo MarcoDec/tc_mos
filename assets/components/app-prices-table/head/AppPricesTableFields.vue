@@ -20,7 +20,7 @@
 
 <template>
     <tr>
-        <th :rowspan="rowspan">
+        <th :rowspan="rowspan" width="50">
             Actions
         </th>
         <AppPricesTableField
@@ -30,3 +30,11 @@
             :rowspan="rowspan"/>
     </tr>
 </template>
+
+<style scoped>
+    th {
+        vertical-align: middle;
+        text-align: center;
+        font-size: small;
+    }
+</style>

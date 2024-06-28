@@ -2,12 +2,13 @@
     import {defineProps} from 'vue'
     import AppPricesTableItem from './AppPricesTableItem.vue'
 
-    defineProps({
+    const props = defineProps({
         items: {required: true, type: Object},
-        fieldsComponentSuppliers: {required: true, type: Array},
-        fieldsComponentSuppliersPrices: {required: true, type: Array},
+        mainFields: {required: true, type: Array},
+        priceFields: {required: true, type: Array},
         form: {required: true, type: String}
     })
+    console.log('AppPricesTableItems.vue', props)
     const emit = defineEmits(['addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updateItemsPrices'])
     async function updateItems(item) {
         emit('updateItems', item)
@@ -36,8 +37,8 @@
         :item="item"
         :items="items"
         :form="form"
-        :fields-componenent-suppliers="fieldsComponentSuppliers"
-        :fields-componenent-suppliers-prices="fieldsComponentSuppliersPrices"
+        :main-fields="mainFields"
+        :price-fields="priceFields"
         @add-item-price="addItemPrice"
         @deleted="deleted"
         @deleted-prices="deletedPrices"

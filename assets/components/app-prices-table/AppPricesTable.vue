@@ -3,13 +3,15 @@
     import AppPricesTableHeaders from './head/AppPricesTableHeaders.vue'
     import AppPricesTableBody from './body/AppPricesTableBody.vue'
 
-    defineProps({
-        fieldsComponentSuppliers: {required: true, type: Array},
-        fieldsComponentSuppliersPrices: {required: true, type: Array},
+    const props = defineProps({
+        mainFields: {required: true, type: Array},
+        priceFields: {required: true, type: Array},
         form: {required: true, type: String},
         id: {required: true, type: String},
-        items: {required: true, type: Object}
+        items: {required: true, type: Object},
+        title: {default: '', required: false, type: String}
     })
+    console.log('AppPricesTable.vue', props)
 
     const emit = defineEmits(['addItem', 'addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updateItemsPrices'])
 
@@ -39,8 +41,8 @@
 
 <template>
     <table :id="id" class="table table-bordered table-hover table-striped">
-        <AppPricesTableHeaders :fields-component-suppliers="fieldsComponentSuppliers"/>
-        <AppPricesTableBody :fields-component-suppliers="fieldsComponentSuppliers" :fields-component-suppliers-prices="fieldsComponentSuppliersPrices" :form="form" :items="items" @deleted="deleted" @deleted-prices="deletedPrices" @annule-update="annuleUpdated" @update-items="updateItems" @update-items-prices="updateItemsPrices" @add-item="addItem" @add-item-price="addItemPrice"/>
+        <AppPricesTableHeaders :main-fields="mainFields" :title="title"/>
+        <AppPricesTableBody :main-fields="mainFields" :price-fields="priceFields" :form="form" :items="items" @deleted="deleted" @deleted-prices="deletedPrices" @annule-update="annuleUpdated" @update-items="updateItems" @update-items-prices="updateItemsPrices" @add-item="addItem" @add-item-price="addItemPrice"/>
     </table>
     <slot name="btn"/>
 </template>

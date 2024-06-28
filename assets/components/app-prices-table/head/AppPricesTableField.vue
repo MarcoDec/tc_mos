@@ -23,7 +23,7 @@
 </script>
 
 <template>
-    <th :colspan="colspan" :rowspan="safeRowSpan">
+    <th :colspan="colspan" :rowspan="safeRowSpan" :width="field.width">
         <span class="d-flex justify-content-between">
             <span>{{ field.label }}</span>
         </span>

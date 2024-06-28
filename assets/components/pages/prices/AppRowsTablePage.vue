@@ -2,12 +2,13 @@
     import AppPricesTable from '../../app-prices-table/AppPricesTable.vue'
     import AppSuspense from '../../AppSuspense.vue'
 
-    defineProps({
+    const props = defineProps({
         mainFields: {required: true, type: Array},
         priceFields: {required: true, type: Array},
         items: {required: true, type: Object},
         title: {required: true, type: String}
     })
+    console.log('AppPricesTablePage.vue', props)
     const emit = defineEmits(['addItem', 'addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updateItemsPrices'])
 
     async function annuleUpdated() {
@@ -36,12 +37,12 @@
 
 <template>
     <AppSuspense>
-        <h1>{{ title }}</h1>
         <AppPricesTable
             id="prices"
-            :fields-component-suppliers="mainFields"
-            :fields-component-suppliers-prices="priceFields"
+            :main-fields="mainFields"
+            :price-fields="priceFields"
             :items="items"
+            :title="title"
             form="formComponentSuppliersPricesTable"
             @add-item="addItem"
             @add-item-price="addItemPrice"
