@@ -69,7 +69,7 @@
                     <button class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.id" @click="update">
                         <Fa icon="pencil"/>
                     </button>
-                    <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted(item.id)">
+                    <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted(item['@id'])">
                         <Fa icon="trash"/>
                     </button>
                 </td>

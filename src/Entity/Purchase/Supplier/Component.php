@@ -138,7 +138,7 @@ class Component extends Entity {
     /** @var DoctrineCollection<int, SupplierComponentPrice> */
     #[
         ApiProperty(description: 'Prix', example: '[]'),
-        ORM\OneToMany(targetEntity: SupplierComponentPrice::class, mappedBy:'component', fetch: 'EAGER'),
+        ORM\OneToMany(mappedBy: 'component', targetEntity: SupplierComponentPrice::class, fetch: 'EAGER'),
         Serializer\Groups(['read:supplier-component'])
     ]
     private DoctrineCollection $prices;
@@ -227,9 +227,11 @@ class Component extends Entity {
         return $this->packagingKind;
     }
 
-    public function getPrices()
+    public function getPrices(): ArrayCollection|DoctrineCollection
     {
-        return $this->prices;
+        return $this->prices->filter(function($price){
+            return $price->isDeleted() === false;
+        });
     }
 
     final public function getProportion(): float {

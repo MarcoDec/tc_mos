@@ -62,14 +62,9 @@
     const product = ref(null)
     const customer = ref(null)
 
-    //TODO: remplacer les stores spécifiques par des fonctions génériques
-    const storeComponentSuppliers = useComponentSuppliersStore()
-    const storeComponentSuppliersPrices = useComponentSuppliersPricesStore()
-
     const mainItems1 = ref([])
     const mainItems2 = ref([])
 
-    const mainItems = computed(() => storeComponentSuppliers.componentSuppliersItems)
     const fetchCriteria1 = useFetchCriteria('table1Criteria')
     const fetchCriteria2 = useFetchCriteria('table2Criteria')
 
@@ -113,9 +108,6 @@
         errorMessage.value = 'Le contexte Produit/Composant de la grille de prix est invalide car les 2 sont renseignés'
     }
     //endregion
-    function getIdFromIri(iri) {
-        return iri.split('/').pop()
-    }
     // Liste des champs communs à toutes les grilles de prix (partie principale)
     const commonFields = [
         {
@@ -277,7 +269,8 @@
             name: 'component',
             type: 'multiselect-fetch',
             api: '/api/components',
-            filteredProperty: 'code'
+            filteredProperty: 'code',
+            width: '100'
         }
     ]
     const supplierFields = [
@@ -286,7 +279,8 @@
             name: 'supplier',
             type: 'multiselect-fetch',
             api: '/api/suppliers',
-            filteredProperty: 'name'
+            filteredProperty: 'name',
+            width: '150'
         }
     ]
     const customerFields = [
@@ -295,7 +289,8 @@
             name: 'customer',
             type: 'multiselect-fetch',
             api: '/api/customers',
-            filteredProperty: 'name'
+            filteredProperty: 'name',
+            width: '150'
         }
     ]
     const productFields = [
@@ -304,7 +299,8 @@
             name: 'product',
             type: 'multiselect-fetch',
             api: '/api/products',
-            filteredProperty: 'name'
+            filteredProperty: 'name',
+            width: '150'
         }
     ]
     // en fonction des données passées en props, on ajoute les champs correspondants dans les propriétés mainFields et pricesFields des tableaux 1 et 2
@@ -313,6 +309,7 @@
     const showTable2 = ref(false)
     const title1 = ref('')
     const title2 = ref('')
+
     if (customer.value !== null) { // Si on a un client [B]
         fetchCriteria1.addFilter('customer', props.customer)
         fetchCriteria2.addFilter('customer', props.customer)
@@ -456,10 +453,20 @@
     console.log('title2', title2.value)
     console.log('apis', apis.value)
     // Chargement des données
-    const response1 = await api(apis.value[0].main + fetchCriteria1.getFetchCriteria, 'GET')
-    mainItems1.value = response1['hydra:member']
-    const response2 = await api(apis.value[1].main + fetchCriteria2.getFetchCriteria, 'GET')
-    mainItems2.value = response2['hydra:member']
+
+    function transformPricesAsAnArray(item) {
+        if (typeof item.prices === 'object') {
+            item.prices = Object.values(item.prices)
+        }
+        return item
+    }
+    async function loadData() {
+        const response1 = await api(apis.value[0].main + fetchCriteria1.getFetchCriteria, 'GET')
+        mainItems1.value = response1['hydra:member'].map(item => transformPricesAsAnArray(item))
+        const response2 = await api(apis.value[1].main + fetchCriteria2.getFetchCriteria, 'GET')
+        mainItems2.value = response2['hydra:member'].map(item => transformPricesAsAnArray(item))
+    }
+    await loadData()
     console.log('mainItems1', mainItems1.value)
     console.log('mainItems2', mainItems2.value)
 
@@ -518,6 +525,7 @@
 
     async function transformItems(items) {
         return await Promise.all(items.map(async item => {
+            console.log('item', item)
             const foundUnitDelai = optionsUnits.value.find(unit => unit.text === item.deliveryTime.code)
             const foundUnitMoq = optionsUnits.value.find(unit => unit.text === item.moq.code)
             const foundUnitPackaging = optionsUnits.value.find(unit => unit.text === item.packaging.code)
@@ -582,10 +590,14 @@
         console.log('updateItemsPrices', item)
     }
     async function deleted(id){
-        console.log('deleted', id)
+        if (window.confirm('Voulez-vous vraiment supprimer cet élément ?') === false) return
+        await api(id, 'DELETE')
+        await loadData()
     }
     async function deletedPrices(id){
-        console.log('deletedPrices', id)
+        if (window.confirm('Voulez-vous vraiment supprimer cet élément ?') === false) return
+        await api(id, 'DELETE')
+        await loadData()
     }
 </script>
 
