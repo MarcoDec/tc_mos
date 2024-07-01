@@ -573,9 +573,45 @@
     watchEffect(async () => {
         resolvedItems2.value = await transformItems(mainItems2.value)
     })
-    async function addItem(formData) {
-        console.log('addItem formData', formData)
-        const component = props.component
+    async function addItem(formData, index) {
+        const currentApi = apis.value[index].main
+        console.log('addItem formData', formData, currentApi)
+        const data = {}
+        if (formData.component) {
+            data.component = formData.component[0]
+        }
+        if (formData.supplier) {
+            data.supplier = formData.supplier[0]
+        }
+        if (formData.product) {
+            data.product = formData.product[0]
+        }
+        if (formData.customer) {
+            data.customer = formData.customer[0]
+        }
+        data.copperWeight = {
+            code: optionsUnits.value.find(option => option.value === formData.copperWeight.code)?.text,
+            value: formData.copperWeight.value
+        }
+        data.deliveryTime = {
+            code: optionsUnits.value.find(option => option.value === formData.deliveryTime.code)?.text,
+            value: formData.deliveryTime.value
+        }
+        data.moq = {
+            code: optionsUnits.value.find(option => option.value === formData.moq.code)?.text,
+            value: formData.moq.value
+        }
+        data.packaging = {
+            code: optionsUnits.value.find(option => option.value === formData.packaging.code)?.text,
+            value: formData.packaging.value
+        }
+        data.reference = formData.reference
+        data.index = formData.index
+        data.incoterms = formData.incoterms
+        data.packagingKind = formData.packagingKind
+        data.proportion = formData.proportion
+        await api(currentApi, 'POST', data)
+        await loadData()
     }
     async function annuleUpdated() {
         console.log('annuleUpdated')
@@ -583,8 +619,35 @@
     async function updateItems(item) {
         console.log('updateItems', item)
     }
-    async function addItemPrice(formData) {
-        console.log('addItemPrice formData', formData)
+    async function addItemPrice(formData, index) {
+        const currentApi = apis.value[index].prices
+        const data = {}
+        if (formData.component) {
+            data.component = formData.component
+        }
+        if (formData.supplier) {
+            data.supplier = formData.supplier
+        }
+        if (formData.product) {
+            data.product = formData.product
+        }
+        if (formData.customer) {
+            data.customer = formData.customer
+        }
+        if (formData.formData) {
+            const priceCode = currenciesOptions.value.find(option => option.value === formData.formData.price.code)?currenciesOptions.value.find(option => option.value === formData.formData.price.code).text:'EUR'
+            data.price = {
+                code: priceCode,
+                value: formData.formData.price.value
+            }
+            data.quantity = {
+                code: optionsUnits.value.find(option => option.value === formData.formData.quantity.code)?.text,
+                value: formData.formData.quantity.value
+            }
+            data.ref = formData.formData.ref
+        }
+        await api(currentApi, 'POST', data)
+        await loadData()
     }
     async function updateItemsPrices(item) {
         console.log('updateItemsPrices', item)
@@ -611,8 +674,8 @@
                 :price-fields="fieldsPrices"
                 :items="resolvedItems1"
                 :title="title1"
-                @add-item="addItem"
-                @add-item-price="addItemPrice"
+                @add-item="data => addItem(data, 0)"
+                @add-item-price="data => addItemPrice(data, 0)"
                 @deleted="deleted"
                 @deleted-prices="deletedPrices"
                 @annule-update="annuleUpdated"
@@ -624,8 +687,8 @@
                 :price-fields="fieldsPrices"
                 :items="resolvedItems2"
                 :title="title2"
-                @add-item="addItem"
-                @add-item-price="addItemPrice"
+                @add-item="data => addItem(data, 1)"
+                @add-item-price="data => addItemPrice(data, 1)"
                 @deleted="deleted"
                 @deleted-prices="deletedPrices"
                 @annule-update="annuleUpdated"
