@@ -42,3 +42,9 @@
         </template>
     </tr>
 </template>
+
+<style scoped>
+    td {
+        font-size: xx-small !important;
+    }
+</style>

@@ -52,3 +52,9 @@
         @keyup.enter="keyup"
         @input="input"/>
 </template>
+
+<style scoped>
+    input {
+        font-size: xx-small !important;
+    }
+</style>

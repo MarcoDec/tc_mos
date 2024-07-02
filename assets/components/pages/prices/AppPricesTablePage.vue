@@ -270,7 +270,8 @@
             type: 'multiselect-fetch',
             api: '/api/components',
             filteredProperty: 'code',
-            width: '100'
+            width: '100',
+            max: 1
         }
     ]
     const supplierFields = [
@@ -280,7 +281,8 @@
             type: 'multiselect-fetch',
             api: '/api/suppliers',
             filteredProperty: 'name',
-            width: '150'
+            width: '150',
+            max: 1
         }
     ]
     const customerFields = [
@@ -290,7 +292,8 @@
             type: 'multiselect-fetch',
             api: '/api/customers',
             filteredProperty: 'name',
-            width: '150'
+            width: '150',
+            max: 1
         }
     ]
     const productFields = [
@@ -300,7 +303,8 @@
             type: 'multiselect-fetch',
             api: '/api/products',
             filteredProperty: 'name',
-            width: '150'
+            width: '150',
+            max: 1
         }
     ]
     // en fonction des données passées en props, on ajoute les champs correspondants dans les propriétés mainFields et pricesFields des tableaux 1 et 2
@@ -617,7 +621,43 @@
         console.log('annuleUpdated')
     }
     async function updateItems(item) {
-        console.log('updateItems', item)
+        const data = {}
+        const iri = item['@id']
+        if (item.component) {
+            data.component = item.component
+        }
+        if (item.supplier) {
+            data.supplier = item.supplier
+        }
+        if (item.product) {
+            data.product = item.product
+        }
+        if (item.customer) {
+            data.customer = item.customer
+        }
+        data.proportion = item.proportion
+        data.deliveryTime = {
+            code: optionsUnits.value.find(option => option.value === item.deliveryTime.code)?.text,
+            value: item.deliveryTime.value
+        }
+        data.moq = {
+            code: optionsUnits.value.find(option => option.value === item.moq.code)?.text,
+            value: item.moq.value
+        }
+        data.copperWeight = {
+            code: optionsUnits.value.find(option => option.value === item.copperWeight.code)?.text,
+            value: item.copperWeight.value
+        }
+        data.code = item.code
+        data.index = item.index
+        data.incoterms = item.incoterms
+        data.packaging = {
+            code: optionsUnits.value.find(option => option.value === item.packaging.code)?.text,
+            value: item.packaging.value
+        }
+        data.packagingKind = item.packagingKind
+        await api(iri, 'PATCH', data)
+        await loadData()
     }
     async function addItemPrice(formData, index) {
         const currentApi = apis.value[index].prices

@@ -48,7 +48,7 @@
         :model-value="localModelValue"
         :options="field.options && field.options.options "
         :value-prop="field.options && field.options.valueProp "
-        class="text-dark"
+        class="text-dark font-xsmall"
         label="text"
         :searchable="true"
         @search-change="updateSearch"
