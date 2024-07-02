@@ -37,7 +37,7 @@
 
 <template>
     <tbody>
-        <AppPricesTableItems :main-fields="mainFields" :price-fields="priceFields" :form="form" :items="items" @deleted="deleted" @deleted-prices="deletedPrices" @add-item-price="addItemPrice" @annule-update="annuleUpdated" @update-items="updateItems" @update-items-prices="updateItemsPrices"/>
         <AppPricesTableAddItems :fields="mainFields" :form="form" @add-item="addItem"/>
+        <AppPricesTableItems :main-fields="mainFields" :price-fields="priceFields" :form="form" :items="items" @deleted="deleted" @deleted-prices="deletedPrices" @add-item-price="addItemPrice" @annule-update="annuleUpdated" @update-items="updateItems" @update-items-prices="updateItemsPrices"/>
     </tbody>
 </template>
