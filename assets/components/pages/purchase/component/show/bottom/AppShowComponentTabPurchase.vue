@@ -2,6 +2,7 @@
     import AppCardShow from '../../../../../AppCardShow.vue'
     import {useComponentListStore} from '../../../../../../stores/purchase/component/components'
     import {useRoute} from 'vue-router'
+    import AppPricesTablePage from "../../../../prices/AppPricesTablePage.vue";
 
     const route = useRoute()
     const idComponent = Number(route.params.id_component)
@@ -30,4 +31,6 @@
         :fields="purchaseFields"
         :component-attribute="useFetchComponentStore.component"
         @update="updateAchats(useFetchComponentStore.component)"/>
+    <AppPricesTablePage
+        :component="useFetchComponentStore.component['@id']"/>
 </template>

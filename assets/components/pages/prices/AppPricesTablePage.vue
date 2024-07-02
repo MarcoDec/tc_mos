@@ -4,10 +4,11 @@
     import {computed, ref, watchEffect} from 'vue'
     import AppSuspense from '../../../components/AppSuspense.vue'
     import useOptions from '../../../stores/option/options'
-    import {useComponentSuppliersStore} from '../../../stores/prices/componentSuppliers'
-    import {useComponentSuppliersPricesStore} from '../../../stores/prices/componentSuppliersPrices'
     import useFetchCriteria from "../../../stores/fetch-criteria/fetchCriteria"
+    import useUser from "../../../stores/security"
 
+    const user = useUser()
+    console.log('user company', user.company)
     const props = defineProps({
         supplier: {
             type: String,
