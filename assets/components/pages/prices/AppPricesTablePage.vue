@@ -690,7 +690,25 @@
         await loadData()
     }
     async function updateItemsPrices(item) {
-        console.log('updateItemsPrices', item)
+        const data = {}
+        const iri = item['@id']
+        if (item.component) {
+            data.component = item.component
+        }
+        if (item.product) {
+            data.product = item.product
+        }
+        data.price = {
+            code: currenciesOptions.value.find(option => option.value === item.price.code)?.text,
+            value: item.price.value
+        }
+        data.quantity = {
+            code: optionsUnits.value.find(option => option.value === item.quantity.code)?.text,
+            value: item.quantity.value
+        }
+        data.ref = item.ref
+        await api(iri, 'PATCH', data)
+        await loadData()
     }
     async function deleted(id){
         if (window.confirm('Voulez-vous vraiment supprimer cet élément ?') === false) return
