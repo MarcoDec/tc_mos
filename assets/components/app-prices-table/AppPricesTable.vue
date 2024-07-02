@@ -11,7 +11,6 @@
         items: {required: true, type: Object},
         title: {default: '', required: false, type: String}
     })
-    console.log('AppPricesTable.vue', props)
 
     const emit = defineEmits(['addItem', 'addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updateItemsPrices'])
 

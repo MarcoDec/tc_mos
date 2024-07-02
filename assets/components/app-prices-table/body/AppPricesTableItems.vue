@@ -8,7 +8,6 @@
         priceFields: {required: true, type: Array},
         form: {required: true, type: String}
     })
-    console.log('AppPricesTableItems.vue', props)
     const emit = defineEmits(['addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updateItemsPrices'])
     async function updateItems(item) {
         emit('updateItems', item)

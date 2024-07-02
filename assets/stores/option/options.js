@@ -3,7 +3,6 @@ import {defineStore} from 'pinia'
 import useOption from './option'
 
 function sort(a, b) {
-    // console.log(a.text, b.text)
     if (typeof a.text === 'undefined' || typeof b.text === 'undefined') return 0
     return a.text.localeCompare(b.text)
 }
@@ -56,7 +55,6 @@ export default function useOptions(base, valueProp = '@id') {
 
             // fonctions utiles pour récupération des labels des options
             getLabelFromCode(value) {
-                console.log('getLabel', value)
                 return this.options.find(option => option.code === value)?.text ?? value
             },
             getLabelFromValue(value) {

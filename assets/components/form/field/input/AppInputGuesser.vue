@@ -19,7 +19,6 @@
         id: {required: true, type: String},
         modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
     })
-    console.log('AppInputGuesser.vue', props)
     const kind = computed(() => {
         switch (props.field.type) {
             case 'boolean':

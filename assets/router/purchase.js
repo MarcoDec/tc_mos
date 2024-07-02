@@ -97,12 +97,6 @@ export default [
         name: 'component',
         path: '/component/:id_component'
     },
-    // {
-    //     component: AppShowGui,
-    //     meta: {container: false, title: 'Equipement — T-Concept GPAO'},
-    //     name: 'equipment',
-    //     path: '/equipment'
-    // },
     {
         component: AppTablePageSuspense,
         meta: {title: 'Paramètres production— T-Concept GPAO'},

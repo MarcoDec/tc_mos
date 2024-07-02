@@ -12,7 +12,6 @@
         priceFields: {required: true, type: Array},
         form: {required: true, type: String}
     })
-    console.log('AppPricesTableItem.vue', props)
     const emit = defineEmits(['addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'update', 'updateItems', 'updatePrices', 'updateItemsPrices'])
     const updated = ref(false)
     const priceModified = ref(Array(props.item.prices.length).fill(false))

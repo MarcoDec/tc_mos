@@ -74,29 +74,24 @@
     //region chargement des inputs
     if (props.component) {
         component.value = await api(props.component, 'GET')
-        // console.log('Chargement du composant', component.value)
         mainTitle.value += ' pour ' + component.value.code
     }
     if (props.supplier) {
         supplier.value = await api(props.supplier, 'GET')
-        // console.log('Chargement du fournisseur', supplier.value)
         mainTitle.value += ' pour ' + supplier.value.name
     }
     if (props.product) {
         product.value = await api(props.product, 'GET')
-        // console.log('Chargement du produit', product.value)
         mainTitle.value += ' pour ' + product.value.name
     }
     if (props.customer) {
         customer.value = await api(props.customer, 'GET')
-        // console.log('Chargement du client', customer.value)
         mainTitle.value += ' pour ' + customer.value.name
     }
-    // console.log('props', props)
-    // console.log('component', component.value)
-    // console.log('supplier', supplier.value)
-    // console.log('product', product.value)
-    // console.log('customer', customer.value)
+    console.log('component', component.value)
+    console.log('supplier', supplier.value)
+    console.log('product', product.value)
+    console.log('customer', customer.value)
     //endregion
     //region controle des inputs et génération des erreurs correspondantes
     if (supplier.value !== null && customer.value !== null) {
@@ -453,9 +448,6 @@
         }
 
     }
-    console.log('title1', title1.value)
-    console.log('title2', title2.value)
-    console.log('apis', apis.value)
     // Chargement des données
 
     function transformPricesAsAnArray(item) {
@@ -471,8 +463,6 @@
         mainItems2.value = response2['hydra:member'].map(item => transformPricesAsAnArray(item))
     }
     await loadData()
-    console.log('mainItems1', mainItems1.value)
-    console.log('mainItems2', mainItems2.value)
 
     const fieldsPrices = [
         {
@@ -529,7 +519,6 @@
 
     async function transformItems(items) {
         return await Promise.all(items.map(async item => {
-            console.log('item', item)
             const foundUnitDelai = optionsUnits.value.find(unit => unit.text === item.deliveryTime.code)
             const foundUnitMoq = optionsUnits.value.find(unit => unit.text === item.moq.code)
             const foundUnitPackaging = optionsUnits.value.find(unit => unit.text === item.packaging.code)
@@ -539,7 +528,6 @@
                 return api(price['@id'], 'GET')
             })
             const values = await Promise.all(promises)
-            console.log('values', values)
             // On attend le retour de toutes les promesses
             const transformedPrices = values.map(price => {
                     const foundUnitQuantity = optionsUnits.value.find(unit => unit.text === price.quantity.code)
@@ -578,20 +566,21 @@
         resolvedItems2.value = await transformItems(mainItems2.value)
     })
     async function addItem(formData, index) {
+        console.log('addItem', formData, index)
         const currentApi = apis.value[index].main
-        console.log('addItem formData', formData, currentApi)
+        console.log('currentApi', currentApi)
         const data = {}
         if (formData.component) {
-            data.component = formData.component[0]
+            data.component = formData.component
         }
         if (formData.supplier) {
-            data.supplier = formData.supplier[0]
+            data.supplier = formData.supplier
         }
         if (formData.product) {
-            data.product = formData.product[0]
+            data.product = formData.product
         }
         if (formData.customer) {
-            data.customer = formData.customer[0]
+            data.customer = formData.customer
         }
         data.copperWeight = {
             code: optionsUnits.value.find(option => option.value === formData.copperWeight.code)?.text,
@@ -724,7 +713,6 @@
 
 <template>
     <AppSuspense>
-        <h1>{{ mainTitle}}</h1>
         <div
             v-if="!inputError">
             <AppRowsTablePage

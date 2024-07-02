@@ -8,7 +8,6 @@
         items: {required: true, type: Object},
         title: {required: true, type: String}
     })
-    console.log('AppPricesTablePage.vue', props)
     const emit = defineEmits(['addItem', 'addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updateItemsPrices'])
 
     async function annuleUpdated() {

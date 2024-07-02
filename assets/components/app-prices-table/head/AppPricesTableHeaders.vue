@@ -16,7 +16,6 @@
         } while (current.length > 0)
         return ranks
     })
-    console.log('rows', rows.value)
 </script>
 
 <template>

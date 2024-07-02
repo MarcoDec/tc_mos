@@ -9,7 +9,6 @@
         form: {required: true, type: String},
         items: {required: true, type: Object}
     })
-    console.log('AppPricesTableBody.vue', props)
     const emit = defineEmits(['addItem', 'addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updateItemsPrices'])
     async function updateItems(item) {
         emit('updateItems', item)

@@ -12,7 +12,6 @@ const props = defineProps({
     })
     const multiSelectResults = ref([])
     if (props.field.type === 'multiselect-fetch') {
-        console.log('props.item[props.field.name] field', props.field)
         if (typeof props.item[props.field.name] === 'object') {
             multiSelectResults.value = await api(props.item[props.field.name]['@id'], 'GET')
         } else {
