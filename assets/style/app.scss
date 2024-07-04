@@ -132,14 +132,40 @@ $dropdown-success: #57ec57 !default;
   width: 100%;
   max-width: 100% !important;
 }
-
+.parent-buttons-div {
+  position: relative;
+}
 
 .full-visible-width {
   min-width:calc(100vw - 50px);
   max-width:calc(100vw - 50px);
   width:calc(100vw - 50px);
   padding: 1px;
-  display: inline-block;
+  display: block;
+  height: 100%;
+  //display: block;
+  //border: 3pc solid red;
+}
+.full-screen-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 10px;
+    //position: relative;
+    //top: 10px;
+    //left: 50px;
+    z-index: 100000 !important; /* Assurez-vous que c'est au-dessus des autres éléments */
+}
+.full-screen-button:hover {
+  cursor: pointer;
+  //On agrandit légèrement la taille de l'élément au survol
+    transform: scale(1.5);
+    transition: transform 0.3s;
+  //On change la couleur de fond au survol
+    color: #6c757d;
 }
 .full-screen {
   position: fixed;

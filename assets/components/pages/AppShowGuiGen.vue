@@ -205,10 +205,10 @@
         overflow: auto;
     }
     .gui-resizer {
-        background-color: black;
+        background-color: green;
         cursor: row-resize;
-        margin: 0;
-        padding: 1px;
+        margin: 2px;
+        padding: 5px;
         display: block;
     }
     #gui-bottom {
