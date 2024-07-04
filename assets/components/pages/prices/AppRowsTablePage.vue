@@ -3,6 +3,7 @@
     import AppSuspense from '../../AppSuspense.vue'
 
     const props = defineProps({
+        defaultAddFormValues: {required: true, type: Object},
         mainFields: {required: true, type: Array},
         priceFields: {required: true, type: Array},
         items: {required: true, type: Object},
@@ -38,6 +39,7 @@
     <AppSuspense>
         <AppPricesTable
             id="prices"
+            :default-add-form-values="defaultAddFormValues"
             :main-fields="mainFields"
             :price-fields="priceFields"
             :items="items"

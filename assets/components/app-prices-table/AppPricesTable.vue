@@ -4,6 +4,7 @@
     import AppPricesTableBody from './body/AppPricesTableBody.vue'
 
     const props = defineProps({
+        defaultAddFormValues: {required: true, type: Object},
         mainFields: {required: true, type: Array},
         priceFields: {required: true, type: Array},
         form: {required: true, type: String},
@@ -48,6 +49,7 @@
     <table :id="id" class="table table-bordered table-hover table-striped">
         <AppPricesTableHeaders :main-fields="mainFields" :title="title"/>
         <AppPricesTableBody
+            :default-add-form-values="defaultAddFormValues"
             :main-fields="mainFields"
             :price-fields="priceFields"
             :form="form"

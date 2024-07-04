@@ -36,7 +36,34 @@
             default: 'Tableau des prix des composants'
         }
     })
-
+    const defaultAddFormValues = {
+        component: null,
+        supplier: null,
+        product: null,
+        customer: null,
+        copperWeight: {
+            code: 'g',
+            value: null
+        },
+        deliveryTime: {
+            code: 'j',
+            value: null
+        },
+        moq: {
+            code: null,
+            value: null
+        },
+        packaging: {
+            code: null,
+            value: null
+        },
+        reference: null,
+        index: null,
+        incoterms: null,
+        packagingKind: null,
+        proportion: 100,
+        kind: 'Série'
+    }
     //region fetch options
     const storeUnits = useOptions('units')
     const optionsUnits = computed(() => storeUnits.getOptionsMap())
@@ -76,23 +103,23 @@
     if (props.component) {
         component.value = await api(props.component, 'GET')
         mainTitle.value += ' pour ' + component.value.code
+        defaultAddFormValues.component = component.value['@id']
     }
     if (props.supplier) {
         supplier.value = await api(props.supplier, 'GET')
         mainTitle.value += ' pour ' + supplier.value.name
+        defaultAddFormValues.supplier = supplier.value['@id']
     }
     if (props.product) {
         product.value = await api(props.product, 'GET')
         mainTitle.value += ' pour ' + product.value.name
+        defaultAddFormValues.product = product.value['@id']
     }
     if (props.customer) {
         customer.value = await api(props.customer, 'GET')
         mainTitle.value += ' pour ' + customer.value.name
+        defaultAddFormValues.customer = customer.value['@id']
     }
-    console.log('component', component.value)
-    console.log('supplier', supplier.value)
-    console.log('product', product.value)
-    console.log('customer', customer.value)
     //endregion
     //region controle des inputs et génération des erreurs correspondantes
     if (supplier.value !== null && customer.value !== null) {
@@ -724,6 +751,7 @@
         await api(id, 'DELETE')
         await loadData()
     }
+    console.log('defaultAddFormValues', defaultAddFormValues)
 </script>
 
 <template>
@@ -731,6 +759,7 @@
         <div
             v-if="!inputError">
             <AppRowsTablePage
+                :default-add-form-values="defaultAddFormValues"
                 :main-fields="fieldsMain1"
                 :price-fields="fieldsPrices"
                 :items="resolvedItems1"
@@ -744,6 +773,7 @@
                 @update-items-prices="updateItemsPrices"/>
             <AppRowsTablePage
                 v-if="showTable2"
+                :default-add-form-values="defaultAddFormValues"
                 :main-fields="fieldsMain2"
                 :price-fields="fieldsPrices"
                 :items="resolvedItems2"

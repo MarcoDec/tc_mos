@@ -4,11 +4,13 @@
     import AppPricesTableItems from './AppPricesTableItems.vue'
 
     const props = defineProps({
+        defaultAddFormValues: {required: true, type: Object},
         mainFields: {required: true, type: Array},
         priceFields: {required: true, type: Array},
         form: {required: true, type: String},
         items: {required: true, type: Object}
     })
+    console.log('defaultAddFormValues', props.defaultAddFormValues)
     const emit = defineEmits(['addItem', 'addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updateItemsPrices'])
 
     async function updateItems(item) {
@@ -43,7 +45,7 @@
 
 <template>
     <tbody>
-    <AppPricesTableAddItems :fields="mainFields" :form="form" @add-item="addItem"/>
+    <AppPricesTableAddItems :default-add-form-values="defaultAddFormValues" :fields="mainFields" :form="form" @add-item="addItem"/>
     <AppPricesTableItems
         :main-fields="mainFields"
         :price-fields="priceFields"

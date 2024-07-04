@@ -1,11 +1,12 @@
 <script setup>
     import {defineProps, defineEmits, reactive} from 'vue'
 
-    defineProps({
+    const props = defineProps({
+        defaultAddFormValues: {required: true, type: Object},
         fields: {required: true, type: Array},
         form: {required: true, type: String}
     })
-
+    console.log('defaultAddFormValues', props.defaultAddFormValues)
     const emit = defineEmits(['addItem'])
 
     const formData = reactive({})
@@ -35,6 +36,7 @@
                     :id="field.name"
                     :form="form"
                     :field="field"
+                    :model-value="defaultAddFormValues[field.name]"
                     no-label
                     @update:model-value="onUpdateModelValue($event, field.name)"/>
             </td>
