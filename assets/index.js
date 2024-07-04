@@ -77,7 +77,7 @@ import {createApp} from 'vue'
 import pinia from './stores'
 import router from './router'
 import useUser from './stores/security'
-import { PDFPlugin } from 'vue3-pdfmake';
+import {PDFPlugin} from 'vue3-pdfmake'
 
 const app = createApp(App)
     .component('AppBtn', AppBtn)
