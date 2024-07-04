@@ -107,6 +107,19 @@
     // Liste des champs communs à toutes les grilles de prix (partie principale)
     const commonFields = [
         {
+            label: 'Type de Grille',
+            name: 'kind',
+            type: 'select',
+            width: '100',
+            options: {
+                label: value => value,
+                options: [
+                    {text: 'Prototype', value: 'Prototype'},
+                    {text: 'Série', value: 'Série'}
+                ]
+            }
+        },
+        {
             label: 'Proportion',
             name: 'proportion',
             type: 'number',
@@ -567,9 +580,7 @@
         resolvedItems2.value = await transformItems(mainItems2.value)
     })
     async function addItem(formData, index) {
-        console.log('addItem', formData, index)
         const currentApi = apis.value[index].main
-        console.log('currentApi', currentApi)
         const data = {}
         if (formData.component) {
             data.component = formData.component
@@ -604,6 +615,8 @@
         data.incoterms = formData.incoterms
         data.packagingKind = formData.packagingKind
         data.proportion = formData.proportion
+        data.kind = formData.kind
+        data.administeredBy = user.company
         await api(currentApi, 'POST', data)
         await loadData()
     }
@@ -701,6 +714,7 @@
         await loadData()
     }
     async function deleted(id){
+        console.log('deleted', id)
         if (window.confirm('Voulez-vous vraiment supprimer cet élément ?') === false) return
         await api(id, 'DELETE')
         await loadData()

@@ -17,22 +17,28 @@
     function annuleUpdated() {
         emit('annuleUpdate')
     }
+
     async function updateItems(item) {
         emit('updateItems', item)
         emit('annuleUpdate')
     }
+
     async function updateItemsPrices(item) {
         emit('updateItemsPrices', item)
     }
-    function deleted(id){
+
+    function deleted(id) {
         emit('deleted', id)
     }
-    function deletedPrices(id){
+
+    function deletedPrices(id) {
         emit('deletedPrices', id)
     }
+
     function addItem(formData) {
         emit('addItem', formData)
     }
+
     function addItemPrice(formData) {
         emit('addItemPrice', formData)
     }
@@ -41,7 +47,18 @@
 <template>
     <table :id="id" class="table table-bordered table-hover table-striped">
         <AppPricesTableHeaders :main-fields="mainFields" :title="title"/>
-        <AppPricesTableBody :main-fields="mainFields" :price-fields="priceFields" :form="form" :items="items" @deleted="deleted" @deleted-prices="deletedPrices" @annule-update="annuleUpdated" @update-items="updateItems" @update-items-prices="updateItemsPrices" @add-item="addItem" @add-item-price="addItemPrice"/>
+        <AppPricesTableBody
+            :main-fields="mainFields"
+            :price-fields="priceFields"
+            :form="form"
+            :items="items"
+            @deleted="deleted"
+            @deleted-prices="deletedPrices"
+            @annule-update="annuleUpdated"
+            @update-items="updateItems"
+            @update-items-prices="updateItemsPrices"
+            @add-item="addItem"
+            @add-item-price="addItemPrice"/>
     </table>
     <slot name="btn"/>
 </template>

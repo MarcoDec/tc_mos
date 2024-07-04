@@ -10,25 +10,32 @@
         items: {required: true, type: Object}
     })
     const emit = defineEmits(['addItem', 'addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updateItemsPrices'])
+
     async function updateItems(item) {
         emit('updateItems', item)
         emit('annuleUpdate')
     }
+
     function annuleUpdated() {
         emit('annuleUpdate')
     }
+
     async function updateItemsPrices(item) {
         emit('updateItemsPrices', item)
     }
-    function deleted(id){
+
+    function deleted(id) {
         emit('deleted', id)
     }
-    function deletedPrices(id){
+
+    function deletedPrices(id) {
         emit('deletedPrices', id)
     }
+
     function addItem(formData) {
         emit('addItem', formData)
     }
+
     function addItemPrice(formData) {
         emit('addItemPrice', formData)
     }
@@ -36,7 +43,17 @@
 
 <template>
     <tbody>
-        <AppPricesTableAddItems :fields="mainFields" :form="form" @add-item="addItem"/>
-        <AppPricesTableItems :main-fields="mainFields" :price-fields="priceFields" :form="form" :items="items" @deleted="deleted" @deleted-prices="deletedPrices" @add-item-price="addItemPrice" @annule-update="annuleUpdated" @update-items="updateItems" @update-items-prices="updateItemsPrices"/>
+    <AppPricesTableAddItems :fields="mainFields" :form="form" @add-item="addItem"/>
+    <AppPricesTableItems
+        :main-fields="mainFields"
+        :price-fields="priceFields"
+        :form="form"
+        :items="items"
+        @deleted="deleted"
+        @deleted-prices="deletedPrices"
+        @add-item-price="addItemPrice"
+        @annule-update="annuleUpdated"
+        @update-items="updateItems"
+        @update-items-prices="updateItemsPrices"/>
     </tbody>
 </template>

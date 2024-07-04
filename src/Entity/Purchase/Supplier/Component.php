@@ -76,13 +76,13 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
 ]
 class Component extends Entity
 {
-    /** @var Collection<int, Company> */
+    /** @var Company */
     #[
         ApiProperty(description: 'Compagnies gérantes la grille de prix', readableLink: false, example: ['/api/companies/1']),
         ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'components'),
         Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
-    private Collection $administeredBy;
+    private Company $administeredBy;
     #[
         ApiProperty(description: 'Référence', example: 'DH544G'),
         ORM\Column(nullable: true),
@@ -126,12 +126,11 @@ class Component extends Entity
     private string $index = '0';
     #[
         ApiProperty(description: 'Type de grille produit', example: KindType::TYPE_PROTOTYPE, openapiContext: ['enum' => KindType::TYPES]),
-        Assert\Choice(choices: KindType::TYPES),
         ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_SERIES]),
         Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
 
-    private KindType $kind;
+    private string $kind;
 
     #[
         ApiProperty(description: 'MOQ (Minimal Order Quantity)', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
@@ -345,22 +344,22 @@ class Component extends Entity
         return $this;
     }
 
-    public function getAdministeredBy(): DoctrineCollection
+    public function getAdministeredBy(): ?Company
     {
         return $this->administeredBy;
     }
 
-    public function setAdministeredBy(DoctrineCollection $administeredBy): void
+    public function setAdministeredBy(?Company $administeredBy): void
     {
         $this->administeredBy = $administeredBy;
     }
 
-    public function getKind(): KindType
+    public function getKind(): string
     {
         return $this->kind;
     }
 
-    public function setKind(KindType $kind): void
+    public function setKind(string $kind): void
     {
         $this->kind = $kind;
     }
