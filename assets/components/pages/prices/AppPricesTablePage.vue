@@ -8,7 +8,7 @@
     import useUser from "../../../stores/security"
 
     const user = useUser()
-    console.log('user company', user.company)
+    // console.log('user company', user.company)
     const props = defineProps({
         supplier: {
             type: String,
@@ -306,8 +306,9 @@
             type: 'multiselect-fetch',
             api: '/api/components',
             filteredProperty: 'code',
-            width: '100',
-            max: 1
+            width: '200',
+            max: 1,
+            readonly: !!props.component
         }
     ]
     const supplierFields = [
@@ -623,25 +624,26 @@
         }
         data.copperWeight = {
             code: optionsUnits.value.find(option => option.value === formData.copperWeight.code)?.text,
-            value: formData.copperWeight.value
+            value: formData.copperWeight.value??0
         }
         data.deliveryTime = {
             code: optionsUnits.value.find(option => option.value === formData.deliveryTime.code)?.text,
-            value: formData.deliveryTime.value
+            value: formData.deliveryTime.value??0
         }
         data.moq = {
             code: optionsUnits.value.find(option => option.value === formData.moq.code)?.text,
-            value: formData.moq.value
+            value: formData.moq.value??0
         }
         data.packaging = {
             code: optionsUnits.value.find(option => option.value === formData.packaging.code)?.text,
-            value: formData.packaging.value
+            value: formData.packaging.value??0
         }
         data.reference = formData.reference
         data.index = formData.index
         data.incoterms = formData.incoterms
         data.packagingKind = formData.packagingKind
-        data.proportion = formData.proportion
+        data.proportion = formData.proportion??0
+        // console.log('formData', formData)
         data.kind = formData.kind
         data.administeredBy = user.company
         await api(currentApi, 'POST', data)
@@ -741,7 +743,7 @@
         await loadData()
     }
     async function deleted(id){
-        console.log('deleted', id)
+        // console.log('deleted', id)
         if (window.confirm('Voulez-vous vraiment supprimer cet élément ?') === false) return
         await api(id, 'DELETE')
         await loadData()
@@ -751,7 +753,7 @@
         await api(id, 'DELETE')
         await loadData()
     }
-    console.log('defaultAddFormValues', defaultAddFormValues)
+    // console.log('defaultAddFormValues', defaultAddFormValues)
 </script>
 
 <template>

@@ -9,6 +9,7 @@ export const useComponentListStore = defineStore('component', {
             this.isLoaded = false
             this.isLoading = true
             this.component = await api(`/api/components/${id}`, 'GET')
+            console.log('component', this.component)
             this.isLoading = false
             this.isLoaded = true
         },

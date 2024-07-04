@@ -10,15 +10,22 @@
     const emit = defineEmits(['addItem'])
 
     const formData = reactive({})
+    //On initialise formData avec les valeurs contenues dans defaultAddFormValues
+    for (const field in props.defaultAddFormValues) {
+        formData[field] = props.defaultAddFormValues[field]
+    }
 
     function onUpdateModelValue(event, fieldName) {
+        console.log('onUpdateModelValue', event, fieldName)
         if (typeof event === 'object' && event !== null) {
             formData[fieldName] = {...formData[fieldName], ...event}
         } else {
             formData[fieldName] = event
         }
+        console.log('formData', formData)
     }
     function addItem() {
+        console.log('addItem', formData)
         emit('addItem', formData)
     }
 </script>
@@ -34,6 +41,7 @@
             <td v-if="field.type !== null && field.name !== 'prices' ">
                 <AppInputGuesser
                     :id="field.name"
+                    :disabled="field.readonly"
                     :form="form"
                     :field="field"
                     :model-value="defaultAddFormValues[field.name]"

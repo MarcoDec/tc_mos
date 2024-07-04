@@ -1,7 +1,7 @@
 <script setup>
     import {defineProps} from 'vue'
-    import AppPricesTableAddItems from './AppPricesTableAddItems.vue'
-    import AppPricesTableItems from './AppPricesTableItems.vue'
+    import AppPricesTableAddItems from './AddForms/AppPricesTableAddItems.vue'
+    import AppPricesTableItem from './ShowForms/AppPricesTableItem.vue'
 
     const props = defineProps({
         defaultAddFormValues: {required: true, type: Object},
@@ -46,15 +46,17 @@
 <template>
     <tbody>
     <AppPricesTableAddItems :default-add-form-values="defaultAddFormValues" :fields="mainFields" :form="form" @add-item="addItem"/>
-    <AppPricesTableItems
+    <AppPricesTableItem
+        v-for="item in items" :key="item"
+        :item="item"
+        :items="items"
+        :form="form"
         :main-fields="mainFields"
         :price-fields="priceFields"
-        :form="form"
-        :items="items"
+        @add-item-price="addItemPrice"
         @deleted="deleted"
         @deleted-prices="deletedPrices"
-        @add-item-price="addItemPrice"
-        @annule-update="annuleUpdated"
+        @annule--update="annuleUpdated"
         @update-items="updateItems"
         @update-items-prices="updateItemsPrices"/>
     </tbody>

@@ -1,7 +1,7 @@
 <script setup>
     import {computed, defineProps, ref} from 'vue'
     import {isObject} from '@vueuse/core'
-    import AppSwitch from '../../form-cardable/fieldCardable/input/AppSwitch.vue'
+    import AppSwitch from '../../../form-cardable/fieldCardable/input/AppSwitch.vue'
 
     const props = defineProps({
         item: {required: true, type: Object},
