@@ -1,5 +1,6 @@
 <script setup>
     import api from '../../../api'
+    import AppPricesTable from '../../app-prices-table/AppPricesTable.vue'
     import AppRowsTablePage from './AppRowsTablePage.vue'
     import {computed, ref, watchEffect} from 'vue'
     import AppSuspense from '../../../components/AppSuspense.vue'
@@ -760,28 +761,31 @@
     <AppSuspense>
         <div
             v-if="!inputError">
-            <AppRowsTablePage
+            <AppPricesTable
+                id="prices"
                 :default-add-form-values="defaultAddFormValues"
                 :main-fields="fieldsMain1"
                 :price-fields="fieldsPrices"
                 :items="resolvedItems1"
-                :title="title1"
-                @add-item="data => addItem(data, 0)"
-                @add-item-price="data => addItemPrice(data, 0)"
+                :title="title"
+                form="formComponentSuppliersPricesTable"
+                @add-item="addItem"
+                @add-item-price="addItemPrice"
                 @deleted="deleted"
                 @deleted-prices="deletedPrices"
                 @annule-update="annuleUpdated"
                 @update-items="updateItems"
                 @update-items-prices="updateItemsPrices"/>
-            <AppRowsTablePage
-                v-if="showTable2"
+            <AppPricesTable
+                id="prices"
                 :default-add-form-values="defaultAddFormValues"
                 :main-fields="fieldsMain2"
                 :price-fields="fieldsPrices"
                 :items="resolvedItems2"
-                :title="title2"
-                @add-item="data => addItem(data, 1)"
-                @add-item-price="data => addItemPrice(data, 1)"
+                :title="title"
+                form="formComponentSuppliersPricesTable"
+                @add-item="addItem"
+                @add-item-price="addItemPrice"
                 @deleted="deleted"
                 @deleted-prices="deletedPrices"
                 @annule-update="annuleUpdated"

@@ -26,6 +26,7 @@
         console.log('deleted', item['@id'])
         emit('deleted', item['@id'])
     }
+
     async function updateItems(item) {
         emit('updateItems', item)
         emit('annuleUpdate')
@@ -44,31 +45,34 @@
 
 <template>
     <template v-if="updated === false">
-        <td>
-            <button class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.id" @click="update">
-                <Fa icon="pencil"/>
-            </button>
-            <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted(item)">
-                <Fa icon="trash"/>
-            </button>
-        </td>
-        <template v-for="field in mainFields" :key="field.name">
-            <AppPricesTableItemsComponentSuppliers
-                :field="field"
-                :item="item"
-                :rowspan="range(nbTr).length + 1"
-                :index="index"/>
-        </template>
+        <td>VIF 1</td>
+<!--        <td>-->
+<!--            <button class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.id" @click="update">-->
+<!--                <Fa icon="pencil"/>-->
+<!--            </button>-->
+<!--            <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted(item)">-->
+<!--                <Fa icon="trash"/>-->
+<!--            </button>-->
+<!--        </td>-->
+<!--        <template v-for="field in mainFields" :key="field.name">-->
+<!--            <AppPricesTableItemsComponentSuppliers-->
+<!--                :field="field"-->
+<!--                :item="item"-->
+<!--                :rowspan="range(nbTr).length + 1"-->
+<!--                :index="index"/>-->
+<!--        </template>-->
     </template>
     <template v-else>
-        <AppPricesTableUpdateItem
-            v-if="(index === 0)"
-            :fields="mainFields"
-            :form="form"
-            :item="item"
-            :rowspan="range(nbTr).length + 1"
-            :index="index"
-            @annule-update="annuleUpdated"
-            @update-items="updateItems"/>
+        <td>VELSE 1</td>
+<!--        <template v-for="(field, index0) in mainFields" :key="field.name">-->
+<!--            <AppPricesTableUpdateItem-->
+<!--                :fields="mainFields"-->
+<!--                :form="form"-->
+<!--                :item="item"-->
+<!--                :rowspan="range(nbTr).length + 1"-->
+<!--                :index="index0"-->
+<!--                @annule-update="annuleUpdated"-->
+<!--                @update-items="updateItems"/>-->
+<!--        </template>-->
     </template>
 </template>

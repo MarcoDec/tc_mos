@@ -12,7 +12,8 @@
         item: {required: true, type: Object},
         mainFields: {required: true, type: Array},
         priceFields: {required: true, type: Array},
-        form: {required: true, type: String}
+        form: {required: true, type: String},
+        index: {required: true, type: Number}
     })
     const emit = defineEmits(['addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'update', 'updateItems', 'updatePrices', 'updateItemsPrices'])
     const updated = ref(false)
@@ -69,8 +70,8 @@
 </script>
 
 <template>
-    <template>
-        <tr v-for="(i, index) in range(nbTr)" :key="index">
+        <tr>World</tr>
+        <tr>
             <AppPricesTableItemLeft
                 :index="index"
                 :form="form"
@@ -86,6 +87,4 @@
                 :main-fields="mainFields"
                 :item="item"/>
         </tr>
-        <!--        <AppPricesTableAddItems :fields="priceFields" :form="form" @add-item="addItemPrice"/>-->
-    </template>
 </template>

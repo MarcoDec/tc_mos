@@ -46,9 +46,13 @@
 <template>
     <tbody>
     <AppPricesTableAddItems :default-add-form-values="defaultAddFormValues" :fields="mainFields" :form="form" @add-item="addItem"/>
+    <tr v-for="item in items" :key="item">
+        HELLO
+    </tr>
     <AppPricesTableItem
-        v-for="item in items" :key="item"
+        v-for="(item, index) in items" :key="item"
         :item="item"
+        :index="index"
         :items="items"
         :form="form"
         :main-fields="mainFields"
