@@ -224,3 +224,13 @@ $dropdown-success: #57ec57 !default;
   transform: scale(1.5);
   transition: transform 0.3s;
 }
+
+.input-group > .form-control {
+  min-width: 50px;
+}
+.form-select-sm {
+  font-size: x-small!important;
+}
+.multiselect-tag {
+  font-size: x-small!important;
+}

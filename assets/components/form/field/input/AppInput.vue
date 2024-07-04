@@ -56,5 +56,6 @@
 <style scoped>
     input {
         font-size: xx-small !important;
+        min-width: 50px;
     }
 </style>
