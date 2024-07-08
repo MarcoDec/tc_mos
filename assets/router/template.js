@@ -10,5 +10,12 @@ export default [
         meta: {requiresAuth: true},
         name: 'pdf-customer-order-confirmation',
         path: '/pdf-customer-order-confirmation'
+    },
+    {
+        component: () => import('../components/pages/template/AppPdfDeliveryNote.vue'),
+        meta: {requiresAuth: true},
+        name: 'pdf-delivery-note',
+        path: '/pdf-delivery-note'
     }
+
 ]
