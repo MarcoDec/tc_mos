@@ -8,25 +8,47 @@
         priceFields: {required: true, type: Array}
     })
     const emit = defineEmits(['deletedPrices'])
+    const key = ref(0)
+    const localItem = ref({})
+    localItem.value = Object.assign({}, props.item)
     // console.log('AppPricesTablePriceItemShow.vue item', props.item)
     const onGoingUpdate = ref(false)
     function deletedPrice(iri) {
         emit('deletedPrices', iri)
+    }
+    function onPriceToUpdate(item) {
+        onGoingUpdate.value = true
+    }
+    function onCancelUpdate() {
+        localItem.value = Object.assign({}, props.item)
+        key.value++
+        onGoingUpdate.value = false
+    }
+    function onUpdateItemPrice(item) {
+        console.log('onUpdateItemPrice', item)
+        localItem.value = Object.assign({}, item)
+        key.value++
+        onGoingUpdate.value = false
     }
 </script>
 
 <template>
     <AppPriceItemShow
         v-if="onGoingUpdate === false"
-        :form="`price_${item.id}`"
+        :form="`price_${localItem.id}`"
+        :key="`price_show_${localItem.id}_${key}`"
         :price-fields="priceFields"
-        :item="item"
-        @deleted-price="deletedPrice"/>
+        :item="localItem"
+        @deleted-price="deletedPrice"
+        @price-to-update="onPriceToUpdate"/>
     <AppPriceItemUpdate
         v-else
-        :form="`price_${item.id}`"
+        :form="`price_${localItem.id}`"
+        :key="`price_update_${localItem.id}_${key}`"
         :price-fields="priceFields"
-        :item="item"/>
+        :item="localItem"
+        @annule-update="onCancelUpdate"
+        @update-items-prices="onUpdateItemPrice"/>
 </template>
 
 <style scoped>

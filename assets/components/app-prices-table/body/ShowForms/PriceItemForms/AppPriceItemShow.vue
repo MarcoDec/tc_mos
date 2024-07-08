@@ -11,7 +11,7 @@ const props = defineProps({
 
 function priceToUpdate(item) {
     console.log('priceToUpdate', item['@id'])
-    //emits('priceToUpdate', item)
+    emits('priceToUpdate', item)
 }
 
 function deletedPrices(iri) {

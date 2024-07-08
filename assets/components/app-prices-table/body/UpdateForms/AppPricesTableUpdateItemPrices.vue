@@ -2,8 +2,7 @@
     const props = defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},
-        item: {required: true, type: Object},
-        index: {required: true, type: Number}
+        item: {required: true, type: Object}
     })
     console.log('props', props)
 </script>
@@ -12,7 +11,7 @@
     <td>
         <AppInputGuesser
             :id="field.name"
-            v-model="item.prices[index][field.name]"
+            v-model="item[field.name]"
             :field="field"
             :form="form"
             :item="item"/>

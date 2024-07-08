@@ -6,30 +6,24 @@
         priceFields: {required: true, type: Array},
         form: {required: true, type: String}
     })
+    const localItem = ref(props.item)
     const emit = defineEmits(['annuleUpdate', 'updateItemsPrices'])
-    const priceModified = ref([])
-    async function updateItemsPrices(index, item) {
+    async function updateItemsPrices(item) {
         emit('updateItemsPrices', item)
-        priceModified.value[index] = false
     }
-    function cancelUpdatedPrices(index) {
-        emit('annuleUpdate')
-        priceModified.value[index] = false
+    function cancelUpdatedPrices(item) {
+        emit('annuleUpdate', item)
     }
 </script>
 
 <template>
     <td>
         <button class="btn btn-icon btn-primary btn-sm mx-2">
-            <Fa icon="check" @click="updateItemsPrices(index, item.prices[index])"/>
+            <Fa icon="check" @click="updateItemsPrices"/>
         </button>
-        <button class="btn btn-danger btn-icon btn-sm" @click="cancelUpdatedPrices(index)">
+        <button class="btn btn-danger btn-icon btn-sm" @click="cancelUpdatedPrices">
             <Fa icon="times"/>
         </button>
     </td>
-    <AppPricesTableUpdateItemPrices :field="field" :form="form" :item="item" :index="index"/>
+    <AppPricesTableUpdateItemPrices v-for="field in priceFields" :field="field" :form="form" :item="localItem"/>
 </template>
-
-<style scoped>
-
-</style>
