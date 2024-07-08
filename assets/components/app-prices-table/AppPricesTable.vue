@@ -41,6 +41,7 @@
     }
 
     function addItemPrice(formData) {
+        console.log('addItemPrice', formData)
         emit('addItemPrice', formData)
     }
 </script>

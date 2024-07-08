@@ -2,6 +2,9 @@
     import {defineProps, ref} from 'vue'
     import AppPricesTableUpdateItemPrices from '../UpdateForms/AppPricesTableUpdateItemPrices.vue'
     import AppPricesTableItemsPrices from './AppPricesTableItemsPrices.vue'
+    import AppPricesTablePriceItemShow from "./AppPricesTablePriceItemShow.vue";
+    import api from "../../../../api";
+    import AppPricesTableAddItems from "../AddForms/AppPricesTableAddItems.vue";
     const props = defineProps({
         item: {required: true, type: Object},
         mainFields: {required: true, type: Array},
@@ -10,55 +13,67 @@
         priceModified: {required: true, type: Array},
         index: {required: true, type: Number}
     })
-    console.log('props.priceFields', props.priceFields)
+    const emit = defineEmits(['priceDeleted','addItemPrice'])
+    const localItem = ref(props.item)
+    // console.log('props.priceFields', props.priceFields)
+    const filteredMainFields = props.mainFields.filter(field => !field.children)
     const priceModified = ref(props.priceModified)
-    function addItemPrice(formData) {
-        const component = props.item['@id']
-        emit('addItemPrice', {formData, component})
+    async function deletePrice(iri) {
+        console.log('deletePrice', iri)
+        if (confirm('Voulez-vous vraiment supprimer ce prix ?')) {
+            await api(iri, 'DELETE')
+            emit('priceDeleted', iri)
+        }
     }
-    function updatePrices(index) {
-        emit('updatePrices')
-        priceModified.value[index] = true
+    const defaultAddFormValues = {
+        item: props.item['@id'],
+        price: {
+            code: '/api/currencies/1',
+            value: 0
+        },
+        quantity: {
+            value: 0,
+            code: '/api/units/1'
+        },
+        ref: null
     }
-    async function updateItemsPrices(index, item) {
-        emit('updateItemsPrices', item)
-        priceModified.value[index] = false
-    }
-    function annuleUpdatedprices(index) {
-        emit('annuleUpdate')
-        priceModified.value[index] = false
-    }
-    function deletedPrices(iri){
-        emit('deletedPrices', iri)
+    function onAddItem(formData) {
+        console.log('addItemPrice', formData)
+        emit('addItemPrice', formData)
     }
 </script>
 
 <template>
-    <template v-for="field in priceFields" :key="field.name">
-        <td v-if="priceModified[index] === false">
-            VIF2
-<!--            <button class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.prices[index].id"-->
-<!--                    @click="updatePrices(index)">-->
-<!--                <Fa icon="pencil"/>-->
-<!--            </button>-->
-<!--            <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deletedPrices(item.prices[index].id)">-->
-<!--                <Fa icon="trash"/>-->
-<!--            </button>-->
-<!--            <td>-->
-<!--                <AppPricesTableItemsPrices :field="field" :item="item" :index="index"/>-->
-<!--            </td>-->
-        </td>
-        <td v-else>
-            VELSE2
-<!--            <button class="btn btn-icon btn-primary btn-sm mx-2">-->
-<!--                <Fa icon="check" @click="updateItemsPrices(index, item.prices[index])"/>-->
-<!--            </button>-->
-<!--            <button class="btn btn-danger btn-icon btn-sm" @click="annuleUpdatedprices(index)">-->
-<!--                <Fa icon="times"/>-->
-<!--            </button>-->
-<!--            <AppPricesTableUpdateItemPrices :field="field" :form="form" :item="item" :index="index"/>-->
-        </td>
-    </template>
+    <td></td>
+    <td :colspan="filteredMainFields.length">
+        <table class="table table-bordered table-hover table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th width="100">Actions</th>
+                    <th
+                        v-for="field in priceFields"
+                        class="text-center"
+                        :key="field.name"
+                        :width="field.width">
+                        {{ field.label }}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <AppPricesTableAddItems
+                    :form="`addPriceItems_${index}`"
+                    :fields="priceFields"
+                    :default-add-form-values="defaultAddFormValues"
+                    @add-item="onAddItem"/>
+                <tr v-for="price in localItem.prices">
+                    <AppPricesTablePriceItemShow
+                        :item="price"
+                        :price-fields="priceFields"
+                        @deleted-prices="deletePrice"/>
+                </tr>
+            </tbody>
+        </table>
+    </td>
 </template>
 
 <style scoped>

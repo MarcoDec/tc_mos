@@ -7,7 +7,7 @@ import api from "../../../../api";
 const props = defineProps({
         item: {required: true, type: Object},
         field: {required: true, type: Object},
-        rowspan: {required: true, type: Number},
+        rowspan: {required: false, type: Number},
         index: {required: true, type: Number}
     })
     const multiSelectResults = ref([])

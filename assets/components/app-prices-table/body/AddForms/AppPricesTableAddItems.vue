@@ -6,7 +6,7 @@
         fields: {required: true, type: Array},
         form: {required: true, type: String}
     })
-    console.log('defaultAddFormValues', props.defaultAddFormValues)
+    // console.log('defaultAddFormValues', props.defaultAddFormValues)
     const emit = defineEmits(['addItem'])
 
     const formData = reactive({})
@@ -48,7 +48,7 @@
                     no-label
                     @update:model-value="onUpdateModelValue($event, field.name)"/>
             </td>
-            <td v-else colspan="4"/>
+<!--            <td v-else colspan="4"/>-->
         </template>
     </tr>
 </template>

@@ -54,7 +54,7 @@
         emit('deletedPrices', iri)
     }
 
-    console.log('props.item', props.item)
+    // console.log('props.item', props.item)
     const nbTr = computed(() => {
         const nbItems = props.item.prices.length
         if (nbItems > 0) return nbItems
@@ -65,26 +65,38 @@
         return Array.from({length: n}, (value, key) => key + 1)
     }
 
-    console.log('priceModified', priceModified.value)
-    console.log('range(nbTr)', range(nbTr.value))
+    // console.log('priceModified', priceModified.value)
+    // console.log('range(nbTr)', range(nbTr.value))
+    function onPriceDeleted(iri) {
+        console.log('onPriceDeleted', iri)
+        //emit('priceDeleted', iri)
+    }
+    function onAddItemPrice(formData) {
+        console.log('onAddItemPrice', formData)
+        emit('addItemPrice', formData)
+    }
 </script>
 
 <template>
-        <tr>World</tr>
-        <tr>
-            <AppPricesTableItemLeft
-                :index="index"
-                :form="form"
-                :price-fields="priceFields"
-                :main-fields="mainFields"
-                :item="item"
-            />
-            <AppPricesTableItemRight
-                :index="index"
-                :price-modified="priceModified"
-                :form="form"
-                :price-fields="priceFields"
-                :main-fields="mainFields"
-                :item="item"/>
-        </tr>
+    <tr>
+        <AppPricesTableItemLeft
+            :index="index"
+            :form="form"
+            :price-fields="priceFields"
+            :main-fields="mainFields"
+            :item="item"
+        />
+    </tr>
+    <tr>
+        <AppPricesTableItemRight
+            :index="index"
+            :price-modified="priceModified"
+            :form="form"
+            :price-fields="priceFields"
+            :main-fields="mainFields"
+            :item="item"
+            @price-deleted="onPriceDeleted"
+            @add-item-price="onAddItemPrice"/>
+
+    </tr>
 </template>

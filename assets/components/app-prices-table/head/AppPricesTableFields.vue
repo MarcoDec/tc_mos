@@ -3,7 +3,7 @@
     import AppPricesTableField from './AppPricesTableField.vue'
 
     const props = defineProps({fields: {required: true, type: Array}})
-
+    const filterFields = computed(() => props.fields.filter(field => !field.children))
     function walkRowspan(walkedFields, span = 1) {
         let max = span
         for (const field of walkedFields)
@@ -20,14 +20,14 @@
 
 <template>
     <tr>
-        <th :rowspan="rowspan" width="50">
+        <th width="100">
             Actions
         </th>
         <AppPricesTableField
-            v-for="field in fields"
+            v-for="field in filterFields"
             :key="field.name"
             :field="field"
-            :rowspan="rowspan"/>
+            />
     </tr>
 </template>
 

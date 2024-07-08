@@ -364,7 +364,8 @@
             title1.value = 'Tableau des prix Client - Produits'
             apis.value[0] = {
                 main: '/api/customer-products',
-                prices: '/api/customer-product-prices'
+                prices: '/api/customer-product-prices',
+                parentPriceFieldName: 'product'
             }
             if (product.value === null) { // Et si aucun produit n'est renseigné, alors on affiche la grille de prix composant [3]
                 fieldsMain2.value = [
@@ -375,7 +376,8 @@
                 title2.value = 'Tableau des prix Client - Composants'
                 apis.value[1] = {
                     main: '/api/customer-components',
-                    prices: '/api/customer-component-prices'
+                    prices: '/api/customer-component-prices',
+                    parentPriceFieldName: 'component'
                 }
                 showTable2.value = true
             } else {
@@ -393,7 +395,8 @@
             title1.value = 'Tableau des prix Client - Composants'
             apis.value[0] = {
                 main: '/api/customer-components',
-                prices: '/api/customer-component-prices'
+                prices: '/api/customer-component-prices',
+                parentPriceFieldName: 'component'
             }
             showTable2.value = false
         }
@@ -409,7 +412,8 @@
             title1.value = 'Tableau des prix Fournisseur - Composants'
             apis.value[0] ={
                 main: '/api/supplier-components',
-                prices: '/api/supplier-component-prices'
+                prices: '/api/supplier-component-prices',
+                parentPriceFieldName: 'component'
             }
             if (component.value === null) { // Et si aucun composant n'est renseigné, alors on affiche la grille de prix produit [2]
                 fieldsMain2.value = [
@@ -420,7 +424,8 @@
                 title2.value = 'Tableau des prix Fournisseur - Produits'
                 apis.value[1] = {
                     main: '/api/supplier-products',
-                    prices: '/api/supplier-product-prices'
+                    prices: '/api/supplier-product-prices',
+                    parentPriceFieldName: 'product'
                 }
                 showTable2.value = true
             } else {
@@ -438,7 +443,8 @@
             title1.value = 'Tableau des prix Fournisseur - Produits'
             apis.value[0] = {
                 main: '/api/supplier-products',
-                prices: '/api/supplier-product-prices'
+                prices: '/api/supplier-product-prices',
+                parentPriceFieldName: 'product'
             }
             showTable2.value = false
         }
@@ -453,7 +459,8 @@
         title1.value = 'Tableau des prix Composant - Fournisseurs'
         apis.value[0] ={
             main: '/api/supplier-components',
-            prices: '/api/supplier-component-prices'
+            prices: '/api/supplier-component-prices',
+            parentPriceFieldName: 'component'
         }
         fieldsMain2.value = [
             ...componentFields,
@@ -463,7 +470,8 @@
         title2.value = 'Tableau des prix Composant - Clients'
         apis.value[1] = {
             main: '/api/customer-components',
-            prices: '/api/customer-component-prices'
+            prices: '/api/customer-component-prices',
+            parentPriceFieldName: 'component'
         }
         showTable2.value = true
     } else { // Uniquement un produit est renseigné [D]
@@ -477,7 +485,8 @@
         title1.value = 'Tableau des prix Produit - Clients'
         apis.value[0] = {
             main: '/api/customer-products',
-            prices: '/api/customer-product-prices'
+            prices: '/api/customer-product-prices',
+            parentPriceFieldName: 'product'
         }
         fieldsMain2.value = [
             ...productFields,
@@ -487,7 +496,8 @@
         title2.value = 'Tableau des prix Produit - Fournisseurs'
         apis.value[1] = {
             main: '/api/supplier-products',
-            prices: '/api/supplier-product-prices'
+            prices: '/api/supplier-product-prices',
+            parentPriceFieldName: 'product'
         }
 
     }
@@ -529,7 +539,8 @@
                     step: 0.1
                 }
             },
-            type: 'measure'
+            type: 'measure',
+            width: '250'
         },
         {
             label: 'Q',
@@ -551,7 +562,8 @@
                     step: 0.1
                 }
             },
-            type: 'measure'
+            type: 'measure',
+            width: '250'
         },
         {
             label: 'ref',
@@ -693,31 +705,22 @@
         await loadData()
     }
     async function addItemPrice(formData, index) {
+        console.log('addItemPrice', formData, index)
         const currentApi = apis.value[index].prices
+        const currentItemFieldNames = apis.value[index].parentPriceFieldName
         const data = {}
-        if (formData.component) {
-            data.component = formData.component
-        }
-        if (formData.supplier) {
-            data.supplier = formData.supplier
-        }
-        if (formData.product) {
-            data.product = formData.product
-        }
-        if (formData.customer) {
-            data.customer = formData.customer
-        }
-        if (formData.formData) {
-            const priceCode = currenciesOptions.value.find(option => option.value === formData.formData.price.code)?currenciesOptions.value.find(option => option.value === formData.formData.price.code).text:'EUR'
+        if (formData) {
+            data[currentItemFieldNames] = formData.item
+            const priceCode = currenciesOptions.value.find(option => option.value === formData.price.code)?currenciesOptions.value.find(option => option.value === formData.price.code).text:'EUR'
             data.price = {
                 code: priceCode,
-                value: formData.formData.price.value
+                value: formData.price.value
             }
             data.quantity = {
-                code: optionsUnits.value.find(option => option.value === formData.formData.quantity.code)?.text,
-                value: formData.formData.quantity.value
+                code: optionsUnits.value.find(option => option.value === formData.quantity.code)?.text,
+                value: formData.quantity.value
             }
-            data.ref = formData.formData.ref
+            data.ref = formData.ref
         }
         await api(currentApi, 'POST', data)
         await loadData()
@@ -770,7 +773,7 @@
                 :title="title"
                 form="formComponentSuppliersPricesTable"
                 @add-item="addItem"
-                @add-item-price="addItemPrice"
+                @add-item-price="(item) => addItemPrice(item, 0)"
                 @deleted="deleted"
                 @deleted-prices="deletedPrices"
                 @annule-update="annuleUpdated"
@@ -785,7 +788,7 @@
                 :title="title"
                 form="formComponentSuppliersPricesTable"
                 @add-item="addItem"
-                @add-item-price="addItemPrice"
+                @add-item-price="(item) => addItemPrice(item, 0)"
                 @deleted="deleted"
                 @deleted-prices="deletedPrices"
                 @annule-update="annuleUpdated"

@@ -3,7 +3,7 @@
 
     const props = defineProps({
         field: {required: true, type: Object},
-        rowspan: {required: true, type: Number}
+        rowspan: {required: false, type: Number}
     })
 
     function childLength(field) {
@@ -23,7 +23,7 @@
 </script>
 
 <template>
-    <th :colspan="colspan" :rowspan="safeRowSpan" :width="field.width">
+    <th :width="field.width">
         <span class="d-flex justify-content-between">
             <span>{{ field.label }}</span>
         </span>

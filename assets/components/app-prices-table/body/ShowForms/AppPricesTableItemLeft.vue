@@ -45,22 +45,21 @@
 
 <template>
     <template v-if="updated === false">
-        <td>VIF 1</td>
-<!--        <td>-->
-<!--            <button class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.id" @click="update">-->
-<!--                <Fa icon="pencil"/>-->
-<!--            </button>-->
-<!--            <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted(item)">-->
-<!--                <Fa icon="trash"/>-->
-<!--            </button>-->
-<!--        </td>-->
-<!--        <template v-for="field in mainFields" :key="field.name">-->
-<!--            <AppPricesTableItemsComponentSuppliers-->
-<!--                :field="field"-->
-<!--                :item="item"-->
-<!--                :rowspan="range(nbTr).length + 1"-->
-<!--                :index="index"/>-->
-<!--        </template>-->
+<!--        <td>VIF 1</td>-->
+        <td class="">
+            <button class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.id" @click="update">
+                <Fa icon="pencil"/>
+            </button>
+            <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted(item)">
+                <Fa icon="trash"/>
+            </button>
+        </td>
+        <template v-for="field in mainFields" :key="field.name">
+            <AppPricesTableItemsComponentSuppliers
+                :field="field"
+                :item="item"
+                :index="index"/>
+        </template>
     </template>
     <template v-else>
         <td>VELSE 1</td>

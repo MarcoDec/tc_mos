@@ -10,7 +10,7 @@
         form: {required: true, type: String},
         items: {required: true, type: Object}
     })
-    console.log('defaultAddFormValues', props.defaultAddFormValues)
+    // console.log('defaultAddFormValues', props.defaultAddFormValues)
     const emit = defineEmits(['addItem', 'addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updateItemsPrices'])
 
     async function updateItems(item) {
@@ -45,23 +45,20 @@
 
 <template>
     <tbody>
-    <AppPricesTableAddItems :default-add-form-values="defaultAddFormValues" :fields="mainFields" :form="form" @add-item="addItem"/>
-    <tr v-for="item in items" :key="item">
-        HELLO
-    </tr>
-    <AppPricesTableItem
-        v-for="(item, index) in items" :key="item"
-        :item="item"
-        :index="index"
-        :items="items"
-        :form="form"
-        :main-fields="mainFields"
-        :price-fields="priceFields"
-        @add-item-price="addItemPrice"
-        @deleted="deleted"
-        @deleted-prices="deletedPrices"
-        @annule--update="annuleUpdated"
-        @update-items="updateItems"
-        @update-items-prices="updateItemsPrices"/>
+        <AppPricesTableAddItems :default-add-form-values="defaultAddFormValues" :fields="mainFields" :form="form" @add-item="addItem"/>
+        <AppPricesTableItem
+            v-for="(item, index) in items" :key="item"
+            :item="item"
+            :index="index"
+            :items="items"
+            :form="form"
+            :main-fields="mainFields"
+            :price-fields="priceFields"
+            @add-item-price="addItemPrice"
+            @deleted="deleted"
+            @deleted-prices="deletedPrices"
+            @annule--update="annuleUpdated"
+            @update-items="updateItems"
+            @update-items-prices="updateItemsPrices"/>
     </tbody>
 </template>
