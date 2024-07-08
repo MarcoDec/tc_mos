@@ -55,7 +55,19 @@ export default function useOptions(base, valueProp = '@id') {
 
             // fonctions utiles pour récupération des labels des options
             getLabelFromCode(value) {
-                return this.options.find(option => option.code === value)?.text ?? value
+                console.log('getLabelFromCode', value)
+                let option = this.options.find(option => option.code === value)
+                if (option) {
+                    console.log('option.code trouvé', option)
+                    return option.text
+                }
+                option = this.options.find(option => option.value === value)
+                if (option) {
+                    console.log('option.value trouvé', option)
+                    return option.text
+                }
+                console.log('option non trouvé', value)
+                return this.getLabelFromValue(value)
             },
             getLabelFromValue(value) {
                 return this.options.find(option => option.value === value)?.text ?? value

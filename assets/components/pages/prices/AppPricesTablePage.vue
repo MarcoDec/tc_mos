@@ -72,6 +72,7 @@
 
     const storeCurrencies = useOptions('currencies')
     const currenciesOptions = computed(() => storeCurrencies.getOptionsMap())
+    console.log('currenciesOptions', currenciesOptions.value)
     storeCurrencies.fetchOp()
 
     const fetchIncotermsOptions = useOptions('incoterms')
@@ -512,6 +513,7 @@
     async function loadData() {
         const response1 = await api(apis.value[0].main + fetchCriteria1.getFetchCriteria, 'GET')
         mainItems1.value = response1['hydra:member'].map(item => transformPricesAsAnArray(item))
+        console.log('mainItems1', mainItems1.value)
         const response2 = await api(apis.value[1].main + fetchCriteria2.getFetchCriteria, 'GET')
         mainItems2.value = response2['hydra:member'].map(item => transformPricesAsAnArray(item))
     }
