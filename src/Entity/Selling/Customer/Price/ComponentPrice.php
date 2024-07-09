@@ -42,7 +42,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get',
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un prix',
@@ -70,6 +70,12 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 ]
 class ComponentPrice extends Entity implements MeasuredInterface {
     //region properties
+    #[
+        ApiProperty(description: 'Référence', example: 'DJZ54'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:price', 'write:price'])
+    ]
+    protected ?string $ref = null;
     #[
         ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
@@ -138,6 +144,24 @@ class ComponentPrice extends Entity implements MeasuredInterface {
 
     final public function setQuantity(Measure $quantity): self {
         $this->quantity = $quantity;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRef(): ?string
+    {
+        return $this->ref;
+    }
+
+    /**
+     * @param string|null $ref
+     * @return ComponentPrice
+     */
+    public function setRef(?string $ref): ComponentPrice
+    {
+        $this->ref = $ref;
         return $this;
     }
     //endregion

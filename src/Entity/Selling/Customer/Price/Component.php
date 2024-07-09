@@ -19,6 +19,7 @@ use App\Filter\RelationFilter;
 use App\Repository\Selling\Customer\ComponentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
@@ -143,8 +144,14 @@ class Component extends Entity implements MeasuredInterface
         ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_SERIES]),
         Serializer\Groups(['read:component-customer', 'write:component-customer'])
     ]
-
     private string $kind;
+
+    #[
+        ApiProperty(description: 'Proportion', example: '99'),
+        ORM\Column(options: ['default' => 100, 'unsigned' => true]),
+        Serializer\Groups(['read:component-customer', 'write:component-customer'])
+    ]
+    private float $proportion = 100;
     #[
         ApiProperty(description: 'MOQ (Minimal Order Quantity)', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
@@ -157,9 +164,16 @@ class Component extends Entity implements MeasuredInterface
         Serializer\Groups(['read:component-customer', 'write:component-customer'])
     ]
     private Measure $packaging;
+
     #[
-        ApiProperty(description: 'Prix', readableLink: false, example: '/api/customer-component-prices/1'),
-        ORM\OneToMany(mappedBy: 'component', targetEntity: ComponentPrice::class, cascade: ['persist', 'remove']),
+        ApiProperty(description: 'Type de packaging', example: 'Palette'),
+        ORM\Column(length: 30, nullable: true),
+        Serializer\Groups(['read:component-customer', 'write:component-customer'])
+    ]
+    private ?string $packagingKind = null;
+    #[
+        ApiProperty(description: 'Prix', example: '[]'),
+        ORM\OneToMany(mappedBy: 'component', targetEntity: ComponentPrice::class, cascade: ['persist', 'remove'], fetch: 'EAGER'),
         Serializer\Groups(['read:component-customer', 'write:component-customer'])
     ]
     private Collection $prices;
@@ -212,9 +226,11 @@ class Component extends Entity implements MeasuredInterface
         return $this;
     }
 
-    public function getPrices(): Collection
+    public function getPrices(): ArrayCollection|DoctrineCollection
     {
-        return $this->prices;
+        return $this->prices->filter(function ($price) {
+            return $price->isDeleted() === false;
+        });
     }
 
     public function setPrices(Collection $prices): void
@@ -373,4 +389,41 @@ class Component extends Entity implements MeasuredInterface
     {
         return [];
     }
+
+    /**
+     * @return float
+     */
+    public function getProportion(): float
+    {
+        return $this->proportion;
+    }
+
+    /**
+     * @param float $proportion
+     * @return Component
+     */
+    public function setProportion(float $proportion): Component
+    {
+        $this->proportion = $proportion;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPackagingKind(): ?string
+    {
+        return $this->packagingKind;
+    }
+
+    /**
+     * @param string|null $packagingKind
+     * @return Component
+     */
+    public function setPackagingKind(?string $packagingKind): Component
+    {
+        $this->packagingKind = $packagingKind;
+        return $this;
+    }
+
 }

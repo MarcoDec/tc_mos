@@ -689,16 +689,32 @@
         const data = {}
         const iri = item['@id']
         if (item.component) {
-            data.component = item.component
+            if (typeof item.component === 'object') {
+                data.component = item.component['@id']
+            } else {
+                data.component = item.component
+            }
         }
         if (item.supplier) {
-            data.supplier = item.supplier
+            if (typeof item.supplier === 'object') {
+                data.supplier = item.supplier['@id']
+            } else {
+                data.supplier = item.supplier
+            }
         }
         if (item.product) {
-            data.product = item.product
+            if (typeof item.product === 'object') {
+                data.product = item.product['@id']
+            } else {
+                data.product = item.product
+            }
         }
         if (item.customer) {
-            data.customer = item.customer
+            if (typeof item.customer === 'object') {
+                data.customer = item.customer['@id']
+            } else {
+                data.customer = item.customer
+            }
         }
         data.proportion = item.proportion
         data.deliveryTime = {

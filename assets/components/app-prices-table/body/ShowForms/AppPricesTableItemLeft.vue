@@ -56,7 +56,7 @@
     <AppPricesTableUpdateItem
         v-else
         :fields="mainFields"
-        :form="form"
+        :form="`main_update_${props.item.id}`"
         :item="item"
         :index="index"
         @annule-update="annuleUpdated"

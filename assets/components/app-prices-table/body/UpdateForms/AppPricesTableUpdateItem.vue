@@ -8,6 +8,7 @@
         item: {required: true, type: Object}
     })
     const emit = defineEmits(['annuleUpdate', 'updateItems', 'update:modelValue'])
+    console.log('props', props)
     const localItem = ref({})
     // localItem.value = Object.assign({}, props.item)
     localItem.value = {...props.item}

@@ -15,7 +15,6 @@ use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Component as TechnicalSheet;
 use App\Filter\RelationFilter;
 use App\Repository\Purchase\Supplier\ComponentRepository;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use App\Entity\Purchase\Supplier\Price\ComponentPrice as SupplierComponentPrice;
