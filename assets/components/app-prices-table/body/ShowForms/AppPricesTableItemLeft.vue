@@ -1,6 +1,5 @@
 <script setup>
     import {computed, defineProps, ref} from 'vue'
-    import AppPricesTableUpdateItem from '../UpdateForms/AppPricesTableUpdateItem.vue'
     import AppPricesTableItemsComponentSuppliers from './AppPricesTableItemsComponentSuppliers.vue'
 
     const props = defineProps({
@@ -10,6 +9,7 @@
         form: {required: true, type: String},
         index: {required: true, type: Number}
     })
+    const emit = defineEmits(['deleted', 'update', 'annuleUpdate', 'updateItems'])
     console.log('props.item', props.item)
     const updated = ref(false)
 

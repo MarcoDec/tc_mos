@@ -11,7 +11,7 @@
         index: {required: true, type: Number}
     })
     console.log('props', props)
-    const emit = defineEmits(['addItemPrice', 'priceDeleted', 'updatedPrices'])
+    const emit = defineEmits(['addItemPrice', 'priceDeleted', 'updatedPrices', 'deleted'])
     const updated = ref(false)
     const priceModified = ref([])
     priceModified.value = Array.from({length: props.item.prices.length}, () => false)
@@ -51,6 +51,10 @@
         console.log('onUpdatedPrice', item)
         emit('updatedPrices', item)
     }
+    function onDeleted(iri) {
+        console.log('onDeleted', iri)
+        emit('deleted', iri)
+    }
 </script>
 
 <template>
@@ -61,7 +65,7 @@
             :price-fields="priceFields"
             :main-fields="mainFields"
             :item="item"
-        />
+            @deleted="onDeleted"/>
     </tr>
     <tr>
         <AppPricesTableItemRight

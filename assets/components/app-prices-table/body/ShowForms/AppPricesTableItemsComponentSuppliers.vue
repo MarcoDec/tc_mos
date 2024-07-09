@@ -9,7 +9,7 @@ import api from "../../../../api";
         field: {required: true, type: Object},
         index: {required: true, type: Number}
     })
-    console.log('props', props.item[props.field.name])
+    // console.log('props', props.item[props.field.name])
     const multiSelectResults = ref([])
     if (props.field.type === 'multiselect-fetch') {
         if (typeof props.item[props.field.name] === 'object') {
