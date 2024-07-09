@@ -44,6 +44,7 @@ final class MeasureHydrator {
 //        dump(["MeasureHydrator:hydrateIn Before" => $entity]);
         if ($this->isSafe()) {
             foreach ($entity->getUnitMeasures() as $measure) {
+                dump(["MeasureHydrator:hydrateIn" => $measure]);
                 $this->hydrateUnit($measure);
             }
             foreach ($entity->getCurrencyMeasures() as $measure) {

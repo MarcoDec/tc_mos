@@ -78,8 +78,8 @@ class ComponentPrice extends Entity implements MeasuredInterface {
     private Measure $price;
 
     #[
-        ApiProperty(description: 'Composant', readableLink: false, example: '/api/customer-components/1'),
-        ORM\ManyToOne(targetEntity: Component::class, inversedBy: 'componentPrices'),
+        ApiProperty(description: 'Composant cLIENT', readableLink: false, example: '/api/customer-components/1'),
+        ORM\ManyToOne(targetEntity: Component::class, inversedBy: 'prices'),
         Serializer\Groups(['read:price', 'write:price'])
     ]
     private ?Component $component = null;

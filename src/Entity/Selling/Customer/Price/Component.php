@@ -9,6 +9,7 @@ use App\Doctrine\DBAL\Types\Project\Product\KindType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
+use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Unit;
@@ -67,11 +68,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\'' . Roles::ROLE_SELLING_READER . '\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:component-customer'],
+            'groups' => ['write:component-customer', 'write:measure'],
             'openapi_definition_name' => 'CustomerComponent-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:component-customer'],
+            'groups' => ['read:id', 'read:measure', 'read:component-customer'],
             'openapi_definition_name' => 'CustomerComponent-read',
             'skip_null_values' => false
         ],
@@ -80,16 +81,16 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity(repositoryClass: ComponentRepository::class),
     ORM\Table(name: 'component_customer')
 ]
-class Component extends Entity
+class Component extends Entity implements MeasuredInterface
 {
     //region properties
-    /** @var Collection<int, Company> */
+    /** @var Company */
     #[
-        ApiProperty(description: 'Compagnies gérantes la grille de prix', readableLink: false, example: ['/api/companies/1']),
+        ApiProperty(description: 'Compagnie gérant la grille de prix', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'components'),
         Serializer\Groups(['read:component-customer', 'write:component-customer'])
     ]
-    private Collection $administeredBy;
+    private Company $administeredBy;
     #[
         ApiProperty(description: 'Référence', example: 'DH544G'),
         ORM\Column(nullable: true),
@@ -140,10 +141,10 @@ class Component extends Entity
         ApiProperty(description: 'Type de grille produit', example: KindType::TYPE_PROTOTYPE, openapiContext: ['enum' => KindType::TYPES]),
         Assert\Choice(choices: KindType::TYPES),
         ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_SERIES]),
-        Serializer\Groups(['read:product-customer', 'write:product-customer'])
+        Serializer\Groups(['read:component-customer', 'write:component-customer'])
     ]
 
-    private KindType $kind;
+    private string $kind;
     #[
         ApiProperty(description: 'MOQ (Minimal Order Quantity)', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
@@ -161,29 +162,25 @@ class Component extends Entity
         ORM\OneToMany(mappedBy: 'component', targetEntity: ComponentPrice::class, cascade: ['persist', 'remove']),
         Serializer\Groups(['read:component-customer', 'write:component-customer'])
     ]
-    private Collection $componentPrices;
+    private Collection $prices;
 
     //endregion
     public function __construct()
     {
-        $this->administeredBy = new ArrayCollection();
-        $this->componentPrices = new ArrayCollection();
+        $this->prices = new ArrayCollection();
     }
 
     //region getters & setters
-    final public function addAdministeredBy(Company $administeredBy): self
+    final public function setAdministeredBy(Company $administeredBy): self
     {
-        if (!$this->administeredBy->contains($administeredBy)) {
-            $this->administeredBy->add($administeredBy);
-            $administeredBy->addProduct($this);
-        }
+        $this->administeredBy = $administeredBy;
         return $this;
     }
 
     /**
-     * @return Collection<int, Company>
+     * @return Company
      */
-    final public function getAdministeredBy(): Collection
+    final public function getAdministeredBy(): Company
     {
         return $this->administeredBy;
     }
@@ -203,15 +200,6 @@ class Component extends Entity
         return $this->component?->getUnit();
     }
 
-    final public function removeAdministeredBy(Company $administeredBy): self
-    {
-        if ($this->administeredBy->contains($administeredBy)) {
-            $this->administeredBy->removeElement($administeredBy);
-            $administeredBy->removeProduct($this);
-        }
-        return $this;
-    }
-
     final public function setCustomer(?Customer $customer): self
     {
         $this->customer = $customer;
@@ -224,29 +212,29 @@ class Component extends Entity
         return $this;
     }
 
-    public function getComponentPrices(): Collection
+    public function getPrices(): Collection
     {
-        return $this->componentPrices;
+        return $this->prices;
     }
 
-    public function setComponentPrices(Collection $componentPrices): void
+    public function setPrices(Collection $prices): void
     {
-        $this->componentPrices = $componentPrices;
+        $this->prices = $prices;
     }
 
     /**
-     * @return KindType
+     * @return string
      */
-    public function getKind(): KindType
+    public function getKind(): string
     {
         return $this->kind;
     }
 
     /**
-     * @param KindType $kind
+     * @param string $kind
      * @return Component
      */
-    public function setKind(KindType $kind): Component
+    public function setKind(string $kind): Component
     {
         $this->kind = $kind;
         return $this;
@@ -261,7 +249,7 @@ class Component extends Entity
         $bestPrice->setCode('EUR');
         $possiblePrices = [];
         /** @var ComponentPrice $price */
-        foreach ($this->componentPrices as $price) {
+        foreach ($this->prices as $price) {
             if ($quantity->isGreaterThanOrEqual($price->getQuantity())) {
                 $possiblePrices [] = $price;
             }
@@ -351,4 +339,38 @@ class Component extends Entity
         $this->packaging = $packaging;
     }
     //endregion
+
+    /**
+     * @return Measure[]
+     */
+    public function getMeasures(): array
+    {
+        return [
+            $this->copperWeight,
+            $this->deliveryTime,
+            $this->moq,
+            $this->packaging
+        ];
+    }
+
+    /**
+     * @return Measure[]
+     */
+    public function getUnitMeasures(): array
+    {
+        return [
+            $this->copperWeight,
+            $this->deliveryTime,
+            $this->moq,
+            $this->packaging
+        ];
+    }
+
+    /**
+     * @return Measure[]
+     */
+    public function getCurrencyMeasures(): array
+    {
+        return [];
+    }
 }
