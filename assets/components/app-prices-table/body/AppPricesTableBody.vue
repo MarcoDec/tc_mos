@@ -59,7 +59,7 @@
             @deleted="deleted"
             @price-deleted="deletedPrices"
             @annule--update="annuleUpdated"
-            @update="updateItems"
+            @update-items="updateItems"
             @updated-prices="updateItemsPrices"/>
     </tbody>
 </template>

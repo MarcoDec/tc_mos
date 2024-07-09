@@ -1,15 +1,16 @@
 <script setup>
     import clone from 'clone'
-    import {computed} from 'vue'
+    import {computed, ref} from 'vue'
 
     const props = defineProps({
         fields: {required: true, type: Array},
         form: {required: true, type: String},
         item: {required: true, type: Object},
-        rowspan: {default: null, type: Number},
         index: {default: null, type: Number}
     })
     const emit = defineEmits(['annuleUpdate', 'updateItems', 'update:modelValue'])
+    const localItem = ref({})
+    localItem.value = Object.assign({}, props.item)
     const tabFields = computed(() =>
         props.fields.map(element => {
             const cloned = clone(element)
@@ -22,29 +23,31 @@
     function annuleUpdated() {
         emit('annuleUpdate')
     }
-    async function updateItems(item) {
-        emit('updateItems', item)
+    async function updateItems() {
+        emit('updateItems', localItem.value)
         emit('annuleUpdate')
     }
 </script>
 
 <template>
-    <td v-if="(index === 0)" :rowspan="rowspan">
+    <template v-for="(field, index0) in mainFields" :key="field.name">
+    </template>
+    <td>
         <button class="btn btn-icon btn-primary btn-sm mx-2">
-            <Fa icon="check" @click="updateItems(item)"/>
+            <Fa icon="check" @click="updateItems"/>
         </button>
         <button class="btn btn-danger btn-icon btn-sm" @click="annuleUpdated">
             <Fa icon="times"/>
         </button>
     </td>
     <template v-for="field in tabFields" :key="field.name">
-        <td v-if="index === 0 && field.name !== 'prices'" :rowspan="rowspan">
+        <td v-if="field.name !== 'prices'">
             <AppInputGuesser
                 :id="field.name"
-                v-model="item[field.name]"
+                v-model="localItem[field.name]"
                 :field="field"
                 :form="form"
-                :item="item"/>
+                :item="localItem"/>
         </td>
     </template>
 </template>

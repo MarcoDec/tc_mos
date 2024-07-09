@@ -667,6 +667,7 @@
         console.log('annuleUpdated')
     }
     async function updateItems(item) {
+        console.log('updateItems', item)
         const data = {}
         const iri = item['@id']
         if (item.component) {

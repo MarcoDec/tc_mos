@@ -1,6 +1,7 @@
 <script setup>
     import {computed, defineProps, ref} from 'vue'
-    import AppPricesTableItemsComponentSuppliers from './AppPricesTableItemsComponentSuppliers.vue'
+    import AppPricesTableUpdateItem from '../UpdateForms/AppPricesTableUpdateItem.vue'
+    import AppMainItemShow from './MainItemForms/AppMainItemShow.vue'
 
     const props = defineProps({
         item: {required: true, type: Object},
@@ -13,8 +14,9 @@
     console.log('props.item', props.item)
     const updated = ref(false)
 
-    function update() {
-        emit('update')
+    function update(item) {
+        console.log('update', item)
+        //emit('update', item)
         updated.value = true
     }
 
@@ -24,11 +26,12 @@
     }
 
     function deleted(item) {
-        console.log('deleted', item['@id'])
-        emit('deleted', item['@id'])
+        console.log('deleted', item)
+        emit('deleted', item)
     }
 
     async function updateItems(item) {
+        console.log('item', item)
         emit('updateItems', item)
         emit('annuleUpdate')
     }
@@ -45,33 +48,20 @@
 </script>
 
 <template>
-    <template v-if="updated === false">
-        <td class="">
-            <button class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.id" @click="update">
-                <Fa icon="pencil"/>
-            </button>
-            <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted(item)">
-                <Fa icon="trash"/>
-            </button>
-        </td>
-        <template v-for="field in mainFields" :key="field.name">
-            <AppPricesTableItemsComponentSuppliers
-                :field="field"
-                :item="item"
-                :index="index"/>
-        </template>
-    </template>
-    <template v-else>
-        <td>VELSE 1</td>
-<!--        <template v-for="(field, index0) in mainFields" :key="field.name">-->
-<!--            <AppPricesTableUpdateItem-->
-<!--                :fields="mainFields"-->
-<!--                :form="form"-->
-<!--                :item="item"-->
-<!--                :rowspan="range(nbTr).length + 1"-->
-<!--                :index="index0"-->
-<!--                @annule-update="annuleUpdated"-->
-<!--                @update-items="updateItems"/>-->
-<!--        </template>-->
-    </template>
+    <AppMainItemShow
+        v-if="updated === false"
+        :index="index"
+        :form="`main_${props.item.id}`"
+        :main-fields="mainFields"
+        :item="item"
+        @deleted="deleted"
+        @update="update"/>
+    <AppPricesTableUpdateItem
+        v-else
+        :fields="mainFields"
+        :form="form"
+        :item="item"
+        :index="index"
+        @annule-update="annuleUpdated"
+        @update-items="updateItems"/>
 </template>
