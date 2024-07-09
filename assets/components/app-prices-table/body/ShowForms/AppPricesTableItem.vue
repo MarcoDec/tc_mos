@@ -1,5 +1,5 @@
 <script setup>
-    import {defineProps, computed, ref} from 'vue'
+    import {defineProps, ref} from 'vue'
     import AppPricesTableItemLeft from './AppPricesTableItemLeft.vue'
     import AppPricesTableItemRight from './AppPricesTableItemRight.vue'
 
@@ -8,55 +8,51 @@
         mainFields: {required: true, type: Array},
         priceFields: {required: true, type: Array},
         form: {required: true, type: String},
-        index: {required: true, type: Number}
+        index: {required: true, type: Number},
+        rights: {
+            required: true,
+            type: Object,
+            default: () => ({
+                main: {
+                    update: false,
+                    delete: false,
+                    add: false
+                },
+                price: {
+                    update: false,
+                    delete: false,
+                    add: false
+                }
+            })
+        }
     })
-    console.log('props', props)
+    // console.log('props', props)
     const emit = defineEmits(['addItemPrice', 'priceDeleted', 'updatedPrices', 'deleted', 'updateItems'])
-    const updated = ref(false)
     const priceModified = ref([])
     priceModified.value = Array.from({length: props.item.prices.length}, () => false)
 
-    function update() {
-        emit('update')
-        updated.value = true
-    }
-
-    function deleted(item) {
-        console.log('deleted', item['@id'])
-        emit('deleted', item['@id'])
-    }
-
-    // console.log('props.item', props.item)
-    const nbTr = computed(() => {
-        const nbItems = props.item.prices.length
-        if (nbItems > 0) return nbItems
-        return 1
-    })
-
-    function range(n) {
-        return Array.from({length: n}, (value, key) => key + 1)
-    }
-
-    // console.log('priceModified', priceModified.value)
-    // console.log('range(nbTr)', range(nbTr.value))
     function onPriceDeleted(iri) {
-        console.log('onPriceDeleted', iri)
+        // console.log('onPriceDeleted', iri)
         emit('priceDeleted', iri)
     }
+
     function onAddItemPrice(formData) {
-        console.log('onAddItemPrice', formData)
+        // console.log('onAddItemPrice', formData)
         emit('addItemPrice', formData)
     }
+
     function onUpdatedPrice(item) {
-        console.log('onUpdatedPrice', item)
+        // console.log('onUpdatedPrice', item)
         emit('updatedPrices', item)
     }
+
     function onDeleted(iri) {
-        console.log('onDeleted', iri)
+        // console.log('onDeleted', iri)
         emit('deleted', iri)
     }
+
     function onUpdateItems(item) {
-        console.log('onUpdateItems', item)
+        // console.log('onUpdateItems', item)
         emit('updateItems', item)
     }
 </script>
@@ -69,6 +65,7 @@
             :price-fields="priceFields"
             :main-fields="mainFields"
             :item="item"
+            :rights="rights.main"
             @deleted="onDeleted"
             @update-items="onUpdateItems"/>
     </tr>
@@ -80,9 +77,9 @@
             :price-fields="priceFields"
             :main-fields="mainFields"
             :item="item"
+            :rights="rights.price"
             @price-deleted="onPriceDeleted"
             @add-item-price="onAddItemPrice"
             @updated-prices="onUpdatedPrice"/>
-
     </tr>
 </template>

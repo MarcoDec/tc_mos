@@ -1,33 +1,33 @@
 <script setup>
-import {defineProps, defineEmits, reactive} from 'vue'
+    import {defineProps, defineEmits, reactive} from 'vue'
 
-const props = defineProps({
-    defaultAddFormValues: {required: true, type: Object},
-    fields: {required: true, type: Array},
-    form: {required: true, type: String}
-})
-// console.log('defaultAddFormValues', props.defaultAddFormValues)
-const emit = defineEmits(['addItem'])
+    const props = defineProps({
+        defaultAddFormValues: {required: true, type: Object},
+        fields: {required: true, type: Array},
+        form: {required: true, type: String}
+    })
+    // console.log('defaultAddFormValues', props.defaultAddFormValues)
+    const emit = defineEmits(['addItem'])
 
-const formData = reactive({})
-//On initialise formData avec les valeurs contenues dans defaultAddFormValues
-for (const field in props.defaultAddFormValues) {
-    formData[field] = props.defaultAddFormValues[field]
-}
-
-function onUpdateModelValue(event, fieldName) {
-    console.log('onUpdateModelValue', event, fieldName)
-    if (typeof event === 'object' && event !== null) {
-        formData[fieldName] = {...formData[fieldName], ...event}
-    } else {
-        formData[fieldName] = event
+    const formData = reactive({})
+    //On initialise formData avec les valeurs contenues dans defaultAddFormValues
+    for (const field in props.defaultAddFormValues) {
+        formData[field] = props.defaultAddFormValues[field]
     }
-    console.log('formData', formData)
-}
-function addItem() {
-    console.log('addItem', formData)
-    emit('addItem', formData)
-}
+
+    function onUpdateModelValue(event, fieldName) {
+        console.log('onUpdateModelValue', event, fieldName)
+        if (typeof event === 'object' && event !== null) {
+            formData[fieldName] = {...formData[fieldName], ...event}
+        } else {
+            formData[fieldName] = event
+        }
+        console.log('formData', formData)
+    }
+    function addItem() {
+        console.log('addItem', formData)
+        emit('addItem', formData)
+    }
 </script>
 
 <template>
@@ -54,7 +54,7 @@ function addItem() {
 </template>
 
 <style scoped>
-td {
-    font-size: xx-small !important;
-}
+    td {
+        font-size: xx-small !important;
+    }
 </style>

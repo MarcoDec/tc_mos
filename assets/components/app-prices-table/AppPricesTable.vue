@@ -3,14 +3,23 @@
     import AppPricesTableHeaders from './head/AppPricesTableHeaders.vue'
     import AppPricesTableBody from './body/AppPricesTableBody.vue'
 
-    const props = defineProps({
+    /*const props = */defineProps({
         defaultAddFormValues: {required: true, type: Object},
         mainFields: {required: true, type: Array},
         priceFields: {required: true, type: Array},
         form: {required: true, type: String},
         id: {required: true, type: String},
         items: {required: true, type: Object},
-        title: {default: '', required: false, type: String}
+        title: {default: '', required: false, type: String},
+        rights: {
+            required: true,
+            type: Object,
+            default: () => ({
+                update: false,
+                delete: false,
+                add: false
+            })
+        }
     })
 
     const emit = defineEmits(['addItem', 'addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updateItemsPrices'])
@@ -33,7 +42,7 @@
     }
 
     function deletedPrices(id) {
-        console.log('deletedPrices', id)
+        // console.log('deletedPrices', id)
         emit('deletedPrices', id)
     }
 
@@ -42,7 +51,7 @@
     }
 
     function addItemPrice(formData) {
-        console.log('addItemPrice', formData)
+        // console.log('addItemPrice', formData)
         emit('addItemPrice', formData)
     }
 </script>
@@ -56,6 +65,7 @@
             :price-fields="priceFields"
             :form="form"
             :items="items"
+            :rights="rights"
             @deleted="deleted"
             @deleted-prices="deletedPrices"
             @annule-update="annuleUpdated"

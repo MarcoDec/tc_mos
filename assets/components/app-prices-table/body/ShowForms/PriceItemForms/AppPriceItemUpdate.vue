@@ -25,5 +25,10 @@
             <Fa icon="times"/>
         </button>
     </td>
-    <AppPricesTableUpdateItemPrices v-for="field in priceFields" :field="field" :form="form" :item="localItem"/>
+    <AppPricesTableUpdateItemPrices
+        v-for="(field, index0) in priceFields"
+        :key="`update_form_${index0}_item_${item.id}_field_${field.name}`"
+        :field="field"
+        :form="form"
+        :item="localItem"/>
 </template>

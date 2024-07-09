@@ -1,7 +1,6 @@
 <script setup>
     import api from '../../../api'
     import AppPricesTable from '../../app-prices-table/AppPricesTable.vue'
-    import AppRowsTablePage from './AppRowsTablePage.vue'
     import {computed, ref, watchEffect} from 'vue'
     import AppSuspense from '../../../components/AppSuspense.vue'
     import useOptions from '../../../stores/option/options'
@@ -35,6 +34,22 @@
             type: String,
             required: false,
             default: 'Tableau des prix des composants'
+        },
+        rights: {
+            type: Object,
+            required: false,
+            default: () => ({
+                main: {
+                    add: false,
+                    update: false,
+                    delete: false
+                },
+                price: {
+                    add: false,
+                    update: false,
+                    delete: false
+                }
+            })
         }
     })
     const defaultAddFormValues = {
@@ -87,10 +102,10 @@
     const inputError = ref(false)
     const errorMessage = ref('')
 
-    const component = ref(null)
-    const supplier = ref(null)
-    const product = ref(null)
-    const customer = ref(null)
+    const componentItem = ref(null)
+    const supplierItem = ref(null)
+    const productItem = ref(null)
+    const customerItem = ref(null)
 
     const mainItems1 = ref([])
     const mainItems2 = ref([])
@@ -98,37 +113,36 @@
     const fetchCriteria1 = useFetchCriteria('table1Criteria')
     const fetchCriteria2 = useFetchCriteria('table2Criteria')
 
-    const componentId = ref(0)
     const mainTitle = ref("Grille de prix")
     const apis = ref([])
     //region chargement des inputs
     if (props.component) {
-        component.value = await api(props.component, 'GET')
-        mainTitle.value += ' pour ' + component.value.code
-        defaultAddFormValues.component = component.value['@id']
+        componentItem.value = await api(props.component, 'GET')
+        mainTitle.value += ` pour ${componentItem.value.code}`
+        defaultAddFormValues.component = componentItem.value['@id']
     }
     if (props.supplier) {
-        supplier.value = await api(props.supplier, 'GET')
-        mainTitle.value += ' pour ' + supplier.value.name
-        defaultAddFormValues.supplier = supplier.value['@id']
+        supplierItem.value = await api(props.supplier, 'GET')
+        mainTitle.value += ` pour ${supplierItem.value.name}`
+        defaultAddFormValues.supplier = supplierItem.value['@id']
     }
     if (props.product) {
-        product.value = await api(props.product, 'GET')
-        mainTitle.value += ' pour ' + product.value.name
-        defaultAddFormValues.product = product.value['@id']
+        productItem.value = await api(props.product, 'GET')
+        mainTitle.value += ` pour ${productItem.value.name}`
+        defaultAddFormValues.product = productItem.value['@id']
     }
     if (props.customer) {
-        customer.value = await api(props.customer, 'GET')
-        mainTitle.value += ' pour ' + customer.value.name
-        defaultAddFormValues.customer = customer.value['@id']
+        customerItem.value = await api(props.customer, 'GET')
+        mainTitle.value += ` pour ${customerItem.value.name}`
+        defaultAddFormValues.customer = customerItem.value['@id']
     }
     //endregion
     //region controle des inputs et génération des erreurs correspondantes
-    if (supplier.value !== null && customer.value !== null) {
+    if (supplierItem.value !== null && customerItem.value !== null) {
         inputError.value = true
         errorMessage.value = 'Le contexte Client/Fournisseur de la grille de prix est invalide car les 2 sont renseignés'
     }
-    if (component.value !== null && product.value !== null) {
+    if (componentItem.value !== null && productItem.value !== null) {
         inputError.value = true
         errorMessage.value = 'Le contexte Produit/Composant de la grille de prix est invalide car les 2 sont renseignés'
     }
@@ -293,7 +307,7 @@
                 {
                     label: 'ref',
                     name: 'ref',
-                    type: 'text',
+                    type: 'text'
                 }
             ],
             label: 'Prix',
@@ -310,7 +324,7 @@
             filteredProperty: 'code',
             width: '200',
             max: 1,
-            readonly: !!props.component
+            readonly: Boolean(props.component)
         }
     ]
     const supplierFields = [
@@ -321,7 +335,8 @@
             api: '/api/suppliers',
             filteredProperty: 'name',
             width: '150',
-            max: 1
+            max: 1,
+            readonly: Boolean(props.supplier)
         }
     ]
     const customerFields = [
@@ -332,7 +347,8 @@
             api: '/api/customers',
             filteredProperty: 'name',
             width: '150',
-            max: 1
+            max: 1,
+            readonly: Boolean(props.customer)
         }
     ]
     const productFields = [
@@ -343,7 +359,8 @@
             api: '/api/products',
             filteredProperty: 'name',
             width: '150',
-            max: 1
+            max: 1,
+            readonly: Boolean(props.product)
         }
     ]
     // en fonction des données passées en props, on ajoute les champs correspondants dans les propriétés mainFields et pricesFields des tableaux 1 et 2
@@ -353,10 +370,10 @@
     const title1 = ref('')
     const title2 = ref('')
 
-    if (customer.value !== null) { // Si on a un client [B]
+    if (customerItem.value !== null) { // Si on a un client [B]
         fetchCriteria1.addFilter('customer', props.customer)
         fetchCriteria2.addFilter('customer', props.customer)
-        if (component.value === null) { // Et si aucun composant n'est renseigné, alors on affiche la grille de prix produit [4]
+        if (componentItem.value === null) { // Et si aucun composant n'est renseigné, alors on affiche la grille de prix produit [4]
             fieldsMain1.value = [
                 ...customerFields,
                 ...productFields,
@@ -368,7 +385,7 @@
                 prices: '/api/customer-product-prices',
                 parentPriceFieldName: 'product'
             }
-            if (product.value === null) { // Et si aucun produit n'est renseigné, alors on affiche la grille de prix composant [3]
+            if (productItem.value === null) { // Et si aucun produit n'est renseigné, alors on affiche la grille de prix composant [3]
                 fieldsMain2.value = [
                     ...customerFields,
                     ...componentFields,
@@ -401,22 +418,22 @@
             }
             showTable2.value = false
         }
-    } else if (supplier.value !== null) { // Sinon si on a un fournisseur de renseigné [A]
+    } else if (supplierItem.value !== null) { // Sinon si on a un fournisseur de renseigné [A]
         fetchCriteria1.addFilter('supplier', props.supplier)
         fetchCriteria2.addFilter('supplier', props.supplier)
-        if (product.value === null) { // Et si aucun produit n'est renseigné, alors on affiche la grille de prix composant [1]
+        if (productItem.value === null) { // Et si aucun produit n'est renseigné, alors on affiche la grille de prix composant [1]
             fieldsMain1.value = [
                 ...supplierFields,
                 ...componentFields,
                 ...commonFields
             ]
             title1.value = 'Tableau des prix Fournisseur - Composants'
-            apis.value[0] ={
+            apis.value[0] = {
                 main: '/api/supplier-components',
                 prices: '/api/supplier-component-prices',
                 parentPriceFieldName: 'component'
             }
-            if (component.value === null) { // Et si aucun composant n'est renseigné, alors on affiche la grille de prix produit [2]
+            if (componentItem.value === null) { // Et si aucun composant n'est renseigné, alors on affiche la grille de prix produit [2]
                 fieldsMain2.value = [
                     ...supplierFields,
                     ...productFields,
@@ -449,33 +466,8 @@
             }
             showTable2.value = false
         }
-    } else if (component.value !== null) { // Uniquement un composant de renseigné [C]
-        fetchCriteria1.addFilter('component', props.component)
-        fetchCriteria2.addFilter('component', props.component)
-        fieldsMain1.value = [
-            ...componentFields,
-            ...supplierFields,
-            ...commonFields
-        ]
-        title1.value = 'Tableau des prix Composant - Fournisseurs'
-        apis.value[0] ={
-            main: '/api/supplier-components',
-            prices: '/api/supplier-component-prices',
-            parentPriceFieldName: 'component'
-        }
-        fieldsMain2.value = [
-            ...componentFields,
-            ...customerFields,
-            ...commonFields
-        ]
-        title2.value = 'Tableau des prix Composant - Clients'
-        apis.value[1] = {
-            main: '/api/customer-components',
-            prices: '/api/customer-component-prices',
-            parentPriceFieldName: 'component'
-        }
-        showTable2.value = true
-    } else { // Uniquement un produit est renseigné [D]
+    } else if (componentItem.value === null) { // Uniquement un composant de renseigné [C]
+        //region component.value === null
         fetchCriteria1.addFilter('product', props.product)
         fetchCriteria2.addFilter('product', props.product)
         fieldsMain1.value = [
@@ -500,7 +492,35 @@
             prices: '/api/supplier-product-prices',
             parentPriceFieldName: 'product'
         }
-
+        //endregion
+    } else { // Uniquement un produit est renseigné [D]
+        //region component.value !== null
+        fetchCriteria1.addFilter('component', props.component)
+        fetchCriteria2.addFilter('component', props.component)
+        fieldsMain1.value = [
+            ...componentFields,
+            ...supplierFields,
+            ...commonFields
+        ]
+        title1.value = 'Tableau des prix Composant - Fournisseurs'
+        apis.value[0] = {
+            main: '/api/supplier-components',
+            prices: '/api/supplier-component-prices',
+            parentPriceFieldName: 'component'
+        }
+        fieldsMain2.value = [
+            ...componentFields,
+            ...customerFields,
+            ...commonFields
+        ]
+        title2.value = 'Tableau des prix Composant - Clients'
+        apis.value[1] = {
+            main: '/api/customer-components',
+            prices: '/api/customer-component-prices',
+            parentPriceFieldName: 'component'
+        }
+        showTable2.value = true
+        //endregion
     }
     // Chargement des données
 
@@ -570,37 +590,35 @@
         {
             label: 'ref',
             name: 'ref',
-            type: 'text',
+            type: 'text'
         }
     ]
 
     async function transformItems(items) {
-        return await Promise.all(items.map(async item => {
+        return Promise.all(items.map(async item => {
             const foundUnitDelai = optionsUnits.value.find(unit => unit.text === item.deliveryTime.code)
             const foundUnitMoq = optionsUnits.value.find(unit => unit.text === item.moq.code)
             const foundUnitPackaging = optionsUnits.value.find(unit => unit.text === item.packaging.code)
             const foundUnitPoidsCu = optionsUnits.value.find(unit => unit.text === item.copperWeight.code)
             //On charge les prix via l'API en utilisant le champ '@id' de l'item de prix
-            const promises = item.prices.map(price => {
-                return api(price['@id'], 'GET')
-            })
+            const promises = item.prices.map(price => api(price['@id'], 'GET'))
             const values = await Promise.all(promises)
             // On attend le retour de toutes les promesses
             const transformedPrices = values.map(price => {
-                    const foundUnitQuantity = optionsUnits.value.find(unit => unit.text === price.quantity.code)
-                    const foundCurrencietPrice = currenciesOptions.value.find(currencie => currencie.text === price.price.code)
-                    return {
-                        ...price,
-                        quantity: {
-                            ...price.quantity,
-                            code: foundUnitQuantity ? foundUnitQuantity.value : price.quantity.code
-                        },
-                        price: {
-                            ...price.price,
-                            code: foundCurrencietPrice ? foundCurrencietPrice.value : price.price.code
-                        }
+                const foundUnitQuantity = optionsUnits.value.find(unit => unit.text === price.quantity.code)
+                const foundCurrencietPrice = currenciesOptions.value.find(currencie => currencie.text === price.price.code)
+                return {
+                    ...price,
+                    quantity: {
+                        ...price.quantity,
+                        code: foundUnitQuantity ? foundUnitQuantity.value : price.quantity.code
+                    },
+                    price: {
+                        ...price.price,
+                        code: foundCurrencietPrice ? foundCurrencietPrice.value : price.price.code
                     }
-                })
+                }
+            })
             return {
                 ...item,
                 deliveryTime: {value: item.deliveryTime.value, code: foundUnitDelai ? foundUnitDelai.value : item.deliveryTime.code},
@@ -639,25 +657,25 @@
         }
         data.copperWeight = {
             code: optionsUnits.value.find(option => option.value === formData.copperWeight.code)?.text,
-            value: formData.copperWeight.value??0
+            value: formData.copperWeight.value ?? 0
         }
         data.deliveryTime = {
             code: optionsUnits.value.find(option => option.value === formData.deliveryTime.code)?.text,
-            value: formData.deliveryTime.value??0
+            value: formData.deliveryTime.value ?? 0
         }
         data.moq = {
             code: optionsUnits.value.find(option => option.value === formData.moq.code)?.text,
-            value: formData.moq.value??0
+            value: formData.moq.value ?? 0
         }
         data.packaging = {
             code: optionsUnits.value.find(option => option.value === formData.packaging.code)?.text,
-            value: formData.packaging.value??0
+            value: formData.packaging.value ?? 0
         }
         data.code = formData.code
         data.index = formData.index
         data.incoterms = formData.incoterms
         data.packagingKind = formData.packagingKind
-        data.proportion = formData.proportion??0
+        data.proportion = formData.proportion ?? 0
         data.kind = formData.kind
         data.administeredBy = user.company
         await api(currentApi, 'POST', data)
@@ -713,7 +731,7 @@
         const data = {}
         if (formData) {
             data[currentItemFieldNames] = formData.item
-            const priceCode = currenciesOptions.value.find(option => option.value === formData.price.code)?currenciesOptions.value.find(option => option.value === formData.price.code).text:'EUR'
+            const priceCode = currenciesOptions.value.find(option => option.value === formData.price.code) ? currenciesOptions.value.find(option => option.value === formData.price.code).text : 'EUR'
             data.price = {
                 code: priceCode,
                 value: formData.price.value
@@ -748,7 +766,7 @@
         await api(iri, 'PATCH', data)
         await loadData()
     }
-    async function deleted(id, index){
+    async function deleted(id){
         // console.log('deleted', id, index)
         if (window.confirm('Voulez-vous vraiment supprimer cet élément ?') === true) {
             await api(id, 'DELETE')
@@ -766,8 +784,7 @@
 
 <template>
     <AppSuspense>
-        <div
-            v-if="!inputError">
+        <div v-if="!inputError">
             <AppPricesTable
                 id="prices"
                 :default-add-form-values="defaultAddFormValues"
@@ -775,16 +792,18 @@
                 :price-fields="fieldsPrices"
                 :items="resolvedItems1"
                 :title="title"
+                :rights="rights"
                 form="form0PricesTable"
                 @add-item="(item) => addItem(item, 0)"
                 @add-item-price="(item) => addItemPrice(item, 0)"
-                @deleted="(item) => deleted(item, 0)"
+                @deleted="deleted"
                 @deleted-prices="deletedPrices"
                 @annule-update="annuleUpdated"
                 @update-items="updateItems"
                 @update-items-prices="updateItemsPrices"/>
             <AppPricesTable
                 id="prices"
+                :rights="rights"
                 :default-add-form-values="defaultAddFormValues"
                 :main-fields="fieldsMain2"
                 :price-fields="fieldsPrices"
@@ -793,12 +812,14 @@
                 form="form1PricesTable"
                 @add-item="(item) => addItem(item, 1)"
                 @add-item-price="(item) => addItemPrice(item, 1)"
-                @deleted="(item) => deleted(item, 1)"
+                @deleted="deleted"
                 @deleted-prices="deletedPrices"
                 @annule-update="annuleUpdated"
                 @update-items="updateItems"
                 @update-items-prices="updateItemsPrices"/>
         </div>
-        <div v-else class="bg-danger text-white text-center m-5 p-5">{{ errorMessage }}</div>
+        <div v-else class="bg-danger text-white text-center m-5 p-5">
+            {{ errorMessage }}
+        </div>
     </AppSuspense>
 </template>

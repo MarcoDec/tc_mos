@@ -8,16 +8,6 @@
     })
     // console.log('MainFields', props.mainFields)
     const filteredHeaders = computed(() => props.mainFields.filter(field => !field.children))
-    // console.log('filteredHeaders', filteredHeaders.value)
-    const rows = computed(() => {
-        const ranks = []
-        let current = filteredHeaders.value
-        do {
-            ranks.push(current)
-            current = current.map(field => (Array.isArray(field.children) && field.children.length > 0 ? field.children : [])).flat()
-        } while (current.length > 0)
-        return ranks
-    })
 </script>
 
 <template>

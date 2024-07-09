@@ -25,7 +25,7 @@
         }
     }
     function deselect(data) {
-        console.log('deselect', data)
+        //console.log('deselect', data)
         // On retire l'élément du tableau
         localModelValue.value = localModelValue.value.filter(item => item !== data)
         emit('searchChange', localModelValue.value)

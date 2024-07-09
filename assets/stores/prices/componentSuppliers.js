@@ -99,32 +99,31 @@ export const useComponentSuppliersStore = defineStore('componentSuppliers', {
     },
     getters: {
         componentSuppliersItems: state => state.itemsPrices.map(item => ({
-                '@id': item['@id'],
-                id: item.id,
-                proportion: item.proportion,
-                delai: {
-                    code: item.deliveryTime.code,
-                    value: item.deliveryTime.value
-                },
-                moq: {
-                    code: item.moq.code,
-                    value: item.moq.value
-                },
-                poidsCu: {
-                    code: item.copperWeight.code,
-                    value: item.copperWeight.value
-                },
-                packaging: {
-                    code: item.packaging.code,
-                    value: item.packaging.value
-                },
-                packagingKind: item.packagingKind,
-                incoterms: item.incoterms,
-                reference: item.code,
-                indice: item.index,
-                prices: item.prices
-            }))
-
+            '@id': item['@id'],
+            id: item.id,
+            proportion: item.proportion,
+            delai: {
+                code: item.deliveryTime.code,
+                value: item.deliveryTime.value
+            },
+            moq: {
+                code: item.moq.code,
+                value: item.moq.value
+            },
+            poidsCu: {
+                code: item.copperWeight.code,
+                value: item.copperWeight.value
+            },
+            packaging: {
+                code: item.packaging.code,
+                value: item.packaging.value
+            },
+            packagingKind: item.packagingKind,
+            incoterms: item.incoterms,
+            reference: item.code,
+            indice: item.index,
+            prices: item.prices
+        }))
     },
     state: () => ({
         items: [],

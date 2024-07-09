@@ -8,7 +8,16 @@
         mainFields: {required: true, type: Array},
         priceFields: {required: true, type: Array},
         form: {required: true, type: String},
-        items: {required: true, type: Object}
+        items: {required: true, type: Object},
+        rights: {
+            required: true,
+            type: Object,
+            default: () => ({
+                update: false,
+                delete: false,
+                add: false
+            })
+        }
     })
     // console.log('defaultAddFormValues', props.defaultAddFormValues)
     const emit = defineEmits(['addItem', 'addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updatedPrices'])
@@ -46,7 +55,7 @@
 
 <template>
     <tbody>
-        <AppPricesTableAddItems :default-add-form-values="defaultAddFormValues" :fields="mainFields" :form="form" @add-item="addItem"/>
+        <AppPricesTableAddItems v-if="props.rights.main.add" :default-add-form-values="defaultAddFormValues" :fields="mainFields" :form="form" @add-item="addItem"/>
         <AppPricesTableItem
             v-for="(item, index) in items" :key="item"
             :item="item"
@@ -55,6 +64,7 @@
             :form="form"
             :main-fields="mainFields"
             :price-fields="priceFields"
+            :rights="rights"
             @add-item-price="addItemPrice"
             @deleted="deleted"
             @price-deleted="deletedPrices"

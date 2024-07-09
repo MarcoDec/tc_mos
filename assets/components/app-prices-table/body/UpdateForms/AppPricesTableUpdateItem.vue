@@ -5,12 +5,12 @@
     const props = defineProps({
         fields: {required: true, type: Array},
         form: {required: true, type: String},
-        item: {required: true, type: Object},
-        index: {default: null, type: Number}
+        item: {required: true, type: Object}
     })
     const emit = defineEmits(['annuleUpdate', 'updateItems', 'update:modelValue'])
     const localItem = ref({})
-    localItem.value = Object.assign({}, props.item)
+    // localItem.value = Object.assign({}, props.item)
+    localItem.value = {...props.item}
     const tabFields = computed(() =>
         props.fields.map(element => {
             const cloned = clone(element)
@@ -30,8 +30,6 @@
 </script>
 
 <template>
-    <template v-for="(field, index0) in mainFields" :key="field.name">
-    </template>
     <td>
         <button class="btn btn-icon btn-primary btn-sm mx-2">
             <Fa icon="check" @click="updateItems"/>

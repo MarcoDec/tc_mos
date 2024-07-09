@@ -88,10 +88,18 @@
                         <AppWorkflowShow :workflow-to-show="['component', 'blocker']" :item-iri="iriComponent"/>
                     </AppSuspense>
                     <span class="ml-auto">
-                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye"
-                                variant="secondary" @click="requestDetails"/>
-                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry"
-                                variant="secondary" @click="requestExploitation"/>
+                        <AppBtn
+                            :class="{'selected-detail': modeDetail}"
+                            label="Détails"
+                            icon="eye"
+                            variant="secondary"
+                            @click="requestDetails"/>
+                        <AppBtn
+                            :class="{'selected-detail': !modeDetail}"
+                            label="Exploitation"
+                            icon="industry"
+                            variant="secondary"
+                            @click="requestExploitation"/>
                     </span>
                 </div>
             </div>

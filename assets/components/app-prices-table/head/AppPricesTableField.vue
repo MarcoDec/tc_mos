@@ -1,25 +1,9 @@
 <script setup>
-    import {computed, defineProps} from 'vue'
+    import {defineProps} from 'vue'
 
-    const props = defineProps({
-        field: {required: true, type: Object},
-        rowspan: {required: false, type: Number}
+    /*const props =*/ defineProps({
+        field: {required: true, type: Object}
     })
-
-    function childLength(field) {
-        if (Array.isArray(field.children) && field.children.length > 0) {
-            let somme = 2
-            for (const walkedField of field.children) somme += childLength(walkedField)
-            return somme
-        }
-        return 1
-    }
-
-    const colspan = computed(() => childLength(props.field))
-    const safeRowSpan = computed(() =>
-        (Array.isArray(props.field.children) && props.field.children.length > 0
-            ? 1
-            : props.rowspan))
 </script>
 
 <template>

@@ -25,7 +25,7 @@
         // console.log('formData', formData)
     }
     function addItem() {
-        console.log('addItem', formData)
+        // console.log('addItem', formData)
         emit('addItem', formData)
     }
 </script>
@@ -48,7 +48,6 @@
                     no-label
                     @update:model-value="onUpdateModelValue($event, field.name)"/>
             </td>
-<!--            <td v-else colspan="4"/>-->
         </template>
     </tr>
 </template>

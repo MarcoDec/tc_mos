@@ -1,31 +1,47 @@
 <script setup>
     import {defineProps, ref} from 'vue'
     import AppPricesTableItemsComponentSuppliers from '../AppPricesTableItemsComponentSuppliers.vue'
+
     const props = defineProps({
         item: {required: true, type: Object},
         mainFields: {required: true, type: Array},
-        form: {required: true, type: String},
-        index: {required: true, type: Number}
+        index: {required: true, type: Number},
+        rights: {
+            required: true,
+            type: Object,
+            default: () => ({
+                update: false,
+                delete: false,
+                add: false
+            })
+        }
     })
     const emit = defineEmits(['deleted', 'update'])
     const localItem = ref({})
-    localItem.value = Object.assign({}, props.item)
+    localItem.value = {...props.item}
+    // localItem.value = Object.assign({}, props.item)
+
     function update() {
-        console.log('update', localItem.value)
+        // console.log('update', localItem.value)
         emit('update', localItem.value)
     }
+
     function deleted(item) {
-        console.log('deleted', item['@id'])
+        // console.log('deleted', item['@id'])
         emit('deleted', item['@id'])
     }
 </script>
 
 <template>
     <td class="">
-        <button class="btn btn-icon btn-secondary btn-sm mx-2" :title="localItem.id" @click="update">
+        <button
+            v-if="rights.update"
+            class="btn btn-icon btn-secondary btn-sm mx-2"
+            :title="localItem.id"
+            @click="update">
             <Fa icon="pencil"/>
         </button>
-        <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted(localItem)">
+        <button v-if="rights.delete" class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted(localItem)">
             <Fa icon="trash"/>
         </button>
     </td>

@@ -2,7 +2,7 @@
     import AppPricesTable from '../../app-prices-table/AppPricesTable.vue'
     import AppSuspense from '../../AppSuspense.vue'
 
-    const props = defineProps({
+    /*const props = */defineProps({
         defaultAddFormValues: {required: true, type: Object},
         mainFields: {required: true, type: Array},
         priceFields: {required: true, type: Array},

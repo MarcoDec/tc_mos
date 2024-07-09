@@ -1,10 +1,10 @@
 <script setup>
-    const props = defineProps({
+    /*const props = */defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},
         item: {required: true, type: Object}
     })
-    console.log('props', props)
+    // console.log('props', props)
 </script>
 
 <template>
