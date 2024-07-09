@@ -13,18 +13,11 @@
         priceModified: {required: true, type: Array},
         index: {required: true, type: Number}
     })
-    const emit = defineEmits(['priceDeleted','addItemPrice'])
+    const emit = defineEmits(['priceDeleted','addItemPrice', 'updatedPrices'])
     const localItem = ref(props.item)
     // console.log('props.priceFields', props.priceFields)
     const filteredMainFields = props.mainFields.filter(field => !field.children)
     const priceModified = ref(props.priceModified)
-    async function deletePrice(iri) {
-        console.log('deletePrice', iri)
-        if (confirm('Voulez-vous vraiment supprimer ce prix ?')) {
-            await api(iri, 'DELETE')
-            emit('priceDeleted', iri)
-        }
-    }
     const defaultAddFormValues = {
         item: props.item['@id'],
         price: {
@@ -37,9 +30,16 @@
         },
         ref: null
     }
+    async function deletePrice(iri) {
+        emit('priceDeleted', iri)
+    }
     function onAddItem(formData) {
         console.log('addItemPrice', formData)
         emit('addItemPrice', formData)
+    }
+    function updatePrice(item) {
+        console.log('updatePrice', item)
+        emit('updatedPrices', item)
     }
 </script>
 
@@ -69,7 +69,8 @@
                     <AppPricesTablePriceItemShow
                         :item="price"
                         :price-fields="priceFields"
-                        @deleted-prices="deletePrice"/>
+                        @deleted-prices="deletePrice"
+                        @updated-prices="updatePrice"/>
                 </tr>
             </tbody>
         </table>

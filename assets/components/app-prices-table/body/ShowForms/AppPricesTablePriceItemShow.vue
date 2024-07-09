@@ -24,11 +24,9 @@
         key.value++
         onGoingUpdate.value = false
     }
-    function onUpdateItemPrice(item) {
-        console.log('onUpdateItemPrice', item)
-        localItem.value = Object.assign({}, item)
-        key.value++
-        onGoingUpdate.value = false
+    function onUpdateItemPrice() {
+        console.log('onUpdateItemPrice', localItem.value)
+        emit('updatedPrices', localItem.value)
     }
 </script>
 

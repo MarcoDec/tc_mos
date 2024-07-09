@@ -748,16 +748,18 @@
         await api(iri, 'PATCH', data)
         await loadData()
     }
-    async function deleted(id){
-        // console.log('deleted', id)
-        if (window.confirm('Voulez-vous vraiment supprimer cet élément ?') === false) return
-        await api(id, 'DELETE')
-        await loadData()
+    async function deleted(id, index){
+        console.log('deleted', id, index)
+        if (window.confirm('Voulez-vous vraiment supprimer cet élément ?') === true) {
+            await api(id, 'DELETE')
+            await loadData()
+        }
     }
     async function deletedPrices(id){
-        if (window.confirm('Voulez-vous vraiment supprimer cet élément ?') === false) return
-        await api(id, 'DELETE')
-        await loadData()
+        if (window.confirm('Voulez-vous vraiment supprimer cet élément ?') === true) {
+            await api(id, 'DELETE')
+            await loadData()
+        }
     }
     // console.log('defaultAddFormValues', defaultAddFormValues)
 </script>
@@ -776,7 +778,7 @@
                 form="formComponentSuppliersPricesTable"
                 @add-item="addItem"
                 @add-item-price="(item) => addItemPrice(item, 0)"
-                @deleted="deleted"
+                @deleted="(item) => deleted(item, 0)"
                 @deleted-prices="deletedPrices"
                 @annule-update="annuleUpdated"
                 @update-items="updateItems"

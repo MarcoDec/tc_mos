@@ -2,7 +2,7 @@
 import AppPricesTableItemsPrices from "../AppPricesTableItemsPrices.vue"
 import {defineProps, defineEmits} from 'vue'
 
-const emits = defineEmits(['deletePrice', 'priceToUpdate'])
+const emits = defineEmits(['deletedPrice', 'priceToUpdate'])
 const props = defineProps({
     item: {required: true, type: Object},
     priceFields: {required: true, type: Array},

@@ -1,12 +1,7 @@
 <script setup>
     import {defineProps, computed, ref} from 'vue'
-    import AppPricesTableAddItems from '../AddForms/AppPricesTableAddItems.vue'
-    import AppPricesTableUpdateItem from '../UpdateForms/AppPricesTableUpdateItem.vue'
     import AppPricesTableItemLeft from './AppPricesTableItemLeft.vue'
     import AppPricesTableItemRight from './AppPricesTableItemRight.vue'
-    import AppPricesTableItemsComponentSuppliers from './AppPricesTableItemsComponentSuppliers.vue'
-    import AppPricesTableItemsPrices from './AppPricesTableItemsPrices.vue'
-    import AppPricesTableUpdateItemPrices from '../UpdateForms/AppPricesTableUpdateItemPrices.vue'
 
     const props = defineProps({
         item: {required: true, type: Object},
@@ -15,7 +10,7 @@
         form: {required: true, type: String},
         index: {required: true, type: Number}
     })
-    const emit = defineEmits(['addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'update', 'updateItems', 'updatePrices', 'updateItemsPrices'])
+    const emit = defineEmits(['addItemPrice', 'priceDeleted', 'updatedPrices'])
     const updated = ref(false)
     const priceModified = ref([])
     priceModified.value = Array.from({length: props.item.prices.length}, () => false)
@@ -28,30 +23,6 @@
     function deleted(item) {
         console.log('deleted', item['@id'])
         emit('deleted', item['@id'])
-    }
-
-    async function updateItems(item) {
-        emit('updateItems', item)
-        emit('annuleUpdate')
-    }
-
-    function annuleUpdated() {
-        emit('annuleUpdate')
-        updated.value = false
-    }
-
-    async function updateItemsPrices(index, item) {
-        emit('updateItemsPrices', item)
-        priceModified.value[index] = false
-    }
-
-    function annuleUpdatedprices(index) {
-        emit('annuleUpdate')
-        priceModified.value[index] = false
-    }
-
-    function deletedPrices(iri) {
-        emit('deletedPrices', iri)
     }
 
     // console.log('props.item', props.item)
@@ -69,11 +40,15 @@
     // console.log('range(nbTr)', range(nbTr.value))
     function onPriceDeleted(iri) {
         console.log('onPriceDeleted', iri)
-        //emit('priceDeleted', iri)
+        emit('priceDeleted', iri)
     }
     function onAddItemPrice(formData) {
         console.log('onAddItemPrice', formData)
         emit('addItemPrice', formData)
+    }
+    function onUpdatedPrice(item) {
+        console.log('onUpdatedPrice', item)
+        emit('updatedPrices', item)
     }
 </script>
 
@@ -96,7 +71,8 @@
             :main-fields="mainFields"
             :item="item"
             @price-deleted="onPriceDeleted"
-            @add-item-price="onAddItemPrice"/>
+            @add-item-price="onAddItemPrice"
+            @updated-prices="onUpdatedPrice"/>
 
     </tr>
 </template>

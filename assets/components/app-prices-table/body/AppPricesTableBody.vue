@@ -11,7 +11,7 @@
         items: {required: true, type: Object}
     })
     // console.log('defaultAddFormValues', props.defaultAddFormValues)
-    const emit = defineEmits(['addItem', 'addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updateItemsPrices'])
+    const emit = defineEmits(['addItem', 'addItemPrice', 'annuleUpdate', 'deleted', 'deletedPrices', 'updateItems', 'updatedPrices'])
 
     async function updateItems(item) {
         emit('updateItems', item)
@@ -23,7 +23,7 @@
     }
 
     async function updateItemsPrices(item) {
-        emit('updateItemsPrices', item)
+        emit('updatedPrices', item)
     }
 
     function deleted(id) {
@@ -31,6 +31,7 @@
     }
 
     function deletedPrices(id) {
+        console.log('deletedPrices', id)
         emit('deletedPrices', id)
     }
 
@@ -56,9 +57,9 @@
             :price-fields="priceFields"
             @add-item-price="addItemPrice"
             @deleted="deleted"
-            @deleted-prices="deletedPrices"
+            @price-deleted="deletedPrices"
             @annule--update="annuleUpdated"
-            @update-items="updateItems"
-            @update-items-prices="updateItemsPrices"/>
+            @update="updateItems"
+            @updated-prices="updateItemsPrices"/>
     </tbody>
 </template>

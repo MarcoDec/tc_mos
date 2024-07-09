@@ -33,6 +33,7 @@
     }
 
     function deletedPrices(id) {
+        console.log('deletedPrices', id)
         emit('deletedPrices', id)
     }
 
@@ -59,7 +60,7 @@
             @deleted-prices="deletedPrices"
             @annule-update="annuleUpdated"
             @update-items="updateItems"
-            @update-items-prices="updateItemsPrices"
+            @updated-prices="updateItemsPrices"
             @add-item="addItem"
             @add-item-price="addItemPrice"/>
     </table>
