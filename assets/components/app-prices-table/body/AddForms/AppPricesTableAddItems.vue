@@ -16,13 +16,13 @@
     }
 
     function onUpdateModelValue(event, fieldName) {
-        console.log('onUpdateModelValue', event, fieldName)
+        // console.log('onUpdateModelValue', event, fieldName)
         if (typeof event === 'object' && event !== null) {
             formData[fieldName] = {...formData[fieldName], ...event}
         } else {
             formData[fieldName] = event
         }
-        console.log('formData', formData)
+        // console.log('formData', formData)
     }
     function addItem() {
         console.log('addItem', formData)
@@ -44,7 +44,7 @@
                     :disabled="field.readonly"
                     :form="form"
                     :field="field"
-                    :model-value="defaultAddFormValues[field.name]"
+                    :model-value="formData[field.name]"
                     no-label
                     @update:model-value="onUpdateModelValue($event, field.name)"/>
             </td>

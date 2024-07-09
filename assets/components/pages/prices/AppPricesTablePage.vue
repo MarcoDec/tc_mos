@@ -653,12 +653,11 @@
             code: optionsUnits.value.find(option => option.value === formData.packaging.code)?.text,
             value: formData.packaging.value??0
         }
-        data.reference = formData.reference
+        data.code = formData.code
         data.index = formData.index
         data.incoterms = formData.incoterms
         data.packagingKind = formData.packagingKind
         data.proportion = formData.proportion??0
-        // console.log('formData', formData)
         data.kind = formData.kind
         data.administeredBy = user.company
         await api(currentApi, 'POST', data)
