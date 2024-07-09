@@ -10,6 +10,7 @@
         form: {required: true, type: String},
         index: {required: true, type: Number}
     })
+    console.log('props.item', props.item)
     const updated = ref(false)
 
     function update() {
@@ -45,7 +46,6 @@
 
 <template>
     <template v-if="updated === false">
-<!--        <td>VIF 1</td>-->
         <td class="">
             <button class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.id" @click="update">
                 <Fa icon="pencil"/>

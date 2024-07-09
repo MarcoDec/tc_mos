@@ -4,12 +4,12 @@ import {isObject} from '@vueuse/core'
 import AppSwitch from '../../../form-cardable/fieldCardable/input/AppSwitch.vue'
 import api from "../../../../api";
 
-const props = defineProps({
+    const props = defineProps({
         item: {required: true, type: Object},
         field: {required: true, type: Object},
-        rowspan: {required: false, type: Number},
         index: {required: true, type: Number}
     })
+    console.log('props', props.item[props.field.name])
     const multiSelectResults = ref([])
     if (props.field.type === 'multiselect-fetch') {
         if (typeof props.item[props.field.name] === 'object') {
@@ -22,7 +22,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <td v-if="index === 0 && field.name !== 'prices'" :rowspan="rowspan">
+    <td v-if="field.name !== 'prices'">
         <template v-if="item[field.name] !== null">
             <div v-if="field.name !== 'prices'">
                 <div v-if="field.type === 'select'">

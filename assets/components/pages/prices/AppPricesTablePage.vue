@@ -72,7 +72,7 @@
 
     const storeCurrencies = useOptions('currencies')
     const currenciesOptions = computed(() => storeCurrencies.getOptionsMap())
-    console.log('currenciesOptions', currenciesOptions.value)
+    // console.log('currenciesOptions', currenciesOptions.value)
     storeCurrencies.fetchOp()
 
     const fetchIncotermsOptions = useOptions('incoterms')
@@ -225,7 +225,7 @@
         },
         {
             label: 'Référence',
-            name: 'reference',
+            name: 'code',
             type: 'text',
             width: '100'
         },
@@ -513,7 +513,7 @@
     async function loadData() {
         const response1 = await api(apis.value[0].main + fetchCriteria1.getFetchCriteria, 'GET')
         mainItems1.value = response1['hydra:member'].map(item => transformPricesAsAnArray(item))
-        console.log('mainItems1', mainItems1.value)
+        // console.log('mainItems1', mainItems1.value)
         const response2 = await api(apis.value[1].main + fetchCriteria2.getFetchCriteria, 'GET')
         mainItems2.value = response2['hydra:member'].map(item => transformPricesAsAnArray(item))
     }
@@ -749,7 +749,7 @@
         await loadData()
     }
     async function deleted(id, index){
-        console.log('deleted', id, index)
+        // console.log('deleted', id, index)
         if (window.confirm('Voulez-vous vraiment supprimer cet élément ?') === true) {
             await api(id, 'DELETE')
             await loadData()
@@ -775,8 +775,8 @@
                 :price-fields="fieldsPrices"
                 :items="resolvedItems1"
                 :title="title"
-                form="formComponentSuppliersPricesTable"
-                @add-item="addItem"
+                form="form0PricesTable"
+                @add-item="(item) => addItem(item, 0)"
                 @add-item-price="(item) => addItemPrice(item, 0)"
                 @deleted="(item) => deleted(item, 0)"
                 @deleted-prices="deletedPrices"
@@ -790,10 +790,10 @@
                 :price-fields="fieldsPrices"
                 :items="resolvedItems2"
                 :title="title"
-                form="formComponentSuppliersPricesTable"
-                @add-item="addItem"
-                @add-item-price="(item) => addItemPrice(item, 0)"
-                @deleted="deleted"
+                form="form1PricesTable"
+                @add-item="(item) => addItem(item, 1)"
+                @add-item-price="(item) => addItemPrice(item, 1)"
+                @deleted="(item) => deleted(item, 1)"
                 @deleted-prices="deletedPrices"
                 @annule-update="annuleUpdated"
                 @update-items="updateItems"

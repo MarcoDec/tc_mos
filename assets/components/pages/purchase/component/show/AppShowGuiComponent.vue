@@ -74,62 +74,58 @@
 </script>
 
 <template>
-    <AppSuspense>
-        <AppShowGuiGen v-if="beforeMountDataLoaded">
-            <template #gui-left>
-                <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <div class="d-flex flex-row">
-                        <div>
-                            <FontAwesomeIcon icon="puzzle-piece"/>
-                            <b>{{ useFetchComponentStore.component.code }}</b>: {{
-                                useFetchComponentStore.component.name
-                            }}
-                        </div>
-                        <AppSuspense>
-                            <AppWorkflowShow :workflow-to-show="['component', 'blocker']" :item-iri="iriComponent"/>
-                        </AppSuspense>
-                        <span class="ml-auto">
-                            <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye"
-                                    variant="secondary" @click="requestDetails"/>
-                            <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry"
-                                    variant="secondary" @click="requestExploitation"/>
-                        </span>
-                    </div>
-                </div>
+    <AppShowGuiGen v-if="beforeMountDataLoaded">
+        <template #gui-left>
+            <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
                 <div class="d-flex flex-row">
-                    <AppImg
-                        class="width30"
-                        :file-path="useFetchComponentStore.component.filePath"
-                        :image-update-url="imageUpdateUrl"
-                        @update:file-path="onImageUpdate"/>
+                    <div>
+                        <FontAwesomeIcon icon="puzzle-piece"/>
+                        <b>{{ useFetchComponentStore.component.code }}</b>: {{
+                            useFetchComponentStore.component.name
+                        }}
+                    </div>
                     <AppSuspense>
-                        <AppShowComponentTabGeneral :key="`form-${keyTabs}`" class="width70" @updated="onUpdated"/>
+                        <AppWorkflowShow :workflow-to-show="['component', 'blocker']" :item-iri="iriComponent"/>
+                    </AppSuspense>
+                    <span class="ml-auto">
+                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye"
+                                variant="secondary" @click="requestDetails"/>
+                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry"
+                                variant="secondary" @click="requestExploitation"/>
+                    </span>
+                </div>
+            </div>
+            <div class="d-flex flex-row">
+                <AppImg
+                    class="width30"
+                    :file-path="useFetchComponentStore.component.filePath"
+                    :image-update-url="imageUpdateUrl"
+                    @update:file-path="onImageUpdate"/>
+                <AppShowComponentTabGeneral :key="`form-${keyTabs}`" class="width70" @updated="onUpdated"/>
+            </div>
+        </template>
+        <template #gui-bottom>
+            <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small parent-buttons-div">
+                <div class="full-visible-width">
+                    <AppSuspense>
+                        <AppComponentFormShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100"/>
+                        <AppComponentShowInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>
                     </AppSuspense>
                 </div>
-            </template>
-            <template #gui-bottom>
-                <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small parent-buttons-div">
-                    <div class="full-visible-width">
-                        <AppSuspense>
-                            <AppComponentFormShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100"/>
-                            <AppComponentShowInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>
-                        </AppSuspense>
-                    </div>
-                    <div class="full-screen-button">
-                        <FontAwesomeIcon
-                            v-if="isFullScreen"
-                            icon="fa-solid fa-circle-chevron-down"
-                            title="Réduire la fenêtre en plein écran"
-                            @click="deactivateFullScreen"/>
-                        <FontAwesomeIcon
-                            v-else
-                            icon="fa-solid fa-circle-chevron-up"
-                            title="Agrandir la fenêtre en plein écran"
-                            @click="activateFullScreen"/>
-                    </div>
+                <div class="full-screen-button">
+                    <FontAwesomeIcon
+                        v-if="isFullScreen"
+                        icon="fa-solid fa-circle-chevron-down"
+                        title="Réduire la fenêtre en plein écran"
+                        @click="deactivateFullScreen"/>
+                    <FontAwesomeIcon
+                        v-else
+                        icon="fa-solid fa-circle-chevron-up"
+                        title="Agrandir la fenêtre en plein écran"
+                        @click="activateFullScreen"/>
                 </div>
-            </template>
-            <template #gui-right/>
-        </AppShowGuiGen>
-    </AppSuspense>
+            </div>
+        </template>
+        <template #gui-right/>
+    </AppShowGuiGen>
 </template>

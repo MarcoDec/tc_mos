@@ -10,6 +10,7 @@
         form: {required: true, type: String},
         index: {required: true, type: Number}
     })
+    console.log('props', props)
     const emit = defineEmits(['addItemPrice', 'priceDeleted', 'updatedPrices'])
     const updated = ref(false)
     const priceModified = ref([])
@@ -56,7 +57,7 @@
     <tr>
         <AppPricesTableItemLeft
             :index="index"
-            :form="form"
+            :form="`${form}_${index}_main`"
             :price-fields="priceFields"
             :main-fields="mainFields"
             :item="item"
@@ -66,7 +67,7 @@
         <AppPricesTableItemRight
             :index="index"
             :price-modified="priceModified"
-            :form="form"
+            :form="`${form}_${index}_prices`"
             :price-fields="priceFields"
             :main-fields="mainFields"
             :item="item"
