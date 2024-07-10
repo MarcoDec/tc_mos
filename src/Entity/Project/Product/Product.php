@@ -1022,7 +1022,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
     {
         $companies = [];
         foreach ($this->productCustomers as $productCustomer) {
-            $companies[] = $productCustomer->getAdministeredBy();
+            $administeredBy = $productCustomer->getAdministeredBy();
+            if ($administeredBy instanceof Company) {
+                $companies[] = $administeredBy;
+            }
         }
         return new ArrayCollection($companies);
     }

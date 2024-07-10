@@ -66,7 +66,7 @@ class ProductionPlanningItemsController
                 $embState = $SellingItem->getEmbState()->getState();
 
             if($embBlocker === 'enabled' && !in_array($embState, ['delivered','billed','paid'])){
-                if ($this->is_semaine_passee($date) === true) {
+                if ($this->isWeekBeforeNow($date) === true) {
                     $date_week = "RETARD" ;
                    if (!isset($confirmedProductQuantities[$productId])) {
                         $confirmedProductQuantities[$productId] = 0;
@@ -83,7 +83,7 @@ class ProductionPlanningItemsController
                     }
                     $lateProductQuantities[$productId] = $confirmedProductQuantities[$productId] - $sentProductQuantities[$productId];
                 }   
-                if($this->is_semaine_passee($date) === false) {
+                if($this->isWeekBeforeNow($date) === true) {
                     $date_week = "PAS DE RETARD" ;
                     dump($date_week);
                     if (!isset($productsByYearWeek[$YearWeek])) {
@@ -110,41 +110,77 @@ class ProductionPlanningItemsController
         }
 
         $dataItems = ['items' => $data];
-        dump($productsByYearWeek);
-        foreach ($dataItems['items'] as &$productData) {
-            $productId = $productData['id'];
-            // Ajouter les quantités par semaine et par année directement dans $productData
-            foreach ($productsByYearWeek as $YearWeek => $productQuantities) {
-                if (isset($productQuantities[$productId])) {
-                    $productData[$YearWeek] = $productQuantities[$productId];
+        // On trie $productsByYearWeek par clé croissante
+        $yearWeeks = array_keys($productsByYearWeek);
+        sort($yearWeeks);
+        // On ne garde que les 12 premiers éléments des clés
+        //$limitedYearWeeks = array_slice($yearWeeks, 0, 12);
+//        $limitedYearWeeks = $yearWeeks;
+        //Construction du tableau des YearWeek des 12 prochaines semaine incluant la semaine courante
+        $nextTwelveWeeks = [];
+        $currentDate = new DateTime();
+        for ($i = 0; $i < 12; $i++) {
+            // Clone la date pour éviter de modifier l'original lors de l'ajout de semaines
+            $weekDate = clone $currentDate;
+            $weekDate->modify("+{$i} week");
+            $yearWeek = $weekDate->format('oW'); // 'o' pour l'année ISO, 'W' pour le numéro de semaine ISO
+            $nextTwelveWeeks[] = $yearWeek;
+        }
+        // On ne garde que les éléments de $productsByYearWeek qui ont leur clé dans $limitedYearWeeks
+        $filteredProductsByYearWeek = array_filter($productsByYearWeek, static function($value, $key) use ($nextTwelveWeeks) {
+            return in_array($key, $nextTwelveWeeks, true);
+        }, ARRAY_FILTER_USE_BOTH);
+        ksort($filteredProductsByYearWeek);
+        // On boucle sur $nextTwelveWeek afin d'obtenir le tableau des champs à ajouter
+        foreach ($nextTwelveWeeks as $YearWeek) {
+            $dataFields[] = [
+                'label' => $YearWeek,
+                'name' => $YearWeek,
+                'type' => 'integer'
+            ];
+            foreach ($dataItems['items'] as &$productData) {
+                $productId = $productData['id'];
+                // Ajouter les quantités par semaine et par année directement dans $productData
+                if (isset($filteredProductsByYearWeek[$YearWeek][$productId])) {
+                    $productData[$YearWeek] = $filteredProductsByYearWeek[$YearWeek][$productId];
                 } else {
                     $productData[$YearWeek] = '';
                 }
             }
         }
-        foreach ($productsByYearWeek as $key => $value) {
-            $type = 'integer';
-            $dataFields[] = [
-                'label' => $key,
-                'name' => $key,
-                'type' => $type
-            ];
-        }
+//        dump($filteredProductsByYearWeek);
+//        foreach ($dataItems['items'] as &$productData) {
+//            $productId = $productData['id'];
+//            // Ajouter les quantités par semaine et par année directement dans $productData
+//            foreach ($filteredProductsByYearWeek as $YearWeek => $productQuantities) {
+//                if (isset($productQuantities[$productId])) {
+//                    $productData[$YearWeek] = $productQuantities[$productId];
+//                } else {
+//                    $productData[$YearWeek] = '';
+//                }
+//            }
+//        }
+//        foreach ($filteredProductsByYearWeek as $key => $value) {
+//            $type = 'integer';
+//            $dataFields[] = [
+//                'label' => $key,
+//                'name' => $key,
+//                'type' => $type
+//            ];
+//        }
         $responseData = array_merge($dataItems, ['fields' => $dataFields]);
 
         return new JsonResponse($responseData);
     }
 
-   public function is_semaine_passee(DateTimeImmutable $date) {
-        $semaine = $date->format('W');
-        $annee = $date->format('Y');
+   public function isWeekBeforeNow(DateTimeImmutable $date): bool
+   {
+        $week = $date->format('W');
+        $year = $date->format('Y');
 
-        $annee_courante = date('Y');
-        $semaine_courante = date('W');
+        $currentYear = date('Y');
+        $currentWeek = date('W');
 
-        if ($annee_courante > $annee || ($annee == $annee_courante && $semaine_courante > $semaine)) {
-            return true;
-        }
-        return false;
-    }
+       return $currentYear > $year || ($year === $currentYear && $currentWeek > $week);
+   }
 }

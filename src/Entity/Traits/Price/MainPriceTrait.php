@@ -12,13 +12,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 trait MainPriceTrait
 {
-    /** @var Company */
+    /** @var ?Company */
     #[
         ApiProperty(description: 'Compagnies gérantes la grille de prix', readableLink: false, example: ['/api/companies/1']),
         ORM\ManyToOne(targetEntity: Company::class),
         Serializer\Groups(['read:main-price', 'write:main-price'])
     ]
-    private Company $administeredBy;
+    private ?Company $administeredBy;
     #[
         ApiProperty(description: 'Référence', example: 'DH544G'),
         ORM\Column(nullable: true),
@@ -88,7 +88,7 @@ trait MainPriceTrait
         $this->packaging = new Measure();
     }
 
-    public function getAdministeredBy(): Company
+    public function getAdministeredBy(): ?Company
     {
         return $this->administeredBy;
     }

@@ -35,11 +35,11 @@ class ManufacturingOrderNeedsController
 
     private function getOrderData(Order $manufacturingOrder): array
     {
-        $selling = $manufacturingOrder->getOrder();
+        $selling = $manufacturingOrder->getSellingOrder();
         $commande = $selling ? $selling->getRef() : '';
         $customerName = '';
         if ($selling) {
-            $sellingOrders = $this->sellingOrderRepository->findById($manufacturingOrder->getOrder()->getId());
+            $sellingOrders = $this->sellingOrderRepository->findById($manufacturingOrder->getSellingOrder()->getId());
             foreach ($sellingOrders as $sellingOrder) {
                 $customer = $sellingOrder->getCustomer();
                 $customerName = $customer ? $customer->getName() : '';
