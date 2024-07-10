@@ -113,24 +113,12 @@
             </div>
         </template>
         <template #gui-bottom>
-            <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small parent-buttons-div">
+            <div class="bg-warning-subtle font-small">
                 <div class="full-visible-width">
                     <AppSuspense>
                         <AppComponentFormShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100"/>
                         <AppComponentShowInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>
                     </AppSuspense>
-                </div>
-                <div class="full-screen-button">
-                    <FontAwesomeIcon
-                        v-if="isFullScreen"
-                        icon="fa-solid fa-circle-chevron-down"
-                        title="Réduire la fenêtre en plein écran"
-                        @click="deactivateFullScreen"/>
-                    <FontAwesomeIcon
-                        v-else
-                        icon="fa-solid fa-circle-chevron-up"
-                        title="Agrandir la fenêtre en plein écran"
-                        @click="activateFullScreen"/>
                 </div>
             </div>
         </template>
