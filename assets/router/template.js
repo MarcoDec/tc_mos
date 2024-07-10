@@ -16,6 +16,12 @@ export default [
         meta: {requiresAuth: true},
         name: 'pdf-delivery-note',
         path: '/pdf-delivery-note'
+    },
+    {
+        component: () => import('../components/pages/template/AppPdfProForma.vue'),
+        meta: {requiresAuth: true},
+        name: 'pdf-pro-forma',
+        path: '/pdf-pro-forma'
     }
 
 ]
