@@ -25,7 +25,7 @@
     iriCustomer.value = `/api/customers/${idCustomer}`
     const isCustomerLoaded = ref(false)
     fetchCustomerStore.fetchOne(idCustomer).then(() => {
-        console.log('fetchCustomerStore.customer', fetchCustomerStore.customer)
+        // console.log('fetchCustomerStore.customer', fetchCustomerStore.customer)
         isCustomerLoaded.value = true
     })
     const onUpdated = () => {

@@ -8,7 +8,7 @@
     const props = defineProps({
         dataCustomers: {required: true, type: Object}
     })
-    console.log('dataCustomers', props.dataCustomers)
+    // console.log('dataCustomers', props.dataCustomers)
     const isErrors = ref(false)
     if (Object.keys(props.dataCustomers).length === 0) {
         isErrors.value = true
