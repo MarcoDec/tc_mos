@@ -9,12 +9,14 @@
         id: {required: true, type: String},
         title: {default: '', type: String}
     })
+    // console.log('AppCardShow props', props)
     const emit = defineEmits(['cancel', 'update', 'update:modelValue'])
     const updated = ref(false)
     const disable = ref(true)
     const localData = ref({})
     onBeforeMount(() => {
         localData.value = props.componentAttribute
+        // console.log('localData', localData.value)
     })
     function update() {
         updated.value = true
@@ -31,6 +33,7 @@
         emit('cancel')
     }
     function input(value) {
+        // console.log('input', value)
         localData.value = value
         emit('update:modelValue', value)
     }

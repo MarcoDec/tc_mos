@@ -6,6 +6,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Management\Unit;
 use App\Entity\Project\Product\Product;
 use App\Filter\RelationFilter;
 use App\Repository\Selling\Order\ProductItemRepository;
@@ -17,11 +18,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  * @template-extends Item<Product>
  */
 #[   
-    ApiFilter(filterClass: RelationFilter::class, properties: ['item',  'order.customer.id']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['order.customer.id' => 'partial', 'ref' => 'partial', 'requestedQuantity.value' => 'partial', 'requestedQuantity.code' => 'partial', 'confirmedQuantity.code' => 'partial', 'confirmedQuantity.value' => 'partial', 'confirmedDate' => 'partial', 'requestedDate' => 'partial',
-    'order.ref' => 'partial', 'embState.state' =>'partial', 'order.kind' => 'partial'
-]),
-
+    ApiFilter(filterClass: RelationFilter::class, properties: ['item',  'sellingOrder.customer.id']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['sellingOrder.customer.id' => 'partial', 'ref' => 'partial', 'requestedQuantity.value' => 'partial', 'requestedQuantity.code' => 'partial', 'confirmedQuantity.code' => 'partial', 'confirmedQuantity.value' => 'partial', 'confirmedDate' => 'partial', 'requestedDate' => 'partial',
+        'sellingOrder.ref' => 'partial', 'embState.state' =>'partial', 'sellingOrder.kind' => 'partial', 'item.id'=> 'partial'
+    ]),
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -36,11 +36,12 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                 'openapi_context' => [
                     'description' => 'Récupère les lignes',
                     'summary' => 'Récupère les lignes',
+                    'tags' => ['SellingOrderItem']
                 ],
-                'path' => '/selling-order-products',
+                'path' => '/selling-order-item-products',
             ]
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        itemOperations: ['get', 'patch'],
         shortName: 'SellingOrderItemProduct',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
@@ -62,7 +63,13 @@ class ProductItem extends Item {
         ApiProperty(description: 'Produit', readableLink: true),
         ORM\JoinColumn(name: 'product_id'),
         ORM\ManyToOne(targetEntity: Product::class),
-        Serializer\Groups(['read:item', 'write:item', 'read:expedition'])
+        Serializer\Groups(['read:item', 'write:item', 'read:expedition']),
+        Serializer\MaxDepth(1)
     ]
     protected $item;
+    public function __construct()
+    {
+        parent::__construct();
+        $this->item = new Product();
+    }
 }

@@ -6,10 +6,14 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Selling\Order\Item\State;
+use App\Entity\Project\Product\Product;
+use App\Entity\Purchase\Component\Component;
 use App\Entity\Selling\Customer\Customer;
 use App\Entity\Item as BaseItem;
 use App\Entity\Production\Manufacturing\Expedition;
@@ -20,16 +24,18 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Entity\Embeddable\Measure;
 
 
 /**
- * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
+ * @template I of Component|Product
  *
  * @template-extends BaseItem<I, Order>
  */
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['order']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['id' => 'exact', 'item.id' => 'exact', 'parentOrder.id' => 'exact', 'ref' => 'partial', 'embState.state' => 'exact', 'confirmedDate' => 'exact', 'confirmedQuantity.value' => 'exact', 'confirmedQuantity.code' => 'exact', 'requestedDate' => 'exact', 'requestedQuantity.value' => 'exact', 'requestedQuantity.code' => 'exact', 'notes' => 'partial']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['item', 'parentOrder']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['id', 'item.id', 'ref', 'embState.state', 'confirmedDate', 'confirmedQuantity.value', 'requestedDate', 'requestedQuantity.value', 'notes']),
+
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -46,7 +52,7 @@ use App\Entity\Embeddable\Measure;
                     'description' => 'Supprime une ligne',
                     'summary' => 'Supprime une ligne',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
@@ -79,13 +85,13 @@ use App\Entity\Embeddable\Measure;
                     'summary' => 'Transite la ligne à son prochain statut de workflow'
                 ],
                 'path' => '/selling-order-items/{id}/promote/{workflow}/to/{transition}',
-                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')',
                 'validate' => false
             ]
         ],
         shortName: 'SellingOrderItem',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_SELLING_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:item', 'write:measure'],
@@ -104,6 +110,7 @@ use App\Entity\Embeddable\Measure;
     ORM\Table(name: 'selling_order_item')
 ]
 abstract class Item extends BaseItem {
+    //region properties
     final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
 
     #[
@@ -126,18 +133,40 @@ abstract class Item extends BaseItem {
     protected State $embState;
 
     #[
-        ApiProperty(description: 'Commande', readableLink: false, example: '/api/selling-orders/1'),
-        ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'sellingOrderItems', fetch: "EAGER"),
+        ApiProperty(description: 'Estimation ?', example: false),
+        ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    protected $order;
+    protected bool $isForecast = false;
 
     #[
-        ApiProperty(description: 'Expéditions associées', example: '/api/expeditions/1'),
-        ORM\OneToMany(targetEntity: Expedition::class, mappedBy: 'item'),
+        ApiProperty(description: 'Commande Client', readableLink: false, example: '/api/selling-orders/1', fetchEager: false),
+        ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'sellingOrderItems'),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    protected $parentOrder;
+
+    #[
+        ApiProperty(description: 'Expéditions associées', example: '/api/expeditions/1', fetchEager: false),
+        ORM\OneToMany(mappedBy: 'item', targetEntity: Expedition::class),
         Serializer\Groups(['read:item'])
     ]
     private Collection $expeditions;
+
+    #[
+        ApiProperty(description: 'Quantité expédiée', fetchEager: false),
+        ORM\Embedded(class: Measure::class),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    private Measure $sentQuantity;
+
+    #[
+        ApiProperty(description: 'Prix total de l\'item', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    private Measure $totalItemPrice;
+    //endregion
 
     #[
         ApiProperty(description: 'Quantité a envoyé', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
@@ -151,15 +180,19 @@ abstract class Item extends BaseItem {
         $this->embBlocker = new Closer();
         $this->embState = new State();
         $this->expeditions = new ArrayCollection();
+        $this->parentOrder = new Order();
+        $this->sentQuantity = new Measure();
+        $this->totalItemPrice = new Measure();
         $this->quantityToSent = new Measure();
     }
+    //region getters & setters
     /*, 'read:expedition'*/
     #[
         ApiProperty(description: 'Client'),
         Serializer\Groups(['read:item','write:item'])
     ]
     final public function getCustomer(): ?Customer {
-        return $this->order->getCustomer();
+        return $this->parentOrder->getCustomer();
     }
 
     final public function getBlocker(): string {
@@ -183,7 +216,7 @@ abstract class Item extends BaseItem {
     }
 
     #[
-        ApiProperty(description: 'Item', readableLink: false, example: '/api/selling-orders/1'),
+        ApiProperty(description: 'Item commandé', readableLink: false, example: '/api/products/1'),
         Serializer\Groups(['read:item'])
     ]
     final public function getItem() {
@@ -257,4 +290,51 @@ abstract class Item extends BaseItem {
         $this->embState->setState($state);
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function getIsForecast(): bool
+    {
+        return $this->isForecast;
+    }
+
+    /**
+     * @param bool $isForecast
+     * @return Item
+     */
+    public function setIsForecast(bool $isForecast): Item
+    {
+        $this->isForecast = $isForecast;
+        return $this;
+    }
+
+    public function getSentQuantity(): Measure
+    {
+        return $this->sentQuantity;
+    }
+
+    public function setSentQuantity(Measure $sentQuantity): void
+    {
+        $this->sentQuantity = $sentQuantity;
+    }
+    #[
+        ApiProperty(description: 'Quantité restante à envoyer', readableLink: false),
+        Serializer\Groups(['read:item'])
+    ]
+    public function getQuantityToBeSent(): Measure
+    {
+        return $this->getRequestedQuantity()->substract($this->sentQuantity);
+    }
+
+    public function getTotalItemPrice(): Measure
+    {
+        return $this->totalItemPrice;
+    }
+
+    public function setTotalItemPrice(Measure $totalItemPrice): void
+    {
+        $this->totalItemPrice = $totalItemPrice;
+    }
+    //endregion
 }

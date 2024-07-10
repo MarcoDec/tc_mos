@@ -45,7 +45,7 @@ export default function useZonesStore() {
             },
             async getZone(zoneIri) {
                 return api(zoneIri).then(response => {
-                    console.log('response', response)
+                    //console.log('response', response)
                     this.zone = response
                 })
             },

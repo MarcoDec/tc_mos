@@ -165,7 +165,7 @@
         await storeProductsList.fetch(productListCriteria.getFetchCriteria)
     }
     function onProductShowRequest(item) {
-        console.log('onProductShowRequest', item)
+        //console.log('onProductShowRequest', item)
         /* eslint-disable camelcase */
         router.push({name: 'product', params: {id_product: item.id}})
     }
@@ -229,6 +229,7 @@
                     :pag="storeProductsList.pagination"
                     :previous-page="storeProductsList.previousPage"
                     :user="roleuser"
+                    top-offset="48px"
                     form="formProductCardableTable"
                     @cancel-search="cancelSearch"
                     @deleted="deleted"

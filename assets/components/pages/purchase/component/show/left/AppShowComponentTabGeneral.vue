@@ -32,9 +32,9 @@
             notes: formData.get('notes')
         }
         useFetchComponentStore.updateAdmin(dataAdmin, idComponent).then(() => {
-            console.log('update Admin')
+            //console.log('update Admin')
             useFetchComponentStore.updateMain(dataMain, idComponent).then(() => {
-                console.log('update Main')
+                //console.log('update Main')
                 useFetchComponentStore.fetchOne(idComponent)
                 emits('updated')
             })
@@ -42,9 +42,9 @@
     }
     onMounted(async () => {
         await componentFamilyOptions.fetchOp()
-        console.log('onMounted')
+        //console.log('onMounted')
         await useFetchComponentStore.fetchOne(idComponent)
-        console.log('onMounted afterFetch')
+        //console.log('onMounted afterFetch')
     })
     onUnmounted(() => {
         useFetchComponentStore.reset()

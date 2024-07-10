@@ -192,3 +192,9 @@ $dropdown-success: #57ec57 !default;
 .ml-auto {
   margin-left: auto;
 }
+
+.overable:hover {
+  //on augmente légèrement la taille de l'élément au survol
+  transform: scale(1.5);
+  transition: transform 0.3s;
+}

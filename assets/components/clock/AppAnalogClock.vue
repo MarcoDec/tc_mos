@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="clock-container">
         <ClockAnalog
             outer-background="none"
             outer-border="none"
@@ -63,7 +63,7 @@
   padding: 0;
 }
 
-.container {
+.clock-container {
   padding: 20px;
 }
 </style>

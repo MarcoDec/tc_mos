@@ -61,8 +61,8 @@ export const useSuppliersStore = defineStore('suppliers', {
             return responseData
         },
         async addSupplier(payload) {
-            const response = await api('/api/suppliers', 'POST', payload)
-            console.log('response addSupplier', response)
+            await api('/api/suppliers', 'POST', payload)
+            //console.log('response addSupplier', response)
         }
 
     },

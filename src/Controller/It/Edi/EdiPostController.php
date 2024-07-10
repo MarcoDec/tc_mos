@@ -24,10 +24,11 @@ class EdiPostController extends AbstractController
    ) {
    }
 
-   /**
-    * @param Request $request
-    * @return Edi
-    */
+    /**
+     * @param Request $request
+     * @return Edi
+     * @throws Exception
+     */
    public function __invoke(Request $request): Edi {
        //region récupération des données des la requête
       $ediType = $request->get('ediType');

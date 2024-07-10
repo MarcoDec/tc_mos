@@ -28,7 +28,7 @@
     useFetchToolsStore.fetchOne(idEngine)
     onBeforeMount(() => {
         const promises = []
-        console.log('onBeforeMount')
+        //console.log('onBeforeMount')
         // promises.push(fetchUnits.fetchOp())
         promises.push(useFetchToolsStore.fetchOne(idEngine))
         Promise.all(promises).then(() => {

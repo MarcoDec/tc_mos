@@ -62,6 +62,9 @@
                 <AppNavbarLink icon="magnet" to="component-equivalents" :variant="variantPurchase" @click="emit('close-menu')">
                     Groupes d'équivalences
                 </AppNavbarLink>
+                <AppNavbarLink icon="shopping-cart" to="purchaseOrderList" :variant="variantPurchase" @click="emit('close-menu')">
+                    Liste des commandes
+                </AppNavbarLink>
                 <template v-if="user.isPurchaseAdmin">
                     <AppDropdownItem disabled variant="danger">
                         <span class="text-white">Administration</span>
@@ -271,6 +274,9 @@
             <AppNavbarItem v-if="user.isSellingReader" id="selling" icon="euro-sign" title="Ventes">
                 <AppNavbarLink icon="user-tie" to="customer-list" :variant="variantSelling" @click="emit('close-menu')">
                     Liste des clients
+                </AppNavbarLink>
+                <AppNavbarLink icon="bullhorn" to="customer-order-list" :variant="variantSelling" @click="emit('close-menu')">
+                    Liste des ventes
                 </AppNavbarLink>
                 <template v-if="user.isSellingAdmin">
                     <AppDropdownItem disabled variant="danger">

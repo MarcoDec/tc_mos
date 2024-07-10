@@ -3,7 +3,7 @@
 namespace App\Entity\Embeddable\Manufacturing\Operation;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
-use App\Doctrine\DBAL\Types\Embeddable\Manufacturing\OperationStateType;
+use App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\OperationStateType;
 use App\Entity\Embeddable\State as AbstractState;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;

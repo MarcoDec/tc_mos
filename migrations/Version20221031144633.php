@@ -311,8 +311,6 @@ SQL);
         $this->addQuery('ALTER TABLE `customer_address` DROP `old_id`');
         $this->addQuery('ALTER TABLE `customer_contact` DROP `old_id`');
         $this->addQuery('ALTER TABLE `employee` DROP `id_society`');
-//        $this->addQuery('ALTER TABLE `employee` DROP `matricule`, DROP `id_society`');
-        //$this->addQuery('ALTER TABLE `engine` DROP `old_id`');
         $this->addQuery('ALTER TABLE `engine_group` DROP `old_id`');
         $this->addQuery('ALTER TABLE `expedition` DROP `old_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
@@ -331,7 +329,6 @@ SQL);
         $this->addQuery('ALTER TABLE `society` DROP `old_id`');
         $this->addQuery('ALTER TABLE `stock` DROP `old_id`');
         $this->addQuery('ALTER TABLE `supplier_component` DROP `old_id`');
-//        $this->addQuery('ALTER TABLE `warehouse` DROP `old_id`');
     }
 
     private function upAttributes(): void {
@@ -1999,6 +1996,7 @@ CREATE TABLE `employee` (
     `notes` VARCHAR(255) DEFAULT NULL,
     `password` VARCHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
     `plain_password` VARCHAR(255) DEFAULT NULL,
+    `preferred_warehouse_id` INT UNSIGNED DEFAULT NULL,
     `situation` ENUM('married', 'single', 'windowed') DEFAULT 'single' COMMENT '(DC2Type:situation_place)',
     `social_security_number` VARCHAR(255) DEFAULT NULL,
     `surname` VARCHAR(255) NOT NULL,
@@ -4856,7 +4854,7 @@ INSERT INTO `supplier` (
     CASE
         WHEN `society_old`.`id_societystatus` = 2 THEN 'agreed'
         WHEN `society_old`.`id_societystatus` = 3 THEN 'warning'
-        ELSE 'to_validate'
+        ELSE 'draft'
     END,
     UCASE(`locale`.`code`),
     `society_old`.`nom`,

@@ -4,7 +4,7 @@
     import AppSuspense from '../../../AppSuspense.vue'
     import {useCustomerStore} from '../../../../stores/selling/customers/customers'
     import AppCustomerShowInlist from './bottom/AppCustomerShowInlist.vue'
-    import {useRoute} from 'vue-router'
+    import {useRoute, useRouter} from 'vue-router'
     import {onBeforeMount, ref} from 'vue'
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
     import AppBtn from '../../../AppBtn.vue'
@@ -13,20 +13,20 @@
     import AppWorkflowShow from '../../../workflow/AppWorkflowShow.vue'
 
     const route = useRoute()
+    const router = useRouter()
     const idCustomer = Number(route.params.id_customer)
     const iriCustomer = ref('')
     const fetchCustomerStore = useCustomerStore()
-    const beforeMountDataLoaded = ref(false)
     const keyTitle = ref(0)
     const modeDetail = ref(true)
     const isFullScreen = ref(false)
     const keyTabs = ref(0)
     const imageUpdateUrl = `/api/customers/${idCustomer}/image`
 
-    onBeforeMount(() => {
-        fetchCustomerStore.fetchOne(idCustomer).then(() => {
+    onBeforeMount(async () => {
+        await fetchCustomerStore.fetchOne(idCustomer).then(() => {
             iriCustomer.value = fetchCustomerStore.customer['@id']
-            beforeMountDataLoaded.value = true
+            //beforeMountDataLoaded.value = true
         })
     })
     const onUpdated = () => {
@@ -47,16 +47,21 @@
     const deactivateFullScreen = () => {
         isFullScreen.value = false
     }
+    function goToTheList() {
+        router.push({name: 'customer-list'})
+    }
 </script>
 
 <template>
     <AppSuspense>
-        <AppShowGuiGen v-if="beforeMountDataLoaded">
+        <AppShowGuiGen>
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
                     <div class="d-flex flex-row">
                         <div>
-                            <FontAwesomeIcon icon="user-tie"/>
+                            <button class="text-dark" @click="goToTheList">
+                                <FontAwesomeIcon icon="user-tie"/>
+                            </button>
                             <b>{{ fetchCustomerStore.customer.id }}</b>: {{ fetchCustomerStore.customer.name }}
                         </div>
                         <AppSuspense>

@@ -6,8 +6,13 @@
         itemIri: {default: null, required: true, type: String},
         workflowToShow: {default: () => [], required: true, type: Array}
     })
+    // console.log('props', props)
     const workflowData = ref([])
     function getItemWorkflowInformationFromAPI() {
+        if (props.itemIri === null || props.itemIri === '') {
+            console.log('No item IRI yet provided')
+            return
+        }
         const formData = {
             iri: props.itemIri
         }

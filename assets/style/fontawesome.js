@@ -36,6 +36,7 @@ import {
     faCircleDollarToSlot,
     faCircleInfo,
     faCity,
+    faClipboard,
     faClipboardCheck,
     faClipboardList,
     faClock,
@@ -51,6 +52,7 @@ import {
     faFileContract,
     faFileInvoice,
     faFileInvoiceDollar,
+    faFilePdf,
     faFilter,
     faFlask,
     faFolder,
@@ -116,7 +118,6 @@ import {
     faSquarePlus,
     faStar,
     faTags,
-    faTableList,
     faTimes,
     faTimesCircle,
     faToggleOff,
@@ -127,6 +128,7 @@ import {
     faTruck,
     faTruckField,
     faTruckLoading,
+    faTruckMoving,
     faUnlock,
     faUserCircle,
     faUserGraduate,
@@ -177,6 +179,7 @@ library.add(faChevronUp)
 library.add(faCircleDollarToSlot)
 library.add(faCircleInfo)
 library.add(faCity)
+library.add(faClipboard)
 library.add(faClipboardCheck)
 library.add(faClipboardList)
 library.add(faClock)
@@ -190,11 +193,10 @@ library.add(faElementor)
 library.add(faEuroSign)
 library.add(faExclamationTriangle)
 library.add(faEye)
-library.add(faEuroSign)
-library.add(faExclamationTriangle)
 library.add(faFileContract)
 library.add(faFileInvoice)
 library.add(faFileInvoiceDollar)
+library.add(faFilePdf)
 library.add(faFilter)
 library.add(faFlask)
 library.add(faFolder)
@@ -207,7 +209,6 @@ library.add(faHandshake)
 library.add(faHistory)
 library.add(faHourglass)
 library.add(faHourglassHalf)
-library.add(faHourglass)
 library.add(faIcons)
 library.add(faIndustry)
 library.add(faLaptop)
@@ -233,7 +234,6 @@ library.add(faPaperPlane)
 library.add(faPencil)
 library.add(faPencilAlt)
 library.add(faPeopleGroup)
-library.add(faPencil)
 library.add(faPlus)
 library.add(faPlusCircle)
 library.add(faPrint)
@@ -262,6 +262,7 @@ library.add(faSitemap)
 library.add(faSquare)
 library.add(faSquarePlus)
 library.add(faStar)
+library.add(faTableList)
 library.add(faTags)
 library.add(faTimes)
 library.add(faTimesCircle)
@@ -272,7 +273,6 @@ library.add(faTools)
 library.add(faTrash)
 library.add(faTruck)
 library.add(faTruckField)
-library.add(faTools)
 library.add(faTruckLoading)
 library.add(faUnlock)
 library.add(faUserCircle)
@@ -283,4 +283,12 @@ library.add(faUsers)
 library.add(faWallet)
 library.add(faWarehouse)
 library.add(faWrench)
-library.add(faTableList)
+library.add(faCubesStacked)
+library.add(faRulerVertical)
+library.add(faStar)
+library.add(faGaugeHigh)
+library.add(faMoneyBill1)
+library.add(faRightToBracket)
+library.add(faTruck)
+library.add(faTruckMoving)
+library.add(faBusinessTime)

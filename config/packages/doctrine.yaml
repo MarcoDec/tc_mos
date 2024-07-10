@@ -59,7 +59,7 @@ doctrine:
       expedition_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\ExpeditionStateType
       gender_place: App\Doctrine\DBAL\Types\Hr\Employee\GenderType
       item: App\Doctrine\DBAL\Types\ItemType
-      manufacturing_operation_state: App\Doctrine\DBAL\Types\Embeddable\Manufacturing\OperationStateType
+      manufacturing_operation_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\OperationStateType
       manufacturing_order_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\OrderStateType
       notification_category: App\Doctrine\DBAL\Types\Hr\Employee\NotificationCategoryType
       preparation_state: App\Doctrine\DBAL\Types\Embeddable\Logistics\Component\PreparationStateType

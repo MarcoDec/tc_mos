@@ -52,6 +52,19 @@ export default function useOptions(base, valueProp = '@id') {
                 this.isLoaded = false
                 for (const option of options)
                     option.$dispose()
+            },
+
+            // fonctions utiles pour récupération des labels des options
+            getLabel(value) {
+                return this.options.find(option => option.code === value)?.text ?? value
+            },
+            getOptionsMap() {
+                return this.options.map(op => {
+                    const text = op.text
+                    const value = op.value
+                    const code = op.code
+                    return {text, value, code}
+                })
             }
         },
         getters: {
@@ -59,6 +72,7 @@ export default function useOptions(base, valueProp = '@id') {
                 return !this.hasGroups && state.options.length > 30
             },
             find: state => value => state.options.find(option => option.value === value),
+
             groups: state => {
                 if (!state.options.every(option => Boolean(option.group)))
                     return []
@@ -81,6 +95,13 @@ export default function useOptions(base, valueProp = '@id') {
                 return state.options.length > 0
             }
         },
-        state: () => ({base, fetchable: false, id, isLoaded: false, options: [], valueProp, items: []})
+        state: () => ({
+            base,
+            fetchable: false,
+            id, isLoaded: false,
+            options: [],
+            valueProp,
+            items: []
+        })
     })()
 }
