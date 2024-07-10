@@ -22,6 +22,7 @@
         mode: {default: 'tags', type: String},
         modelValue: {default: null, type: [Array, String]}
     })
+    const isDisabled = computed(() => props.disabled || props.field.readonly)
     const localModelValue = ref({})
     // Initialisation de localModelValue
     if (props.field.max === 1) {
@@ -107,7 +108,7 @@
         :form="form"
         :field="multiselectField"
         :data-mode="mode"
-        :disabled="disabled"
+        :disabled="isDisabled"
         :max="field.max ?? -1"
         :mode="mode"
         :model-value="newModelValue"

@@ -33,6 +33,8 @@ import {
     faChevronDown,
     faChevronRight,
     faChevronUp,
+    faCircleChevronDown,
+    faCircleChevronUp,
     faCircleDollarToSlot,
     faCircleInfo,
     faCity,
@@ -177,6 +179,8 @@ library.add(faChevronDown)
 library.add(faChevronRight)
 library.add(faChevronUp)
 library.add(faCircleDollarToSlot)
+library.add(faCircleChevronDown)
+library.add(faCircleChevronUp)
 library.add(faCircleInfo)
 library.add(faCity)
 library.add(faClipboard)

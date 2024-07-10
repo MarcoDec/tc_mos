@@ -36,16 +36,16 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
                 this.currentPage = 1
             }
             // const response = await api(`/api/selling-order-items/customerFilter/${this.customerID}?page=${this.currentPage}`, 'GET')
-            const response = await api(`/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}`, 'GET')
+            const response = await api(`/api/selling-order-item-products?parentOrder.customer.id=/api/customers/${this.customerID}`, 'GET')
             this.customerCommande = await this.updatePagination(response)
         },
         async filterBy(payload) {
-            let url = `/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&`
+            let url = `/api/selling-order-item-products?parentOrder.customer.id=/api/customers/${this.customerID}&`
             if (payload === ''){
                 await this.fetch()
             } else {
                 if (payload.ref !== '') {
-                    url += `order.ref=${payload.ref}&`
+                    url += `parentOrder.ref=${payload.ref}&`
                 }
 
                 if (payload.etat !== '') {
@@ -56,7 +56,7 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
                     url += `confirmedDate=${payload.dateConfirmee}&`
                 }
                 if (payload.typeCommande !== '') {
-                    url += `order.kind=${payload.typeCommande}&`
+                    url += `parentOrder.kind=${payload.typeCommande}&`
                 }
                 if (payload.dateSouhaitee !== '') {
                     url += `requestedDate=${payload.dateSouhaitee}&`
@@ -86,15 +86,15 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
             }
         },
         async itemsPagination(nPage) {
-            const response = await api(`/api/selling-order-product?order.customer=/api/customers/${this.customerID}?page=${nPage}`, 'GET')
+            const response = await api(`/api/selling-order-item-products?parentOrder.customer=/api/customers/${this.customerID}?page=${nPage}`, 'GET')
             this.customerCommande = await this.updatePagination(response)
         },
         async paginationSortableOrFilterItems(payload) {
             let response = {}
             if (payload.filter.value === true && payload.sortable.value === true){
-                let url = `/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&`
+                let url = `/api/selling-order-item-products?parentOrder.customer.id=/api/customers/${this.customerID}&`
                 if (payload.filterBy.value.ref !== '') {
-                    url += `order.ref=${payload.filterBy.value.ref}&`
+                    url += `parentOrder.ref=${payload.filterBy.value.ref}&`
                 }
 
                 if (payload.filterBy.value.etat !== '') {
@@ -105,7 +105,7 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
                     url += `confirmedDate=${payload.filterBy.value.dateConfirmee}&`
                 }
                 if (payload.filterBy.value.typeCommande !== '') {
-                    url += `order.kind=${payload.filterBy.value.typeCommande}&`
+                    url += `parentOrder.kind=${payload.filterBy.value.typeCommande}&`
                 }
                 if (payload.filterBy.value.dateSouhaitee !== '') {
                     url += `requestedDate=${payload.filterBy.value.dateSouhaitee}&`
@@ -132,9 +132,9 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
                 response = await api(url, 'GET')
                 this.customerCommande = await this.updatePagination(response)
             } else if (payload.filter.value === true){
-                let url = `/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&`
+                let url = `/api/selling-order-item-products?parentOrder.customer.id=/api/customers/${this.customerID}&`
                 if (payload.filterBy.value.ref !== '') {
-                    url += `order.ref=${payload.filterBy.value.ref}&`
+                    url += `parentOrder.ref=${payload.filterBy.value.ref}&`
                 }
 
                 if (payload.filterBy.value.etat !== '') {
@@ -145,7 +145,7 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
                     url += `confirmedDate=${payload.filterBy.value.dateConfirmee}&`
                 }
                 if (payload.filterBy.value.typeCommande !== '') {
-                    url += `order.kind=${payload.filterBy.value.typeCommande}&`
+                    url += `parentOrder.kind=${payload.filterBy.value.typeCommande}&`
                 }
                 if (payload.filterBy.value.dateSouhaitee !== '') {
                     url += `requestedDate=${payload.filterBy.value.dateSouhaitee}&`
@@ -172,13 +172,13 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
                 response = await api(url, 'GET')
                 this.customerCommande = await this.updatePagination(response)
             } else if (payload.sortable.value === false) {
-                response = await api(`/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&page=${payload.nPage}`, 'GET')
+                response = await api(`/api/selling-order-item-products?parentOrder.customer.id=/api/customers/${this.customerID}&page=${payload.nPage}`, 'GET')
                 this.customerCommande = await this.updatePagination(response)
             } else {
                 if (payload.trierAlpha.value.composant === 'component') {
-                    response = await api(`/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                    response = await api(`/api/selling-order-item-products?parentOrder.customer.id=/api/customers/${this.customerID}&order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 } else {
-                    response = await api(`/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                    response = await api(`/api/selling-order-item-products?parentOrder.customer.id=/api/customers/${this.customerID}&order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 }
                 this.customerCommande = await this.updatePagination(response)
             }
@@ -186,9 +186,10 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
 
         async sortableItems(payload, filterBy, filter) {
             let response = {}
+            let url = ''
             if (filter.value === true){
                 if (filterBy.value.ref !== '') {
-                    url += `order.ref=${filterBy.value.ref}&`
+                    url += `parentOrder.ref=${filterBy.value.ref}&`
                 }
 
                 if (filterBy.value.etat !== '') {
@@ -199,7 +200,7 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
                     url += `confirmedDate=${filterBy.value.dateConfirmee}&`
                 }
                 if (filterBy.value.typeCommande !== '') {
-                    url += `order.kind=${filterBy.value.typeCommande}&`
+                    url += `parentOrder.kind=${filterBy.value.typeCommande}&`
                 }
                 if (filterBy.value.dateSouhaitee !== '') {
                     url += `requestedDate=${filterBy.value.dateSouhaitee}&`
@@ -228,9 +229,9 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
                 this.customerCommande = await this.updatePagination(response)
             } else {
                 if (payload.composant === 'component') {
-                    response = await api(`/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                    response = await api(`/api/selling-order-item-products?parentOrder.customer.id=/api/customers/${this.customerID}&order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 } else {
-                    response = await api(`/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                    response = await api(`/api/selling-order-item-products?parentOrder.customer.id=/api/customers/${this.customerID}&order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 }
                 this.customerCommande = await this.updatePagination(response)
             }
@@ -267,14 +268,15 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
     },
     getters: {
         itemsCustomerCommande: state => state.customerCommande.map(item => {
+            console.log('item', item)
             const newObject = {
                 '@id': item['@id'],
-                ref: item.order.ref,
+                ref: item.parentOrder.ref,
                 dateSouhaitee: item.requestedDate,
                 dateConfirmee: item.confirmedDate,
                 etat: item.embState.state,
-                typeCommande: item.order.kind,
-                destination: item.order.destination,
+                typeCommande: item.parentOrder.kind,
+                destination: item.parentOrder.destination,
                 quantiteEffectuee: `${item.confirmedQuantity.value} ${item.confirmedQuantity.code}`,
                 quantiteSouhaitee: `${item.requestedQuantity.value} ${item.requestedQuantity.code}`
             }

@@ -97,12 +97,6 @@ export default [
         name: 'component',
         path: '/component/:id_component'
     },
-    // {
-    //     component: AppShowGui,
-    //     meta: {container: false, title: 'Equipement — T-Concept GPAO'},
-    //     name: 'equipment',
-    //     path: '/equipment'
-    // },
     {
         component: AppTablePageSuspense,
         meta: {title: 'Paramètres production— T-Concept GPAO'},
@@ -155,5 +149,11 @@ export default [
             icon: 'bullhorn',
             title: 'Commandes Fournisseurs'
         }
+    },
+    {
+        component: async () => import('../components/pages/prices/AppPricePage.vue'),
+        meta: {requiresAuth: true},
+        name: 'prices',
+        path: '/prices'
     }
 ]

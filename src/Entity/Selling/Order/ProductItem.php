@@ -18,9 +18,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  * @template-extends Item<Product>
  */
 #[   
-    ApiFilter(filterClass: RelationFilter::class, properties: ['item',  'sellingOrder.customer.id']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['sellingOrder.customer.id' => 'partial', 'ref' => 'partial', 'requestedQuantity.value' => 'partial', 'requestedQuantity.code' => 'partial', 'confirmedQuantity.code' => 'partial', 'confirmedQuantity.value' => 'partial', 'confirmedDate' => 'partial', 'requestedDate' => 'partial',
-        'sellingOrder.ref' => 'partial', 'embState.state' =>'partial', 'sellingOrder.kind' => 'partial', 'item.id'=> 'partial'
+    ApiFilter(filterClass: RelationFilter::class, properties: ['item',  'parentOrder.customer.id']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['parentOrder.customer.id' => 'partial', 'ref' => 'partial', 'requestedQuantity.value' => 'partial', 'requestedQuantity.code' => 'partial', 'confirmedQuantity.code' => 'partial', 'confirmedQuantity.value' => 'partial', 'confirmedDate' => 'partial', 'requestedDate' => 'partial',
+        'parentOrder.ref' => 'partial', 'embState.state' =>'partial', 'parentOrder.kind' => 'partial', 'item.id'=> 'partial'
     ]),
     ApiResource(
         description: 'Ligne de commande',

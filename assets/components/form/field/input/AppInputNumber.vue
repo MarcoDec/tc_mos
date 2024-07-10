@@ -11,9 +11,11 @@
     })
     const emit = defineEmits(['update:modelValue'])
     const localData = ref(props.modelValue)
+
     function updateModelValue(v) {
         localData.value = v
     }
+
     function onFocusOut(e) {
         e.preventDefault()
         e.stopPropagation()
@@ -31,3 +33,17 @@
         @update:model-value="updateModelValue"
         @focusout="onFocusOut"/>
 </template>
+
+<style scoped>
+    /* Chrome, Safari, Edge, Opera */
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>

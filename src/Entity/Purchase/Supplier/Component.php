@@ -8,9 +8,9 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
-use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Component as TechnicalSheet;
+use App\Entity\Traits\Price\MainPriceTrait;
 use App\Filter\RelationFilter;
 use App\Repository\Purchase\Supplier\ComponentRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -35,7 +35,7 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
                     'description' => 'Créer un composant',
                     'summary' => 'Créer un composant'
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
+                'security' => 'is_granted(\'' . Roles::ROLE_PURCHASE_WRITER . '\')'
             ]
         ],
         itemOperations: [
@@ -55,29 +55,25 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
         ],
         shortName: 'SupplierComponent',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
+            'security' => 'is_granted(\'' . Roles::ROLE_PURCHASE_READER . '\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:measure', 'write:supplier-component'],
+            'groups' => ['write:measure', 'write:supplier-component', 'write:main-price'],
             'openapi_definition_name' => 'SupplierComponent-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:measure', 'read:supplier-component'],
+            'groups' => ['read:id', 'read:measure', 'read:supplier-component', 'read:main-price'],
             'openapi_definition_name' => 'SupplierComponent-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\Entity(repositoryClass: ComponentRepository::class),
     ORM\Table(name: 'supplier_component')
 ]
-class Component extends Entity {
-    #[
-        ApiProperty(description: 'Référence', example: 'DH544G'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
-    ]
-    private ?string $code = null;
-
+class Component extends Entity
+{
+    use MainPriceTrait;
     #[
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
         ORM\ManyToOne(targetEntity: TechnicalSheet::class, inversedBy: 'supplierComponents'),
@@ -85,67 +81,13 @@ class Component extends Entity {
     ]
     private ?TechnicalSheet $component = null;
 
-    #[
-        ApiProperty(description: 'Poids cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-linear-density']),
-        ORM\Embedded,
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
-    ]
-    private Measure $copperWeight;
-
-    #[
-        ApiProperty(description: 'Temps de livraison', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
-        ORM\Embedded,
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
-    ]
-    private Measure $deliveryTime;
-
-    #[
-        ApiProperty(description: 'Incoterms', readableLink: false, example: '/api/incoterms/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
-    ]
-    private ?Incoterms $incoterms = null;
-
-    #[
-        ApiProperty(description: 'Indice', example: '0'),
-        ORM\Column(name: '`index`', options: ['default' => '0']),
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
-    ]
-    private string $index = '0';
-
-    #[
-        ApiProperty(description: 'MOQ (Minimal Order Quantity)', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
-        ORM\Embedded,
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
-    ]
-    private Measure $moq;
-
-    #[
-        ApiProperty(description: 'Conditionnement', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
-        ORM\Embedded,
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
-    ]
-    private Measure $packaging;
-
-    #[
-        ApiProperty(description: 'Type de packaging', example: 'Palette'),
-        ORM\Column(length: 30, nullable: true),
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
-    ]
-    private ?string $packagingKind = null;
-
     /** @var DoctrineCollection<int, SupplierComponentPrice> */
     #[
-        ORM\OneToMany(targetEntity: SupplierComponentPrice::class, mappedBy:'component', fetch: 'EAGER')
+        ApiProperty(description: 'Prix', example: '[]'),
+        ORM\OneToMany(mappedBy: 'component', targetEntity: SupplierComponentPrice::class, fetch: 'EAGER'),
+        Serializer\Groups(['read:supplier-component'])
     ]
     private DoctrineCollection $prices;
-
-    #[
-        ApiProperty(description: 'Proportion', example: '99'),
-        ORM\Column(options: ['default' => 100, 'unsigned' => true]),
-        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
-    ]
-    private float $proportion = 100;
 
     #[
         ApiProperty(description: 'Fournisseur', readableLink: false, example: '/api/suppliers/1'),
@@ -153,13 +95,11 @@ class Component extends Entity {
         Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
     private ?Supplier $supplier = null;
-   
 
-    public function __construct() {
-        $this->copperWeight = new Measure();
-        $this->deliveryTime = new Measure();
-        $this->moq = new Measure();
-        $this->packaging = new Measure();
+
+    public function __construct()
+    {
+        $this->initialize();
         $this->prices = new ArrayCollection();
     }
 
@@ -167,133 +107,57 @@ class Component extends Entity {
         ApiProperty(description: 'Meilleur prix'),
         Serializer\Groups(['read:id', 'read:supplier-component'])
     ]
-    final public function getBestPrice():Measure {
-        $bestPrice=new Measure();
+    final public function getBestPrice(): Measure
+    {
+        $bestPrice = new Measure();
         //On récupère tous les prix
         $prices = $this->getPrices();
         //dump(['prices'=>$prices]);
-        if (count($prices)>0) {
+        if (count($prices) > 0) {
             /** @var SupplierComponentPrice $supplierComponentPrice */
             $filteredPrices = $prices
-            ->filter(function($supplierComponentPrice){ // On retire tous les enregistrements qui ont une quantité à zéro ou un prix à zéro
-                $quantity = $supplierComponentPrice->getQuantity()->getValue();
-                $price = $supplierComponentPrice->getPrice()->getValue();
-                return $price >0;
-            })->toArray();
-            usort($filteredPrices, function( $a,  $b){
-                    return $b->getPrice()->getValue() < $a->getPrice()->getValue();
-                });
+                ->filter(function ($supplierComponentPrice) { // On retire tous les enregistrements qui ont une quantité à zéro ou un prix à zéro
+                    $quantity = $supplierComponentPrice->getQuantity()->getValue();
+                    $price = $supplierComponentPrice->getPrice()->getValue();
+                    return $price > 0;
+                })->toArray();
+            usort($filteredPrices, function ($a, $b) {
+                return $b->getPrice()->getValue() < $a->getPrice()->getValue();
+            });
             $bestPrice = $filteredPrices[0]->getPrice();
         }
         return $bestPrice;
     }
 
-    final public function getCode(): ?string {
-        return $this->code;
-    }
-
-    final public function getComponent(): ?TechnicalSheet {
+    final public function getComponent(): ?TechnicalSheet
+    {
         return $this->component;
     }
 
-    final public function getCopperWeight(): Measure {
-        return $this->copperWeight;
-    }
-
-    final public function getDeliveryTime(): Measure {
-        return $this->deliveryTime;
-    }
-
-    final public function getIncoterms(): ?Incoterms {
-        return $this->incoterms;
-    }
-
-    final public function getIndex(): string {
-        return $this->index;
-    }
-
-    final public function getMoq(): Measure {
-        return $this->moq;
-    }
-
-    final public function getPackaging(): Measure {
-        return $this->packaging;
-    }
-
-    final public function getPackagingKind(): ?string {
-        return $this->packagingKind;
-    }
-
-    public function getPrices()
+    public function getPrices(): ArrayCollection|DoctrineCollection
     {
-        return $this->prices;
+        return $this->prices->filter(function ($price) {
+            return $price->isDeleted() === false;
+        });
     }
-
-    final public function getProportion(): float {
-        return $this->proportion;
-    }
-
-    final public function getSupplier(): ?Supplier {
+    final public function getSupplier(): ?Supplier
+    {
         return $this->supplier;
     }
 
-    final public function getUnit(): ?Unit {
+    final public function getUnit(): ?Unit
+    {
         return $this->component?->getUnit();
     }
 
-    final public function setCode(?string $code): self {
-        $this->code = $code;
-        return $this;
-    }
-
-    final public function setComponent(?TechnicalSheet $component): self {
+    final public function setComponent(?TechnicalSheet $component): self
+    {
         $this->component = $component;
         return $this;
     }
-
-    final public function setCopperWeight(Measure $copperWeight): self {
-        $this->copperWeight = $copperWeight;
-        return $this;
-    }
-
-    final public function setDeliveryTime(Measure $deliveryTime): self {
-        $this->deliveryTime = $deliveryTime;
-        return $this;
-    }
-
-    final public function setIncoterms(?Incoterms $incoterms): self {
-        $this->incoterms = $incoterms;
-        return $this;
-    }
-
-    final public function setIndex(string $index): self {
-        $this->index = $index;
-        return $this;
-    }
-
-    final public function setMoq(Measure $moq): self {
-        $this->moq = $moq;
-        return $this;
-    }
-
-    final public function setPackaging(Measure $packaging): self {
-        $this->packaging = $packaging;
-        return $this;
-    }
-
-    final public function setPackagingKind(?string $packagingKind): self {
-        $this->packagingKind = $packagingKind;
-        return $this;
-    }
-
-    final public function setProportion(float $proportion): self {
-        $this->proportion = $proportion;
-        return $this;
-    }
-
-    final public function setSupplier(?Supplier $supplier): self {
+    final public function setSupplier(?Supplier $supplier): self
+    {
         $this->supplier = $supplier;
         return $this;
     }
-
 }

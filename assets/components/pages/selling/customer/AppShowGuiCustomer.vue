@@ -22,12 +22,11 @@
     const isFullScreen = ref(false)
     const keyTabs = ref(0)
     const imageUpdateUrl = `/api/customers/${idCustomer}/image`
-
-    onBeforeMount(async () => {
-        await fetchCustomerStore.fetchOne(idCustomer).then(() => {
-            iriCustomer.value = fetchCustomerStore.customer['@id']
-            //beforeMountDataLoaded.value = true
-        })
+    iriCustomer.value = `/api/customers/${idCustomer}`
+    const isCustomerLoaded = ref(false)
+    fetchCustomerStore.fetchOne(idCustomer).then(() => {
+        // console.log('fetchCustomerStore.customer', fetchCustomerStore.customer)
+        isCustomerLoaded.value = true
     })
     const onUpdated = () => {
         keyTitle.value++
@@ -82,6 +81,7 @@
                         @update:file-path="onImageUpdate"/>
                     <AppSuspense>
                         <AppShowCustomerTabGeneral
+                            v-if="isCustomerLoaded"
                             :key="`form-${keyTabs}`"
                             class="width70"
                             :data-customers="fetchCustomerStore.customer"

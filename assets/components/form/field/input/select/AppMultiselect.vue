@@ -25,7 +25,7 @@
         }
     }
     function deselect(data) {
-        console.log('deselect', data)
+        //console.log('deselect', data)
         // On retire l'élément du tableau
         localModelValue.value = localModelValue.value.filter(item => item !== data)
         emit('searchChange', localModelValue.value)
@@ -48,7 +48,7 @@
         :model-value="localModelValue"
         :options="field.options && field.options.options "
         :value-prop="field.options && field.options.valueProp "
-        class="text-dark"
+        class="text-dark font-xsmall"
         label="text"
         :searchable="true"
         @search-change="updateSearch"

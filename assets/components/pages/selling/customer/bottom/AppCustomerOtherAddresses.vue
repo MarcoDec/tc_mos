@@ -7,7 +7,7 @@
         customerId: {required: true, type: Number},
         optionsCountries: {required: true, type: Array}
     })
-    console.log('optionsCountries', props.optionsCountries)
+    // console.log('optionsCountries', props.optionsCountries)
     const customerAddresses = ref({})
     async function updateTable() {
         await api(`/api/customer-addresses?customer=/api/customers/${props.customerId}`, 'GET').then(response => {

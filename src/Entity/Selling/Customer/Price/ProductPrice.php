@@ -9,6 +9,7 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
+use App\Entity\Traits\Price\ItemPriceTrait;
 use App\Validator as AppAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -42,7 +43,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get',
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un prix',
@@ -69,32 +70,18 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
     ORM\Table(name: 'customer_product_price')
 ]
 class ProductPrice extends Entity implements MeasuredInterface {
+    use ItemPriceTrait;
     //region properties
     #[
-        ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
-        ORM\Embedded,
-        Serializer\Groups(['read:price', 'write:price'])
-    ]
-    private Measure $price;
-
-    #[
         ApiProperty(description: 'Produit', readableLink: false, example: '/api/customer-products/1'),
-        ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'productPrices'),
+        ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'prices'),
         Serializer\Groups(['read:price', 'write:price'])
     ]
     private ?Product $product = null;
 
-    #[
-        ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
-        AppAssert\Measure,
-        ORM\Embedded,
-        Serializer\Groups(['read:price', 'write:price'])
-    ]
-    private Measure $quantity;
     //endregion
     public function __construct() {
-        $this->price = new Measure();
-        $this->quantity = new Measure();
+        $this->initialize();
     }
     //region getters & setters
     final public function getMeasures(): array {
@@ -109,26 +96,12 @@ class ProductPrice extends Entity implements MeasuredInterface {
     {
         return [$this->price];
     }
-
-    final public function getPrice(): Measure {
-        return $this->price;
-    }
-
     final public function getProduct(): ?Product {
         return $this->product;
     }
 
-    final public function getQuantity(): Measure {
-        return $this->quantity;
-    }
-
     final public function getUnit(): ?Unit {
         return $this->product?->getUnit();
-    }
-
-    final public function setPrice(Measure $price): self {
-        $this->price = $price;
-        return $this;
     }
 
     final public function setProduct(?Product $product): self {
@@ -136,9 +109,5 @@ class ProductPrice extends Entity implements MeasuredInterface {
         return $this;
     }
 
-    final public function setQuantity(Measure $quantity): self {
-        $this->quantity = $quantity;
-        return $this;
-    }
     //endregion
 }
