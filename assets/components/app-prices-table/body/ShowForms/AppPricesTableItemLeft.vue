@@ -47,7 +47,7 @@
     <AppMainItemShow
         v-if="updated === false"
         :index="index"
-        :form="`main_${props.item.id}`"
+        :form="`${form}_main_${props.item.id}`"
         :main-fields="mainFields"
         :item="item"
         :rights="rights"
@@ -56,7 +56,7 @@
     <AppPricesTableUpdateItem
         v-else
         :fields="mainFields"
-        :form="`main_update_${props.item.id}`"
+        :form="`${form}_main_update_${props.item.id}`"
         :item="item"
         :index="index"
         @annule-update="annuleUpdated"

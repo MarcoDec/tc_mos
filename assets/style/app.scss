@@ -146,23 +146,33 @@ $dropdown-success: #57ec57 !default;
   //display: block;
   //border: 3pc solid red;
 }
-.full-screen-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  height: 10px;
-    //position: relative;
-    //top: 10px;
-    //left: 50px;
-    z-index: 100000 !important; /* Assurez-vous que c'est au-dessus des autres éléments */
+.half-visible-width {
+  min-width:calc(50vw - 50px);
+  max-width:calc(50vw - 50px);
+  width:calc(50vw - 50px);
+  padding: 1px;
+  display: block;
+  height: 100%;
+  //display: block;
+  //border: 3pc solid red;
 }
+//.full-screen-button {
+//  display: flex;
+//  justify-content:  center;
+//  align-items: center;
+//  position: absolute;
+//  top: 0;
+//  width: 100%;
+//  height: 10px;
+//    //position: relative;
+//    //top: 10px;
+//    //left: 50px;
+//    z-index: 100000 !important; /* Assurez-vous que c'est au-dessus des autres éléments */
+//}
 .full-screen-button:hover {
   cursor: pointer;
   //On agrandit légèrement la taille de l'élément au survol
-    transform: scale(1.5);
+    transform: scale(1.2);
     transition: transform 0.3s;
   //On change la couleur de fond au survol
     color: #6c757d;
@@ -175,6 +185,7 @@ $dropdown-success: #57ec57 !default;
   height: 100vh;
   z-index: 10000; /* Assurez-vous que c'est au-dessus des autres éléments */
   background-color: white; /* ou toute autre couleur de fond souhaitée */
+  overflow: auto;
 }
 
 @media print {
