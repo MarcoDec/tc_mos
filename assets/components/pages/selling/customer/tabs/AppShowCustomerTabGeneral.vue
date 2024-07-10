@@ -8,7 +8,11 @@
     const props = defineProps({
         dataCustomers: {required: true, type: Object}
     })
-    // console.log('dataCustomers', props.dataCustomers)
+    console.log('dataCustomers', props.dataCustomers)
+    const isErrors = ref(false)
+    if (Object.keys(props.dataCustomers).length === 0) {
+        isErrors.value = true
+    }
     const localData = ref({})
     const societyId = ref(0)
     const fetchCustomerStore = useCustomerStore()
@@ -77,7 +81,11 @@
 </script>
 
 <template>
-    <div class="d-flex flex-column">
+    <div v-if="isErrors" class="bg-danger text-center text-white">
+        Erreur: Aucune donnée à afficher<br>
+        Veuillez tenter de recharger la page, et si l'erreur persiste, contacter le support informatique
+    </div>
+    <div v-else class="d-flex flex-column">
         <div v-if="dataCustomers.isEdiOrders" class="ediType">
             Type d'EDI: {{ dataCustomers.ediKind }}
         </div>
