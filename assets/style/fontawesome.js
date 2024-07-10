@@ -137,7 +137,7 @@ import {
     faUsers,
     faWallet,
     faWarehouse,
-    faWrench
+    faWrench, faTableList
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
