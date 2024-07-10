@@ -18,9 +18,7 @@
     const storeProductionPlanningsItems = useProductionPlanningsItemsStore()
     storeProductionPlanningsItems.fetchItems()
 
-    const combinedFields = computed(() => {
-        return [...props.fields, ...storeProductionPlanningsFields.fields]
-    })
+    const combinedFields = computed(() => [...props.fields, ...storeProductionPlanningsFields.fields])
 
     const currentPage = ref(1)
     const itemsPerPage = 10
@@ -30,9 +28,7 @@
         return storeProductionPlanningsItems.items.slice(start, start + itemsPerPage)
     })
 
-    const totalPages = computed(() => {
-        return Math.ceil(storeProductionPlanningsItems.items.length / itemsPerPage)
-    })
+    const totalPages = computed(() => Math.ceil(storeProductionPlanningsItems.items.length / itemsPerPage))
 
     const nextPage = () => {
         if (currentPage.value < totalPages.value) {
@@ -56,7 +52,7 @@
         <table :id="route.name" class="schedule-table">
             <thead>
                 <tr>
-                    <th v-for="field in combinedFields" :key="field.name" :style="{ width: field.width }">
+                    <th v-for="field in combinedFields" :key="field.name" :style="{width: field.width}">
                         {{ field.label }}
                     </th>
                 </tr>
@@ -70,9 +66,13 @@
             </tbody>
         </table>
         <div class="pagination">
-            <button :disabled="currentPage === 1" @click="prevPage">Previous</button>
+            <button :disabled="currentPage === 1" @click="prevPage">
+                Previous
+            </button>
             <span>Page {{ currentPage }} of {{ totalPages }}</span>
-            <button :disabled="currentPage === totalPages" @click="nextPage">Next</button>
+            <button :disabled="currentPage === totalPages" @click="nextPage">
+                Next
+            </button>
         </div>
     </div>
 </template>

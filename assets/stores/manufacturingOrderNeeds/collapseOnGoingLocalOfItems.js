@@ -12,8 +12,7 @@ export const useCollapseOnGoingLocalOfItemsStore = defineStore('collapseOnGoingL
             }
         }
     },
-    getters: {
-    },
+    getters: {},
     state: () => ({
         items: []
     })

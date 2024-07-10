@@ -1,6 +1,6 @@
 <script setup>
     import {defineProps} from 'vue'
-    import {useCollapseNewOfsItemsStore} from '../../stores/manufacturingOrderNeeds/CollapseNewOfsItems'
+    import {useCollapseNewOfsItemsStore} from '../../stores/manufacturingOrderNeeds/newOfsItemsStore'
     import {useCollapseOfsToConfirmItemsStore} from '../../stores/manufacturingOrderNeeds/collapseOfsToConfirmItems'
     import {useCollapseOnGoingLocalOfItemsStore} from '../../stores/manufacturingOrderNeeds/collapseOnGoingLocalOfItems'
 

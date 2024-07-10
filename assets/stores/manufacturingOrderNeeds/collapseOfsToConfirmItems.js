@@ -12,8 +12,7 @@ export const useCollapseOfsToConfirmItemsStore = defineStore('collapseOfsToConfi
             }
         }
     },
-    getters: {
-    },
+    getters: {},
     state: () => ({
         items: []
     })

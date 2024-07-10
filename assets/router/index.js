@@ -138,11 +138,10 @@ const router = createRouter({
                         label: 'Confirmer OF',
                         name: 'confirmerOF',
                         type: 'boolean'
-                    },
-
+                    }
                 ],
                 fieldsCollapseOnGoingLocalOf: [
-                    
+
                     {
                         label: 'Client',
                         name: 'client',
@@ -202,8 +201,7 @@ const router = createRouter({
                         label: 'Indice OF',
                         name: 'Indice OF',
                         type: 'number'
-                    },
-
+                    }
                 ],
                 fieldsCollapsenewOfs: [
                     {
@@ -258,7 +256,7 @@ const router = createRouter({
                     }
                 ],
                 icon: 'table-list',
-                title: 'Calcul des besoins'   
+                title: 'Calcul des besoins'
             }
         },
         ...hr,
