@@ -1,33 +1,33 @@
 <script setup>
-    import {useCookies} from '@vueuse/integrations/useCookies'
+    // import {useCookies} from '@vueuse/integrations/useCookies'
     import AppNavbarItem from './AppNavbarItem.vue'
     import AppNavbarLink from './link/AppNavbarLink.vue'
     import AppNavbarUser from './AppNavbarUser.vue'
     import AppNotifications from './notification/AppNotifications.vue'
-    import {computed} from 'vue'
+    import {computed, ref} from 'vue'
     import {useBrowserLocation} from '@vueuse/core'
     import useUser from '../../stores/security'
 
     defineProps({id: {required: true, type: String}})
     const emit = defineEmits(['close-menu'])
-    const cookies = useCookies()
+    // const cookies = useCookies()
     function getTableFromString(str) {
         return JSON.parse(str.replace(/'/g, '"'))
     }
     // fonction d'ajout du token dans l'url
-    function addTokenToUrl(url) {
-        if (cookies.get('token')) {
-            return `${url}?token=${cookies.get('token')}`
-        }
-        return url
-    }
+    // function addTokenToUrl(url) {
+    //     if (cookies.get('token')) {
+    //         return `${url}?token=${cookies.get('token')}`
+    //     }
+    //     return url
+    // }
 
-    const localId = import.meta.env.VITE_BACKEND_LOCALID
-    const allIds = getTableFromString(import.meta.env.VITE_BACKEND_ALLIDS)
-    const allIdsUrl = getTableFromString(import.meta.env.VITE_BACKEND_ALLIDSURL)
+    // const localId = import.meta.env.VITE_BACKEND_LOCALID
+    // const allIds = getTableFromString(import.meta.env.VITE_BACKEND_ALLIDS)
+    // const allIdsUrl = getTableFromString(import.meta.env.VITE_BACKEND_ALLIDSURL)
     //Récupération des Ids et Urls autre que le localId
-    const otherIds = allIds.filter(id => id !== localId)
-    const otherIdsUrl = allIdsUrl.filter((url, index) => allIds[index] !== localId)
+    // const otherIds = allIds.filter(id => id !== localId)
+    // const otherIdsUrl = allIdsUrl.filter((url, index) => allIds[index] !== localId)
 
     const location = useBrowserLocation()
     const databaseHostName = computed(() => location.value.hostname.replace('desktop.', 'phpmyadmin.'))
@@ -44,14 +44,39 @@
     const variantSelling = user.isSellingAdmin ? 'danger' : user.isSellingWriter ? 'warning' : user.isSellingReader ? 'info' : null
     const variantPurchase = user.isPurchaseAdmin ? 'danger' : user.isPurchaseWriter ? 'warning' : user.isPurchaseReader ? 'info' : null
     //const variantIt = user.isItAdmin ? 'danger' : null
+    const openedSubMenus = ref([])
+    function onSubMenuClick(e, menuId) {
+        e.preventDefault()
+        //On empèche tout évènement de propagation uniquement si aria-expanded est à true et que le clic est sur un item du menu
+        if (e.target.getAttribute('aria-expanded') === 'true') {
+            openedSubMenus.value.push(menuId)
+            //On ferme tous les autres menus
+            openedSubMenus.value.filter(id => id !== menuId).forEach(id => {
+                const dropdown = document.getElementById(`${id}-dropdown`)
+                if (dropdown) {
+                    //On ferme le menu en simulant un clic
+                    dropdown.click()
+                }
+            })
+            e.stopPropagation()
+        } else {
+            openedSubMenus.value = openedSubMenus.value.filter(id => id !== menuId)
+            e.stopPropagation()
+        }
+    }
+    function onSubMenuItemClick(e) {
+        e.preventDefault()
+        e.stopPropagation()
+        emit('close-menu')
+    }
 </script>
 
 <template>
     <div :id="id" class="collapse navbar-collapse">
         <ul class="me-auto navbar-nav pt-0">
-            <AppNavbarItem id="switch" title="oldGP" icon="repeat" class="d-flex flex-column justify-content-center bg-danger">
-                <a v-for="(name, index) in otherIds" :key="`switch_${index}`" class="btn btn-secondary d-block width70 m-2" :href="addTokenToUrl(otherIdsUrl[index])">{{ name }}</a>
-            </AppNavbarItem>
+            <!--            <AppNavbarItem id="switch" title="oldGP" icon="repeat" class="d-flex flex-column justify-content-center bg-danger">-->
+            <!--                <a v-for="(name, index) in otherIds" :key="`switch_${index}`" class="btn btn-secondary d-block width70 m-2" :href="addTokenToUrl(otherIdsUrl[index])">{{ name }}</a>-->
+            <!--            </AppNavbarItem>-->
             <AppNavbarItem v-if="user.isPurchaseReader !== null" id="purchase" icon="shopping-bag" title="Achats">
                 <AppNavbarLink icon="user-tie" to="supplier-list" :variant="variantPurchase" @click="emit('close-menu')">
                     Liste des fournisseurs
@@ -158,43 +183,46 @@
             <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
                 <!--TODO                <p>Production</p>-->
                 <!--TODO                    <p>Catégories d'événements des équipements (engine-events)</p>-->
-                <AppNavbarLink icon="desktop" to="workstations" :variant="variantProduction" @click="emit('close-menu')">
-                    Postes de travail
-                </AppNavbarLink>
-                <AppNavbarLink icon="cogs" to="machines" :variant="variantProduction" @click="emit('close-menu')">
-                    Machines
-                </AppNavbarLink>
-                <AppNavbarLink icon="toolbox" to="tools" :variant="variantProduction" @click="emit('close-menu')">
-                    Outils
-                </AppNavbarLink>
-                <AppNavbarLink icon="flask" to="counter-parts" :variant="variantProduction" @click="emit('close-menu')">
-                    Contre-parties de test
-                </AppNavbarLink>
-                <AppNavbarLink icon="puzzle-piece" to="spare-parts" :variant="variantProduction" @click="emit('close-menu')">
-                    Pièces de rechange
-                </AppNavbarLink>
-                <AppNavbarLink icon="building" to="infrastructures" :variant="variantProduction" @click="emit('close-menu')">
-                    Eléments d'infrastructures
-                </AppNavbarLink>
+                <AppNavbarItem id="1" title="Equipements" icon="puzzle-piece" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, '1')">
+                    <AppNavbarLink icon="building" to="infrastructures" :variant="variantProduction" @click="emit('close-menu')">
+                        Eléments d'infrastructures
+                    </AppNavbarLink>
+                    <AppNavbarLink icon="desktop" to="workstations" :variant="variantProduction" @click="onSubMenuItemClick">
+                        Postes de travail
+                    </AppNavbarLink>
+                    <AppNavbarLink icon="cogs" to="machines" :variant="variantProduction" @click="emit('close-menu')">
+                        Machines
+                    </AppNavbarLink>
+                    <AppNavbarLink icon="toolbox" to="tools" :variant="variantProduction" @click="emit('close-menu')">
+                        Outils
+                    </AppNavbarLink>
+                    <AppNavbarLink icon="flask" to="counter-parts" :variant="variantProduction" @click="emit('close-menu')">
+                        Contre-parties de test
+                    </AppNavbarLink>
+                    <AppNavbarLink icon="puzzle-piece" to="spare-parts" :variant="variantProduction" @click="emit('close-menu')">
+                        Pièces de rechange
+                    </AppNavbarLink>
+                </AppNavbarItem>
                 <AppNavbarLink icon="map-marked" to="zones" :variant="variantProduction" @click="emit('close-menu')">
                     Zones
                 </AppNavbarLink>
-                <AppNavbarLink v-if="user.isProductionWriter" to="label-template-list" icon="tags" :variant="variantProduction" @click="emit('close-menu')">
-                    Modèles d'étiquette
-                </AppNavbarLink>
+                <AppNavbarItem id="2" title="Etiquette" icon="puzzle-piece" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, '2')">
+                    <AppNavbarLink v-if="user.isProductionWriter" to="label-template-list" icon="tags" :variant="variantProduction" @click="emit('close-menu')">
+                        Modèles d'étiquette
+                    </AppNavbarLink>
+                    <template v-if="user.isProductionAdmin">
+                        <AppNavbarLink icon="tags" to="etiquette-list" :variant="variantProduction" @click="emit('close-menu')">
+                            Etiquettes Générées
+                        </AppNavbarLink>
+                    </template>
+                </AppNavbarItem>
                 <AppNavbarLink v-if="user.isProductionReader" icon="bullhorn" to="of-list" :variant="variantProduction" @click="emit('close-menu')">
                     Ordres de fabrication
-                </AppNavbarLink>
-                <AppNavbarLink v-if="user.isProductionWriter" icon="wrench" to="engine-groups" :variant="variantProduction" @click="emit('close-menu')">
-                    Groupes d'équipements
                 </AppNavbarLink>
                 <template v-if="user.isProductionAdmin">
                     <AppDropdownItem disabled variant="danger">
                         <span class="text-white">Administration</span>
                     </AppDropdownItem>
-                    <AppNavbarLink icon="tags" to="etiquette-list" :variant="variantProduction" @click="emit('close-menu')">
-                        Etiquettes Générées
-                    </AppNavbarLink>
                     <AppNavbarLink icon="oil-well" to="manufacturers" :variant="variantProduction" @click="emit('close-menu')">
                         Fabricants Equipement
                     </AppNavbarLink>

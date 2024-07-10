@@ -4,13 +4,14 @@
     const props = defineProps({
         icon: {required: true, type: String},
         id: {required: true, type: String},
-        title: {required: true, type: String}
+        title: {required: true, type: String},
+        dropEnd: {default: false, type: Boolean}
     })
     const dropdownId = computed(() => `${props.id}-dropdown`)
 </script>
 
 <template>
-    <li :id="id" class="dropdown nav-item">
+    <li :id="id" class="dropdown nav-item" :class="{'dropend': dropEnd}">
         <span
             :id="dropdownId"
             aria-expanded="false"
