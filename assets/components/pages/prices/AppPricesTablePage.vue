@@ -33,7 +33,7 @@
         title: {
             type: String,
             required: false,
-            default: 'Tableau des prix des composants'
+            default: 'Grille(s) de prix'
         },
         rights: {
             type: Object,
@@ -685,7 +685,7 @@
         console.log('annuleUpdated')
     }
     async function updateItems(item) {
-        console.log('updateItems', item)
+        // console.log('updateItems', item)
         const data = {}
         const iri = item['@id']
         if (item.component) {
@@ -741,7 +741,7 @@
         await loadData()
     }
     async function addItemPrice(formData, index) {
-        console.log('addItemPrice', formData, index)
+        // console.log('addItemPrice', formData, index)
         const currentApi = apis.value[index].prices
         const currentItemFieldNames = apis.value[index].parentPriceFieldName
         const data = {}
@@ -762,6 +762,7 @@
         await loadData()
     }
     async function updateItemsPrices(item) {
+        // console.log('updateItemsPrices', item)
         const data = {}
         const iri = item['@id']
         if (item.component) {
@@ -770,8 +771,9 @@
         if (item.product) {
             data.product = item.product
         }
+        const currentCode = currenciesOptions.value.find(option => option.value === item.price.code) ? currenciesOptions.value.find(option => option.value === item.price.code).text : 'EUR'
         data.price = {
-            code: currenciesOptions.value.find(option => option.value === item.price.code)?.text,
+            code: currentCode,
             value: item.price.value
         }
         data.quantity = {

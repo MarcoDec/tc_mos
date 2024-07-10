@@ -15,6 +15,7 @@ use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Component as TechnicalSheet;
 use App\Entity\Selling\Customer\Customer;
+use App\Entity\Traits\Price\MainPriceTrait;
 use App\Filter\RelationFilter;
 use App\Repository\Selling\Customer\ComponentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -69,11 +70,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\'' . Roles::ROLE_SELLING_READER . '\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:component-customer', 'write:measure'],
+            'groups' => ['write:component-customer', 'write:measure', 'write:main-price'],
             'openapi_definition_name' => 'CustomerComponent-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:measure', 'read:component-customer'],
+            'groups' => ['read:id', 'read:measure', 'read:component-customer', 'read:main-price'],
             'openapi_definition_name' => 'CustomerComponent-read',
             'skip_null_values' => false
         ],
@@ -84,21 +85,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Component extends Entity implements MeasuredInterface
 {
-    //region properties
-    /** @var Company */
-    #[
-        ApiProperty(description: 'Compagnie gérant la grille de prix', readableLink: false, example: '/api/companies/1'),
-        ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'components'),
-        Serializer\Groups(['read:component-customer', 'write:component-customer'])
-    ]
-    private Company $administeredBy;
-    #[
-        ApiProperty(description: 'Référence', example: 'DH544G'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:component-customer', 'write:component-customer'])
-    ]
-    private ?string $code = null;
+    use MainPriceTrait;
 
+    //region properties
     #[
         ApiProperty(description: 'Client', readableLink: true),
         ORM\JoinColumn(nullable: false),
@@ -114,63 +103,7 @@ class Component extends Entity implements MeasuredInterface
         Serializer\Groups(['read:component-customer', 'write:component-customer', 'read:manufacturing-order', 'read:nomenclature'])
     ]
     private ?TechnicalSheet $component;
-    #[
-        ApiProperty(description: 'Poids cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-linear-density']),
-        ORM\Embedded,
-        Serializer\Groups(['read:component-customer', 'write:component-customer'])
-    ]
-    private Measure $copperWeight;
-    #[
-        ApiProperty(description: 'Temps de livraison', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
-        ORM\Embedded,
-        Serializer\Groups(['read:component-customer', 'write:component-customer'])
-    ]
-    private Measure $deliveryTime;
-    #[
-        ApiProperty(description: 'Incoterms', readableLink: false, example: '/api/incoterms/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:component-customer', 'write:component-customer'])
-    ]
-    private ?Incoterms $incoterms = null;
-    #[
-        ApiProperty(description: 'Indice', example: '0'),
-        ORM\Column(name: '`index`', options: ['default' => '0']),
-        Serializer\Groups(['read:component-customer', 'write:component-customer'])
-    ]
-    private string $index = '0';
-    #[
-        ApiProperty(description: 'Type de grille produit', example: KindType::TYPE_PROTOTYPE, openapiContext: ['enum' => KindType::TYPES]),
-        Assert\Choice(choices: KindType::TYPES),
-        ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_SERIES]),
-        Serializer\Groups(['read:component-customer', 'write:component-customer'])
-    ]
-    private string $kind;
 
-    #[
-        ApiProperty(description: 'Proportion', example: '99'),
-        ORM\Column(options: ['default' => 100, 'unsigned' => true]),
-        Serializer\Groups(['read:component-customer', 'write:component-customer'])
-    ]
-    private float $proportion = 100;
-    #[
-        ApiProperty(description: 'MOQ (Minimal Order Quantity)', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
-        ORM\Embedded,
-        Serializer\Groups(['read:component-customer', 'write:component-customer'])
-    ]
-    private Measure $moq;
-    #[
-        ApiProperty(description: 'Conditionnement', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
-        ORM\Embedded,
-        Serializer\Groups(['read:component-customer', 'write:component-customer'])
-    ]
-    private Measure $packaging;
-
-    #[
-        ApiProperty(description: 'Type de packaging', example: 'Palette'),
-        ORM\Column(length: 30, nullable: true),
-        Serializer\Groups(['read:component-customer', 'write:component-customer'])
-    ]
-    private ?string $packagingKind = null;
     #[
         ApiProperty(description: 'Prix', example: '[]'),
         ORM\OneToMany(mappedBy: 'component', targetEntity: ComponentPrice::class, cascade: ['persist', 'remove'], fetch: 'EAGER'),
@@ -181,24 +114,11 @@ class Component extends Entity implements MeasuredInterface
     //endregion
     public function __construct()
     {
+        $this->initialize();
         $this->prices = new ArrayCollection();
     }
 
     //region getters & setters
-    final public function setAdministeredBy(Company $administeredBy): self
-    {
-        $this->administeredBy = $administeredBy;
-        return $this;
-    }
-
-    /**
-     * @return Company
-     */
-    final public function getAdministeredBy(): Company
-    {
-        return $this->administeredBy;
-    }
-
     final public function getCustomer(): ?Customer
     {
         return $this->customer;
@@ -238,25 +158,6 @@ class Component extends Entity implements MeasuredInterface
         $this->prices = $prices;
     }
 
-    /**
-     * @return string
-     */
-    public function getKind(): string
-    {
-        return $this->kind;
-    }
-
-    /**
-     * @param string $kind
-     * @return Component
-     */
-    public function setKind(string $kind): Component
-    {
-        $this->kind = $kind;
-        return $this;
-    }
-
-
     // On récupère le meilleur prix associé au produit en fonction de la quantité passée en paramètre
     public function getBestPrice(Measure $quantity): ?ComponentPrice
     {
@@ -283,76 +184,6 @@ class Component extends Entity implements MeasuredInterface
             }
         }
         return $bestPrice;
-    }
-
-    public function getCode(): ?string
-    {
-        return $this->code;
-    }
-
-    public function setCode(?string $code): void
-    {
-        $this->code = $code;
-    }
-
-    public function getCopperWeight(): Measure
-    {
-        return $this->copperWeight;
-    }
-
-    public function setCopperWeight(Measure $copperWeight): void
-    {
-        $this->copperWeight = $copperWeight;
-    }
-
-    public function getDeliveryTime(): Measure
-    {
-        return $this->deliveryTime;
-    }
-
-    public function setDeliveryTime(Measure $deliveryTime): void
-    {
-        $this->deliveryTime = $deliveryTime;
-    }
-
-    public function getIncoterms(): ?Incoterms
-    {
-        return $this->incoterms;
-    }
-
-    public function setIncoterms(?Incoterms $incoterms): void
-    {
-        $this->incoterms = $incoterms;
-    }
-
-    public function getIndex(): string
-    {
-        return $this->index;
-    }
-
-    public function setIndex(string $index): void
-    {
-        $this->index = $index;
-    }
-
-    public function getMoq(): Measure
-    {
-        return $this->moq;
-    }
-
-    public function setMoq(Measure $moq): void
-    {
-        $this->moq = $moq;
-    }
-
-    public function getPackaging(): Measure
-    {
-        return $this->packaging;
-    }
-
-    public function setPackaging(Measure $packaging): void
-    {
-        $this->packaging = $packaging;
     }
     //endregion
 
@@ -389,41 +220,4 @@ class Component extends Entity implements MeasuredInterface
     {
         return [];
     }
-
-    /**
-     * @return float
-     */
-    public function getProportion(): float
-    {
-        return $this->proportion;
-    }
-
-    /**
-     * @param float $proportion
-     * @return Component
-     */
-    public function setProportion(float $proportion): Component
-    {
-        $this->proportion = $proportion;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPackagingKind(): ?string
-    {
-        return $this->packagingKind;
-    }
-
-    /**
-     * @param string|null $packagingKind
-     * @return Component
-     */
-    public function setPackagingKind(?string $packagingKind): Component
-    {
-        $this->packagingKind = $packagingKind;
-        return $this;
-    }
-
 }
