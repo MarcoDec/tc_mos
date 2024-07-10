@@ -1,7 +1,7 @@
 <script setup>
     import {computed, defineProps, ref} from 'vue'
-    import {useProductionPlanningsFieldsStore} from '../../stores/productionPlannings/productionPlannings'
-    import {useProductionPlanningsItemsStore} from '../../stores/productionPlannings/productionPlanningsItems'
+    import {useProductionPlanningsFieldsStore} from '../../../../stores/productionPlannings/productionPlannings'
+    import {useProductionPlanningsItemsStore} from '../../../../stores/productionPlannings/productionPlanningsItems'
     import {useRoute} from 'vue-router'
 
     const props = defineProps({

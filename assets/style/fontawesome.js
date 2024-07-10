@@ -139,7 +139,7 @@ import {
     faUsers,
     faWallet,
     faWarehouse,
-    faWrench, faTableList
+    faWrench, faTableList, faCodeFork
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -187,6 +187,7 @@ library.add(faClipboard)
 library.add(faClipboardCheck)
 library.add(faClipboardList)
 library.add(faClock)
+library.add(faCodeFork)
 library.add(faCogs)
 library.add(faCommentsDollar)
 library.add(faCubesStacked)

@@ -183,17 +183,17 @@
             <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
                 <!--TODO                <p>Production</p>-->
                 <!--TODO                    <p>Catégories d'événements des équipements (engine-events)</p>-->
-                <AppNavbarItem id="1" title="Equipements" icon="puzzle-piece" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, '1')">
+                <AppNavbarItem id="1" title="Equipements" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, '1')">
                     <AppNavbarLink icon="building" to="infrastructures" :variant="variantProduction" @click="emit('close-menu')">
                         Eléments d'infrastructures
                     </AppNavbarLink>
-                    <AppNavbarLink icon="desktop" to="workstations" :variant="variantProduction" @click="onSubMenuItemClick">
+                    <AppNavbarLink icon="code-fork" to="workstations" :variant="variantProduction" @click="onSubMenuItemClick">
                         Postes de travail
                     </AppNavbarLink>
                     <AppNavbarLink icon="cogs" to="machines" :variant="variantProduction" @click="emit('close-menu')">
                         Machines
                     </AppNavbarLink>
-                    <AppNavbarLink icon="toolbox" to="tools" :variant="variantProduction" @click="emit('close-menu')">
+                    <AppNavbarLink icon="wrench" to="tools" :variant="variantProduction" @click="emit('close-menu')">
                         Outils
                     </AppNavbarLink>
                     <AppNavbarLink icon="flask" to="counter-parts" :variant="variantProduction" @click="emit('close-menu')">
@@ -206,7 +206,7 @@
                 <AppNavbarLink icon="map-marked" to="zones" :variant="variantProduction" @click="emit('close-menu')">
                     Zones
                 </AppNavbarLink>
-                <AppNavbarItem id="2" title="Etiquette" icon="puzzle-piece" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, '2')">
+                <AppNavbarItem id="2" title="Etiquette" icon="tags" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, '2')">
                     <AppNavbarLink v-if="user.isProductionWriter" to="label-template-list" icon="tags" :variant="variantProduction" @click="emit('close-menu')">
                         Modèles d'étiquette
                     </AppNavbarLink>
@@ -216,6 +216,12 @@
                         </AppNavbarLink>
                     </template>
                 </AppNavbarItem>
+                <AppNavbarLink v-if="user.isProductionReader" icon="table-list" to="manufacturing-schedule" :variant="variantProduction" @click="emit('close-menu')">
+                    Planning de production
+                </AppNavbarLink>
+                <AppNavbarLink v-if="user.isProductionReader" icon="table-list" to="manufacturing-order-needs" :variant="variantProduction" @click="emit('close-menu')">
+                    Besoins OFs
+                </AppNavbarLink>
                 <AppNavbarLink v-if="user.isProductionReader" icon="bullhorn" to="of-list" :variant="variantProduction" @click="emit('close-menu')">
                     Ordres de fabrication
                 </AppNavbarLink>
