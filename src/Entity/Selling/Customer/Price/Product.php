@@ -13,6 +13,7 @@ use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Unit;
 use App\Entity\Project\Product\Product as TechnicalSheet;
 use App\Entity\Selling\Customer\Customer;
+use App\Entity\Traits\Price\MainPriceTrait;
 use App\Filter\RelationFilter;
 use App\Repository\Selling\Customer\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -23,7 +24,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['customer', 'product', 'kind']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['customer', 'product']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['product.code' => 'partial', 'product.name' => 'partial', 'product.price.code' => 'partial', 'product.price.value' => 'partial',
         'product.index' => 'partial', 'product.forecastVolume.value' => 'partial', 'product.forecastVolume.code' => 'partial'
     ]),
@@ -52,18 +53,19 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ],
-            'get' => NO_ITEM_GET_OPERATION
+            'get',
+            'patch'
         ],
         shortName: 'CustomerProduct',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_SELLING_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:product-customer'],
+            'groups' => ['write:measure', 'write:product-customer', 'write:main-price'],
             'openapi_definition_name' => 'CustomerProduct-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:product-customer'],
+            'groups' => ['read:id', 'read:measure', 'read:product-customer', 'read:main-price'],
             'openapi_definition_name' => 'CustomerProduct-read',
             'skip_null_values' => false
         ],
@@ -73,15 +75,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Table(name: 'product_customer')
 ]
 class Product extends Entity {
+    use MainPriceTrait;
     //region properties
-    /** @var Collection<int, Company> */
-    #[
-        ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
-        ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'products'),
-        Serializer\Groups(['read:product-customer'])
-    ]
-    private Collection $administeredBy;
-
     #[
         ApiProperty(description: 'Client', readableLink: true),
         ORM\JoinColumn(nullable: false),
@@ -89,15 +84,6 @@ class Product extends Entity {
         Serializer\Groups(['read:product-customer', 'write:product-customer', 'read:manufacturing-order', 'read:expedition', 'read:nomenclature'])
     ]
     private ?Customer $customer;
-
-    #[
-        ApiProperty(description: 'Type de grille produit', example: KindType::TYPE_PROTOTYPE, openapiContext: ['enum' => KindType::TYPES]),
-        Assert\Choice(choices: KindType::TYPES),
-        ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_SERIES]),
-        Serializer\Groups(['read:product-customer', 'write:product-customer'])
-    ]
-    private ?string $kind;
-
     #[
         ApiProperty(description: 'Produit', readableLink: true),
         ORM\JoinColumn(nullable: false),
@@ -107,32 +93,17 @@ class Product extends Entity {
     private ?TechnicalSheet $product;
 
     #[
-        ApiProperty(description: 'Prix', readableLink: false, example: '/api/customer-product-prices/1'),
+        ApiProperty(description: 'Prix', example: '[]'),
         ORM\OneToMany(mappedBy: 'product', targetEntity: ProductPrice::class, cascade: ['persist', 'remove']),
         Serializer\Groups(['read:product-customer', 'write:product-customer'])
     ]
-    private Collection $productPrices;
+    private Collection $prices;
     //endregion
     public function __construct() {
-        $this->administeredBy = new ArrayCollection();
-        $this->productPrices = new ArrayCollection();
+        $this->initialize();
+        $this->prices = new ArrayCollection();
     }
     //region getters & setters
-    final public function addAdministeredBy(Company $administeredBy): self {
-        if (!$this->administeredBy->contains($administeredBy)) {
-            $this->administeredBy->add($administeredBy);
-            $administeredBy->addProduct($this);
-        }
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Company>
-     */
-    final public function getAdministeredBy(): Collection {
-        return $this->administeredBy;
-    }
-
     final public function getCustomer(): ?Customer {
         return $this->customer;
     }
@@ -144,15 +115,6 @@ class Product extends Entity {
     final public function getUnit(): ?Unit {
         return $this->product?->getUnit();
     }
-
-    final public function removeAdministeredBy(Company $administeredBy): self {
-        if ($this->administeredBy->contains($administeredBy)) {
-            $this->administeredBy->removeElement($administeredBy);
-            $administeredBy->removeProduct($this);
-        }
-        return $this;
-    }
-
     final public function setCustomer(?Customer $customer): self {
         $this->customer = $customer;
         return $this;
@@ -163,33 +125,18 @@ class Product extends Entity {
         return $this;
     }
 
-    public function getProductPrices(): Collection
+    public function getPrices(): Collection
     {
-        return $this->productPrices;
+        return $this->prices->filter(function ($price) {
+            return $price->isDeleted() === false;
+        });
     }
 
-    public function setProductPrices(Collection $productPrices): void
+    public function setPrices(Collection $prices): void
     {
-        $this->productPrices = $productPrices;
+        $this->prices = $prices;
     }
 
-    /**
-     * @return ?string
-     */
-    public function getKind(): ?string
-    {
-        return $this->kind;
-    }
-
-    /**
-     * @param ?string $kind
-     * @return Product
-     */
-    public function setKind(?string $kind): Product
-    {
-        $this->kind = $kind;
-        return $this;
-    }
 
     // On récupère le meilleur prix associé au produit en fonction de la quantité passée en paramètre
     public function getBestPrice(Measure $quantity): ?ProductPrice {
@@ -198,7 +145,7 @@ class Product extends Entity {
         $bestPrice->setCode('EUR');
         $possiblePrices = [];
         /** @var ProductPrice $price */
-        foreach ($this->productPrices as $price) {
+        foreach ($this->prices as $price) {
             if ($quantity->isGreaterThanOrEqual($price->getQuantity())) {
                 $possiblePrices [] = $price;
             }

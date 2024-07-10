@@ -14,9 +14,27 @@
     import {useRoute} from 'vue-router'
     import {useSocietyStore} from '../../../../../stores/management/societies/societies'
     import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
+    import AppPricesTablePage from "../../../prices/AppPricesTablePage.vue";
+    import useUser from "../../../../../stores/security";
 
     const route = useRoute()
     const idSupplier = route.params.id_supplier
+
+    const user = useUser()
+    const isPurchaseAdmin = user.isPurchaseAdmin
+    const isPurchaseWriter = user.isPurchaseWriter
+    const rights = {
+        main: {
+            add: isPurchaseWriter,
+            update: isPurchaseWriter,
+            delete: isPurchaseAdmin
+        },
+        price: {
+            add: isPurchaseWriter,
+            update: isPurchaseWriter,
+            delete: isPurchaseAdmin
+        }
+    }
 
     //Création des variables locales
     const isError2 = ref(false)
@@ -80,6 +98,11 @@
             icon="laptop"
             tabs="gui-start">
             <AppSuspense><AppSupplierShowTabFichiers/></AppSuspense>
+        </AppTab>
+        <AppTab id="gui-start-prices" title="Prix" tabs="gui-start" icon="euro-sign">
+            <AppPricesTablePage
+                :supplier="`/api/suppliers/${idSupplier}`"
+                :rights="rights"/>
         </AppTab>
         <AppTab
             id="gui-start-quality"

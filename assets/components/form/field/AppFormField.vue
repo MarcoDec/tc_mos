@@ -8,12 +8,14 @@
     const props = defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},
-        modelValue: {default: null, type: [Object, String]},
+        modelValue: {default: null, type: [Object, String, Boolean, Number]},
         newField: {default: null, required: false, type: Object},
         disabled: {default: false, type: Boolean}
     })
     // console.log('AppFormField props', props)
     const localData = ref(props.modelValue)
+    // console.log('localData', localData.value)
+
     const componentType = computed(() => {
         if (props.field.mode === 'wrap') return AppFormFlexWrapper
         switch (props.field.mode) {

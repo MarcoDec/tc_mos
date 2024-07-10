@@ -67,7 +67,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
             'skip_null_values' => false
         ],
         //order: ['code' => 'asc'],
-        paginationEnabled: true
+        paginationEnabled: true,
+        paginationClientEnabled: true
     ),
     ORM\Entity(repositoryClass: CurrencyRepository::class)
 ]

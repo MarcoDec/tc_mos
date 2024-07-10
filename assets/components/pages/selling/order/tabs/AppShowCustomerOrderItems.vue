@@ -63,7 +63,7 @@
                     label: 'Code',
                     name: 'requestedQuantity.code',
                     options: {
-                        label: value => fetchUnitOptions.getLabel(value),
+                        label: value => fetchUnitOptions.getLabelFromCode(value),
                         options: optionsUnit.value
                     },
                     type: 'select'
@@ -89,7 +89,7 @@
                     label: 'Code',
                     name: 'confirmedQuantity.code',
                     options: {
-                        label: value => fetchUnitOptions.getLabel(value),
+                        label: value => fetchUnitOptions.getLabelFromCode(value),
                         options: optionsUnit.value
                     },
                     type: 'select'
@@ -117,7 +117,7 @@
                     label: 'Code',
                     name: 'price.code',
                     options: {
-                        label: value => fetchCurrencyOptions.getLabel(value),
+                        label: value => fetchCurrencyOptions.getLabelFromCode(value),
                         options: optionsCurrency.value
                     },
                     type: 'select'

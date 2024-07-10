@@ -79,7 +79,7 @@ export const useProductStore = defineStore('products', {
                 id: item.id,
                 kind: item.kind,
                 name: item.name,
-                companies: item.companies.map(company => ({id: Number(company['@id'].split('/').pop())})),
+                companies: [],//item.companies.map(company => ({id: Number(company['@id'].split('/').pop())})),
                 customers: item.customers
             }
             return newObject

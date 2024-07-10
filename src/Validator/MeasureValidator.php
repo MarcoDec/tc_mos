@@ -81,6 +81,6 @@ final class MeasureValidator extends ConstraintValidator {
         if (!empty($objectUnit)) {
             return $objectUnit;
         }
-        throw new InvalidArgumentException('Unit is not set in MeasuredInterface object.');
+        throw new InvalidArgumentException('Unit is not set in MeasuredInterface object.'.get_class($myObject));
     }
 }
