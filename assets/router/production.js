@@ -237,7 +237,7 @@ export default [
         path: '/infra/:id_engine'
     },
     {
-        component: async () => import('../components/pages/production/Planning/AppProductionPlanning.vue'),
+        component: async () => import('../components/pages/production/Planning/AppProductionPlanningPage.vue'),
         meta: {requiresAuth: true},
         name: 'manufacturing-schedule',
         path: '/manufacturingSchedule',

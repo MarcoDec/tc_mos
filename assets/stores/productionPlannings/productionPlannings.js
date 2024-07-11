@@ -3,10 +3,11 @@ import api from './../../api'
 
 export const useProductionPlanningsFieldsStore = defineStore('productionPlanningsFileds', {
     actions: {
-        async fetchFields() {
+        async fetch() {
             try {
                 const response = await api('/api/manufacturingSchedule', 'GET')
-                console.log('Réponse de l\'API :', response.fields)
+                this.items = response.items
+                console.log('Réponse de l\'API :', response)
                 this.fields = response.fields.map(field => ({
                     label: field.label,
                     name: field.name,
@@ -19,6 +20,7 @@ export const useProductionPlanningsFieldsStore = defineStore('productionPlanning
     },
     getters: {},
     state: () => ({
-        fields: []
+        fields: [],
+        items: []
     })
 })
