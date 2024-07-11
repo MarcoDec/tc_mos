@@ -42,7 +42,7 @@
                                 body: [
                                     [
                                         {
-                                            text: 'ProForma\n N° 50701\n',
+                                            text: 'Credit Customer\n N° 1\n',
                                             alignment: 'center',
                                             style: 'header'
                                         }
@@ -77,7 +77,7 @@
                         {
                             width: '*',
                             text: [
-                                {text: 'Émetteur :\n', style: 'contactInfo'},
+                                {text: 'Applicant :\n', style: 'contactInfo'},
                                 {text: 'TCONCEPT\n', style: 'subheader'},
                                 {text: '5 rue Alfred Nobel\n', style: 'headerInfo'},
                                 {text: 'ZA La charrière\n', style: 'headerInfo'},
@@ -90,14 +90,16 @@
                         },
                         {
                             stack: [
-                                {text: 'Adressé à :\n', style: 'contactInfo'},
-                                {text: 'PCA SLOVAKIA SRO\n', style: 'subheader'},
-                                {text: 'Automobilova ulica 1, 91701 Trnava\n', style: 'headerInfo'},
-                                {text: 'C/O PSA COMPTABILITE FOURNISSEURS TSA 17833\n', style: 'headerInfo'},
-                                {text: '62971 ARRAS\n', style: 'headerInfo'},
-                                {text: 'France\n', style: 'headerInfo'},
-                                {text: 'Tel. +421915759107\n', style: 'contactInfo'},
-                                {text: 'SK2021746817\n', style: 'contactInfo'}
+                                {text: 'To :\n', style: 'contactInfo'},
+                                {text: 'ZANINI PARETS SL (13096)\n', style: 'subheader'},
+                                {text: 'C/.TENES, 5-9\n', style: 'headerInfo'},
+                                {text: 'POL.IND.LLEVANT\n', style: 'headerInfo'},
+                                {text: '08 150 PARRETS DEL VALLES\n', style: 'headerInfo'},
+                                {text: 'Spain\n', style: 'headerInfo'},
+                                {text: 'Tel. +349357377780\n', style: 'contactInfo'},
+                                {text: 'ESB61011326\n', style: 'contactInfo', margin: [0, 0, 0, 5]},
+                                {text: 'I GOMEZ\n', style: 'headerInfo'},
+                                {text: 'igomez@zanini.com', style: 'contactInfo'}
                             ],
                             width: '50%'
                         }
@@ -107,21 +109,15 @@
                 {
                     table: {
                         headerRows: 1,
-                        widths: [70, 100, 80, 70, '*'],
+                        widths: [70, '*'],
                         body: [
                             [
-                                {text: 'Date facture', style: 'tableHeader'},
-                                {text: 'Contact', style: 'tableHeader'},
-                                {text: 'Règlement', style: 'tableHeader'},
-                                {text: 'Échéance', style: 'tableHeader'},
-                                {text: 'INCOTERM', style: 'tableHeader'}
+                                {text: 'Date', style: 'tableHeader'},
+                                {text: '', style: 'tableHeader'}
                             ],
                             [
                                 {text: '26/01/2024', style: 'tableBody'},
-                                {text: '', style: 'tableBody'},
-                                {text: 'Virement à 60 jours', style: 'tableBody'},
-                                {text: '26/03/2024', style: 'tableBody'},
-                                {text: 'FCA', style: 'tableBody'}
+                                ''
                             ]
                         ]
                     },
@@ -143,61 +139,47 @@
                 {
                     table: {
                         headerRows: 1,
-                        widths: [10, 60, 250, '*', '*', '*'],
+                        widths: [10, 300, '*', '*', '*'],
                         body: [
                             [{text: '#', style: 'tableHeader'},
-                             {text: 'Référence', style: 'tableHeader'},
                              {text: 'Désignation', style: 'tableHeader'},
-                             {text: 'P.U. HT', style: 'tableHeader'},
-                             {text: 'Quantité', style: 'tableHeader'},
-                             {text: 'Prix HT', style: 'tableHeader'}],
+                             {text: 'Unit price Excl.VAT', style: 'tableHeader'},
+                             {text: 'Quantity', style: 'tableHeader'},
+                             {text: 'Price excl.VAT', style: 'tableHeader'}],
                             [
                                 '',
-                                {colSpan: 5, text: 'BL n° 50711 du 26/01/2024 / Votre référence: 87264123', bold: 'true', style: 'tableBody'},
-                                '',
+                                {colSpan: 4, text: 'Avoir sur facture 50524-BL 50537 - Votre référence: 4SR000137/4CC000183', bold: 'true', style: 'tableBody'},
                                 '',
                                 '',
                                 ''
                             ],
                             [
                                 {text: '1', style: 'tableBody'},
-                                {text: '9813715280', style: 'tableBody'},
-                                {text: 'FCA B618 HAB AM FM DAB\nIndice: A\nNuméro de commande: 87264123\nCode Douanier: 8544300089', style: 'tableBody'},
-                                {text: '8,61000€', style: 'tableBody'},
-                                {text: '480', style: 'tableBody'},
-                                {text: '4132,80€', style: 'tableBody'}
-                            ],
-                            [
-                                {text: '2', style: 'tableBody'},
-                                {text: '9813715280', style: 'tableBody'},
-                                {text: 'FCA B618 HAB AM FM DAB\nIndice: A\nNuméro de commande: 87264123\nCode Douanier: 8544300089', style: 'tableBody'},
-                                {text: '8,61000€', style: 'tableBody'},
-                                {text: '20', style: 'tableBody'},
-                                {text: '172,20€', style: 'tableBody'}
+                                {text: 'Erreur de quantité sur référence: 9852179080', style: 'tableBody'},
+                                {text: '-3,06000€', style: 'tableBody'},
+                                {text: '500', style: 'tableBody'},
+                                {text: '-1530,00€', style: 'tableBody'}
                             ],
                             [
                                 '',
                                 '',
                                 '',
-                                '',
-                                {text: 'Total HT', style: 'tableBody'},
-                                {text: '4305,00€', style: 'tableBody'}
+                                {text: 'Total Excl Vat', style: 'tableBody'},
+                                {text: '-1530,00€', style: 'tableBody'}
                             ],
                             [
                                 '',
                                 '',
                                 '',
-                                '',
-                                {text: 'TVA', style: 'tableBody'},
-                                {text: '0,00€', style: 'tableBody'}
+                                {text: 'VAT', style: 'tableBody'},
+                                {text: '-0,00€', style: 'tableBody'}
                             ],
                             [
                                 '',
                                 '',
                                 '',
-                                '',
-                                {text: 'Total TTC', style: 'tableBody', fillColor: '#A9E2F3'},
-                                {text: '4305,00€', style: 'tableBody', fillColor: '#A9E2F3'}
+                                {text: 'All tax included', style: 'tableBody', fillColor: '#A9E2F3'},
+                                {text: '-1530,00€', style: 'tableBody', fillColor: '#A9E2F3'}
                             ]
                         ]
                     },
@@ -246,21 +228,11 @@
                 },
                 {
                     table: {
-                        widths: ['*', '*'],
+                        widths: ['*'],
                         body: [
                             [
                                 {text: 'Ventes intra-communautaire : Exonération de TVA article 262 TER I du CGI.',
-                                 border: [false, false, false, false]},
-                                {
-                                    text: [
-                                        {text: 'Coordonnées bancaires:\n', style: 'subheader'},
-                                        'BANQUE CIC\n',
-                                        'IBAN FR78 3008 7331 2200 0212 7570 107\n',
-                                        'BIC CMCIFRPP\n'
-                                    ],
-                                    fillColor: '#A9E2F3',
-                                    border: [false, false, false, false]
-                                }
+                                 border: [false, false, false, false]}
                             ]
                         ]
                     }
