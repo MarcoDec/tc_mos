@@ -28,6 +28,12 @@ export default [
         meta: {requiresAuth: true},
         name: 'pdf-credit-customer',
         path: '/pdf-credit-customer'
+    },
+    {
+        component: () => import('../components/pages/template/AppPdfProFormaFr.vue'),
+        meta: {requiresAuth: true},
+        name: 'pdf-pro-forma-fr',
+        path: '/pdf-pro-forma-fr'
     }
 
 ]
