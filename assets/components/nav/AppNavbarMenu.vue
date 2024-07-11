@@ -69,6 +69,38 @@
         e.stopPropagation()
         emit('close-menu')
     }
+    //region définition des Ids uniques des sous-menus
+    const subMenuIds = {
+        purchase: {
+            admin: 'purchase-admin',
+        },
+        management: {
+            admin: 'management-admin',
+        },
+        it: {
+            admin: 'it-admin',
+        },
+        logistic: {
+            admin: 'logistic-admin',
+        },
+        production: {
+            equipment: '1',
+            label: '2'
+        },
+        project: {
+            admin: 'project-admin',
+        },
+        quality: {
+            admin: 'quality-admin',
+        },
+        hr: {
+            admin: 'hr-admin',
+        },
+        selling: {
+            admin: 'selling-admin',
+        }
+    }
+    //endregion
 </script>
 
 <template>
@@ -79,30 +111,29 @@
             <!--            </AppNavbarItem>-->
             <AppNavbarItem v-if="user.isPurchaseReader !== null" id="purchase" icon="shopping-bag" title="Achats">
                 <AppNavbarLink icon="user-tie" to="supplier-list" :variant="variantPurchase" @click="emit('close-menu')">
-                    Liste des fournisseurs
+                    Fournisseurs
                 </AppNavbarLink>
                 <AppNavbarLink icon="layer-group" to="component-list" :variant="variantPurchase" @click="emit('close-menu')">
-                    Liste des composants
-                </AppNavbarLink>
-                <AppNavbarLink icon="magnet" to="component-equivalents" :variant="variantPurchase" @click="emit('close-menu')">
-                    Groupes d'équivalences
+                    Composants
                 </AppNavbarLink>
                 <AppNavbarLink icon="shopping-cart" to="purchaseOrderList" :variant="variantPurchase" @click="emit('close-menu')">
-                    Liste des commandes
+                    Commandes
                 </AppNavbarLink>
                 <template v-if="user.isPurchaseAdmin">
-                    <AppDropdownItem disabled variant="danger">
-                        <span class="text-white">Administration</span>
-                    </AppDropdownItem>
-                    <AppNavbarLink icon="layer-group" to="component-families" :variant="variantPurchase" @click="emit('close-menu')">
-                        Familles de composants
-                    </AppNavbarLink>
-                    <AppNavbarLink icon="magnet" to="attributes" :variant="variantPurchase" @click="emit('close-menu')">
-                        Attributs
-                    </AppNavbarLink>
-                    <AppNavbarLink icon="gear" to="purchase parameters" :variant="variantPurchase" @click="emit('close-menu')">
-                        Paramètres
-                    </AppNavbarLink>
+                    <AppNavbarItem :id="subMenuIds.purchase.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.purchase.admin)">
+                        <AppNavbarLink icon="magnet" to="attributes" :variant="variantPurchase" @click="emit('close-menu')">
+                            Attributs
+                        </AppNavbarLink>
+                        <AppNavbarLink icon="layer-group" to="component-families" :variant="variantPurchase" @click="emit('close-menu')">
+                            Familles de composants
+                        </AppNavbarLink>
+                        <AppNavbarLink icon="magnet" to="component-equivalents" :variant="variantPurchase" @click="emit('close-menu')">
+                            Groupes d'équivalences
+                        </AppNavbarLink>
+                        <AppNavbarLink icon="gear" to="purchase parameters" :variant="variantPurchase" @click="emit('close-menu')">
+                            Paramètres
+                        </AppNavbarLink>
+                    </AppNavbarItem>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isManagementReader" id="management" icon="sitemap" title="Direction">
@@ -115,35 +146,33 @@
                 <AppNavbarLink icon="calendar" to="agenda" :variant="variantManagement" @click="emit('close-menu')">
                     Agenda
                 </AppNavbarLink>
-                <AppNavbarLink icon="people-group" to="teams" :variant="variantManagement" @click="emit('close-menu')">
-                    Equipes
-                </AppNavbarLink>
-                <AppNavbarLink v-if="user.isManagementWriter" icon="print" to="printers" :variant="variantManagement" @click="emit('close-menu')">
-                    Imprimantes
-                </AppNavbarLink>
-                <AppNavbarLink v-if="user.isManagementWriter" icon="palette" to="colors" :variant="variantManagement" @click="emit('close-menu')">
-                    Couleurs
+                <AppNavbarLink icon="gauge-high" to="suivi_depenses_ventes" :variant="variantManagement" @click="emit('close-menu')">
+                    Suivi des dépenses et ventes
                 </AppNavbarLink>
                 <template v-if="user.isManagementAdmin">
-                    <AppDropdownItem disabled variant="danger">
-                        <span class="text-white">Administration</span>
-                    </AppDropdownItem>
-                    <AppNavbarLink icon="gauge-high" to="suivi_depenses_ventes" :variant="variantManagement" @click="emit('close-menu')">
-                        Suivi des dépenses et ventes
-                    </AppNavbarLink>
-                    <!-- TODO                    <p>Devises</p>-->
-                    <AppNavbarLink to="currencies" icon="comments-dollar" :variant="variantManagement" @click="emit('close-menu')">
-                        Devises
-                    </AppNavbarLink>
-                    <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" :variant="variantManagement" @click="emit('close-menu')">
-                        Délais de paiement des factures
-                    </AppNavbarLink>
-                    <AppNavbarLink icon="comments-dollar" to="vat-messages" :variant="variantManagement" @click="emit('close-menu')">
-                        Messages TVA
-                    </AppNavbarLink>
-                    <AppNavbarLink icon="ruler-horizontal" to="units" :variant="variantManagement" @click="emit('close-menu')">
-                        Unités
-                    </AppNavbarLink>
+                    <AppNavbarItem :id="subMenuIds.management.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.management.admin)">
+                        <AppNavbarLink icon="people-group" to="teams" :variant="variantManagement" @click="emit('close-menu')">
+                            Equipes
+                        </AppNavbarLink>
+                        <AppNavbarLink v-if="user.isManagementWriter" icon="print" to="printers" :variant="variantManagement" @click="emit('close-menu')">
+                            Imprimantes
+                        </AppNavbarLink>
+                        <AppNavbarLink v-if="user.isManagementWriter" icon="palette" to="colors" :variant="variantManagement" @click="emit('close-menu')">
+                            Couleurs
+                        </AppNavbarLink>
+                        <AppNavbarLink to="currencies" icon="comments-dollar" :variant="variantManagement" @click="emit('close-menu')">
+                            Devises
+                        </AppNavbarLink>
+                        <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" :variant="variantManagement" @click="emit('close-menu')">
+                            Délais de paiement des factures
+                        </AppNavbarLink>
+                        <AppNavbarLink icon="comments-dollar" to="vat-messages" :variant="variantManagement" @click="emit('close-menu')">
+                            Messages TVA
+                        </AppNavbarLink>
+                        <AppNavbarLink icon="ruler-horizontal" to="units" :variant="variantManagement" @click="emit('close-menu')">
+                            Unités
+                        </AppNavbarLink>
+                    </AppNavbarItem>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isItReader || user.isItWriter || user.isItAdmin" id="it" icon="laptop" title="Informatique">
@@ -151,39 +180,44 @@
                     Eléments informatiques
                 </AppNavbarLink>
                 <template v-if="user.isItAdmin">
-                    <AppDropdownItem disabled variant="danger">
-                        <span class="text-white">Administration</span>
-                    </AppDropdownItem>
-                    <a :href="database" class="dropdown-item text-danger" target="_blank" @click="emit('close-menu')">
-                        <Fa icon="database"/>
-                        Base de données
-                    </a>
-                    <a :href="api" class="dropdown-item text-danger" target="_blank" @click="emit('close-menu')">
-                        <Fa icon="database"/>
-                        Application Programming Interface (API)
-                    </a>
+                    <AppNavbarItem :id="subMenuIds.it.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.it.admin)">
+                        <a :href="database" class="dropdown-item text-danger" target="_blank" @click="emit('close-menu')">
+                            <Fa icon="database"/>
+                            Base de données
+                        </a>
+                        <a :href="api" class="dropdown-item text-danger" target="_blank" @click="emit('close-menu')">
+                            <Fa icon="database"/>
+                            Application Programming Interface (API)
+                        </a>
+                    </AppNavbarItem>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isLogisticsReader" id="logistics" icon="boxes" title="Logistique">
+                <AppNavbarLink icon="warehouse" to="warehouse-list" :variant="variantLogistics" @click="emit('close-menu')">
+                    Entrepots
+                </AppNavbarLink>
                 <AppNavbarLink icon="shuttle-van" to="carriers" :variant="variantLogistics" @click="emit('close-menu')">
                     Transporteurs
                 </AppNavbarLink>
                 <template v-if="user.isLogisticsAdmin">
-                    <AppDropdownItem disabled variant="danger">
-                        <span class="text-white">Administration</span>
-                    </AppDropdownItem>
-                    <AppNavbarLink icon="file-contract" to="incoterms" :variant="variantLogistics" @click="emit('close-menu')">
-                        Incoterms
-                    </AppNavbarLink>
-                    <AppNavbarLink icon="warehouse" to="warehouse-list" :variant="variantLogistics" @click="emit('close-menu')">
-                        Entrepots
-                    </AppNavbarLink>
+                    <AppNavbarItem :id="subMenuIds.it.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.it.admin)">
+                        <AppNavbarLink icon="file-contract" to="incoterms" :variant="variantLogistics" @click="emit('close-menu')">
+                            Incoterms
+                        </AppNavbarLink>
+                    </AppNavbarItem>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
-                <!--TODO                <p>Production</p>-->
-                <!--TODO                    <p>Catégories d'événements des équipements (engine-events)</p>-->
-                <AppNavbarItem id="1" title="Equipements" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, '1')">
+                <AppNavbarLink v-if="user.isProductionReader" icon="table-list" to="manufacturing-schedule" :variant="variantProduction" @click="emit('close-menu')">
+                    Planning de production
+                </AppNavbarLink>
+                <AppNavbarLink v-if="user.isProductionReader" icon="table-list" to="manufacturing-order-needs" :variant="variantProduction" @click="emit('close-menu')">
+                    Besoins OFs
+                </AppNavbarLink>
+                <AppNavbarLink v-if="user.isProductionReader" icon="bullhorn" to="of-list" :variant="variantProduction" @click="emit('close-menu')">
+                    Ordres de fabrication
+                </AppNavbarLink>
+                <AppNavbarItem :id="subMenuIds.production.equipment" title="Equipements" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.production.equipment)">
                     <AppNavbarLink icon="building" to="infrastructures" :variant="variantProduction" @click="emit('close-menu')">
                         Eléments d'infrastructures
                     </AppNavbarLink>
@@ -203,10 +237,7 @@
                         Pièces de rechange
                     </AppNavbarLink>
                 </AppNavbarItem>
-                <AppNavbarLink icon="map-marked" to="zones" :variant="variantProduction" @click="emit('close-menu')">
-                    Zones
-                </AppNavbarLink>
-                <AppNavbarItem id="2" title="Etiquette" icon="tags" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, '2')">
+                <AppNavbarItem :id="subMenuIds.production.label" title="Etiquette" icon="tags" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.production.label)">
                     <AppNavbarLink v-if="user.isProductionWriter" to="label-template-list" icon="tags" :variant="variantProduction" @click="emit('close-menu')">
                         Modèles d'étiquette
                     </AppNavbarLink>
@@ -216,50 +247,45 @@
                         </AppNavbarLink>
                     </template>
                 </AppNavbarItem>
-                <AppNavbarLink v-if="user.isProductionReader" icon="table-list" to="manufacturing-schedule" :variant="variantProduction" @click="emit('close-menu')">
-                    Planning de production
-                </AppNavbarLink>
-                <AppNavbarLink v-if="user.isProductionReader" icon="table-list" to="manufacturing-order-needs" :variant="variantProduction" @click="emit('close-menu')">
-                    Besoins OFs
-                </AppNavbarLink>
-                <AppNavbarLink v-if="user.isProductionReader" icon="bullhorn" to="of-list" :variant="variantProduction" @click="emit('close-menu')">
-                    Ordres de fabrication
-                </AppNavbarLink>
                 <template v-if="user.isProductionAdmin">
-                    <AppDropdownItem disabled variant="danger">
-                        <span class="text-white">Administration</span>
-                    </AppDropdownItem>
-                    <AppNavbarLink icon="oil-well" to="manufacturers" :variant="variantProduction" @click="emit('close-menu')">
-                        Fabricants Equipement
-                    </AppNavbarLink>
-                    <AppNavbarLink icon="oil-well" to="manufacturer-engines" :variant="variantProduction" @click="emit('close-menu')">
-                        Modèles d'équipements
-                    </AppNavbarLink>
-                    <AppNavbarLink icon="gear" to="production parameters" :variant="variantProduction" @click="emit('close-menu')">
-                        Paramètres
-                    </AppNavbarLink>
+                    <AppNavbarItem :id="subMenuIds.production.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.production.admin)">
+                        <AppNavbarLink icon="map-marked" to="zones" :variant="variantProduction" @click="emit('close-menu')">
+                            Zones
+                        </AppNavbarLink>
+                        <AppNavbarLink icon="oil-well" to="manufacturers" :variant="variantProduction" @click="emit('close-menu')">
+                            Fabricants Equipement
+                        </AppNavbarLink>
+                        <AppNavbarLink icon="oil-well" to="manufacturer-engines" :variant="variantProduction" @click="emit('close-menu')">
+                            Modèles d'équipements
+                        </AppNavbarLink>
+                        <AppNavbarLink icon="gear" to="production parameters" :variant="variantProduction" @click="emit('close-menu')">
+                            Paramètres
+                        </AppNavbarLink>
+                    </AppNavbarItem>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isProjectReader" id="project" icon="project-diagram" title="Projet">
                 <AppNavbarLink icon="fa-brands fa-product-hunt" to="product-list" :variant="variantProject" @click="emit('close-menu')">
-                    Liste des Produits
+                    Produits
                 </AppNavbarLink>
                 <AppNavbarLink icon="fa-solid fa-atom" to="project-operations" :variant="variantProject" @click="emit('close-menu')">
                     Opérations
                 </AppNavbarLink>
                 <template v-if="user.isProjectAdmin">
-                    <AppDropdownItem disabled variant="danger">
-                        <span class="text-white">Administration</span>
-                    </AppDropdownItem>
-                    <AppNavbarLink icon="fa-brands fa-elementor" to="operation-types" :variant="variantProject" @click="emit('close-menu')">
-                        Types d'Opération
-                    </AppNavbarLink>
-                    <AppNavbarLink icon="layer-group" to="product-families" :variant="variantProject" @click="emit('close-menu')">
-                        Familles de produits
-                    </AppNavbarLink>
-                    <AppNavbarLink icon="gear" to="project parameters" :variant="variantProject" @click="emit('close-menu')">
-                        Paramètres
-                    </AppNavbarLink>
+                    <AppNavbarItem :id="subMenuIds.project.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.project.admin)">
+                        <AppDropdownItem disabled variant="danger">
+                            <span class="text-white">Administration</span>
+                        </AppDropdownItem>
+                        <AppNavbarLink icon="fa-brands fa-elementor" to="operation-types" :variant="variantProject" @click="emit('close-menu')">
+                            Types d'Opération
+                        </AppNavbarLink>
+                        <AppNavbarLink icon="layer-group" to="product-families" :variant="variantProject" @click="emit('close-menu')">
+                            Familles de produits
+                        </AppNavbarLink>
+                        <AppNavbarLink icon="gear" to="project parameters" :variant="variantProject" @click="emit('close-menu')">
+                            Paramètres
+                        </AppNavbarLink>
+                    </AppNavbarItem>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isQualityReader" id="quality" icon="certificate" title="Qualité">
@@ -269,56 +295,53 @@
                     </AppNavbarLink>
                 </template>
                 <template v-if="user.isQualityAdmin">
-                    <AppDropdownItem disabled variant="danger">
-                        <span class="text-white">Administration</span>
-                    </AppDropdownItem>
-                    <AppNavbarLink brands icon="elementor" to="reject-types" :variant="variantQuality" @click="emit('close-menu')">
-                        Catégories de rejets de production
-                    </AppNavbarLink>
-                    <AppNavbarLink brands icon="elementor" to="quality-types" :variant="variantQuality" @click="emit('close-menu')">
-                        Critères qualités
-                    </AppNavbarLink>
+                    <AppNavbarItem :id="subMenuIds.quality.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.quality.admin)">
+                        <AppNavbarLink brands icon="elementor" to="reject-types" :variant="variantQuality" @click="emit('close-menu')">
+                            Catégories de rejets de production
+                        </AppNavbarLink>
+                        <AppNavbarLink brands icon="elementor" to="quality-types" :variant="variantQuality" @click="emit('close-menu')">
+                            Critères qualités
+                        </AppNavbarLink>
+                    </AppNavbarItem>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isHrReader" id="hr" icon="male" title="RH">
                 <AppNavbarLink icon="user-tag" to="employee-list" :variant="variantHr" @click="emit('close-menu')">
-                    Liste des employés
+                    Employés
                 </AppNavbarLink>
                 <AppNavbarLink icon="user-graduate" to="out-trainers" :variant="variantHr" @click="emit('close-menu')">
                     Formateurs extérieurs
                 </AppNavbarLink>
-                <AppNavbarLink icon="signal" to="skill-types" :variant="variantHr" @click="emit('close-menu')">
-                    Types de Compétences
-                </AppNavbarLink>
                 <template v-if="user.isHrAdmin">
-                    <AppDropdownItem disabled variant="danger">
-                        <span class="text-white">Administration</span>
-                    </AppDropdownItem>
-                    <AppNavbarLink brands icon="elementor" to="event-types" :variant="variantHr" @click="emit('close-menu')">
-                        Catégories d'événements des employés
-                    </AppNavbarLink>
-                    <AppNavbarLink icon="clock" to="time-slots" :variant="variantHr" @click="emit('close-menu')">
-                        Plages horaires
-                    </AppNavbarLink>
-                    <AppNavbarLink icon="gear" to="hr parameters" :variant="variantHr" @click="emit('close-menu')">
-                        Paramètres
-                    </AppNavbarLink>
+                    <AppNavbarItem :id="subMenuIds.quality.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-start="true" @click="(e) => onSubMenuClick(e, subMenuIds.quality.admin)">
+                        <AppNavbarLink brands icon="elementor" to="event-types" :variant="variantHr" @click="emit('close-menu')">
+                            Catégories d'événements des employés
+                        </AppNavbarLink>
+                        <AppNavbarLink icon="signal" to="skill-types" :variant="variantHr" @click="emit('close-menu')">
+                            Types de Compétences
+                        </AppNavbarLink>
+                        <AppNavbarLink icon="clock" to="time-slots" :variant="variantHr" @click="emit('close-menu')">
+                            Plages horaires
+                        </AppNavbarLink>
+                        <AppNavbarLink icon="gear" to="hr parameters" :variant="variantHr" @click="emit('close-menu')">
+                            Paramètres
+                        </AppNavbarLink>
+                    </AppNavbarItem>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isSellingReader" id="selling" icon="euro-sign" title="Ventes">
                 <AppNavbarLink icon="user-tie" to="customer-list" :variant="variantSelling" @click="emit('close-menu')">
-                    Liste des clients
+                    Clients
                 </AppNavbarLink>
                 <AppNavbarLink icon="bullhorn" to="customer-order-list" :variant="variantSelling" @click="emit('close-menu')">
-                    Liste des ventes
+                    Ventes
                 </AppNavbarLink>
                 <template v-if="user.isSellingAdmin">
-                    <AppDropdownItem disabled variant="danger">
-                        <span class="text-white">Administration</span>
-                    </AppDropdownItem>
-                    <AppNavbarLink icon="gear" to="selling parameters" :variant="variantSelling" @click="emit('close-menu')">
-                        Paramètres
-                    </AppNavbarLink>
+                    <AppNavbarItem :id="subMenuIds.quality.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-start="true" @click="(e) => onSubMenuClick(e, subMenuIds.quality.admin)">
+                        <AppNavbarLink icon="gear" to="selling parameters" :variant="variantSelling" @click="emit('close-menu')">
+                            Paramètres
+                        </AppNavbarLink>
+                    </AppNavbarItem>
                 </template>
             </AppNavbarItem>
         </ul>

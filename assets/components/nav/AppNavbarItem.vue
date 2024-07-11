@@ -5,13 +5,14 @@
         icon: {required: true, type: String},
         id: {required: true, type: String},
         title: {required: true, type: String},
-        dropEnd: {default: false, type: Boolean}
+        dropEnd: {default: false, type: Boolean},
+        dropStart: {default: false, type: Boolean}
     })
     const dropdownId = computed(() => `${props.id}-dropdown`)
 </script>
 
 <template>
-    <li :id="id" class="dropdown nav-item" :class="{'dropend': dropEnd}">
+    <li :id="id" class="dropdown nav-item" :class="{'dropend': dropEnd, 'dropstart': dropStart}">
         <span
             :id="dropdownId"
             aria-expanded="false"
