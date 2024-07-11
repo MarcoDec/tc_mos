@@ -44,12 +44,12 @@ class ProductionPlanningItemsController
 
             $companies = $product->getCompanies()->toArray();
             $companyNames = implode('<br>', array_map(fn($company) => $company->getName(), $companies));
-            $caustingAutoDuration = $product->getCostingAutoDuration();
-            $caustingManualDuration = $product->getCostingManualDuration();
-            $tempsChiffrage = $caustingAutoDuration->add($caustingManualDuration);
-            $Autoduration = $product->getManualDuration();
+            $costingAutoDuration = $product->getCostingAutoDuration();
+            $costingManualDuration = $product->getCostingManualDuration();
+            $costingDuration = $costingAutoDuration->add($costingManualDuration);
+            $autoDuration = $product->getManualDuration();
             $manualDuration = $product->getAutoDuration();
-            $tempsAtelier = $Autoduration->add($manualDuration);
+            $tempsAtelier = $autoDuration->add($manualDuration);
             $forecastVolume = $product->getForecastVolume();
             $forecastVolumeValue = $forecastVolume->getValue();
             $threePercentValue = $forecastVolumeValue * 0.03;
@@ -85,7 +85,7 @@ class ProductionPlanningItemsController
                 }   
                 if($this->isWeekBeforeNow($date) === true) {
                     $date_week = "PAS DE RETARD" ;
-                    dump($date_week);
+//                    dump($date_week);
                     if (!isset($productsByYearWeek[$YearWeek])) {
                         $productsByYearWeek[$YearWeek] = [];
                     }
@@ -101,10 +101,10 @@ class ProductionPlanningItemsController
                 'compagnie' => $companyNames,
                 'client' => $formattedCustomerNames,
                 'stock' => $stockQuantity,
-                'Temps Chiffrage' => $tempsChiffrage->getValue()." ".$tempsChiffrage->getCode(),         
+                'Temps Chiffrage' => $costingDuration->getValue()." ".$costingDuration->getCode(),
                 'temps atelier'=>$tempsAtelier->getValue()." ".$tempsAtelier->getCode(),
-                'volu_previ'=>$forecastVolume->getValue()." ".$forecastVolume->getCode(),
-                '3pc_volu_previ' =>$threePercentValue." ".$forecastVolume->getCode(),
+                'volu_previ'=>$forecastVolume->getValue(),
+                '3pc_volu_previ' =>$threePercentValue,
                 'retard' => isset($lateProductQuantities[$product->getId()]) ? $lateProductQuantities[$product->getId()] : "",
                 ];
         }
