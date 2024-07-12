@@ -35,7 +35,6 @@ import {defineProps, ref} from 'vue'
         storeCollapseOfsToConfirmItems.fetchItems(company.value.id)
         storeCollapseOnGoingLocalOfItems.fetchItems(company.value.id)
     })
-
 </script>
 
 <template>
@@ -45,16 +44,29 @@ import {defineProps, ref} from 'vue'
     </h1>
     <AppTabs id="gui-start">
         <AppTab id="collapse-new-ofs" active icon="tools" title="Calcul des besoins de création d'OF" tabs="gui-start">
-            <h4>{{ storeCollapseNewOfsItems.items.length }} Commandes/OFs TCONCEPT à passer pour les 2 prochaines semaines</h4>
-            <AppManufacturingTable :id="route.name" :form="form" :fields="fieldsCollapsenewOfs" :items="storeCollapseNewOfsItems.items" title="collapse new Ofs"/>
+            <div class="tab-container">
+                <h4>{{ storeCollapseNewOfsItems.items.length }} Commandes/OFs TCONCEPT à passer pour les 2 prochaines semaines</h4>
+                <AppManufacturingTable :id="route.name" :form="form" :fields="fieldsCollapsenewOfs" :items="storeCollapseNewOfsItems.items" title="collapse new Ofs"/>
+            </div>
         </AppTab>
         <AppTab id="collapse-ofs-to-confirm" icon="tools" title="Ordres de fabrication en attente de confirmation" tabs="gui-start">
-            <h4> {{ storeCollapseOfsToConfirmItems.items.length }} OFs TCONCEPT en draft à confirmer</h4>
-            <AppManufacturingTable :id="route.name" :form="form" :fields="fieldsCollapseOfsToConfirm" :items="storeCollapseOfsToConfirmItems.items" title="collapse ofs ToConfirm"/>
+            <div class="tab-container">
+                <h4> {{ storeCollapseOfsToConfirmItems.items.length }} OFs TCONCEPT en draft à confirmer</h4>
+                <AppManufacturingTable :id="route.name" :form="form" :fields="fieldsCollapseOfsToConfirm" :items="storeCollapseOfsToConfirmItems.items" title="collapse ofs ToConfirm"/>
+            </div>
         </AppTab>
         <AppTab id="collapse-on-going-local-of" icon="tools" title="OFs actuellement en cours" tabs="gui-start">
-            <h4> {{ storeCollapseOnGoingLocalOfItems.items.length }} OFs TCONCEPT en cours de fabrication localement</h4>
-            <AppManufacturingTable :id="route.name" :form="form" :fields="fieldsCollapseOnGoingLocalOf" :items="storeCollapseOnGoingLocalOfItems.items" title="collapse onGoing LocalOf"/>
+            <div class="tab-container">
+                <h4> {{ storeCollapseOnGoingLocalOfItems.items.length }} OFs TCONCEPT en cours de fabrication localement</h4>
+                <AppManufacturingTable :id="route.name" :form="form" :fields="fieldsCollapseOnGoingLocalOf" :items="storeCollapseOnGoingLocalOfItems.items" title="collapse onGoing LocalOf"/>
+            </div>
         </AppTab>
     </AppTabs>
 </template>
+
+<style scoped>
+    .tab-container {
+        overflow: auto;
+        height: calc(100vh - 200px);
+    }
+</style>

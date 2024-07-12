@@ -23,5 +23,4 @@
         <AppManufacturingTableHeaders :fields="fields"/>
         <AppManufacturingTableItems :id="id" :form="form" :items="items" :fields="fields" :title="title"/>
     </table>
-    <!-- <AppPagination v-if="pagination" :count="count" :current="currentPage" class="float-end"/> -->
 </template>
