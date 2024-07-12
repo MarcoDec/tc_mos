@@ -26,7 +26,7 @@ class ManufacturingOrderNeedsController
                 return $this->collapseOfsToConfirmItems();
                 break;
             case 'api_manufacturing_orders_collapseNewOfsItems_collection':
-                return $this->collapseNewOfsItems();
+                return $this->collapseNewOfsItems($request);
                 break;
             default:
                 return new JsonResponse(['error' => 'Route non gérée'], 404);
@@ -35,6 +35,7 @@ class ManufacturingOrderNeedsController
 
     private function getOrderData(Order $manufacturingOrder): array
     {
+        $companyId = $_GET['companyId'];
         $selling = $manufacturingOrder->getSellingOrder();
         $commande = $selling ? $selling->getRef() : '';
         $customerName = '';
@@ -59,7 +60,8 @@ class ManufacturingOrderNeedsController
     
     public function collapseOfsToConfirmItems(): JsonResponse
     {
-        $manufacturingOrders = $this->em->getRepository(Order::class)->findAll();
+        $companyId = $_GET['companyId'];
+        $manufacturingOrders = $this->em->getRepository(Order::class)->findBy(['company' => $companyId]);
         $data = [];
         foreach ($manufacturingOrders as $manufacturingOrder) {
             if ($manufacturingOrder->getEmbState()->getState() === 'asked') {
@@ -78,29 +80,29 @@ class ManufacturingOrderNeedsController
 
     public function collapseOnGoingLocalOfItems(): JsonResponse
     {
-        $manufacturingOrders = $this->em->getRepository(Order::class)->findAll();
+        $companyId = $_GET['companyId'];
+        $manufacturingOrders = $this->em->getRepository(Order::class)->findBy(['company' => $companyId, 'embState.state' => 'agreed']);
         $data = [];
         foreach ($manufacturingOrders as $manufacturingOrder) {
-            if ($manufacturingOrder->getEmbState()->getState() === 'agreed') {
-                $manuCompany = $manufacturingOrder->getmanufacturingCompany();
-                $siteDeProduction = $manuCompany->getName();
-                $orderData = $this->getOrderData($manufacturingOrder);
-                $orderData['quantiteProduite'] = $manufacturingOrder->getQuantityDone()->getValue() ." ".$manufacturingOrder->getQuantityDone()->getCode();
-                $orderData['Etat']= $manufacturingOrder->getEmbState()->getState();
-                $orderData['siteDeProduction'] = $siteDeProduction;
-                $orderData['of'] = $manufacturingOrder->getRef();
-                $orderData['Indice OF']= $manufacturingOrder->getIndex();
-                $orderData['Indice']= $manufacturingOrder->getProduct()->getIndex();
-                $orderData['finProd']=  $manufacturingOrder->getDeliveryDate()->format('Y-m-d');
-                $data[] = $orderData;
-            }
+            $manuCompany = $manufacturingOrder->getmanufacturingCompany();
+            $siteDeProduction = $manuCompany->getName();
+            $orderData = $this->getOrderData($manufacturingOrder);
+            $orderData['quantiteProduite'] = $manufacturingOrder->getQuantityDone()->getValue() ." ".$manufacturingOrder->getQuantityDone()->getCode();
+            $orderData['Etat']= $manufacturingOrder->getEmbState()->getState();
+            $orderData['siteDeProduction'] = $siteDeProduction;
+            $orderData['of'] = $manufacturingOrder->getRef();
+            $orderData['Indice OF']= $manufacturingOrder->getIndex();
+            $orderData['Indice']= $manufacturingOrder->getProduct()->getIndex();
+            $orderData['finProd']=  $manufacturingOrder->getDeliveryDate()->format('Y-m-d');
+            $data[] = $orderData;
         }
-
         return new JsonResponse($data);
     }
 
     public function collapseNewOfsItems(): JsonResponse
     {
+        $companyId = $_GET['companyId'];
+        //TODO: Récupérer le calcul des besoins
         $manufacturingOrders = $this->em->getRepository(Order::class)->findAll();
         $data = [];
         foreach ($manufacturingOrders as $manufacturingOrder) {

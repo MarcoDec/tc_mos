@@ -308,7 +308,7 @@ export default [
         component: async () => import('./pages/AppManufacturingOrderNeeds.vue'),
         meta: {requiresAuth: true},
         name: 'manufacturing-order-needs',
-        path: '/manufacturingOrderNeeds',
+        path: '/manufacturingOrderDashboard',
         props: {
             fieldsCollapseOfsToConfirm: [
                 {
@@ -478,7 +478,7 @@ export default [
                 }
             ],
             icon: 'table-list',
-            title: 'Calcul des besoins'
+            title: 'Tableau de bord des OFs du site'
         }
     }
     //,

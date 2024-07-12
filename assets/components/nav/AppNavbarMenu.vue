@@ -212,7 +212,7 @@
                     Planning de production
                 </AppNavbarLink>
                 <AppNavbarLink v-if="user.isProductionReader" icon="table-list" to="manufacturing-order-needs" :variant="variantProduction" @click="emit('close-menu')">
-                    Besoins OFs
+                    Tableau de bord OFs du site
                 </AppNavbarLink>
                 <AppNavbarLink v-if="user.isProductionReader" icon="bullhorn" to="of-list" :variant="variantProduction" @click="emit('close-menu')">
                     Ordres de fabrication

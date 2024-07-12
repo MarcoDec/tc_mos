@@ -3,9 +3,9 @@ import api from './../../api'
 
 export const useCollapseOnGoingLocalOfItemsStore = defineStore('collapseOnGoingLocalOfItems', {
     actions: {
-        async fetchItems() {
+        async fetchItems(companyId) {
             try {
-                const response = await api('/api/collapseOnGoingLocalOfItems', 'GET')
+                const response = await api(`/api/collapseOnGoingLocalOfItems`, 'GET', {companyId})
                 this.items = response
             } catch (error) {
                 console.error(error)
