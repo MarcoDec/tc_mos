@@ -16,8 +16,8 @@
     import {useInvoiceTimeDuesStore} from '../../../../stores/management/invoiceTimeDues'
     import AppTab from '../../../tab/AppTab.vue'
     import AppShowCustomerTabIt from './tabs/AppShowCustomerTabIt.vue'
-    import AppPricesTablePage from "../../prices/AppPricesTablePage.vue";
-    import useUser from "../../../../stores/security";
+    import AppPricesTablePage from "../../prices/AppPricesTablePage.vue"
+    import useUser from "../../../../stores/security"
 
     const route = useRoute()
     const idCustomer = route.params.id_customer

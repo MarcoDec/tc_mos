@@ -20,7 +20,6 @@
     const fetchUnits = useOptions('units')
     const useFetchComponentStore = useComponentListStore()
     const modeDetail = ref(true)
-    const isFullScreen = ref(false)
     const keyTabs = ref(0)
     const keyTitle = ref(0)
     const beforeMountDataLoaded = ref(false)
@@ -43,12 +42,6 @@
     }
     const requestExploitation = () => {
         modeDetail.value = false
-    }
-    const activateFullScreen = () => {
-        isFullScreen.value = true
-    }
-    const deactivateFullScreen = () => {
-        isFullScreen.value = false
     }
     const imageUpdateUrl = `/api/components/${idComponent}/image`
     //endregion

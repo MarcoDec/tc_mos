@@ -1,11 +1,11 @@
 <script setup>
-import {computed, ref} from 'vue'
-import {useRoute} from 'vue-router'
-import {useProductionPlanningsFieldsStore} from '../../../../stores/productionPlannings/productionPlannings'
-import useUser from "../../../../stores/security";
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+    import {computed, ref} from 'vue'
+    import {useRoute} from 'vue-router'
+    import {useProductionPlanningsFieldsStore} from '../../../../stores/productionPlannings/productionPlannings'
+    import useUser from "../../../../stores/security"
+    import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome"
 
-const props = defineProps({
+    const props = defineProps({
         fields: {required: true, type: Array}
     })
     const route = useRoute()
@@ -19,69 +19,66 @@ const props = defineProps({
     })
 
     const combinedFields = computed(() => [...props.fields, ...storeProductionPlanningsFields.fields])
-    function tabletocsv() {
-        // Variable to store the final csv data
-        var csv_data = [];
-        // Get each row data
-        var rows = document.querySelectorAll(".schedule-table tr");
-        for (var i = 0; i < rows.length; i++) {
-
-            // Get each column data
-            var cols = rows[i].querySelectorAll("td,th");
-
-            // Stores each csv row data
-            var csvrow = [];
-            for (var j = 0; j < cols.length; j++) {
-
-                // Get the text data of each cell
-                // of a row and push it to csvrow
-                var item = cols[j].innerHTML
-                item = item.replaceAll("&amp;","&")
-                item = item.replaceAll("&nbsp;"," ")
-                csvrow.push(item);
-            }
-
-            // Combine each column value with comma
-            csv_data.push(csvrow.join(";"));
-        }
-
-        // Combine each row data with new line character
-        csv_data = csv_data.join("\n");
-
-        // Call this function to download csv file
-        downloadCSVFile(csv_data);
-    }
-    function downloadCSVFile(csv_data) {
-
+    function downloadCSVFile(csvData) {
         // Create CSV file object and feed
         // our csv_data into it
-        const CSVFile = new Blob([csv_data], {
+        const CSVFile = new Blob([csvData], {
             type: "text/csv"
-        });
+        })
 
         // Create to temporary link to initiate
         // download process
-        const temp_link = document.createElement("a");
+        const tempLink = document.createElement("a")
 
-        let currentDate = (new Date()).toJSON().slice(0, 10);
+        const currentDate = new Date().toJSON().slice(0, 10)
         // Download csv file
-        temp_link.download = `newgp_${currentDate}_${userCompanyId}.csv`;
-        temp_link.href = window.URL.createObjectURL(CSVFile);
+        tempLink.download = `newgp_${currentDate}_${userCompanyId}.csv`
+        tempLink.href = window.URL.createObjectURL(CSVFile)
 
         // This link should not be displayed
-        temp_link.style.display = "none";
-        document.body.appendChild(temp_link);
+        tempLink.style.display = "none"
+        document.body.appendChild(tempLink)
 
         // Automatically click the link to
         // trigger download
-        temp_link.click();
-        document.body.removeChild(temp_link);
+        tempLink.click()
+        document.body.removeChild(tempLink)
+    }
+    function tabletocsv() {
+        // Variable to store the final csv data
+        let csvData = []
+        // Get each row data
+        const rows = document.querySelectorAll(".schedule-table tr")
+        for (let i = 0; i < rows.length; i++) {
+            // Get each column data
+            const cols = rows[i].querySelectorAll("td,th")
+
+            // Stores each csv row data
+            const csvRow = []
+            for (let j = 0; j < cols.length; j++) {
+                // Get the text data of each cell
+                // of a row and push it to csvrow
+                let item = cols[j].innerHTML
+                item = item.replaceAll("&amp;", "&")
+                item = item.replaceAll("&nbsp;", " ")
+                csvRow.push(item)
+            }
+
+            // Combine each column value with comma
+            csvData.push(csvRow.join(";"))
+        }
+
+        // Combine each row data with new line character
+        csvData = csvData.join("\n")
+
+        // Call this function to download csv file
+        downloadCSVFile(csvData)
     }
 </script>
 
 <template>
     <div v-if="isLoaded" class="tableFixHead">
-        <button class="btn btn-success"  @click="tabletocsv()">
+        <button class="btn btn-success" @click="tabletocsv">
             <FontAwesomeIcon icon="file-csv"/>
             <span>Download CSV</span>
         </button>
@@ -94,17 +91,17 @@ const props = defineProps({
                 </tr>
             </thead>
             <tbody>
-            <tr v-for="item in storeProductionPlanningsFields.items" :key="item.id">
-                <td v-for="field in combinedFields" :key="field.name">
-                    {{ item[field.name] }}
-                </td>
-            </tr>
+                <tr v-for="item in storeProductionPlanningsFields.items" :key="item.id">
+                    <td v-for="field in combinedFields" :key="field.name">
+                        {{ item[field.name] }}
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
     <div v-else class="text-center">
-        Loading... Please wait...<br>
-        <span :class="text" class="spinner-border" role="status"/>
+        Loading... Please wait...<br/>
+        <span class="spinner-border" role="status"/>
     </div>
 </template>
 

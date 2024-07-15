@@ -3,12 +3,11 @@
     import AppSuspense from '../../../AppSuspense.vue'
     import AppProductionPlanningTable from './AppProductionPlanningTable.vue'
 
-    const props = defineProps({
+    /*const props =*/ defineProps({
         fields: {required: true, type: Array},
         icon: {required: true, type: String},
         title: {required: true, type: String}
     })
-
 </script>
 
 <template>

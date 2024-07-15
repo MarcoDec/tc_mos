@@ -14,8 +14,8 @@
     import {useRoute} from 'vue-router'
     import {useSocietyStore} from '../../../../../stores/management/societies/societies'
     import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
-    import AppPricesTablePage from "../../../prices/AppPricesTablePage.vue";
-    import useUser from "../../../../../stores/security";
+    import AppPricesTablePage from "../../../prices/AppPricesTablePage.vue"
+    import useUser from "../../../../../stores/security"
 
     const route = useRoute()
     const idSupplier = route.params.id_supplier

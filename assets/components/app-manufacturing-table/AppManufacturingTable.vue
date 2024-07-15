@@ -2,7 +2,7 @@
     import {defineProps, provide} from 'vue'
     import AppManufacturingTableHeaders from './head/AppManufacturingTableHeaders.vue'
     import AppManufacturingTableItems from './body/AppManufacturingTableItems.vue'
-    const emits = defineEmits(['OFsConfirmed'])
+    const emits = defineEmits(['oFsConfirmed'])
     const props = defineProps({
         // currentPage: {default: 1, type: Number},
         fields: {required: true, type: Array},
@@ -16,7 +16,7 @@
     provide('fields', props.fields)
     provide('table-id', props.id)
     function onOFsConfirmed() {
-        emits('OFsConfirmed')
+        emits('oFsConfirmed')
     }
 </script>
 

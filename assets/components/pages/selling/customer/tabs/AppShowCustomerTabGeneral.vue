@@ -82,7 +82,7 @@
 
 <template>
     <div v-if="isErrors" class="bg-danger text-center text-white">
-        Erreur: Aucune donnée à afficher<br>
+        Erreur: Aucune donnée à afficher<br/>
         Veuillez tenter de recharger la page, et si l'erreur persiste, contacter le support informatique
     </div>
     <div v-else class="d-flex flex-column">

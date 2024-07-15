@@ -1,6 +1,6 @@
 <script setup>
     import {computed, nextTick, onBeforeUnmount, onMounted, onUpdated, ref} from 'vue'
-    import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+    import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome"
 
     const gui = ref(null)
     const guiHeader = ref(null)
@@ -64,12 +64,19 @@
         right: false,
         bottom: false
     })
+    function onRatioUpdate() {
+        guiTopStyle.value['min-height'] = `${guiRatio.value * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
+        guiTopStyle.value['max-height'] = `${guiRatio.value * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
+        guiTopStyle.value.height = `${guiRatio.value * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
+        guiBottomStyle.value['min-height'] = `${(1 - guiRatio.value) * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
+        guiBottomStyle.value['max-height'] = `${(1 - guiRatio.value) * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
+        guiBottomStyle.value.height = `${(1 - guiRatio.value) * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
+    }
     function toggleFullscreen(section) {
         isFullscreen.value[section] = !isFullscreen.value[section]
         const leftElement = document.getElementById('gui-left')
         const rightElement = document.getElementById('gui-right')
         const bottomElement = document.getElementById('gui-bottom')
-        const topElement = document.getElementById('gui-top')
         if (section === 'left') {
             isFullscreen.value.right = false
             isFullscreen.value.bottom = false
@@ -91,33 +98,33 @@
                 rightElement.style.display = 'block'
             }
         } else if (section === 'right') {
-            isFullscreen.value.left = false;
-            isFullscreen.value.bottom = false;
+            isFullscreen.value.left = false
+            isFullscreen.value.bottom = false
             if (isFullscreen.value.right) {
-                guiRatio.value = 1;
-                rightElement.style.maxWidth = '100%';
-                rightElement.style.minWidth = '100%';
-                rightElement.style.width = '100%';
-                bottomElement.style.display = 'none';
-                leftElement.style.display = 'none';
+                guiRatio.value = 1
+                rightElement.style.maxWidth = '100%'
+                rightElement.style.minWidth = '100%'
+                rightElement.style.width = '100%'
+                bottomElement.style.display = 'none'
+                leftElement.style.display = 'none'
             } else {
-                guiRatio.value = 0.5;
-                rightElement.style.maxWidth = '50%';
-                rightElement.style.minWidth = '50%';
-                rightElement.style.width = '50%';
-                bottomElement.style.display = 'block';
-                leftElement.style.display = 'block';
+                guiRatio.value = 0.5
+                rightElement.style.maxWidth = '50%'
+                rightElement.style.minWidth = '50%'
+                rightElement.style.width = '50%'
+                bottomElement.style.display = 'block'
+                leftElement.style.display = 'block'
             }
         } else if (section === 'bottom') {
-            isFullscreen.value.left = false;
-            isFullscreen.value.right = false;
+            isFullscreen.value.left = false
+            isFullscreen.value.right = false
             if (isFullscreen.value.bottom) {
-                guiRatio.value = 0;
+                guiRatio.value = 0
             } else {
-                guiRatio.value = 0.5;
+                guiRatio.value = 0.5
             }
         }
-        onRatioUpdate();
+        onRatioUpdate()
     }
     function handleMouseMove(event) {
         if (event.pageX === null && event.clientX !== null) {
@@ -132,15 +139,6 @@
         // Use event.pageX / event.pageY here
         zoneUtile.value.xs = event.pageX
         zoneUtile.value.ys = event.pageY
-    }
-
-    function onRatioUpdate() {
-        guiTopStyle.value['min-height'] = `${guiRatio.value * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
-        guiTopStyle.value['max-height'] = `${guiRatio.value * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
-        guiTopStyle.value.height = `${guiRatio.value * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
-        guiBottomStyle.value['min-height'] = `${(1 - guiRatio.value) * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
-        guiBottomStyle.value['max-height'] = `${(1 - guiRatio.value) * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
-        guiBottomStyle.value.height = `${(1 - guiRatio.value) * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
     }
 
     function onWindowResize() {

@@ -3,7 +3,7 @@
     import {defineProps, ref} from 'vue'
     import api from "../../../api"
 
-    const emits = defineEmits(['OFsConfirmed'])
+    const emits = defineEmits(['oFsConfirmed'])
     const props = defineProps({
         fields: {required: true, type: Array},
         form: {required: true, type: String},
@@ -23,7 +23,7 @@
             promises.push(apiRequest)
         })
         Promise.all(promises).then(() => {
-            emits('OFsConfirmed')
+            emits('oFsConfirmed')
         })
     }
 
@@ -52,30 +52,30 @@
 
 <template>
     <tbody>
-    <AppManufacturingTableItem
-        v-for="item in localItems"
-        :id="id"
-        :key="item.id"
-        :item="item"
-        :fields="fields"
-        :title="title"
-        :form="form"
-        @update:model-value="(newItem) => onModelValueUpdated(item, newItem)"/>
-    <tr v-if="title === 'collapse new Ofs'">
-        <td :colspan="lengthTable" class="bg-white text-center text-white"/>
-        <td>
-            <AppBtn type="submit" variant="success">
-                Générer OFs
-            </AppBtn>
-        </td>
-    </tr>
-    <tr v-else-if="title === 'collapse ofs ToConfirm'">
-        <td :colspan="lengthTable" class="bg-white text-center text-white"/>
-        <td>
-            <AppBtn type="submit" variant="success" @click="confirmOFs">
-                Confirmer OFs
-            </AppBtn>
-        </td>
-    </tr>
+        <AppManufacturingTableItem
+            v-for="item in localItems"
+            :id="id"
+            :key="item.id"
+            :item="item"
+            :fields="fields"
+            :title="title"
+            :form="form"
+            @update:model-value="(newItem) => onModelValueUpdated(item, newItem)"/>
+        <tr v-if="title === 'collapse new Ofs'">
+            <td :colspan="lengthTable" class="bg-white text-center text-white"/>
+            <td>
+                <AppBtn type="submit" variant="success">
+                    Générer OFs
+                </AppBtn>
+            </td>
+        </tr>
+        <tr v-else-if="title === 'collapse ofs ToConfirm'">
+            <td :colspan="lengthTable" class="bg-white text-center text-white"/>
+            <td>
+                <AppBtn type="submit" variant="success" @click="confirmOFs">
+                    Confirmer OFs
+                </AppBtn>
+            </td>
+        </tr>
     </tbody>
 </template>

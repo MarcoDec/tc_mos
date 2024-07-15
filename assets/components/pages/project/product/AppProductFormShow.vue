@@ -46,8 +46,7 @@
             tabs="gui-start">
             <AppSuspense>
                 <AppShowProductTabPrice
-                :product="`/api/products/${idProduct}`"
-                />
+                    :product="`/api/products/${idProduct}`"/>
             </AppSuspense>
         </AppTab>
         <AppTab
