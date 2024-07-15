@@ -358,7 +358,7 @@ export default [
                 },
                 {
                     label: 'Confirmer OF',
-                    name: 'confirmerOF',
+                    name: 'confirmedOF',
                     type: 'boolean'
                 }
             ],

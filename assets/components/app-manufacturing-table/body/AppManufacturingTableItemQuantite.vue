@@ -15,7 +15,7 @@
     <td v-if="value >= item.quantiteMin">
         <AppInputGuesser :id="id" v-model="value" :field="field" :form="form" no-label/>
     </td>
-    <td v-else class="bg-warn">
+    <td v-else class="bg-warning">
         <span>
             <Fa icon="exclamation-triangle" :title="e" class="style-icon"/>
         </span>

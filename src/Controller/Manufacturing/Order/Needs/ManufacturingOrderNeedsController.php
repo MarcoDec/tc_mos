@@ -40,7 +40,7 @@ class ManufacturingOrderNeedsController
         $commande = $selling ? $selling->getRef() : '';
         $customerName = '';
         if ($selling) {
-            $sellingOrders = $this->sellingOrderRepository->findById($manufacturingOrder->getSellingOrder()->getId());
+            $sellingOrders = $this->sellingOrderRepository->findById($manufacturingOrder->getSellingOrder()?->getId());
             foreach ($sellingOrders as $sellingOrder) {
                 $customer = $sellingOrder->getCustomer();
                 $customerName = $customer ? $customer->getName() : '';
@@ -50,8 +50,8 @@ class ManufacturingOrderNeedsController
         $data = [
             'client' => $customerName,
             'cmde' => $commande,
-            'debutProd' => $manufacturingOrder->getManufacturingDate()->format('Y-m-d'),
-            'produit' => $manufacturingOrder->getProduct()->getCode(),
+            'debutProd' => $manufacturingOrder->getManufacturingDate()?->format('Y-m-d'),
+            'produit' => $manufacturingOrder->getProduct()?->getCode(),
             'quantite' => $manufacturingOrder->getQuantityRequested()->getValue() ." ".$manufacturingOrder->getQuantityRequested()->getCode(),
         ];
 
@@ -61,19 +61,19 @@ class ManufacturingOrderNeedsController
     public function collapseOfsToConfirmItems(): JsonResponse
     {
         $companyId = $_GET['companyId'];
-        $manufacturingOrders = $this->em->getRepository(Order::class)->findBy(['company' => $companyId]);
+        $manufacturingOrders = $this->em->getRepository(Order::class)->findBy(['manufacturingCompany' => $companyId, 'embState.state' => 'asked', 'embBlocker.state' => ['enabled', 'blocked']]);
         $data = [];
         foreach ($manufacturingOrders as $manufacturingOrder) {
-            if ($manufacturingOrder->getEmbState()->getState() === 'asked') {
-                $orderData = $this->getOrderData($manufacturingOrder);
-                $manuCompany = $manufacturingOrder->getmanufacturingCompany();
-                $siteDeProduction = $manuCompany->getName();
-                $orderData['siteDeProduction'] = $siteDeProduction;
-                $orderData['of'] = $manufacturingOrder->getRef();
-                $orderData['Indice OF']= $manufacturingOrder->getIndex();
-                $orderData['Indice']= $manufacturingOrder->getProduct()->getIndex();
-                $data[] = $orderData;
-            }
+            $orderData = $this->getOrderData($manufacturingOrder);
+            $manuCompany = $manufacturingOrder->getmanufacturingCompany();
+            $siteDeProduction = $manuCompany->getName();
+            $orderData['siteDeProduction'] = $siteDeProduction;
+            $orderData['manufacturingOrderId'] = $manufacturingOrder->getId();
+            $orderData['of'] = $manufacturingOrder->getRef();
+            $orderData['Indice OF']= $manufacturingOrder->getIndex();
+            $orderData['Indice']= $manufacturingOrder->getProduct()?->getIndex();
+            $orderData['Blocker']= $manufacturingOrder->getEmbBlocker()->getState();
+            $data[] = $orderData;
         }
         return new JsonResponse($data);
     }
@@ -81,7 +81,7 @@ class ManufacturingOrderNeedsController
     public function collapseOnGoingLocalOfItems(): JsonResponse
     {
         $companyId = $_GET['companyId'];
-        $manufacturingOrders = $this->em->getRepository(Order::class)->findBy(['company' => $companyId, 'embState.state' => 'agreed']);
+        $manufacturingOrders = $this->em->getRepository(Order::class)->findBy(['manufacturingCompany' => $companyId, 'embState.state' => 'agreed', 'embBlocker.state' => ['enabled', 'blocked']]);
         $data = [];
         foreach ($manufacturingOrders as $manufacturingOrder) {
             $manuCompany = $manufacturingOrder->getmanufacturingCompany();
@@ -89,6 +89,7 @@ class ManufacturingOrderNeedsController
             $orderData = $this->getOrderData($manufacturingOrder);
             $orderData['quantiteProduite'] = $manufacturingOrder->getQuantityDone()->getValue() ." ".$manufacturingOrder->getQuantityDone()->getCode();
             $orderData['Etat']= $manufacturingOrder->getEmbState()->getState();
+            $orderData['Blocker']= $manufacturingOrder->getEmbBlocker()->getState();
             $orderData['siteDeProduction'] = $siteDeProduction;
             $orderData['of'] = $manufacturingOrder->getRef();
             $orderData['Indice OF']= $manufacturingOrder->getIndex();
