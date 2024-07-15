@@ -139,7 +139,7 @@ import {
     faUsers,
     faWallet,
     faWarehouse,
-    faWrench
+    faWrench, faTableList, faCodeFork, faFileCsv
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -178,6 +178,7 @@ library.add(faCheckDouble)
 library.add(faChevronDown)
 library.add(faChevronRight)
 library.add(faChevronUp)
+library.add(faFileCsv)
 library.add(faCircleDollarToSlot)
 library.add(faCircleChevronDown)
 library.add(faCircleChevronUp)
@@ -187,6 +188,7 @@ library.add(faClipboard)
 library.add(faClipboardCheck)
 library.add(faClipboardList)
 library.add(faClock)
+library.add(faCodeFork)
 library.add(faCogs)
 library.add(faCommentsDollar)
 library.add(faCubesStacked)
@@ -266,6 +268,7 @@ library.add(faSitemap)
 library.add(faSquare)
 library.add(faSquarePlus)
 library.add(faStar)
+library.add(faTableList)
 library.add(faTags)
 library.add(faTimes)
 library.add(faTimesCircle)

@@ -168,6 +168,13 @@ abstract class Item extends BaseItem {
     private Measure $totalItemPrice;
     //endregion
 
+    #[
+        ApiProperty(description: 'Quantité a envoyé', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ORM\Embedded,
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    protected Measure $quantityToSent;
+
     public function __construct() {
         parent::__construct();
         $this->embBlocker = new Closer();
@@ -176,6 +183,7 @@ abstract class Item extends BaseItem {
         $this->parentOrder = new Order();
         $this->sentQuantity = new Measure();
         $this->totalItemPrice = new Measure();
+        $this->quantityToSent = new Measure();
     }
     //region getters & setters
     /*, 'read:expedition'*/
@@ -201,6 +209,10 @@ abstract class Item extends BaseItem {
 
     final public function getExpeditions(): Collection {
         return $this->expeditions;
+    }
+
+    final public function getQuantityToSent(): Measure {
+        return $this->quantityToSent;
     }
 
     #[
@@ -260,6 +272,14 @@ abstract class Item extends BaseItem {
         foreach ($expeditions as $expedition) {
             $expedition->setItem($this);
         }
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setQuantityToSent(Measure $quantityToSent): self {
+        $this->quantityToSent = $quantityToSent;
         return $this;
     }
 

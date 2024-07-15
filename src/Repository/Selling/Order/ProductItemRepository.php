@@ -2,15 +2,16 @@
 
 namespace App\Repository\Selling\Order;
 
-use App\Entity\Selling\Order\ComponentItem;
-use App\Entity\Selling\Order\ProductItem;
-use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\Query\Expr\Join;
+use App\Filter\RelationFilter;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Query\Expr\Join;
+use App\Doctrine\DBAL\Types\ItemType;
+use App\Entity\Selling\Order\ProductItem;
 use Doctrine\Persistence\ManagerRegistry;
 use ApiPlatform\Core\Annotation\ApiFilter;
 
-use App\Filter\RelationFilter;
+use Doctrine\ORM\NonUniqueResultException;
+use App\Entity\Selling\Order\ComponentItem;
 
 /**
  * @extends ItemRepository<ProductItem>
@@ -98,4 +99,13 @@ final class ProductItemRepository extends ItemRepository {
             return null;
         }
     }
+    public function findByProductId(int $productId): array {
+        return $this->createQueryBuilder('i')
+            ->leftJoin('i.item', 'p')
+            ->andWhere('p.id = :productId')
+            ->setParameter('productId', $productId)
+            ->getQuery()
+            ->getResult();
+    }
+    
 }

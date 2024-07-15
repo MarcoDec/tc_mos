@@ -1,6 +1,6 @@
 <script setup>
     import AppPricesTablePage from "../../../prices/AppPricesTablePage.vue"
-    import useUser from "../../../../../stores/security";
+    import useUser from "../../../../../stores/security"
     defineProps({
         product: {
             type: String,
@@ -28,6 +28,5 @@
     <AppPricesTablePage
         :product="product"
         :rights="rights"
-        title="Grilles de prix Produit"
-    />
+        title="Grilles de prix Produit"/>
 </template>

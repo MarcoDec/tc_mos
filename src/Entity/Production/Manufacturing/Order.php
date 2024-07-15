@@ -27,8 +27,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Controller\Manufacturing\Component\ItemManufacturingComponentController;
-
-
+use App\Controller\Manufacturing\Order\Needs\ManufacturingOrderNeedsController;
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: [
@@ -63,6 +62,33 @@ use App\Controller\Manufacturing\Component\ItemManufacturingComponentController;
                 'openapi_context' => [
                     'description' => 'Récupère les OF',
                     'summary' => 'Récupère les OF',
+                ]
+            ],
+            'collapseOnGoingLocalOfItems' => [
+                'method' => 'GET',
+                'path' => '/collapseOnGoingLocalOfItems',
+                'controller' => ManufacturingOrderNeedsController::class,
+                'read' => false,
+                'normalization_context' => [
+                    'groups' => ['collapseOnGoingLocalOfItems']
+                ]
+            ],
+            'collapseOfsToConfirmItems' => [
+                'method' => 'GET',
+                'path' => '/collapseOfsToConfirmItems',
+                'controller' => ManufacturingOrderNeedsController::class,
+                'read' => false,
+                'normalization_context' => [
+                    'groups' => ['collapseOfsToConfirmItems']
+                ]
+            ],
+            'collapseNewOfsItems' => [
+                'method' => 'GET',
+                'path' => '/collapseNewOfsItems',
+                'controller' => ManufacturingOrderNeedsController::class,
+                'read' => false,
+                'normalization_context' => [
+                    'groups' => ['collapseNewOfsItems']
                 ]
             ],
             'post' => [
@@ -224,7 +250,7 @@ class Order extends Entity implements BarCodeInterface {
 
     #[
         ApiProperty(description: 'Produit', readableLink: true, example: '/api/products/1'),
-        ORM\ManyToOne(inversedBy:'productorders'),
+        ORM\ManyToOne(fetch:"EAGER", inversedBy:'productorders'),
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?Product $product = null;
@@ -252,13 +278,28 @@ class Order extends Entity implements BarCodeInterface {
 
     private Collection $preparationOrders;
 
+    #[
+        ApiProperty(description: 'Quantité produite', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ORM\Embedded,
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
+    ]
+    private Measure $quantityDone;
+
+    #[
+        ApiProperty(description: 'Quantité réelle', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ORM\Embedded,
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
+    ]
+    private Measure $quantityReal;
+
     public function __construct() {
         $this->embBlocker = new Closer();
         $this->embState = new State();
         $this->quantityRequested = new Measure();
+        $this->quantityDone = new Measure();
+        $this->quantityReal = new Measure();
         $this->operationOrders = new ArrayCollection();
         $this->preparationOrders = new ArrayCollection();
-
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -329,6 +370,14 @@ class Order extends Entity implements BarCodeInterface {
         return $this->preparationOrders;
     }
 
+    final public function getQuantityDone(): Measure {
+        return $this->quantityDone;
+    }
+
+    final public function getQuantityReal(): Measure {
+        return $this->quantityReal;
+    }
+
     final public function setBlocker(string $state): self {
         $this->embBlocker->setState($state);
         return $this;
@@ -396,6 +445,16 @@ class Order extends Entity implements BarCodeInterface {
 
     final public function setState(string $state): self {
         $this->embState->setState($state);
+        return $this;
+    }
+
+    final public function setQuantityDone(Measure $quantityDone): self {
+        $this->quantityDone = $quantityDone;
+        return $this;
+    }
+
+    final public function setQuantityReal(Measure $quantityReal): self {
+        $this->quantityReal = $quantityReal;
         return $this;
     }
 }

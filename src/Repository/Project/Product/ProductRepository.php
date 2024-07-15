@@ -29,4 +29,17 @@ final class ProductRepository extends ServiceEntityRepository {
             ->getQuery()
             ->execute();
     }
+    public function getCustomerName(int $productId): array {
+        $qb = $this->createQueryBuilder('p')
+            ->select('c.name')
+            ->join('p.productCustomers', 'pc')
+            ->join('pc.customer', 'c')
+            ->where('p.id = :productId')
+            ->setParameter('productId', $productId);
+    
+        $result = $qb->getQuery()->getResult();
+        return $result ;
+    }
+
+    
 }

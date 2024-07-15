@@ -2,43 +2,44 @@
 
 namespace App\Entity\Project\Product;
 
-use ApiPlatform\Core\Action\PlaceholderAction;
+use App\Collection;
+use App\Entity\Entity;
+use DateTimeImmutable;
+use App\Filter\SetFilter;
+use App\Filter\RelationFilter;
+use App\Entity\Management\Unit;
+use App\Validator as AppAssert;
+use App\Entity\Traits\FileTrait;
+use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Embeddable\Blocker;
+use App\Entity\Embeddable\Measure;
+use App\Entity\Logistics\Incoterms;
+use App\Entity\Traits\BarCodeTrait;
+use App\Entity\Interfaces\FileEntity;
+use App\Entity\Quality\Reception\Check;
 use ApiPlatform\Core\Annotation\ApiFilter;
+use App\Entity\Interfaces\BarCodeInterface;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Interfaces\MeasuredInterface;
+use ApiPlatform\Core\Action\PlaceholderAction;
+use App\Entity\Production\Manufacturing\Order;
+use Doctrine\Common\Collections\ArrayCollection;
+use App\Doctrine\DBAL\Types\Project\Product\KindType;
+use App\Repository\Project\Product\ProductRepository;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\Embeddable\Project\Product\Product\State;
+use Symfony\Component\Serializer\Annotation as Serializer;
+use App\Entity\Selling\Customer\Price\Product as ProductCustomer;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Collection;
-use App\Doctrine\DBAL\Types\Project\Product\KindType;
-use App\Entity\Embeddable\Blocker;
-use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Embeddable\Measure;
-use App\Entity\Embeddable\Project\Product\Product\State;
-use App\Entity\Entity;
-use App\Entity\Interfaces\BarCodeInterface;
-use App\Entity\Interfaces\FileEntity;
-use App\Entity\Interfaces\MeasuredInterface;
-use App\Entity\Logistics\Incoterms;
-use App\Entity\Management\Unit;
-use App\Entity\Production\Manufacturing\Order;
 use App\Entity\Project\Product\Attachment\ProductAttachment;
-use App\Entity\Quality\Reception\Check;
-use App\Entity\Quality\Reception\Reference\Selling\ProductReference;
-use App\Entity\Traits\BarCodeTrait;
-use App\Entity\Traits\FileTrait;
-use App\Filter\RelationFilter;
-use App\Filter\SetFilter;
-use App\Repository\Project\Product\ProductRepository;
-use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use App\Validator as AppAssert;
-use DateTimeImmutable;
-use Doctrine\Common\Collections\ArrayCollection;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
-use App\Entity\Selling\Customer\Price\Product as ProductCustomer;
+use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use App\Entity\Quality\Reception\Reference\Selling\ProductReference;
+use App\Controller\Production\Planning\Items\ProductionPlanningItemsController;
 
 #[
     ApiFilter(filterClass: DateFilter::class, properties: ['endOfLife']),
@@ -60,6 +61,15 @@ use App\Entity\Selling\Customer\Price\Product as ProductCustomer;
                 'openapi_context' => [
                     'description' => 'Récupère les produits',
                     'summary' => 'Récupère les produits'
+                ]
+            ],
+            'ProductionPlanningItems' => [
+                'method' => 'GET',
+                'path' => '/manufacturingSchedule',
+                'controller' => ProductionPlanningItemsController::class,
+                'read' => false, // Empêche la lecture de l'entité Product elle-même
+                'normalization_context' => [
+                    'groups' => ['ProductionPlanningItems']
                 ]
             ],
             'post' => [
@@ -1012,7 +1022,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
     {
         $companies = [];
         foreach ($this->productCustomers as $productCustomer) {
-            $companies[] = $productCustomer->getAdministeredBy();
+            $administeredBy = $productCustomer->getAdministeredBy();
+            if ($administeredBy instanceof Company) {
+                $companies[] = $administeredBy;
+            }
         }
         return new ArrayCollection($companies);
     }

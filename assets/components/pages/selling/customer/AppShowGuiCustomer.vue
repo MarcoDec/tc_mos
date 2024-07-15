@@ -5,7 +5,7 @@
     import {useCustomerStore} from '../../../../stores/selling/customers/customers'
     import AppCustomerShowInlist from './bottom/AppCustomerShowInlist.vue'
     import {useRoute, useRouter} from 'vue-router'
-    import {onBeforeMount, ref} from 'vue'
+    import {ref} from 'vue'
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
     import AppBtn from '../../../AppBtn.vue'
     import AppImg from '../../../AppImg.vue'
