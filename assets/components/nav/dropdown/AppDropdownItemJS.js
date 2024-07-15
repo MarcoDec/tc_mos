@@ -8,7 +8,7 @@ function AppDropdownItemJS(props, context) {
     return h(
         'li',
         {class: `bg-${props.variant} text-dark`},
-        h('span', {class: css}, context.slots['default']())
+        h('span', {class: css}, context.slots.default())
     )
 }
 

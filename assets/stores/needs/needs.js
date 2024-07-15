@@ -1,16 +1,14 @@
-import { defineStore } from 'pinia'
+import {defineStore} from 'pinia'
 import api from '../../api'
 
 export default defineStore('needs', {
     actions: {
         async fetch() {
-            const response = await api('/api/needs/products', 'GET')
-            this.items = response
+            this.items = await api('/api/needs/products', 'GET')
             await this.fetchComponents() 
         },
         async fetchComponents() {
-            const response = await api('/api/needs/components', 'GET')
-            this.components = response
+            this.components = await api('/api/needs/components', 'GET')
         },
         async initiale(state) {
             state.items = await { ...state.initiale.products }
@@ -153,7 +151,7 @@ export default defineStore('needs', {
                                         size: 20,
                                         style: 'bold'
                                     },
-                                    padding: { bottom: 0, left: 0, right: 0, top: 10 },
+                                    padding: {bottom: 0, left: 0, right: 0, top: 10},
                                     text: 'Jours'
                                 }
                             },
@@ -168,7 +166,7 @@ export default defineStore('needs', {
                                         size: 20,
                                         style: 'normal'
                                     },
-                                    padding: { bottom: 0, left: 0, right: 0, top: 30 },
+                                    padding: {bottom: 0, left: 0, right: 0, top: 30},
                                     text: 'Quantités'
                                 }
                             }
@@ -260,7 +258,7 @@ export default defineStore('needs', {
                                         size: 20,
                                         style: 'bold'
                                     },
-                                    padding: { bottom: 0, left: 0, right: 0, top: 10 },
+                                    padding: {bottom: 0, left: 0, right: 0, top: 10},
                                     text: 'Jours'
                                 }
                             },
@@ -275,7 +273,7 @@ export default defineStore('needs', {
                                         size: 20,
                                         style: 'normal'
                                     },
-                                    padding: { bottom: 0, left: 0, right: 0, top: 30 },
+                                    padding: {bottom: 0, left: 0, right: 0, top: 30},
                                     text: 'Quantités'
                                 }
                             }
@@ -290,5 +288,11 @@ export default defineStore('needs', {
                 .map(need => need.option)
                 .sort((a, b) => a.text.localeCompare(b.text))
     },
-    state: () => ({ displayed: {}, initiale: {}, items: {}, page: 0, components: []})
+    state: () => ({
+        displayed: {},
+        initiale: {},
+        items: {},
+        page: 0,
+        components: []
+    })
 })

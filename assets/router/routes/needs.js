@@ -1,7 +1,7 @@
 export default [
     {
         component: () => import('../pages/needs/AppNeedsPage.vue'),
-        meta: { requiresAuth: true },
+        meta: {requiresAuth: true},
         name: 'needs',
         path: '/needs',
         children: [
