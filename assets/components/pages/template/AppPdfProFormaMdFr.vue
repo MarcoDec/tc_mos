@@ -12,7 +12,7 @@
                     columns: [
                         {
 
-                            text: 'ProForma TN-FR N° 5404',
+                            text: 'ProForma MD-FR N° 5404',
                             style: 'header',
                             alignment: 'left'
 
@@ -61,14 +61,13 @@
                                     [
                                         {
                                             text: [
-                                                {text: 'TCONCEPT\n', style: 'subheader'},
-                                                {text: '5 rue Alfred Nobel\n', style: 'headerInfo'},
-                                                {text: 'ZA La charrière\n', style: 'headerInfo'},
-                                                {text: '70190 RIOZ\n', style: 'headerInfo'},
-                                                {text: 'France\n', style: 'headerInfo'},
-                                                {text: 'Tel. +33 (0)3 84 91 98 84\n', style: 'contactInfo'},
+                                                {text: 'MG2C\n', style: 'subheader'},
+                                                {text: '30 bis Route de Sainte Croix\n', style: 'headerInfo'},
+                                                {text: '1453 Bullet\n', style: 'headerInfo'},
+                                                {text: 'Switzerland\n', style: 'headerInfo'},
+                                                {text: 'Tel. 0225 190 880\n', style: 'contactInfo'},
                                                 {text: 'Fax. +33 (0)3 84 91 98 70\n', style: 'contactInfo'},
-                                                {text: [{text: 'Email: ', style: 'contactInfo'}, {text: 'secretariat@tconcept.fr', color: '#0d6efd', fontSize: 8}]}
+                                                {text: [{text: 'Email: ', style: 'contactInfo'}, {text: 'logistique@mg2c.ch', color: '#0d6efd', fontSize: 8}]}
                                             ]
 
                                         }
@@ -94,21 +93,23 @@
                 {
                     table: {
                         headerRows: 1,
-                        widths: [110, '*', '*', 110, 120],
+                        widths: [130, '*', '*', 130, '*', '*'],
                         body: [
                             [
                                 {text: 'ProForma N°', style: 'tableHeader'},
                                 {text: 'Date', style: 'tableHeader'},
                                 {text: 'Contact', style: 'tableHeader'},
+                                {text: 'Destination', style: 'tableHeader'},
                                 {text: 'Incoterm', style: 'tableHeader'},
-                                {text: 'Destination', style: 'tableHeader'}
+                                {text: 'Échéance', style: 'tableHeader'}
                             ],
                             [
                                 {text: '5404', style: 'tableBody'},
                                 {text: '02/02/24', style: 'tableBody'},
                                 {text: 'BOUSLEMA', style: 'tableBody'},
+                                {text: '10 - CAMION TN-FR', style: 'tableBody'},
                                 {text: 'DAP', style: 'tableBody'},
-                                {text: '10 - CAMION TN-FR', style: 'tableBody'}
+                                {text: '45 jours fin de mois', style: 'tableBody'}
                             ]
                         ]
                     },
@@ -134,11 +135,12 @@
                 },
                 {
                     table: {
-                        widths: ['auto', '*', '*', '*', '*'],
+                        widths: ['auto', '*', '*', '*', '*', '*'],
                         body: [
                             [
                                 {text: 'Code Douane', style: 'tableHeader'},
-                                {text: 'Type de marchandise', style: 'tableHeader'},
+                                {text: 'Libellé', style: 'tableHeader'},
+                                {text: 'Quantité', style: 'tableHeader'},
                                 {text: 'Poids brut', style: 'tableHeader'},
                                 {text: 'Poids net', style: 'tableHeader'},
                                 {text: 'Valeur marchandise', style: 'tableHeader'}
@@ -146,16 +148,18 @@
                             [
                                 {text: '8544300089', style: 'tableBody'},
                                 {text: 'Faisceaux électriques', style: 'tableBody'},
-                                {text: '444.6 Kg', style: 'tableBody'},
+                                {text: '1600 Pièces', style: 'tableBody'},
+                                {text: '359.1 Kg', style: 'tableBody'},
                                 {text: '342 Kg', style: 'tableBody'},
-                                {text: '11202,24€', style: 'tableBody'}
+                                {text: '8208,00€', style: 'tableBody', alignment: 'right'}
                             ],
                             [
-                                {colSpan: '4', text: 'TOTAL', alignment: 'right', bold: true, style: 'tableBody'},
+                                {colSpan: '5', text: 'TOTAL', alignment: 'right', bold: true, style: 'tableBody'},
                                 '',
                                 '',
                                 '',
-                                {text: '11202,24€', style: 'tableBody', bold: true, alignment: 'right'}
+                                '',
+                                {text: '8208,00€', style: 'tableBody', bold: true, alignment: 'right'}
                             ]
                         ]
                     },
@@ -236,8 +240,7 @@
                     },
                     margin: [0, 10, 0, 10]
                 },
-                {text: 'L\'exportateur des produits couverts par le présent document (autorisation douanière n* FR000460/0141) déclare que sauf indication claire du contraire ces produits sont d\'origine préférencielle UE.\n', margin: [0, 0, 0, 0]},
-                {text: 'VALEUR UNIQUEMENT POUR LA DOUANE.\n'}
+                {text: 'L\'exportateur des produits couverts par le présent document (autorisation douanière n* FR000460/0141) déclare que sauf indication claire du contraire ces produits sont d\'origine préférencielle UE.\n', margin: [0, 0, 0, 0]}
             ],
 
             styles: {

@@ -58,6 +58,12 @@ export default [
         meta: {requiresAuth: true},
         name: 'pdf-pro-forma-fr-md',
         path: '/pdf-pro-forma-fr-md'
+    },
+    {
+        component: () => import('../components/pages/template/AppPdfProFormaMdFr.vue'),
+        meta: {requiresAuth: true},
+        name: 'pdf-pro-forma-md-fr',
+        path: '/pdf-pro-forma-md-fr'
     }
 
 ]
