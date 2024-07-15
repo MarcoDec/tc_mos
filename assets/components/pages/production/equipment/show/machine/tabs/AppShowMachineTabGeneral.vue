@@ -1,12 +1,12 @@
 <script setup>
-import {onMounted, ref} from 'vue'
+    import {onMounted, ref} from 'vue'
     import useEngineGroups from '../../../../../../../stores/production/engine/groups/engineGroups'
     import useFetchCriteria from '../../../../../../../stores/fetch-criteria/fetchCriteria'
     import {
         useManufacturerEngineStore
     } from '../../../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
     import useZonesStore from '../../../../../../../stores/production/company/zones'
-    import {useGenEngineStore} from "../../../../../../../stores/production/engine/generic/engines";
+    import {useGenEngineStore} from '../../../../../../../stores/production/engine/generic/engines'
 
     //region récupération des stores déjà chargés
     const fetchEngineStore = useGenEngineStore('machines', '/api/machines')()
@@ -70,7 +70,7 @@ import {onMounted, ref} from 'vue'
             serialNumber: fetchEngineStore.engine ? fetchEngineStore.engine.serialNumber : null,
             zone: fetchEngineStore.engine.zone ? fetchEngineStore.engine.zone['@id'] : null
         }
-        key.value ++
+        key.value++
     })
     //endregion
     //region définition des champs du formulaire
@@ -132,9 +132,9 @@ import {onMounted, ref} from 'vue'
 <template>
     <AppCardShow
         id="addGeneralites"
+        :key="key"
         :fields="generalFields"
         :component-attribute="localData"
-        :key="key"
         @update:model-value="updateField"
         @update="updateGeneral"/>
 </template>

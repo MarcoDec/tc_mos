@@ -1,5 +1,6 @@
 <script setup>
-import {computed, nextTick, onBeforeUnmount, onMounted, onUpdated, ref} from 'vue'
+    import {computed, nextTick, onBeforeUnmount, onMounted, onUpdated, ref} from 'vue'
+    import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome"
 
     const gui = ref(null)
     const guiHeader = ref(null)
@@ -31,24 +32,100 @@ import {computed, nextTick, onBeforeUnmount, onMounted, onUpdated, ref} from 'vu
         ys: 0 // position y souris 'screen'
     })
     const guiTopStyleComputed = computed(() => {
+        if (guiTopStyle.value) return {
+            'min-height': guiTopStyle.value['min-height'],
+            'max-height': guiTopStyle.value['max-height'],
+            height: guiTopStyle.value.height
+        }
         return {
-            'min-height': guiTopStyle.value ? guiTopStyle.value['min-height']: 0,
-            'max-height': guiTopStyle.value ? guiTopStyle.value['max-height']:0,
-            'height': guiTopStyle.value ? guiTopStyle.value.height:0
+            'min-height': 0,
+            'max-height': 0,
+            height: 0
         }
     })
     const guiBottomStyleComputed = computed(() => {
+        if (guiBottomStyle.value) return {
+            'min-height': guiBottomStyle.value['min-height'],
+            'max-height': guiBottomStyle.value['max-height'],
+            height: guiBottomStyle.value.height
+        }
         return {
-            'min-height': guiBottomStyle.value ? guiBottomStyle.value['min-height']:0,
-            'max-height': guiBottomStyle.value ? guiBottomStyle.value['max-height']:0,
-            'height': guiBottomStyle.value ? guiBottomStyle.value.height:0
+            'min-height': 0,
+            'max-height': 0,
+            height: 0
         }
     })
-const guiHeaderComputed = computed(() => {
-  return {
-    'height': guiHeader.value ? guiHeader.value.getBoundingClientRect().height : 0
-  }
-})
+    const guiHeaderComputed = computed(() => {
+        if (guiHeader.value) return {height: guiHeader.value.getBoundingClientRect().height}
+        return {height: 0}
+    })
+    const isFullscreen = ref({
+        left: false,
+        right: false,
+        bottom: false
+    })
+    function onRatioUpdate() {
+        guiTopStyle.value['min-height'] = `${guiRatio.value * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
+        guiTopStyle.value['max-height'] = `${guiRatio.value * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
+        guiTopStyle.value.height = `${guiRatio.value * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
+        guiBottomStyle.value['min-height'] = `${(1 - guiRatio.value) * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
+        guiBottomStyle.value['max-height'] = `${(1 - guiRatio.value) * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
+        guiBottomStyle.value.height = `${(1 - guiRatio.value) * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
+    }
+    function toggleFullscreen(section) {
+        isFullscreen.value[section] = !isFullscreen.value[section]
+        const leftElement = document.getElementById('gui-left')
+        const rightElement = document.getElementById('gui-right')
+        const bottomElement = document.getElementById('gui-bottom')
+        if (section === 'left') {
+            isFullscreen.value.right = false
+            isFullscreen.value.bottom = false
+            if (isFullscreen.value.left) {
+                guiRatio.value = 1
+                leftElement.style.maxWidth = '100%'
+                leftElement.style.minWidth = '100%'
+                leftElement.style.width = '100%'
+                leftElement.style.minHeight = '100%'
+                bottomElement.style.display = 'none'
+                rightElement.style.display = 'none'
+            } else {
+                guiRatio.value = 0.5
+                leftElement.style.maxWidth = '50%'
+                leftElement.style.minWidth = '50%'
+                leftElement.style.width = '50%'
+                leftElement.style.minHeight = '100%'
+                bottomElement.style.display = 'block'
+                rightElement.style.display = 'block'
+            }
+        } else if (section === 'right') {
+            isFullscreen.value.left = false
+            isFullscreen.value.bottom = false
+            if (isFullscreen.value.right) {
+                guiRatio.value = 1
+                rightElement.style.maxWidth = '100%'
+                rightElement.style.minWidth = '100%'
+                rightElement.style.width = '100%'
+                bottomElement.style.display = 'none'
+                leftElement.style.display = 'none'
+            } else {
+                guiRatio.value = 0.5
+                rightElement.style.maxWidth = '50%'
+                rightElement.style.minWidth = '50%'
+                rightElement.style.width = '50%'
+                bottomElement.style.display = 'block'
+                leftElement.style.display = 'block'
+            }
+        } else if (section === 'bottom') {
+            isFullscreen.value.left = false
+            isFullscreen.value.right = false
+            if (isFullscreen.value.bottom) {
+                guiRatio.value = 0
+            } else {
+                guiRatio.value = 0.5
+            }
+        }
+        onRatioUpdate()
+    }
     function handleMouseMove(event) {
         if (event.pageX === null && event.clientX !== null) {
             const eventDoc = event.target && event.target.ownerDocument || document
@@ -62,15 +139,6 @@ const guiHeaderComputed = computed(() => {
         // Use event.pageX / event.pageY here
         zoneUtile.value.xs = event.pageX
         zoneUtile.value.ys = event.pageY
-    }
-
-    function onRatioUpdate() {
-        guiTopStyle.value['min-height'] = `${guiRatio.value * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
-        guiTopStyle.value['max-height'] = `${guiRatio.value * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
-        guiTopStyle.value.height = `${guiRatio.value * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
-        guiBottomStyle.value['min-height'] = `${(1 - guiRatio.value) * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
-        guiBottomStyle.value['max-height'] = `${(1 - guiRatio.value) * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
-        guiBottomStyle.value.height = `${(1 - guiRatio.value) * (zoneUtile.value.y1 - zoneUtile.value.y0)}px`
     }
 
     function onWindowResize() {
@@ -123,7 +191,7 @@ const guiHeaderComputed = computed(() => {
         document.addEventListener('mousemove', handleMouseMove)
     })
     onUpdated(() => {
-            onWindowResize()
+        onWindowResize()
     })
     onBeforeUnmount(() => {
         window.removeEventListener('resize', onWindowResize)
@@ -138,28 +206,63 @@ const guiHeaderComputed = computed(() => {
         </div>
         <div id="gui" ref="gui" :style="guiStyle">
             <div id="gui-top" class="gui-top" :style="guiTopStyle">
-                <div id="gui-left" class="bg-info">
-                    <div class="bg-info gui-card">
+                <div id="gui-left" class="bg-info parent-buttons-div" :class="{'full-screen': isFullscreen.left}">
+                    <div class="bg-info gui-card" :class="{'full-visible-width': isFullscreen.left, 'half-visible-width': !isFullscreen.left}">
                         <slot name="gui-left" :size="guiTopStyleComputed"/>
                     </div>
+                    <div class="full-screen-btn">
+                        <FontAwesomeIcon
+                            v-if="isFullscreen.left"
+                            class="fullscreen-btn full-screen-button"
+                            icon="fa-solid fa-circle-chevron-down"
+                            title="Réduire la fenêtre en plein écran"
+                            @click="toggleFullscreen('left')"/>
+                        <FontAwesomeIcon
+                            v-else
+                            class="screen-btn full-screen-button"
+                            icon="fa-solid fa-circle-chevron-up"
+                            title="Agrandir la fenêtre en plein écran"
+                            @click="toggleFullscreen('left')"/>
+                    </div>
                 </div>
-                <div id="gui-right" class="bg-warning">
-                    <div class="bg-warning gui-card">
-                        <slot name="gui-right" :size="guiTopStyleComputed">
-                            <!--                            <div>guiTopStyle min-height: {{guiTopStyleComputed['min-height']}}</div>-->
-                            <!--                            <div>guiTopStyle max-height: {{guiTopStyleComputed['max-height']}}</div>-->
-                            <!--                            <div>guiTopStyle height: {{guiTopStyleComputed.height}}</div>-->
-                            <!--                            <div>guiBottomStyle min-height: {{guiBottomStyleComputed['min-height']}}</div>-->
-                            <!--                            <div>guiBottomStyle max-height: {{guiBottomStyleComputed['max-height']}}</div>-->
-                            <!--                            <div>guiBottomStyle height: {{guiBottomStyleComputed.height}}</div>-->
-                        </slot>
+                <div id="gui-right" class="bg-warning parent-buttons-div" :class="{'full-screen': isFullscreen.right}">
+                    <div class="bg-warning gui-card" :class="{'full-visible-width': isFullscreen.right, 'half-visible-width': !isFullscreen.right}">
+                        <slot name="gui-right" :size="guiTopStyleComputed"/>
+                    </div>
+                    <div class="full-screen-btn">
+                        <FontAwesomeIcon
+                            v-if="isFullscreen.right"
+                            class="fullscreen-btn full-screen-button"
+                            icon="fa-solid fa-circle-chevron-down"
+                            title="Réduire la fenêtre en plein écran"
+                            @click="toggleFullscreen('right')"/>
+                        <FontAwesomeIcon
+                            v-else
+                            class="screen-btn full-screen-button"
+                            icon="fa-solid fa-circle-chevron-up"
+                            title="Agrandir la fenêtre en plein écran"
+                            @click="toggleFullscreen('right')"/>
                     </div>
                 </div>
             </div>
             <hr class="gui-resizer" @mousedown="resize"/>
-            <div id="gui-bottom" class="bg-danger" :style="guiBottomStyle">
+            <div id="gui-bottom" class="bg-danger parent-buttons-div" :style="guiBottomStyle" :class="{'full-screen': isFullscreen.bottom}">
                 <div class="bg-danger gui-card">
                     <slot name="gui-bottom" :size="guiBottomStyleComputed"/>
+                </div>
+                <div class="full-screen-btn">
+                    <FontAwesomeIcon
+                        v-if="isFullscreen.bottom"
+                        class="fullscreen-btn full-screen-button"
+                        icon="fa-solid fa-circle-chevron-down"
+                        title="Réduire la fenêtre en plein écran"
+                        @click="toggleFullscreen('bottom')"/>
+                    <FontAwesomeIcon
+                        v-else
+                        class="screen-btn full-screen-button"
+                        icon="fa-solid fa-circle-chevron-up"
+                        title="Agrandir la fenêtre en plein écran"
+                        @click="toggleFullscreen('bottom')"/>
                 </div>
             </div>
         </div>
@@ -185,21 +288,18 @@ const guiHeaderComputed = computed(() => {
         flex-direction: row;
         align-items: stretch;
     }
-    #gui-left {
+    #gui-left, #gui-right {
         min-width: 50%;
         max-width: 50%;
         overflow: auto;
+        position: relative;
     }
-    #gui-right {
-        min-width: 50%;
-        max-width: 50%;
-        overflow: auto;
-    }
+
     .gui-resizer {
-        background-color: black;
+        background-color: green;
         cursor: row-resize;
-        margin: 0;
-        padding: 1px;
+        margin: 2px;
+        padding: 5px;
         display: block;
     }
     #gui-bottom {
@@ -209,5 +309,25 @@ const guiHeaderComputed = computed(() => {
         flex-direction: row;
         align-items: stretch;
         overflow: auto;
+    }
+    .fullscreen-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translateX(0);
+        z-index: 2;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    }
+    .screen-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translateX(0);
+        z-index: 2;
+        background: transparent;
+        border: none;
+        cursor: pointer;
     }
 </style>

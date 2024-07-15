@@ -1,13 +1,13 @@
 <script setup>
     import AppCardableTableBody from './AppCardableTableBody.vue'
 
-    const props = defineProps({
-        currentPage: {required: true, type: String},
+    /*const props = */defineProps({
+        // currentPage: {required: false, type: String},
         fields: {required: true, type: Array},
         items: {required: true, type: Array},
         shouldDelete: {required: false, default: true},
-        shouldSee: {required: false, default: true},
-        pagine: {required: true, type: Boolean}
+        shouldSee: {required: false, default: true}//,
+        // pagine: {required: false, type: Boolean}
     })
     const emit = defineEmits(['deleted', 'update'])
     function update(item) {

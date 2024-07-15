@@ -8,7 +8,7 @@
      * - `props.field.filteredProperty` : défini le nom de la propriété de l'object qui sera utilisé pour le filtre
      * - `props.field.max` : défini le nombre max d'élément sélectionnable. Si cette valeur vaut 1, alors c'est un simple select.
      */
-    import {computed, onBeforeMount, ref} from 'vue'
+    import {computed, onBeforeMount, onBeforeUpdate, ref} from 'vue'
     import api from '../../../../../api'
     import AppMultiselect from './AppMultiselect.vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
@@ -22,6 +22,7 @@
         mode: {default: 'tags', type: String},
         modelValue: {default: null, type: [Array, String]}
     })
+    const isDisabled = computed(() => props.disabled || props.field.readonly)
     const localModelValue = ref({})
     // Initialisation de localModelValue
     if (props.field.max === 1) {
@@ -30,7 +31,7 @@
         localModelValue.value = props.modelValue
     }
     const emit = defineEmits(['searchChange', 'update:modelValue'])
-    const fetchCriteria = useFetchCriteria(`${props.form}FetchCriteria`)
+    const fetchCriteria = useFetchCriteria(`${props.form}FetchCriteria${props.field.name}`)
     const items = ref([])
     const options = computed(() => items.value.map(item => ({text: `${item[props.field.filteredProperty]}`, value: item['@id']})))
     const multiselectField = computed(() => ({
@@ -84,7 +85,17 @@
         // console.info('onBeforeMount')
         if (props.field.permanentFilters) {
             props.field.permanentFilters.forEach(filter => {
-                fetchCriteria.addFilter(filter.field, filter.value)
+                // console.log('filter', filter)
+                if (filter !== null) fetchCriteria.addFilter(filter.field, filter.value)
+            })
+        }
+    })
+    onBeforeUpdate(() => {
+        // console.info('onBeforeUpdate')
+        if (props.field.permanentFilters) {
+            props.field.permanentFilters.forEach(filter => {
+                // console.log('filter', filter)
+                if (filter !== null) fetchCriteria.addFilter(filter.field, filter.value)
             })
         }
     })
@@ -97,7 +108,7 @@
         :form="form"
         :field="multiselectField"
         :data-mode="mode"
-        :disabled="disabled"
+        :disabled="isDisabled"
         :max="field.max ?? -1"
         :mode="mode"
         :model-value="newModelValue"

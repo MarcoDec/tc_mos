@@ -1,4 +1,3 @@
-import AppShowGui from '../components/pages/AppShowGui.vue'
 import AppShowGuiComponent from '../components/pages/purchase/component/show/AppShowGuiComponent.vue'
 import AppShowGuiSupplier from '../components/pages/purchase/supplier/show/AppShowGuiSupplier.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
@@ -82,7 +81,7 @@ export default [
                 {label: 'Code douanier', name: 'customsCode'},
                 {label: 'Icône', name: 'file', type: 'file'}
             ],
-            label: 'composants',
+            label: 'Famille de composants',
             tag: AppTreePageAttribute
         }
     },
@@ -97,12 +96,6 @@ export default [
         meta: {container: false, title: 'Composant — T-Concept GPAO'},
         name: 'component',
         path: '/component/:id_component'
-    },
-    {
-        component: AppShowGui,
-        meta: {container: false, title: 'Equipement — T-Concept GPAO'},
-        name: 'equipment',
-        path: '/equipment'
     },
     {
         component: AppTablePageSuspense,
@@ -131,12 +124,6 @@ export default [
         name: 'component-list',
         path: '/component-list'
     },
-    // {
-    //     component: () => import('./pages/supplier/AppSupplierPage.vue'),
-    //     meta: {requiresAuth: true},
-    //     name: 'supplier-list',
-    //     path: '/supplier-list'
-    // },
     {
         component: () => import('../components/pages/purchase/supplier/list/AppSupplierListPage.vue'),
         meta: {requiresAuth: true},
@@ -146,5 +133,27 @@ export default [
             icon: 'user-tag',
             title: 'Liste des Fournisseurs'
         }
+    },
+    {
+        component: () => import('../components/pages/purchase/order/show/AppSupplierOrder.vue'),
+        meta: {requiresAuth: true},
+        name: 'supplier-order-show',
+        path: '/purchaseOrder/show/:id'
+    },
+    {
+        component: () => import('../components/pages/purchase/order/list/AppSupplierOrderListPage.vue'),
+        meta: {requiresAuth: true},
+        name: 'purchaseOrderList',
+        path: '/purchaseOrder/list',
+        props: {
+            icon: 'bullhorn',
+            title: 'Commandes Fournisseurs'
+        }
+    },
+    {
+        component: async () => import('../components/pages/prices/AppPricePage.vue'),
+        meta: {requiresAuth: true},
+        name: 'prices',
+        path: '/prices'
     }
 ]

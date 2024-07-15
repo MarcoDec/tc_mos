@@ -28,17 +28,23 @@ import AppInputJS from './components/form/field/input/AppInputJS'
 import AppLabel from './components/form/field/AppLabel.vue'
 import AppLabelJS from './components/form/field/AppLabelJS'
 import AppModal from './components/modal/AppModal.vue'
+import AppManufacturingTable from './components/app-manufacturing-table/AppManufacturingTable.vue'
+import AppManufacturingTableItemField from './components/app-manufacturing-table/body/AppManufacturingTableItemField.vue'
+import AppManufacturingTableItemQuantite from './components/app-manufacturing-table/body/AppManufacturingTableItemQuantite.vue'
 import AppMultiselect from './components/form/field/input/select/AppMultiselect.vue'
 import AppOptions from './components/form/field/input/select/AppOptions.vue'
 import AppOverlayJS from './components/AppOverlayJS'
 import AppPaginationItem from './components/table/pagination/AppPaginationItem'
 import AppRadio from './components/form/field/input/AppRadio'
 import AppRadioGroup from './components/form/field/input/AppRadioGroup.vue'
+import PortalVue from 'portal-vue'
 // import AppOverlay from './components/AppOverlayJS'
 import AppRouterLink from './components/nav/link/AppRouterLink.vue'
 import AppRouterLinkJS from './components/nav/link/AppRouterLinkJS'
 import AppRow from './components/AppRow'
 import AppShowGuiCard from './components/gui/AppShowGuiCard.vue'
+import AppScheduleTable from './components/app-schedule-table/AppScheduleTable.vue'
+import AppScheduleTableItemField from './components/app-schedule-table/body/AppScheduleTableItemField.vue'
 import AppSuspense from './components/AppSuspense.vue'
 import AppTab from './components/tab/AppTab.vue'
 import AppTable from './components/table/AppTable.vue'
@@ -106,6 +112,9 @@ const app = createApp(App)
     .component('AppLabelJS', AppLabelJS)
     .component('AppModal', AppModal)
     .component('AppMultiselect', AppMultiselect)
+    .component('AppManufacturingTable', AppManufacturingTable)
+    .component('AppManufacturingTableItemQuantite', AppManufacturingTableItemQuantite)
+    .component('AppManufacturingTableItemField', AppManufacturingTableItemField)
     .component('AppOptions', AppOptions)
     .component('AppOverlay', AppOverlayJS)
     .component('AppPaginationItem', AppPaginationItem)
@@ -122,6 +131,8 @@ const app = createApp(App)
     .component('AppTableAddJS', AppTableAddJS)
     .component('AppTableFields', AppTableFields)
     .component('AppTableFieldsJS', AppTableFieldsJS)
+    .component('AppScheduleTable', AppScheduleTable)
+    .component('AppScheduleTableItemField', AppScheduleTableItemField)
     .component('AppTableFormField', AppTableFormField)
     .component('AppTableFormFieldJS', AppTableFormFieldJS)
     .component('AppTableHeaderForm', AppTableHeaderForm)
@@ -161,4 +172,5 @@ const app = createApp(App)
     .component('CountryFlag', CountryFlag)
     .component('Fa', Fa)
     .use(pinia)
+    .use(PortalVue)
 useUser().fetch().then(() => app.use(router).mount('#vue'))

@@ -5,10 +5,11 @@ export const useComponentListStore = defineStore('component', {
     actions: {
         async fetchOne(id = 1) {
             if (this.isLoaded) return
-            console.log('component fetchOne', this)
+            //console.log('component fetchOne', this)
             this.isLoaded = false
             this.isLoading = true
             this.component = await api(`/api/components/${id}`, 'GET')
+            // console.log('component', this.component)
             this.isLoading = false
             this.isLoaded = true
         },

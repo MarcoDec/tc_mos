@@ -14,6 +14,10 @@
     import {useRoute} from 'vue-router'
     import {useSocietyStore} from '../../../../stores/management/societies/societies'
     import {useInvoiceTimeDuesStore} from '../../../../stores/management/invoiceTimeDues'
+    import AppTab from '../../../tab/AppTab.vue'
+    import AppShowCustomerTabIt from './tabs/AppShowCustomerTabIt.vue'
+    import AppPricesTablePage from "../../prices/AppPricesTablePage.vue"
+    import useUser from "../../../../stores/security"
 
     const route = useRoute()
     const idCustomer = route.params.id_customer
@@ -34,6 +38,22 @@
     await fecthCustomerContactsStore.fetchBySociety(societyId)
     fetchSocietyStore.society.orderMin.code = 'EUR'
     fetchCustomerStore.customer.outstandingMax.code = 'EUR'
+
+    const user = useUser()
+    const isSellingAdmin = user.isSellingAdmin
+    const isSellingWriter = user.isSellingWriter
+    const rights = {
+        main: {
+            add: isSellingWriter,
+            update: isSellingWriter,
+            delete: isSellingAdmin
+        },
+        price: {
+            add: isSellingWriter,
+            update: isSellingWriter,
+            delete: isSellingAdmin
+        }
+    }
 
     const optionsCountries = computed(() =>
         fecthOptions.options.map(op => {
@@ -83,6 +103,11 @@
                     :data-society="fetchSocietyStore.society"/>
             </AppSuspense>
         </AppTab>
+        <AppTab id="gui-start-prices" title="Prix" tabs="gui-start" icon="euro-sign">
+            <AppPricesTablePage
+                :customer="`/api/customers/${customerId}`"
+                :rights="rights"/>
+        </AppTab>
         <AppTab
             id="gui-start-accounting"
             title="Comptabilité"
@@ -96,11 +121,12 @@
         </AppTab>
         <AppTab
             id="gui-start-addresses"
-            title="Adresse"
+            title="Adresses"
             icon="location-dot"
             tabs="gui-start">
             <AppSuspense>
                 <AppShowCustomerTabAddress
+                    :customer-id="customerId"
                     :options-countries="optionsCountries"/>
             </AppSuspense>
         </AppTab>
@@ -112,6 +138,13 @@
             <AppSuspense>
                 <AppShowCustomerTabContact
                     :options-countries="optionsCountries"/>
+            </AppSuspense>
+        </AppTab>
+        <AppTab id="gui-IT" title="IT" tabs="gui-start" icon="laptop">
+            <AppSuspense>
+                <AppShowCustomerTabIt
+                    :data-customers="fetchCustomerStore.customer"
+                    :data-society="fetchSocietyStore.society"/>
             </AppSuspense>
         </AppTab>
     </AppTabs>

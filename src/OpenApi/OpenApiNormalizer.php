@@ -67,7 +67,13 @@ final class OpenApiNormalizer implements NormalizerInterface {
         return $normalized;
     }
 
-    public function supportsNormalization($data, ?string $format = null): bool {
+    /**
+     * @param $data
+     * @param string|null $format
+     * @param array $context
+     * @return bool
+     */
+    public function supportsNormalization($data, ?string $format = null, array $context = []): bool {
         return $this->decorated->supportsNormalization($data, $format);
     }
 }

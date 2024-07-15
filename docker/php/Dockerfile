@@ -9,6 +9,12 @@ RUN apt-get update \
     && apt-get install -y libssh2-1-dev libssh2-1 \
     && pecl install ssh2-1.3.1 \
     && docker-php-ext-enable ssh2
+RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends
+RUN apt-get update && apt-get install -y imagemagick --no-install-recommends
+# Installe Imagick
+RUN pecl uninstall imagick && \
+    pecl install imagick && \
+    docker-php-ext-enable imagick
 ADD crontab /tmp/crontab
 
 RUN crontab /tmp/crontab && rm /tmp/crontab

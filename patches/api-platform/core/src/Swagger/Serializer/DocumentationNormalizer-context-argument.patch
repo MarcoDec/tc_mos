@@ -1,0 +1,13 @@
+diff --git a/vendor/api-platform/core/src/Swagger/Serializer/DocumentationNormalizer.php b/patches/tmp/DocumentationNormalizer.php
+index 2357f7bf8..c91360eaa 100644
+--- a/vendor/api-platform/core/src/Swagger/Serializer/DocumentationNormalizer.php
++++ b/patches/tmp/DocumentationNormalizer.php
+@@ -797,7 +797,7 @@ final class DocumentationNormalizer implements NormalizerInterface, CacheableSup
+     /**
+      * {@inheritdoc}
+      */
+-    public function supportsNormalization($data, $format = null): bool
++    public function supportsNormalization($data, $format = null, array $context = []): bool
+     {
+         return self::FORMAT === $format && ($data instanceof Documentation || $this->openApiNormalizer && $data instanceof OpenApi);
+     }

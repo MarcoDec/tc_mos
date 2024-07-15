@@ -22,7 +22,12 @@ class EmployeePatchDataPersister implements ContextAwareDataPersisterInterface
             && $context['item_operation_name'] === 'patch';
     }
 
-    public function persist($data, array $context = [])
+    /**
+     * @param $data
+     * @param array $context
+     * @return void
+     */
+    public function persist($data, array $context = []): void
     {
 //        dump("Persist Employee", $data);
         /** @var Employee $data */

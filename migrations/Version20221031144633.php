@@ -311,8 +311,6 @@ SQL);
         $this->addQuery('ALTER TABLE `customer_address` DROP `old_id`');
         $this->addQuery('ALTER TABLE `customer_contact` DROP `old_id`');
         $this->addQuery('ALTER TABLE `employee` DROP `id_society`');
-//        $this->addQuery('ALTER TABLE `employee` DROP `matricule`, DROP `id_society`');
-        //$this->addQuery('ALTER TABLE `engine` DROP `old_id`');
         $this->addQuery('ALTER TABLE `engine_group` DROP `old_id`');
         $this->addQuery('ALTER TABLE `expedition` DROP `old_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
@@ -331,7 +329,6 @@ SQL);
         $this->addQuery('ALTER TABLE `society` DROP `old_id`');
         $this->addQuery('ALTER TABLE `stock` DROP `old_id`');
         $this->addQuery('ALTER TABLE `supplier_component` DROP `old_id`');
-//        $this->addQuery('ALTER TABLE `warehouse` DROP `old_id`');
     }
 
     private function upAttributes(): void {
@@ -1228,7 +1225,7 @@ CREATE TABLE `component` (
     `copper_weight_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `customs_code` VARCHAR(16) DEFAULT NULL,
     `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
-    `emb_state_state` ENUM('agreed', 'draft', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:component_manufacturing_operation_state)',
+    `emb_state_state` ENUM('agreed', 'draft', 'warning','closed') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:component_state)',
     `end_of_life` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `family_id` INT UNSIGNED NOT NULL,
     `forecast_volume_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
@@ -1804,7 +1801,7 @@ CREATE TABLE `delivery_note` (
     `bill_id` INT UNSIGNED DEFAULT NULL,
     `company_id` INT UNSIGNED DEFAULT NULL,
     `date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    `emb_state_state` ENUM('agreed', 'asked', 'closed', 'rejected') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:event_state)',
+    `emb_state_state` ENUM('draft', 'sent', 'acknowledgment_of_receipt', 'rejected') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:delivery_note_state)',
     `freight_surcharge_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
     `freight_surcharge_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
     `freight_surcharge_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
@@ -1828,7 +1825,7 @@ INSERT INTO `delivery_note` (
     `bill`.`id`,
     `company`.`id`,
     `deliveryform`.`date_depart`,
-    'closed',
+    'acknowledgment_of_receipt',
     'EUR',
     `deliveryform`.`supplement_fret`,
     `deliveryform`.`no_invoice`,
@@ -1989,7 +1986,7 @@ CREATE TABLE `employee` (
     `id_society` INT UNSIGNED DEFAULT NULL,
     `emb_roles_roles` TEXT NOT NULL COMMENT '(DC2Type:simple_array)',
     `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
-    `emb_state_state` ENUM('agreed', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_engine_state)',
+    `emb_state_state` ENUM('agreed', 'warning','closed') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_state)',
     `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `gender` ENUM('female', 'male') DEFAULT 'male' COMMENT '(DC2Type:gender_place)',
     `initials` VARCHAR(255) NOT NULL,
@@ -1999,6 +1996,7 @@ CREATE TABLE `employee` (
     `notes` VARCHAR(255) DEFAULT NULL,
     `password` VARCHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
     `plain_password` VARCHAR(255) DEFAULT NULL,
+    `preferred_warehouse_id` INT UNSIGNED DEFAULT NULL,
     `situation` ENUM('married', 'single', 'windowed') DEFAULT 'single' COMMENT '(DC2Type:situation_place)',
     `social_security_number` VARCHAR(255) DEFAULT NULL,
     `surname` VARCHAR(255) NOT NULL,
@@ -2563,7 +2561,7 @@ CREATE TABLE `engine` (
     `brand` VARCHAR(255) DEFAULT NULL,
     `code` VARCHAR(10) DEFAULT NULL,
     `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
-    `emb_state_state` ENUM('agreed', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_engine_state)',
+    `emb_state_state` ENUM('draft','agreed', 'warning','under_maintenance') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:engine_state)',
     `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `group_id` INT UNSIGNED DEFAULT NULL,
     `max_operator` TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '(DC2Type:tinyint)',
@@ -2946,7 +2944,7 @@ CREATE TABLE `manufacturing_operation` (
     `actual_quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
     `actual_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
-    `emb_state_state` ENUM('agreed', 'draft', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:component_manufacturing_operation_state)',
+    `emb_state_state` ENUM('agreed', 'draft', 'warning','locked') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:manufacturing_operation_state)',
     `notes` VARCHAR(255) DEFAULT NULL,
     `operation_id` INT UNSIGNED DEFAULT NULL,
     `order_id` INT UNSIGNED DEFAULT NULL,
@@ -3071,7 +3069,7 @@ CREATE TABLE `manufacturing_order` (
     `company_id` INT UNSIGNED DEFAULT NULL,
     `delivery_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
-    `emb_state_state` ENUM('agreed', 'asked', 'rejected') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:manufacturing_order_state)',
+    `emb_state_state` ENUM('agreed', 'asked', 'rejected','locked') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:manufacturing_order_state)',
     `index` TINYINT UNSIGNED DEFAULT 1 NOT NULL COMMENT '(DC2Type:tinyint)',
     `manufacturing_company_id` INT UNSIGNED DEFAULT NULL,
     `manufacturing_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
@@ -3082,6 +3080,12 @@ CREATE TABLE `manufacturing_order` (
     `quantity_requested_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
     `quantity_requested_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
     `quantity_requested_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `quantity_done_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `quantity_done_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `quantity_done_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `quantity_real_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `quantity_real_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `quantity_real_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_34010DB1979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
     CONSTRAINT `IDX_34010DB1E26A3063` FOREIGN KEY (`manufacturing_company_id`) REFERENCES `company` (`id`),
     CONSTRAINT `IDX_34010DB18D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `selling_order` (`id`),
@@ -3103,7 +3107,11 @@ INSERT INTO `manufacturing_order` (
     `product_id`,
     `ref`,
     `quantity_requested_code`,
-    `quantity_requested_value`
+    `quantity_requested_value`,
+    `quantity_done_code`,
+    `quantity_done_value`,
+    `quantity_real_code`,
+    `quantity_real_value`
 ) SELECT
     `orderfabrication`.`id`,
     `company`.`id`,
@@ -3119,14 +3127,22 @@ INSERT INTO `manufacturing_order` (
         ELSE 'asked'
     END,
     `orderfabrication`.`indice`,
-    `supplier`.`id`,
+    CASE
+        WHEN `supplier`.`id` = 5 THEN 4
+        WHEN `supplier`.`id` = 4 THEN 3
+        ELSE  1
+    END,
     `orderfabrication`.`date_fabrication`,
     `orderfabrication`.`info_public`,
     `selling_order`.`id`,
     `product`.`id`,
     `orderfabrication`.`ofnumber`,
     `unit`.`code`,
-    `orderfabrication`.`quantity`
+    `orderfabrication`.`quantity`,
+    `unit`.`code`,
+    `orderfabrication`.`quantity_done`,
+    `unit`.`code`,
+    `orderfabrication`.`quantity_real`
 FROM `orderfabrication`
 INNER JOIN `product` ON `orderfabrication`.`id_product` = `product`.`old_id`
 LEFT JOIN `unit` ON `product`.`unit_id` = `unit`.`id`
@@ -3516,7 +3532,7 @@ CREATE TABLE `product` (
     `costing_manual_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `customs_code` VARCHAR(10) DEFAULT NULL,
     `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
-    `emb_state_state` ENUM('agreed', 'draft', 'to_validate', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:product_state)',
+    `emb_state_state` ENUM('agreed', 'draft', 'to_validate', 'warning','closed') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:product_state)',
     `end_of_life` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `family_id` INT UNSIGNED NOT NULL,
     `forecast_volume_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
@@ -3843,7 +3859,7 @@ CREATE TABLE `purchase_order_item` (
     `copper_price_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
     `copper_price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `emb_blocker_state` ENUM('blocked', 'closed', 'delayed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:purchase_order_item_closer_state)',
-    `emb_state_state` ENUM('agreed', 'delivered', 'draft', 'forecast', 'initial', 'monthly', 'partially_delivered') DEFAULT 'initial' NOT NULL COMMENT '(DC2Type:purchase_order_item_state)',
+    `emb_state_state` ENUM('agreed', 'received', 'draft', 'forecast', 'initial', 'monthly', 'partially_received','paid') DEFAULT 'initial' NOT NULL COMMENT '(DC2Type:purchase_order_item_state)',
     `notes` VARCHAR(255) DEFAULT NULL,
     `order_id` INT UNSIGNED DEFAULT NULL,
     `price_code`VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
@@ -3897,7 +3913,7 @@ INSERT INTO `purchase_order_item` (
     'EUR',
     `ordersupplier_component`.`price_surcharge_cu`,
     IF(
-        `purchase_order`.`emb_state_state` IN ('agreed', 'partially_delivery')
+        `purchase_order`.`emb_state_state` IN ('agreed', 'partially_received')
             OR `purchase_order`.`emb_blocker_state` = 'closed',
         CASE
             WHEN IFNULL(`ordersupplier_component`.`quantity`, 0) = IFNULL(`ordersupplier_component`.`quantity_received`, 0) THEN 'closed'
@@ -3907,11 +3923,11 @@ INSERT INTO `purchase_order_item` (
         'enabled'
     ),
     IF(
-        `purchase_order`.`emb_state_state` IN ('agreed', 'partially_delivery')
+        `purchase_order`.`emb_state_state` IN ('agreed', 'partially_received')
             OR `purchase_order`.`emb_blocker_state` = 'closed',
         CASE
-            WHEN IFNULL(`ordersupplier_component`.`quantity`, 0) = IFNULL(`ordersupplier_component`.`quantity_received`, 0) THEN 'delivered'
-            WHEN IFNULL(`ordersupplier_component`.`quantity_received`, 0) > 0 THEN 'partially_delivered'
+            WHEN IFNULL(`ordersupplier_component`.`quantity`, 0) = IFNULL(`ordersupplier_component`.`quantity_received`, 0) THEN 'received'
+            WHEN IFNULL(`ordersupplier_component`.`quantity_received`, 0) > 0 THEN 'partially_received'
             ELSE 'agreed'
         END,
         'draft'
@@ -3943,7 +3959,7 @@ CREATE TABLE `receipt` (
     `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `date` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `emb_state_state` ENUM('asked', 'blocked', 'closed', 'to_validate') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:receipt_state)',
+    `emb_state_state` ENUM('asked', 'rejected', 'closed', 'to_validate') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:receipt_state)',
     `item_id` INT UNSIGNED DEFAULT NULL,
     `quantity_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
     `quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
@@ -3952,7 +3968,7 @@ CREATE TABLE `receipt` (
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `receipt` (`old_id`, `date`, `emb_state_state`, `item_id`, `quantity_code`, `quantity_value`)
+INSERT INTO `receipt` (`old_id`, `date`,`emb_state_state`, `item_id`, `quantity_code`, `quantity_value`)
 SELECT
     `purchase_order_item`.`old_id`,
     `purchase_order_item`.`receipt_date`,
@@ -4014,7 +4030,7 @@ CREATE TABLE `purchase_order` (
     `contact_id` INT UNSIGNED DEFAULT NULL,
     `delivery_company_id` INT UNSIGNED DEFAULT NULL,
     `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
-    `emb_state_state` ENUM('agreed', 'cart', 'delivered', 'draft', 'initial', 'partially_delivered') DEFAULT 'initial' NOT NULL COMMENT '(DC2Type:purchase_order_state)',
+    `emb_state_state` ENUM('agreed', 'cart', 'received', 'draft', 'initial', 'partially_received','paid') DEFAULT 'initial' NOT NULL COMMENT '(DC2Type:purchase_order_state)',
     `notes` TEXT DEFAULT NULL,
     `order_id` INT UNSIGNED DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
@@ -4045,8 +4061,8 @@ INSERT INTO `purchase_order` (
     IF(`ordersupplier`.`id_ordersupplierstatus` IN (6, 7), 'closed', 'enabled'),
     CASE
         WHEN `ordersupplier`.`id_ordersupplierstatus` = 4 THEN 'agreed'
-        WHEN `ordersupplier`.`id_ordersupplierstatus` = 5 THEN 'partially_delivered'
-        WHEN `ordersupplier`.`id_ordersupplierstatus` = 6 THEN 'delivered'
+        WHEN `ordersupplier`.`id_ordersupplierstatus` = 5 THEN 'partially_received'
+        WHEN `ordersupplier`.`id_ordersupplierstatus` = 6 THEN 'received'
         ELSE 'draft'
     END,
     IF(
@@ -4257,7 +4273,7 @@ CREATE TABLE `selling_order` (
     `customer_id` INT UNSIGNED DEFAULT NULL,
     `destination_id` INT UNSIGNED DEFAULT NULL,
     `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
-    `emb_state_state` ENUM('agreed', 'delivered', 'draft', 'partially_delivered', 'to_validate') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:selling_order_state)',
+    `emb_state_state` ENUM('agreed', 'delivered', 'draft', 'partially_delivered', 'to_validate','paid') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:selling_order_state)',
     `kind` ENUM('EI', 'Prototype', 'Série', 'Pièce de rechange') DEFAULT 'Prototype' NOT NULL COMMENT '(DC2Type:product_kind)',
     `notes` VARCHAR(255) DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
@@ -4660,7 +4676,7 @@ CREATE TABLE `customer` (
     `copper_type` ENUM('à la livraison', 'mensuel', 'semestriel') DEFAULT 'mensuel' NOT NULL COMMENT '(DC2Type:copper)',
     `currency_id` INT UNSIGNED NOT NULL,
     `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
-    `emb_state_state` ENUM('agreed', 'draft') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:customer_state)',
+    `emb_state_state` ENUM('agreed', 'draft','closed') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:customer_state)',
     `equivalent_enabled` BOOLEAN DEFAULT FALSE NOT NULL,
     `invoice_by_email` BOOLEAN DEFAULT FALSE NOT NULL,
     `language` VARCHAR(255) DEFAULT NULL,
@@ -4790,7 +4806,7 @@ CREATE TABLE `supplier` (
     `copper_type` ENUM('à la livraison', 'mensuel', 'semestriel') DEFAULT 'mensuel' NOT NULL COMMENT '(DC2Type:copper)',
     `currency_id` INT UNSIGNED NOT NULL,
     `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
-    `emb_state_state` ENUM('agreed', 'draft', 'to_validate', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:supplier_state)',
+    `emb_state_state` ENUM('agreed', 'draft', 'ready_to_work', 'warning','closed') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:supplier_state)',
     `language` VARCHAR(255) DEFAULT NULL,
     `managed_production` BOOLEAN DEFAULT FALSE NOT NULL,
     `managed_quality` BOOLEAN DEFAULT FALSE NOT NULL,
@@ -4838,7 +4854,7 @@ INSERT INTO `supplier` (
     CASE
         WHEN `society_old`.`id_societystatus` = 2 THEN 'agreed'
         WHEN `society_old`.`id_societystatus` = 3 THEN 'warning'
-        ELSE 'to_validate'
+        ELSE 'draft'
     END,
     UCASE(`locale`.`code`),
     `society_old`.`nom`,

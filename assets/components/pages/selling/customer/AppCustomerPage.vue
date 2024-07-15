@@ -13,7 +13,7 @@
         title: {required: true, type: String}
     })
 
-    const modalId = computed(() => 'target')
+    const modalId = computed(() => 'customerCreateModal')
     const target = computed(() => `#${modalId.value}`)
     const customerCreateModal = ref(null)
 
@@ -47,7 +47,7 @@
         {text: 'warning', value: 'warning'}
     ]
     const fields = computed(() => [
-        { label: 'ID', name: 'id', trie: true, type: 'text', width: 50, filter: true },
+        {label: 'ID', name: 'id', trie: true, type: 'text', width: 50, filter: true},
         {
             label: 'Img',
             name: 'filePath',
@@ -112,7 +112,7 @@
         }
     }
     function onCustomerDetailsOpenRequest(customer) {
-        //console.log('onCustomerDetailsOpenRequest', customer)
+        console.log('onCustomerDetailsOpenRequest', customer)
         /* eslint-disable camelcase */
         router.push({name: 'customer', params: {id_customer: customer.id}})
     }
@@ -151,6 +151,7 @@
                     :pag="storeCustomersList.pagination"
                     :previous-page="storeCustomersList.previousPage"
                     :user="roleuser"
+                    top-offset="48px"
                     form="formCustomerCardableTable"
                     @deleted="deleted"
                     @get-page="getPage"

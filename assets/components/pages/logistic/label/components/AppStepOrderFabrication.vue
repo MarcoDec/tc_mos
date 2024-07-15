@@ -9,6 +9,67 @@
     const ofField = ref('')
     const inputOfRef = ref(null)
 
+    async function getOrdreDeFabrication(originGP, ofNumber, ofIndice) {
+        const baseUrl = originGP ? 'http://gp.tconcept.local/dist/api/orderfabrication.php' : 'http://antenne.tconcept.local/dist/api/orderfabrication.php'
+        const response = await fetch(`${baseUrl}?action=show&ofNumber=${ofNumber}&ofIndice=${ofIndice}`)
+        if (response.ok) {
+            const json = await response.json()
+            if (json === 'null') {
+                of.value = {status: false}
+                return false
+            }
+            of.value = {status: true, data: json}
+            return true
+        }
+        console.error(`HTTP-Error: ${response.status}`)
+        return false
+    }
+    async function getProduct(originGP, idProduct) {
+        const baseUrl = originGP ? 'http://gp.tconcept.local/dist/api/product.php' : 'http://antenne.tconcept.local/dist/api/product.php'
+        const response = await fetch(`${baseUrl}?action=show&id=${idProduct}`)
+        if (response.ok) {
+            const json = await response.json()
+            if (json === 'null') {
+                of.value = {status: false}
+                return false
+            }
+            of.value.data = {
+                ...of.value.data,
+                product: json,
+                productRef: json.ref,
+                productIndice: json.indice,
+                productDescription: json.designation,
+                productConditionnement: json.conditionnement,
+                productLabelLogo: json.labelLogo,
+                customerId: json.id_customer
+            }
+            return true
+        }
+        console.error(`HTTP-Error: ${response.status}`)
+        return false
+    }
+
+    async function getCustomer(originGP, idCustomer) {
+        const baseUrl = originGP ? 'http://gp.tconcept.local/dist/api/customerController.php' : 'http://antenne.tconcept.local/dist/api/customerController.php'
+        const response = await fetch(`${baseUrl}?action=get&id=${idCustomer}`)
+        if (response.ok) {
+            const json = await response.json()
+            if (json === 'null') {
+                of.value = {status: false}
+                return false
+            }
+            of.value.data = {
+                ...of.value.data,
+                customer: json,
+                customerName: json.nom
+            }
+            //console.log('customer data chargées', of.value.data.customer)
+            return true
+        }
+        console.error(`HTTP-Error: ${response.status}`)
+        return false
+    }
+
     async function getOf() {
         //region explications
         // On tente de récupérer l'OF depuis les informations du code barre
@@ -22,83 +83,36 @@
         //endregion
         const ofNumber = ofField.value.split('.')[0]
         const ofIndice = ofField.value.split('.')[1]
+        const resultOFOK = await getOrdreDeFabrication(props.originGP, ofNumber, ofIndice)
         let error = false
-        let nullReturn = false
-        if (props.originGP) { // On regarde si on trouve l'OF coté GP
-            const GPresponse = await fetch(`http://gp.tconcept.local/dist/api/orderfabrication.php?action=show&ofNumber=${ofNumber}&ofIndice=${ofIndice}`)
-            if (GPresponse.ok) {
-                const GPJson = await GPresponse.json()
-                if (GPJson === 'null') nullReturn = true
-                else {
-                    of.value = {status: true, data: GPJson}
-                }
-            } else {
-                //erreur
-                error = true
-                console.error(`HTTP-Error GP: ${GPresponse.status}`)
-            }
-        } else { // On regarde si on trouve l'OF coté Antenne
-            const Antenneresponse = await fetch(`http://antenne.tconcept.local/dist/api/orderfabrication.php?action=show&ofNumber=${ofNumber}&ofIndice=${ofIndice}`)
-            if (Antenneresponse.ok) {
-                const AntenneJson = await Antenneresponse.json()
-                if (AntenneJson === 'null') nullReturn = true
-                else {
-                    of.value = {status: true, data: AntenneJson}
-                }
-            } else {
-                //erreur
-                error = true
-                console.error(`HTTP-Error Antenne: ${Antenneresponse.status}`)
-            }
-            if (nullReturn || error) {
-                // On a rien trouvé
-                of.value = {status: false}
-            }
+        // On vérifie que l'OF récupéré est valide
+        if (resultOFOK && of.value.data.statut === '1' || ['1', '2', '5', '6', '7'].indexOf(of.value.data.id_orderfabricationstatus) > 0) {
+            //erreur
+            error = true
+            console.error('L\'OF n\'est pas valide', of.value.data)
+            return false
         }
-        // si testGP Ok alors on charge coté GP le produit lié via la propriété de of nommée id_product
-        if (props.originGP && !nullReturn) {
-            const productResponse = await fetch(`http://gp.tconcept.local/dist/api/product.php?action=show&id=${of.value.data.id_product}`)
-            if (productResponse.ok) {
-                const productJson = await productResponse.json()
-                if (productJson === 'null') {
-                    //erreur
-                    error = true
-                    console.error('Il n\'y a pas de produit lié à cet OF GP coté GP')
-                } else of.value.data = {
-                    ...of.value.data,
-                    productRef: productJson.ref,
-                    productIndice: productJson.indice,
-                    productDescription: productJson.designation,
-                    productConditionnement: productJson.conditionnement
-                }
-            } else {
+
+        // si resultOFOK Ok alors on charge coté GP le produit lié via la propriété de of nommée id_product
+        if (resultOFOK && !error) {
+            const resultProductOK = await getProduct(props.originGP, of.value.data.id_product)
+            if (!resultProductOK) {
                 //erreur
                 error = true
-                console.error(`HTTP-Error GP: ${productResponse.status}`)
+                console.error('Il n\'y a pas de produit lié à l\'OF')
+                return false
             }
-        } else if (!props.originGP && !nullReturn) {
-            // si testAntenne Ok alors on charge coté Antenne le produit lié via la propriété de of nommée id_product
-            const productResponse = await fetch(`http://antenne.tconcept.local/dist/api/product.php?action=show&id=${of.value.data.id_product}`)
-            if (productResponse.ok) {
-                const productJson = await productResponse.json()
-                if (productJson === 'null') {
-                    //erreur
-                    error = true
-                    console.error('Il n\'y a pas de produit lié à cet OF Antenne coté Antenne')
-                } else of.value.data = {
-                    ...of.value.data,
-                    productRef: productJson.ref,
-                    productIndice: productJson.indice,
-                    productDescription: productJson.designation,
-                    productConditionnement: productJson.conditionnement
-                }
-            } else {
+            // Si resultProductOK Ok alors on charge les données client
+            const resultCustomerOK = await getCustomer(props.originGP, of.value.data.customerId)
+            if (!resultCustomerOK) {
                 //erreur
                 error = true
-                console.error(`HTTP-Error Antenne: ${productResponse.status}`)
+                console.error('Il n\'y a pas de client lié au produit')
+                return false
             }
+            return true
         }
-        return !error && !nullReturn
+        return false
     }
     async function validate() {
         const result = await getOf()
@@ -106,7 +120,7 @@
             //console.log('validate ok', of.value)
             emits('nextStep', of.value)
         } else {
-            alert('Veuillez scanner l\'OF')
+            alert('OF ou Produit associé ou Client associé non valide')
         }
     }
     onMounted(() => {

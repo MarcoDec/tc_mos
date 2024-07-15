@@ -83,7 +83,7 @@ final class ItemProductionQualityComponentRepository extends ItemRepository {
         }
     }
 
-    public function findOneByReceipt(int $id, string $ressourceClass): ?ComponentItem {
+    public function findOneByReceipt(int $id, string $resourceClass): ?ComponentItem {
         $query = $this->createReceiptQueryBuilder($id)->getQuery();
         try {
             /** @phpstan-ignore-next-line */
@@ -95,7 +95,6 @@ final class ItemProductionQualityComponentRepository extends ItemRepository {
 
     public function findByQualityComponentId($componentId, $tab = null) : array
     {
-
         $currentPage = $tab['currentPage'];
         // $first = 0;
         $max = 15;
@@ -134,7 +133,7 @@ final class ItemProductionQualityComponentRepository extends ItemRepository {
         LEFT JOIN zone ON  zone.id = moperation.zone_id
         LEFT JOIN company ON company.id = zone.company_id
         LEFT JOIN manufacturing_order as morder ON moperation.order_id = morder.id
-        LEFT JOIN selling_order as so ON so.id = morder.order_id
+        LEFT JOIN selling_order as so ON so.id = morder.selling_order_id
         LEFT JOIN selling_order_item as soi ON soi.id = so.id
         LEFT JOIN component ON component.id = soi.component_id
         WHERE component.id = '. $componentId .' AND pq.deleted = 0';

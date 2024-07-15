@@ -15,7 +15,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial', 'active' => 'exact', 'symbol' => 'partial', 'base' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial', 'active' => 'exact', 'getSymbol' => 'exact', 'base' => 'partial']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'name', 'symbol', 'base']),
     ApiResource(
         description: 'Devises',
@@ -45,7 +45,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
             ]
         ],
         itemOperations: [
-            'get' => NO_ITEM_GET_OPERATION,
+            'get',
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une devise',
@@ -67,7 +67,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
             'skip_null_values' => false
         ],
         //order: ['code' => 'asc'],
-        paginationEnabled: true
+        paginationEnabled: true,
+        paginationClientEnabled: true
     ),
     ORM\Entity(repositoryClass: CurrencyRepository::class)
 ]
@@ -126,5 +127,9 @@ class Currency extends AbstractUnit {
     final public function setActive(bool $active): self {
         $this->active = $active;
         return $this;
+    }
+    #[Serializer\Groups(['read:currency:option'])]
+    final public function getCode(): ?string {
+        return $this->code;
     }
 }

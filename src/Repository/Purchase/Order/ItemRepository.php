@@ -14,14 +14,10 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @template I of Item
- *
  * @extends ServiceEntityRepository<I>
- *
- * @phpstan-type ItemFilter array{'embState.state'?: string[], order?: \App\Entity\Purchase\Order\Order}
- *
- * @method Item|null find($id, $lockMode = null, $lockVersion = null)
- * @method Item|null findOneBy(array $criteria, ?array $orderBy = null)
- * @method Item[]    findAll()
+ * @method I|null find($id, $lockMode = null, $lockVersion = null)
+ * @method I|null findOneBy(array $criteria, ?array $orderBy = null)
+ * @method I[]    findAll()
  */
 class ItemRepository extends ServiceEntityRepository {
     public function __construct(ManagerRegistry $registry, string $entityClass = Item::class) {
@@ -29,14 +25,17 @@ class ItemRepository extends ServiceEntityRepository {
     }
 
     /**
-     * @param ItemFilter                  $criteria
+     * @param array $criteria
      * @param array<string, 'asc'|'desc'> $orderBy
+     * @param int|null $limit
+     * @param int|null $offset
+     * @return QueryBuilder
      */
     public function createByQueryBuilder(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null): QueryBuilder {
         $qb = $this->createQueryBuilder('i')
             ->addSelect('o')
             ->addSelect('r')
-            ->leftJoin('i.order', 'o', Join::WITH, 'o.deleted = FALSE')
+            ->leftJoin('i.parentOrder', 'o', Join::WITH, 'o.deleted = FALSE')
             ->leftJoin('i.receipts', 'r', Join::WITH, 'r.deleted = FALSE')
             ->where('i.deleted = FALSE')
             ->setMaxResults($limit)
@@ -46,8 +45,8 @@ class ItemRepository extends ServiceEntityRepository {
                 ->andWhere('i.embState.state IN (:state)')
                 ->setParameter('state', $criteria['embState.state'], Connection::PARAM_STR_ARRAY);
         }
-        if (isset($criteria['order'])) {
-            $qb->andWhere('i.order = :order')->setParameter('order', $criteria['order']->getId());
+        if (isset($criteria['parentOrder'])) {
+            $qb->andWhere('i.parentOrder = :parentOrder')->setParameter('parentOrder', $criteria['parentOrder']->getId());
         }
         return $qb;
     }
@@ -62,7 +61,7 @@ class ItemRepository extends ServiceEntityRepository {
             ->addSelect('ref')
             ->addSelect('s')
             ->addSelect('s_references')
-            ->leftJoin('i.order', 'o', Join::WITH, 'o.deleted = FALSE')
+            ->leftJoin('i.parentOrder', 'o', Join::WITH, 'o.deleted = FALSE')
             ->leftJoin('o.company', 'company', Join::WITH, 'company.deleted = FALSE')
             ->leftJoin('company.references', 'company_references', Join::WITH, 'company_references.deleted = FALSE')
             ->leftJoin('o.supplier', 's', Join::WITH, 's.deleted = FALSE')
@@ -79,7 +78,7 @@ class ItemRepository extends ServiceEntityRepository {
         return $this->createQueryBuilder('i')
             ->addSelect('o')
             ->addSelect('r')
-            ->leftJoin('i.order', 'o', Join::WITH, 'o.deleted = FALSE')
+            ->leftJoin('i.parentOrder', 'o', Join::WITH, 'o.deleted = FALSE')
             ->leftJoin('i.receipts', 'r', Join::WITH, 'r.deleted = FALSE')
             ->where('i.deleted = FALSE')
             ->andWhere('i.id = :id')

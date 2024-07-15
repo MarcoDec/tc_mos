@@ -6,11 +6,12 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Accounting\Bill;
-use App\Entity\Embeddable\EventState;
+use App\Entity\Embeddable\Production\Manufacturing\DeliveryNote\State;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Management\Society\Company\Company;
+use App\Filter\SetFilter;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -22,6 +23,15 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 
 #[
+    ApiFilter(filterClass: OrderFilter::class, properties: [
+        'date' => 'DESC',
+        'ref' => 'DESC',
+        'embState.state' => 'DESC',
+        'freightSurcharge.value' => 'DESC',
+        'bill.ref' => 'DESC'
+    ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['date', 'ref', 'sellingOrder', 'company', 'bill']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state', 'freightSurcharge.value', 'nonBillable']),
     ApiResource(
         description: 'Bon de livraison',
         collectionOperations: [
@@ -71,13 +81,13 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => EventState::TRANSITIONS, 'type' => 'string']
+                            'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['event'], 'type' => 'string']
+                            'schema' => ['enum' => ['delivery_note'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
@@ -129,7 +139,7 @@ class DeliveryNote extends Entity {
         ORM\Embedded,
         Serializer\Groups(['read:delivery-note', 'read:expedition'])
     ]
-    private EventState $embState;
+    private State $embState;
 
     #[
         ApiProperty(description: 'Supplément de transport', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
@@ -152,8 +162,15 @@ class DeliveryNote extends Entity {
     ]
     private ?string $ref = null;
 
+    #[
+        ApiProperty(description: 'Commande', readableLink: false, example: '/api/selling-orders/1'),
+        ORM\ManyToOne(targetEntity: \App\Entity\Selling\Order\Order::class),
+        Serializer\Groups(['read:delivery-note', 'write:delivery-note', 'read:expedition'])
+    ]
+    private \App\Entity\Selling\Order\Order $sellingOrder;
+
     public function __construct() {
-        $this->embState = new EventState();
+        $this->embState = new State();
         $this->freightSurcharge = new Measure();
     }
 
@@ -169,8 +186,12 @@ class DeliveryNote extends Entity {
         return $this->date;
     }
 
-    final public function getEmbState(): EventState {
+    final public function getEmbState(): State {
         return $this->embState;
+    }
+
+    final public function getState(): string {
+        return $this->embState->getState();
     }
 
     final public function getFreightSurcharge(): Measure {
@@ -179,10 +200,6 @@ class DeliveryNote extends Entity {
 
     final public function getRef(): ?string {
         return $this->ref;
-    }
-
-    final public function getState(): string {
-        return $this->embState->getState();
     }
 
     final public function isNonBillable(): bool {
@@ -204,7 +221,7 @@ class DeliveryNote extends Entity {
         return $this;
     }
 
-    final public function setEmbState(EventState $embState): self {
+    final public function setEmbState(State $embState): self {
         $this->embState = $embState;
         return $this;
     }
@@ -228,4 +245,23 @@ class DeliveryNote extends Entity {
         $this->embState->setState($state);
         return $this;
     }
+
+    /**
+     * @return \App\Entity\Selling\Order\Order
+     */
+    public function getSellingOrder(): \App\Entity\Selling\Order\Order
+    {
+        return $this->sellingOrder;
+    }
+
+    /**
+     * @param \App\Entity\Selling\Order\Order $sellingOrder
+     * @return DeliveryNote
+     */
+    public function setSellingOrder(\App\Entity\Selling\Order\Order $sellingOrder): DeliveryNote
+    {
+        $this->sellingOrder = $sellingOrder;
+        return $this;
+    }
+
 }

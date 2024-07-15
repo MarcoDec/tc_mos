@@ -4,6 +4,7 @@ export default function useFetchCriteria(id) {
     return defineStore(`fetchCriteria_${id}`, {
         actions: {
             addFilter(field, value, dateType = '') {
+                if (typeof field === 'undefined' || typeof value === 'undefined') return
                 if (dateType === '') { //Si le champ à filtrer n'est pas une date
                     const filteredFilters = this.filters.filter(element => element.field === field)
                     if (filteredFilters.length > 0) { // Si l'élément fait déjà parti des filtres existant on mets juste la valeur à jour

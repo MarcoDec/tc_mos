@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\TemplateController as SymfonyTemplateController;
 use Symfony\Component\HttpFoundation\Response;
 use voku\helper\HtmlMin;

@@ -44,7 +44,10 @@
             title="Prix"
             icon="circle-dollar-to-slot"
             tabs="gui-start">
-            <AppSuspense><AppShowProductTabPrice/></AppSuspense>
+            <AppSuspense>
+                <AppShowProductTabPrice
+                    :product="`/api/products/${idProduct}`"/>
+            </AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-project"

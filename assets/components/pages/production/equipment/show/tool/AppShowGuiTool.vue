@@ -12,9 +12,11 @@
     // import AppComponentShowInlist from '../../../../purchase/component/show/AppComponentShowInlist.vue';
     // import AppComponentFormShow from '../../../../purchase/component/show/AppComponentFormShow.vue';
     import AppShowToolTabGeneral from './AppShowToolTabGeneral.vue'
+    import AppWorkflowShow from '../../../../../workflow/AppWorkflowShow.vue'
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
+    const iriEngine = ref('')
     const beforeMountDataLoaded = ref(false)
     const keyTitle = ref(0)
     const keyTabs = ref(0)
@@ -26,10 +28,11 @@
     useFetchToolsStore.fetchOne(idEngine)
     onBeforeMount(() => {
         const promises = []
-        console.log('onBeforeMount')
+        //console.log('onBeforeMount')
         // promises.push(fetchUnits.fetchOp())
         promises.push(useFetchToolsStore.fetchOne(idEngine))
         Promise.all(promises).then(() => {
+            iriEngine.value = useFetchToolsStore.engine['@id']
             beforeMountDataLoaded.value = true
         })
     })
@@ -65,7 +68,7 @@
     // //endregion
     const router = useRouter()
     function goBack() {
-        router.push({name: 'engines'})
+        router.push({name: 'tools'})
     }
 </script>
 
@@ -74,14 +77,21 @@
         <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <button class="text-dark" @click="goBack">
-                        <FontAwesomeIcon icon="oil-well"/>
-                    </button>
-                    <b>{{ useFetchToolsStore.engine.code }}</b>: {{ useFetchToolsStore.engine.name }}
-                    <span class="btn-float-right">
-                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
-                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
-                    </span>
+                    <div class="d-flex flex-row">
+                        <div>
+                            <button class="text-dark mr-10" title="Retour à la liste des outils" @click="goBack">
+                                <FontAwesomeIcon icon="toolbox"/> Outils
+                            </button>
+                            <b>{{ useFetchToolsStore.engine.code }}</b>: {{ useFetchToolsStore.engine.name }}
+                        </div>
+                        <AppSuspense>
+                            <AppWorkflowShow :workflow-to-show="['engine', 'blocker']" :item-iri="iriEngine"/>
+                        </AppSuspense>
+                        <span class="ml-auto">
+                            <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
+                            <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
+                        </span>
+                    </div>
                 </div>
                 <div class="d-flex flex-row">
                     <AppImg

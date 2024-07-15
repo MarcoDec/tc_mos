@@ -15,7 +15,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @template-extends SocietyContact<Customer>
  */
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['society']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['society', 'name' => 'partial', 'fullName' => 'partial']),
     ApiResource(
         description: 'Contact client',
         collectionOperations: [
@@ -41,7 +41,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get',
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un contact',

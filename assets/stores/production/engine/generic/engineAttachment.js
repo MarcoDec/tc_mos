@@ -1,7 +1,7 @@
 import api from '../../../../api'
 import {defineStore} from 'pinia'
 
-export function useGenEngineAttachmentStore(name='engineAttachment', baseUrl='/api/engine-attachments', linkedEntity='engine'){
+export function useGenEngineAttachmentStore(name = 'engineAttachment', baseUrl = '/api/engine-attachments', linkedEntity = 'engine'){
     return defineStore(name, {
         actions: {
             async ajout(data) {

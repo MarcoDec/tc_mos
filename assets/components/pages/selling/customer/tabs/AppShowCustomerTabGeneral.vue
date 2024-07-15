@@ -8,12 +8,17 @@
     const props = defineProps({
         dataCustomers: {required: true, type: Object}
     })
+    // console.log('dataCustomers', props.dataCustomers)
+    const isErrors = ref(false)
+    if (Object.keys(props.dataCustomers).length === 0) {
+        isErrors.value = true
+    }
     const localData = ref({})
     const societyId = ref(0)
     const fetchCustomerStore = useCustomerStore()
-    const fecthCompanyOptions = useOptions('companies')
+    const fetchCompanyOptions = useOptions('companies')
     const fetchSocietyStore = useSocietyStore()
-    await fecthCompanyOptions.fetchOp()
+    await fetchCompanyOptions.fetchOp()
     societyId.value = props.dataCustomers.society.split('/')[3]
     await fetchSocietyStore.fetchById(societyId.value)
     localData.value = {
@@ -25,19 +30,18 @@
         siren: fetchSocietyStore.society.siren
     }
     onUnmounted(() => {
-        fecthCompanyOptions.dispose()
+        fetchCompanyOptions.dispose()
     })
     const optionsCompany = computed(() =>
-        fecthCompanyOptions.options.map(op => {
+        fetchCompanyOptions.options.map(op => {
             const text = op.text
             const value = op['@id']
             return {text, value}
         }))
     const generalFields = [
-        {label: 'Langue', name: 'language', type: 'text'},
-        {label: 'SIREN', name: 'siren', type: 'text'},
+        {label: 'Langue d\'échange', name: 'language', type: 'text'},
         {
-            label: 'Compagnies',
+            label: 'Client géré par',
             name: 'administeredBy',
             options: {
                 label: value =>
@@ -48,8 +52,9 @@
             type: 'multiselect'
         },
         {label: 'Note', name: 'notes', type: 'textarea'},
+        {label: 'SIREN', name: 'siren', type: 'text'},
         {label: 'Accusé de réception', name: 'ar', type: 'boolean'},
-        {label: 'Equivalence', name: 'equivalentEnabled', type: 'boolean'}
+        {label: 'Gestion des Equivalences composant ?', name: 'equivalentEnabled', type: 'boolean'}
     ]
     async function updateGeneral() {
         const data = {
@@ -76,11 +81,31 @@
 </script>
 
 <template>
-    <AppCardShow
-        id="addGeneralites"
-        :fields="generalFields"
-        :component-attribute="localData"
-        @update="updateGeneral"
-        @update:model-value="input"/>
+    <div v-if="isErrors" class="bg-danger text-center text-white">
+        Erreur: Aucune donnée à afficher<br/>
+        Veuillez tenter de recharger la page, et si l'erreur persiste, contacter le support informatique
+    </div>
+    <div v-else class="d-flex flex-column">
+        <div v-if="dataCustomers.isEdiOrders" class="ediType">
+            Type d'EDI: {{ dataCustomers.ediKind }}
+        </div>
+        <div v-else class="ediType">
+            EDI non géré
+        </div>
+        <div>
+            <AppCardShow
+                id="addGeneralites"
+                :fields="generalFields"
+                :component-attribute="localData"
+                @update="updateGeneral"
+                @update:model-value="input"/>
+        </div>
+    </div>
 </template>
 
+<style scoped>
+    .ediType {
+        font-size: xx-small;
+        color: white;
+    }
+</style>

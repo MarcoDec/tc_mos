@@ -11,20 +11,25 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Collection;
 use App\Controller\Purchase\Component\ComponentController;
 use App\Entity\Embeddable\Blocker;
-use App\Entity\Embeddable\ComponentManufacturingOperationState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
+use App\Entity\Embeddable\Purchase\Component\State;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\FileEntity;
 use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Logistics\Component\Preparation;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Attachment\ComponentAttachment;
+use App\Entity\Purchase\Order\ComponentItem;
+use App\Entity\Purchase\Supplier\Component as SupplierComponent;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Purchase\ComponentReference;
+use App\Entity\Selling\Customer\Price\Component as CustomerComponent;
 use App\Entity\Traits\BarCodeTrait;
 use App\Entity\Traits\FileTrait;
 use App\Filter\RelationFilter;
+use App\Filter\SetFilter;
 use App\Repository\Purchase\Component\ComponentRepository;
 use App\Validator as AppAssert;
 use DateTimeImmutable;
@@ -33,8 +38,6 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Entity\Purchase\Supplier\Component as SupplierComponent;
-use App\Filter\SetFilter;
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name', 'code', 'id']),
@@ -166,7 +169,7 @@ use App\Filter\SetFilter;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => [...ComponentManufacturingOperationState::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
@@ -214,6 +217,10 @@ use App\Filter\SetFilter;
     ),
     ORM\Entity(repositoryClass: ComponentRepository::class)
 ]
+/**
+ * Composant
+ * @template-extends Entity<Component>
+ */
 class Component extends Entity implements BarCodeInterface, MeasuredInterface, FileEntity {
     use BarCodeTrait, FileTrait;
 
@@ -242,15 +249,15 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:component', 'read:component:collection'])
+        Serializer\Groups(['read:item', 'read:component', 'read:component:collection'])
     ]
     private Blocker $embBlocker;
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:component', 'read:component:collection'])
+        Serializer\Groups(['read:item', 'read:component', 'read:component:collection', 'read:state'])
     ]
-    private ComponentManufacturingOperationState $embState;
+    private State $embState;
 
     #[
         ApiProperty(description: 'Date de fin de vie', required: false, example: '2021-11-18'),
@@ -289,7 +296,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         Assert\Length(max: 5, groups: ['Component-admin', 'Component-clone']),
         Assert\NotBlank(groups: ['Component-admin', 'Component-clone']),
         ORM\Column(name: '`index`', length: 5, nullable: false, options: ['default' => '0']),
-        Serializer\Groups(['read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone'])
+        Serializer\Groups(['read:item', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone'])
     ]
     private string $index = '0';
 
@@ -304,7 +311,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         ApiProperty(description: 'Fabricant', required: false, example: 'scapa'),
         Assert\NotBlank(groups: ['Component-create', 'Component-purchase']),
         ORM\Column(nullable: true),
-        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:purchase'])
+        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:purchase', 'read:item'])
     ]
     private ?string $manufacturer = null;
 
@@ -312,7 +319,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         ApiProperty(description: 'Référence fabricant', required: false, example: '103078'),
         Assert\NotBlank(groups: ['Component-create', 'Component-purchase']),
         ORM\Column(nullable: true),
-        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:purchase'])
+        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:purchase', 'read:item'])
     ]
     private ?string $manufacturerCode = null;
 
@@ -328,7 +335,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         ApiProperty(description: 'Nom', required: true, example: '2702 SCOTCH ADHESIF PVC T2 19MMX33M NOIR'),
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\Column,
-        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone', 'read:stock', 'read:component-preparation'])
+        Serializer\Groups(['read:item', 'create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone', 'read:stock', 'read:component-preparation'])
     ]
     private ?string $name = null;
 
@@ -397,16 +404,19 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     private bool $rohs = false;
 
     #[
-        ORM\OneToMany(targetEntity: SupplierComponent::class, mappedBy: 'component')
+        ORM\OneToMany(mappedBy: 'component', targetEntity: SupplierComponent::class)
     ]
     private DoctrineCollection $supplierComponents;
-
+    #[
+        ORM\OneToMany(mappedBy: 'component', targetEntity: CustomerComponent::class)
+    ]
+    private DoctrineCollection $customerComponents;
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         Assert\NotBlank(groups: ['Component-create', 'Component-logistics']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(fetch:"LAZY"),
-        Serializer\Groups(['create:component', 'read:component'])
+        ORM\ManyToOne(fetch:'LAZY'),
+        Serializer\Groups(['read:component:collection', 'create:component', 'read:component', 'write:component', 'write:component:logistics'])
     ]
     private ?Unit $unit = null;
 
@@ -420,29 +430,44 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     #[
         ApiProperty(description: 'Référence interne', required: true, example: 'FIX-1'),
         ORM\Column,
-        Serializer\Groups(['read:component', 'read:component:collection', 'read:stock', 'read:item', 'read:component-preparation'])
+        Serializer\Groups(['read:item', 'read:component', 'read:component:collection', 'read:stock', 'read:item', 'read:component-preparation'])
     ]
     private ?string $code='';
+
+    #[
+        ApiProperty(description: 'Préparations', required: false, fetchEager: true),
+        ORM\OneToMany(mappedBy: 'component', targetEntity: Preparation::class, fetch: 'EAGER'),
+        Serializer\MaxDepth(1)
+    ]
+    private DoctrineCollection $preparationComponents;
+
+    #[
+        ApiProperty(description: 'Items de commande fournisseur associés', example: '[/api/purchase-order-items/1]', fetchEager: false),
+        ORM\OneToMany(mappedBy: "item", targetEntity: ComponentItem::class),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    private DoctrineCollection $componentItems;
 
     public function __construct() {
         $this->attributes = new ArrayCollection();
         $this->copperWeight = new Measure();
         $this->embBlocker = new Blocker();
-        $this->embState = new ComponentManufacturingOperationState();
+        $this->embState = new State();
         $this->forecastVolume = new Measure();
         $this->minStock = new Measure();
         $this->references = new ArrayCollection();
         $this->supplierComponents = new ArrayCollection();
+        $this->customerComponents = new ArrayCollection();
         $this->weight = new Measure();
-        $this->code = '';
         $this->code = $this->getCode();
+        $this->preparationComponents = new ArrayCollection();
     }
 
     public function __clone() {
         parent::__clone();
         $this->attributes = new ArrayCollection();
         $this->embBlocker = new Blocker();
-        $this->embState = new ComponentManufacturingOperationState();
+        $this->embState = new State();
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -510,7 +535,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         return $this->embBlocker;
     }
 
-    final public function getEmbState(): ComponentManufacturingOperationState {
+    final public function getEmbState(): State {
         return $this->embState;
     }
 
@@ -518,7 +543,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         return $this->endOfLife;
     }
 
-    final public function getFamily(): Family {
+    final public function getFamily(): ?Family {
         return $this->family;
     }
 
@@ -630,6 +655,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         return $this->supplierComponents;
     }
 
+    public function getPreparationComponents()
+    {
+        return $this->preparationComponents;
+    }
+
     final public function getUnit(): ?Unit {
         return $this->unit;
     }
@@ -684,7 +714,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         return $this;
     }
 
-    final public function setEmbState(ComponentManufacturingOperationState $embState): self {
+    final public function setEmbState(State $embState): self {
         $this->embState = $embState;
         return $this;
     }
@@ -823,5 +853,25 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     public function setFilePath(?string $filePath): void
     {
         $this->filePath = $filePath;
+    }
+
+    public function getComponentItems(): DoctrineCollection
+    {
+        return $this->componentItems;
+    }
+
+    public function setComponentItems(DoctrineCollection $componentItems): void
+    {
+        $this->componentItems = $componentItems;
+    }
+
+    public function getCustomerComponents(): DoctrineCollection
+    {
+        return $this->customerComponents;
+    }
+
+    public function setCustomerComponents(DoctrineCollection $customerComponents): void
+    {
+        $this->customerComponents = $customerComponents;
     }
 }

@@ -1,0 +1,13 @@
+diff --git a/vendor/api-platform/core/src/Hydra/Serializer/ErrorNormalizer.php b/patches/tmp/ErrorNormalizer.php
+index 6b071eb8a..0b0fcef5a 100644
+--- a/vendor/api-platform/core/src/Hydra/Serializer/ErrorNormalizer.php
++++ b/patches/tmp/ErrorNormalizer.php
+@@ -68,7 +68,7 @@ final class ErrorNormalizer implements NormalizerInterface, CacheableSupportsMet
+     /**
+      * {@inheritdoc}
+      */
+-    public function supportsNormalization($data, $format = null): bool
++    public function supportsNormalization($data, $format = null, array $context = []): bool
+     {
+         return self::FORMAT === $format && ($data instanceof \Exception || $data instanceof FlattenException || $data instanceof LegacyFlattenException);
+     }

@@ -1,0 +1,33 @@
+# Travis is used to check supported versions of PHP only.
+os: linux
+dist: xenial
+language: php
+
+php:
+  - 7.3
+  - 7.4
+  - 8.0
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+jobs:
+  fast_finish: true
+
+env:
+  - COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
+
+install:
+  - composer update --prefer-dist --no-interaction $COMPOSER_FLAGS
+
+script:
+  - mkdir -p build/logs build/cov
+  - php bin/phpunit -c phpunit.xml.dist
+
+#after_success:
+#  - travis_retry php bin/php-coveralls -v
+
+notifications:
+  email:
+    - ronan.guilloux@gmail.com

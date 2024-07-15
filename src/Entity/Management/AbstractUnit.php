@@ -96,7 +96,7 @@ abstract class AbstractUnit extends Entity {
         return $this->children;
     }
 
-    final public function getCode(): ?string {
+    public function getCode(): ?string {
         return $this->code;
     }
 

@@ -52,7 +52,7 @@
     ]
 
     const fields = computed(() => [
-        { 'label': 'ID', 'name': 'id', 'trie': true, 'type': 'text', 'width': 50, 'filter': true},
+        {label: 'ID', name: 'id', trie: true, type: 'text', width: 50, filter: true},
         {
             label: 'Img',
             name: 'filePath',
@@ -167,6 +167,7 @@
                     :pag="storeSuppliersList.pagination"
                     :previous-page="storeSuppliersList.previousPage"
                     :user="roleuser"
+                    top-offset="48px"
                     form="formSupplierCardableTable"
                     @deleted="deleted"
                     @get-page="getPage"

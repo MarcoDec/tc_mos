@@ -18,7 +18,7 @@
         previousPage: {required: true, type: String},
         user: {required: true, type: String}
     })
-    const displayedFileds = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
+    const displayedFields = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
     const input = ref({})
     const emit = defineEmits(['deleted', 'getPage', 'update', 'trierAlphabet', 'update:modelValue', 'search', 'cancelSearch', 'ajout'])
     function update(item){
@@ -51,14 +51,14 @@
 
 <template>
     <table class="table table-bordered table-hover table-striped">
-        <AppCollectionTableHeader :fields="displayedFileds" @trier-alphabet="trierAlphabet"/>
+        <AppCollectionTableHeader :fields="displayedFields" @trier-alphabet="trierAlphabet"/>
         <tbody>
-            <AppCollectionTableBodyHeader v-if="!opened" :allowed-actions="allowedActions" :form="form" :fields="displayedFileds" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch" @ajout="ajouter"/>
+            <AppCollectionTableBodyHeader v-if="!opened" :allowed-actions="allowedActions" :form="form" :fields="displayedFields" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch" @ajout="ajouter"/>
             <!-- <AppCollectionTableAddRow v-else :fields="displayedFileds" @close="bascule" @ajout="ajouter" :model-value="input"/> -->
             <tr class="bg-dark">
                 <td colspan="11"/>
             </tr>
-            <AppCollectionTableBodyItem :items="items" :fields="displayedFileds" :current-page="currentPage" @update="update" @deleted="deleted"/>
+            <AppCollectionTableBodyItem :items="items" :fields="displayedFields" :current-page="currentPage" @update="update" @deleted="deleted"/>
         </tbody>
     </table>
     <nav v-if="pag" aria-label="Page navigation example">

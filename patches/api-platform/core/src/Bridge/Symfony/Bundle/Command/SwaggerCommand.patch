@@ -1,0 +1,24 @@
+diff --git a/vendor/api-platform/core/src/Bridge/Symfony/Bundle/Command/SwaggerCommand.php b/patches/tmp/ApiPlatform/SwaggerCommand.php
+index 61198eace..2d31a9979 100644
+--- a/vendor/api-platform/core/src/Bridge/Symfony/Bundle/Command/SwaggerCommand.php
++++ b/patches/tmp/ApiPlatform/SwaggerCommand.php
+@@ -18,6 +18,7 @@ use ApiPlatform\Core\Metadata\Resource\Factory\ResourceNameCollectionFactoryInte
+ use ApiPlatform\Core\Swagger\Serializer\ApiGatewayNormalizer;
+ use ApiPlatform\Core\Swagger\Serializer\DocumentationNormalizer;
+ use Symfony\Component\Console\Command\Command;
++use Symfony\Component\Console\Attribute\AsCommand;
+ use Symfony\Component\Console\Exception\InvalidOptionException;
+ use Symfony\Component\Console\Input\InputInterface;
+ use Symfony\Component\Console\Input\InputOption;
+@@ -31,9 +32,10 @@ use Symfony\Component\Yaml\Yaml;
+  *
+  * @author Amrouche Hamza <hamza.simperfit@gmail.com>
+  */
++#[AsCommand(name: 'api:swagger:export', description: 'Dump the Swagger v2 documentation')]
+ final class SwaggerCommand extends Command
+ {
+-    protected static $defaultName = 'api:swagger:export';
++//    protected static $defaultName = 'api:swagger:export';
+ 
+     private $normalizer;
+     private $resourceNameCollectionFactory;

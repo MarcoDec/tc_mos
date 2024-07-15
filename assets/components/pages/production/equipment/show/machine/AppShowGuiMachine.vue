@@ -2,16 +2,20 @@
     import AppShowGuiGen from '../../../../AppShowGuiGen.vue'
     import {useRoute, useRouter} from 'vue-router'
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
-    import {ref} from 'vue'
+    import {onBeforeMount, ref} from 'vue'
     import AppImg from '../../../../../AppImg.vue'
     import {useGenEngineStore} from '../../../../../../stores/production/engine/generic/engines'
     import AppShowMachineTabGeneral from './tabs/AppShowMachineTabGeneral.vue'
     import AppMachineFormShow from './AppMachineFormShow.vue'
+    import AppSuspense from '../../../../../AppSuspense.vue'
+    import AppWorkflowShow from '../../../../../workflow/AppWorkflowShow.vue'
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
+    const iriEngine = ref('')
     const keyTitle = ref(0)
     const modeDetail = ref(true)
+    const beforeMountDataLoaded = ref(false)
     //region récupération information Workstations
     const useFetchEnginesStore = useGenEngineStore('machines', '/api/machines')
     const imageUpdateUrl = `/api/engines/${idEngine}/image`
@@ -19,6 +23,15 @@
     useFetchEnginesStore().fetchOne(idEngine)
     const keyTabs = ref(0)
     //endregion
+    onBeforeMount(() => {
+        const promises = []
+        // console.log('onBeforeMount')
+        promises.push(useFetchEnginesStore().fetchOne(idEngine))
+        Promise.all(promises).then(() => {
+            iriEngine.value = useFetchEnginesStore().engine['@id']
+            beforeMountDataLoaded.value = true
+        })
+    })
     const onUpdated = () => {
         // console.log('onUpdated')
         const promises = []
@@ -26,15 +39,17 @@
         promises.push(useFetchEnginesStore().fetchOne(idEngine))
         // promises.push(fetchUnits.fetchOp())
         Promise.all(promises).then(() => {
+            iriEngine.value = useFetchEnginesStore().engine['@id']
+            beforeMountDataLoaded.value = true
             keyTitle.value++
         })
     }
-    const requestDetails = () => {
-        modeDetail.value = true
-    }
-    const requestExploitation = () => {
-        modeDetail.value = false
-    }
+    // const requestDetails = () => {
+    //     modeDetail.value = true
+    // }
+    // const requestExploitation = () => {
+    //     modeDetail.value = false
+    // }
     const onImageUpdate = () => {
         window.location.reload()
     }
@@ -52,17 +67,24 @@
 
 <template>
     <AppSuspense>
-        <AppShowGuiGen>
+        <AppShowGuiGen v-if="beforeMountDataLoaded">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                    <button class="text-dark" style="margin-right:10px;" @click="goBack" title="Retour à la liste des machines">
-                        <FontAwesomeIcon icon="cogs"/> Machine
-                    </button>
-                    <b>{{ useFetchEnginesStore().engine.code }}</b>: {{ useFetchEnginesStore().engine.name }}
-                    <!--                    <span class="btn-float-right">-->
-                    <!--                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>-->
-                    <!--                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>-->
-                    <!--                    </span>-->
+                    <div class="d-flex flex-row">
+                        <div>
+                            <button class="text-dark mr-10" title="Retour à la liste des machines" @click="goBack">
+                                <FontAwesomeIcon icon="cogs"/> Machine
+                            </button>
+                            <b>{{ useFetchEnginesStore().engine.code }}</b>: {{ useFetchEnginesStore().engine.name }}
+                        </div>
+                        <AppSuspense>
+                            <AppWorkflowShow :workflow-to-show="['engine', 'blocker']" :item-iri="iriEngine"/>
+                        </AppSuspense>
+                        <!--                    <span class="btn-float-right">-->
+                        <!--                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>-->
+                        <!--                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>-->
+                        <!--                    </span>-->
+                    </div>
                 </div>
                 <div class="d-flex flex-row">
                     <AppImg
@@ -78,7 +100,7 @@
                     <div class="full-visible-width">
                         <AppSuspense>
                             <AppMachineFormShow v-if="modeDetail" :key="`formtab-${keyTabs}`" class="width100"/>
-<!--                            <AppWorkstationShowInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>-->
+                            <!-- <AppWorkstationShowInlist v-else :key="`formlist-${keyTabs}`" class="width100"/>-->
                         </AppSuspense>
                     </div>
                     <span>

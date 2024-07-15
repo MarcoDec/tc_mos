@@ -46,6 +46,9 @@
                             // console.log('target is not object')
                             url = props.item[field.target]
                         }
+                        if (typeof url === 'undefined') {
+                            return
+                        }
                         api(url, 'GET').then(
                             response => {
                                 multiSelectResults.value[field.name] = response[field.filteredProperty]
@@ -60,6 +63,9 @@
                     } else {
                         // console.log('name is not object')
                         url = props.item[field.name]
+                    }
+                    if (typeof url === 'undefined') {
+                        return
                     }
                     api(url, 'GET').then(
                         response => {
@@ -103,7 +109,7 @@
             </div>
             <div v-else-if="field.type === 'measure'">
                 <div class="text-center">
-                    {{ item[field.name].value }} {{ item[field.name].code }}
+                    {{ item[field.name].value }} {{ field.measure.code.options.label(item[field.name].code) }}
                 </div>
             </div>
             <div v-else-if="field.type === 'date'">

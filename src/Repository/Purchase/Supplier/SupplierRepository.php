@@ -47,7 +47,7 @@ final class SupplierRepository extends ServiceEntityRepository {
                     'o.deleted = FALSE AND o.deliveryCompany = :company AND o.embBlocker.state != \'%s\' AND o.embState.state IN (\'%s\', \'%s\')',
                     CloserStateType::TYPE_STATE_CLOSED,
                     OrderStateType::TYPE_STATE_AGREED,
-                    OrderStateType::TYPE_STATE_PARTIALLY_DELIVERED
+                    OrderStateType::TYPE_STATE_PARTIALLY_RECEIVED
                 )
             )
             ->setParameter('company', $this->getCompanyId())
@@ -59,7 +59,7 @@ final class SupplierRepository extends ServiceEntityRepository {
                     'i.deleted = FALSE AND i.embBlocker.state != \'%s\' AND i.embState.state IN (\'%s\', \'%s\')',
                     ItemCloserStateType::TYPE_STATE_CLOSED,
                     ItemStateType::TYPE_STATE_AGREED,
-                    ItemStateType::TYPE_STATE_PARTIALLY_DELIVERED
+                    ItemStateType::TYPE_STATE_PARTIALLY_RECEIVED
                 )
             )
             ->where('s.deleted = FALSE')
