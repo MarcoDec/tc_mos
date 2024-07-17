@@ -182,18 +182,14 @@
                 <AppNavbarLink icon="laptop-code" to="informatiques" :variant="variantIt" @click="emit('closeMenu')">
                     Eléments informatiques
                 </AppNavbarLink>
-                <template v-if="user.isItAdmin">
-                    <AppNavbarItem :id="subMenuIds.it.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.it.admin)">
-                        <a :href="database" class="dropdown-item text-danger" target="_blank" @click="emit('closeMenu')">
-                            <Fa icon="database"/>
-                            Base de données
-                        </a>
-                        <a :href="api" class="dropdown-item text-danger" target="_blank" @click="emit('closeMenu')">
-                            <Fa icon="database"/>
-                            Application Programming Interface (API)
-                        </a>
-                    </AppNavbarItem>
-                </template>
+                <a :href="database" class="dropdown-item text-danger" target="_blank" @click="emit('closeMenu')">
+                    <Fa icon="database"/>
+                    Base de données
+                </a>
+                <a :href="api" class="dropdown-item text-danger" target="_blank" @click="emit('closeMenu')">
+                    <Fa icon="database"/>
+                    Application Programming Interface (API)
+                </a>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isLogisticsReader" id="logistics" icon="boxes" title="Logistique">
                 <AppNavbarLink icon="warehouse" to="warehouse-list" :variant="variantLogistics" @click="emit('closeMenu')">
