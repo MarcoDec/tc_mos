@@ -701,7 +701,7 @@ class NeedsController extends AbstractController
         $productChartsData = [];
 
         // Traitement des ventes (remplis productChartsData[productId][confirmed_quantity_value])
-        $this->processSelliDDDDngItems($sellingItems, $productChartsData);
+        $this->processSellingItems($sellingItems, $productChartsData);
 
         // Traitement des items de manufacturing (remplis aussi ? productChartsData[productId][confirmed_quantity_value])
         $this->processManufacturingOrders($manufacturingOrders, $productChartsData);

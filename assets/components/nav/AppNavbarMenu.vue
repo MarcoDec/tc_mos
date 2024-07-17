@@ -119,6 +119,9 @@
                 <AppNavbarLink icon="shopping-cart" to="purchaseOrderList" :variant="variantPurchase" @click="emit('closeMenu')">
                     Commandes
                 </AppNavbarLink>
+                <AppNavbarLink icon="gauge-high" to="needs" :variant="variantPurchase" @click="emit('closeMenu')">
+                    Calcul des besoins
+                </AppNavbarLink>
                 <template v-if="user.isPurchaseAdmin">
                     <AppNavbarItem :id="subMenuIds.purchase.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.purchase.admin)">
                         <AppNavbarLink icon="magnet" to="attributes" :variant="variantPurchase" @click="emit('closeMenu')">
