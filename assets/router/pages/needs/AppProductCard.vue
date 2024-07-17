@@ -1,13 +1,15 @@
 <script setup>
     import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
-    import {defineProps} from 'vue'
+    import {computed, defineProps} from 'vue'
     import useNeeds from '../../../stores/needs/needs'
 
-    defineProps({
+    const props = defineProps({
         list: {required: true, type: Object},
         productId: {required: true, type: String}
     })
+    console.log('props', props)
     const listDisplayed = useNeeds()
+    const normalizedChart = computed(() => listDisplayed.normalizedChartProd(props.productId))
 </script>
 
 <template>
@@ -15,10 +17,10 @@
         <div class="no-gutters row">
             <div class="canvas col-sm-5">
                 <Vue3ChartJs
-                    :id="listDisplayed.normalizedChartProd(productId).id"
-                    :type="listDisplayed.normalizedChartProd(productId).type"
-                    :data="listDisplayed.normalizedChartProd(productId).data"
-                    :options="listDisplayed.normalizedChartProd(productId).options"/>
+                    :id="normalizedChart.id"
+                    :type="normalizedChart.type"
+                    :data="normalizedChart.data"
+                    :options="normalizedChart.options"/>
             </div>
             <div class="col-sm-7">
                 <div class="card-body">

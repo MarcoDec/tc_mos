@@ -103,13 +103,14 @@ class NeedsController extends AbstractController
      */
     public function index(): JsonResponse
     {
+        //region récupération de cache via redis
+        
         // Récupérer l'instance de Predis\Client à partir de RedisService
         $redisClient = $this->redisService->getClient();
         // Créer une instance de RedisAdapter en passant l'instance de Predis\Client
         $redisAdapter = new RedisAdapter($redisClient);
         // Créer une instance de TagAwareAdapter en passant l'instance de RedisAdapter
         $cache = new TagAwareAdapter($redisAdapter);
-
         $cacheKeyCreationDate = 'api_needs_creation_date_product';
         $cacheKeyStocks = 'api_needs_stocks_product';
         $cacheKeySelling = 'api_needs_selling_order_item';
@@ -118,53 +119,60 @@ class NeedsController extends AbstractController
         $cacheItemCreationDate = $cache->getItem($cacheKeyCreationDate);
         $cacheCreationDates = $cacheItemCreationDate->get();
 
-        // Vérifie si les données de fabrication sont en cache
+        //region Vérifie si les données de fabrication sont en cache
         $cacheproducts = $cache->getItem($cacheKeyProducts);
         if (!$cacheproducts->isHit()) {
-        $products = $this->productRepository->findByEmbBlockerAndEmbState();
-        $cacheproducts->set($products);
-        $cache->save($cacheproducts);
-        $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
-        $cacheCreationDates[$cacheKeyProducts] = $cacheItemCreationDate->get();
-        }else {
+            // $products = $this->productRepository->findByEmbBlockerAndEmbState();
+            $products = $this->productRepository->findBy(['embState.state' => ['agreed', 'warning'], 'embBlocker.state' => 'enabled', 'deleted' => false]);
+            $cacheproducts->set($products);
+            $cache->save($cacheproducts);
+            $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
+            $cacheCreationDates[$cacheKeyProducts] = $cacheItemCreationDate->get();
+        } else {
             /** @var Product $products */
             $products = $cacheproducts->get();
         }        
-        $productcustomers = $this->productCustomerRepository->findAll();
+        $productcustomers = $this->productCustomerRepository->findBy(['deleted' => false]);
+        //endregion
 
-        // Vérifie si les données de vente sont en cache
+        //region Vérifie si les données de vente sont en cache
         $cacheItemSelling = $cache->getItem($cacheKeySelling);
         if (!$cacheItemSelling->isHit()) {
             // Les données de vente ne sont pas en cache, donc on les génère et on les met en cache
-            $sellingItems = $this->productItemRepository->findByEmbBlockerAndEmbState();
+            // $sellingItems = $this->productItemRepository->findByEmbBlockerAndEmbState();
+            $sellingItems = $this->productItemRepository->findBy(['embState.state' => ['agreed', 'partially_delivered'], 'embBlocker.state' => ['enabled'], 'deleted' => false]);
             $cacheItemSelling->set($sellingItems);
             $cache->save($cacheItemSelling);
             $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
             $cacheCreationDates[$cacheKeySelling] = $cacheItemCreationDate->get();
-            
-        }else {
+        } else {
             /** @var ProductItem $sellingItems */
             $sellingItems = $cacheItemSelling->get();
-        }        
-        // Vérifie si les données de fabrication sont en cache
+        }      
+        //endregion  
+        
+        //region Vérifie si les données de fabrication sont en cache
         $cacheItemManufacturing = $cache->getItem($cacheKeymanufacturingOrders);
         if (!$cacheItemManufacturing->isHit()) {
             // Les données de fabrication ne sont pas en cache, donc on les génère et on les met en cache
-            $manufacturingOrders = $this->manufacturingProductItemRepository->findByEmbBlockerAndEmbState();
+            $manufacturingOrders = $this->manufacturingProductItemRepository->findBy(['embState.state' => ['asked', 'agreed'], 'embBlocker.state' => 'enabled', 'deleted' => false]);
+            // $manufacturingOrders = $this->manufacturingProductItemRepository->findByEmbBlockerAndEmbState();
             $cacheItemManufacturing->set($manufacturingOrders);
             $cache->save($cacheItemManufacturing);
             $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
-            $cacheCreationDates[$cacheKeymanufacturingOrders] = $cacheItemCreationDate->get();
-            
+            $cacheCreationDates[$cacheKeymanufacturingOrders] = $cacheItemCreationDate->get();   
         }else {
             /** @var ManufacturingOrder $manufacturingOrders */
             $manufacturingOrders = $cacheItemManufacturing->get();
-        }       
-        // Vérifie si les données stocks sont en cache
+        }
+        //endregion
+        
+        //region Vérifie si les données stocks sont en cache
         $cacheProductStocks = $cache->getItem($cacheKeyStocks);
         if (!$cacheProductStocks->isHit()) {
             // Les données stocks ne sont pas en cache, donc on les génère et on les met en cache
-            $stocks = $this->productStockRepository->findAll();
+            // $stocks = $this->productStockRepository->findAll();
+            $stocks = $this->productStockRepository->findBy(['deleted' => false, 'jail' => false]);
             $cacheProductStocks->set($stocks);
             $cache->save($cacheProductStocks);
            // if (!$cacheCreationDates->isHit()) {
@@ -174,8 +182,12 @@ class NeedsController extends AbstractController
         }else {
             /** @var ProductStock $stocks */
             $stocks = $cacheProductStocks->get();
-        }        
-        $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks);
+        }
+        //endregion
+
+        //endregion
+
+        $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks, $products);
         $productFamilies = $this->getProductFamilies($products);
         $customersData = $this->generateCustomersData($productcustomers);
 
@@ -187,16 +199,16 @@ class NeedsController extends AbstractController
         }
         $productChartsData = $this->finalizeProductChartsData($productChartsData);
 
-       if($cacheItemCreationDate->isHit() === false) {
-       if($cacheItemCreationDate->getMetadata() === []) {
-        $cacheItemCreationDate->set($cacheCreationDates);
-        $value = $cacheItemCreationDate->get();
-        if (is_array($value) && count($value) === 4) {
-            // Le tableau a 4 éléments
-            $cache->save($cacheItemCreationDate);  
+        if($cacheItemCreationDate->isHit() === false) {
+            if($cacheItemCreationDate->getMetadata() === []) {
+                $cacheItemCreationDate->set($cacheCreationDates);
+                $value = $cacheItemCreationDate->get();
+                if (is_array($value) && count($value) === 4) {
+                    // Le tableau a 4 éléments
+                    $cache->save($cacheItemCreationDate);  
+                }
+            }
         }
-        }
-     }
         // Récupère les dates de création du cache
         $cacheCreationDates = $cache->getItem($cacheKeyCreationDate)->get();
         return new JsonResponse([
@@ -233,10 +245,11 @@ class NeedsController extends AbstractController
         $cacheItemCreationDateComponent = $cache->getItem($cacheKeyCreationDateComponent);
         $cacheCreationDatesComponent = $cacheItemCreationDateComponent->get();
 
-        // Vérifie si les données de fabrication sont en cache
+        //region Vérifie si les données de fabrication sont en cache
         $cacheproducts = $cache->getItem($cacheKeyProducts);
         if (!$cacheproducts->isHit()) {
-            $products = $this->productRepository->findByEmbBlockerAndEmbState();
+            // $products = $this->productRepository->findByEmbBlockerAndEmbState();
+            $products = $this->productRepository->findBy(['embState.state' => ['agreed', 'warning'], 'embBlocker.state' => 'enabled', 'deleted' => false]);
             $cacheproducts->set($products);
             $cache->save($cacheproducts);
             $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
@@ -244,12 +257,14 @@ class NeedsController extends AbstractController
         }else {
             /** @var Product $products */
             $products = $cacheproducts->get();
-        } 
-        // Vérifie si les données stocks sont en cache
+        }
+        //endregion
+        //region Vérifie si les données stocks sont en cache
         $cacheItemStocks = $cache->getItem($cacheKeyStocks);
         if (!$cacheItemStocks->isHit()) {
             // Les données stocks ne sont pas en cache, donc on les génère et on les met en cache
-            $stocks = $this->productStockRepository->findAll();
+            // $stocks = $this->productStockRepository->findAll();
+            $stocks = $this->productStockRepository->findBy(['deleted' => false, 'jail' => false]);
             $cacheItemStocks->set($stocks);
             $cache->save($cacheItemStocks);
             $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
@@ -258,10 +273,16 @@ class NeedsController extends AbstractController
             /** @var ProductStock $stock */
             $stocks = $cacheItemStocks->get();
         }
-        // Vérifie si les données selling sont en cache
+        //endregion
+        //region Vérifie si les données selling sont en cache
         $cacheItemSelling = $cache->getItem($cacheKeySelling);
         if (!$cacheItemSelling->isHit()) {
             $sellingItems = $this->productItemRepository->findByEmbBlockerAndEmbState();
+            $sellingItems = $this->productItemRepository->findBy([
+                'embState.state' => ['agreed', 'partially_delivered'],
+                'embBlocker.state' => ['enabled'],
+                'deleted' => false
+            ]);
             $cacheItemSelling->set($sellingItems);
             $cache->save($cacheItemSelling);
             $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
@@ -270,7 +291,8 @@ class NeedsController extends AbstractController
             /** @var ProductItem $sellingItems */
             $sellingItems = $cacheItemSelling->get();
         }
-        // Vérifie si les données manufacturingOrders sont en cache
+        //endregion
+        //region Vérifie si les données manufacturingOrders sont en cache
         $cacheItemManufacturing = $cache->getItem($cacheKeymanufacturingOrders);
         if (!$cacheItemManufacturing->isHit()) {
             $manufacturingOrders = $this->manufacturingProductItemRepository->findByEmbBlockerAndEmbState();
@@ -282,9 +304,10 @@ class NeedsController extends AbstractController
             /** @var ManufacturingOrder $manufacturingOrders */
             $manufacturingOrders = $cacheItemManufacturing->get();
         }
-
-        $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks);
-        // Vérifie si les données ComponentStock sont en cache
+        //endregion
+        $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks, $products);
+        
+        //region New Vérifie si les données ComponentStock sont en cache
        $cacheItemComponentStock = $cache->getItem($cachekeyComponentStock);
         if (!$cacheItemComponentStock->isHit()) {
             $filteredStocks = $this->componentStockRepository->findAll();
@@ -296,8 +319,8 @@ class NeedsController extends AbstractController
             /** @var ComponentStock $filteredStocks */
             $filteredStocks = $cacheItemComponentStock->get();
         }
-        
-        // Vérifie si les données PurchaseItem sont en cache
+        //endregion
+        //region Vérifie si les données PurchaseItem sont en cache
         $cachePurchaseItem = $cache->getItem($cachekeyPurchaseItem);
         if (!$cachePurchaseItem->isHit()) {
             $purchaseItems = $this->purchaseItemRepository->findByEmbBlockerAndEmbState();
@@ -309,7 +332,8 @@ class NeedsController extends AbstractController
             /** @var PurchaseItem $purchaseItems */
            $purchaseItems = $cachePurchaseItem->get();
         }
-
+        //endregion
+        //region inversion de la matrice
         $invertedMatrix = [];
 
         $componentChartData = [];
@@ -341,7 +365,8 @@ class NeedsController extends AbstractController
                 $this->processNewOFNeedsData($newOFNeedsData, $nomenclatures, $productId, $productChartsData, $invertedMatrix);
             }
         }
-        // Itérer sur les stocks filtrés pour calculer les sommes des quantités de stock
+        //endregion
+        //region Itérer sur les stocks filtrés pour calculer les sommes des quantités de stock
         foreach ($filteredStocks as $filteredStock) {
             $stockComponentId = $filteredStock->getItem()->getId();
             $stockComponentQuantity = $this->calculateConvertQuantity($filteredStock->getQuantity());
@@ -351,8 +376,9 @@ class NeedsController extends AbstractController
             // Ajouter la quantité de stock à la somme existante pour ce stockComponentId
             $stockQuantities[$stockComponentId] += $stockComponentQuantity;
         }
+        //endregion
+        //region Etablissement de la base de temps $uniqueDates
         $uniqueDates = [];
-
         foreach ($invertedMatrix as $compositeKey => $orders) {
             foreach ($orders as $order) {
                 $label = $order['label'];
@@ -369,6 +395,7 @@ class NeedsController extends AbstractController
                 $uniqueDates[$purchaseItemComponent][] = $purchaseItemDate;
             }
         }
+        //endregion
 
         foreach ($uniqueDates as $componentId => $dates) {
             $uniqueDatesForComponent = array_unique($dates);
@@ -669,22 +696,36 @@ class NeedsController extends AbstractController
         array_unshift($uniqueDates, $previousDate);
     }
 
-    private function generateProductChartsData(array $sellingItems, array $manufacturingOrders, array $stocks): array
+    private function generateProductChartsData(array $sellingItems, array $manufacturingOrders, array $stocks, array $products): array
     {
         $productChartsData = [];
 
-        // Traitement des ventes
-        $this->processSellingItems($sellingItems, $productChartsData);
+        // Traitement des ventes (remplis productChartsData[productId][confirmed_quantity_value])
+        $this->processSelliDDDDngItems($sellingItems, $productChartsData);
 
-        // Traitement des items de manufacturing
+        // Traitement des items de manufacturing (remplis aussi ? productChartsData[productId][confirmed_quantity_value])
         $this->processManufacturingOrders($manufacturingOrders, $productChartsData);
 
-        // Traitement des stocks
+        // Traitement des stocks (remplis aussi ? productChartsData[productId][stockProgress])
         $this->processStocks($stocks, $productChartsData);
+
+        // Ajout d'un graphique élémentaire pour les produits actifs sans ventes, sans OFs et sans stocks
+        $date = new DateTime('now');
+        $dateStr = $date->format('d/m/Y');
+        /** Product $product */
+        foreach ($products as $product) {
+            $productId = $product->getId();
+            if (!isset($productChartsData[$productId])) {
+                $productChartsData[$productId] = [
+                    'labels' => [$dateStr],
+                    'stockMinimum' => [$product->getMinStock()->getValue()],
+                    'stockProgress' => [0]
+                ];
+            }
+        }
 
         // Ordonner les labels
         $this->sortLabels($productChartsData);
-
         return $productChartsData;
     }
 
@@ -692,6 +733,7 @@ class NeedsController extends AbstractController
     {
         foreach ($sellingItems as $sellingItem) {
             $productId = $sellingItem->getItem()->getId();
+            $productChartsData[$productId] ??= ['labels' => [], 'stockMinimum' => [], 'stockProgress' => [], 'sellingOrderItem'];
             $confirmedDate = $sellingItem->getConfirmedDate()->format('d/m/Y');
             $confirmedQuantityValue = $sellingItem->getConfirmedQuantity()->getValue();
             $productChartsData = $this->updateProductChartsData($productChartsData, $productId, $confirmedDate, $confirmedQuantityValue);
@@ -702,9 +744,10 @@ class NeedsController extends AbstractController
     {
         foreach ($manufacturingOrders as $manufacturingOrder) {
             $productId = $manufacturingOrder->getProduct()->getId();
+            $productChartsData[$productId] ??= ['labels' => [], 'stockMinimum' => [], 'stockProgress' => [], 'sellingOrderItem'];
             $manufacturingDate = $manufacturingOrder->getManufacturingDate()->format('d/m/Y');
             $quantityRequestedValue = $manufacturingOrder->getQuantityRequested()->getValue();
-            $productChartsData = $this->updateProductChartsData($productChartsData, $productId, $manufacturingDate, $quantityRequestedValue);
+            $productChartsData = $this->updateProductChartsData($productChartsData, $productId, $manufacturingDate, $quantityRequestedValue, 'quantity_requested_value');
         }
     }
 
@@ -712,15 +755,20 @@ class NeedsController extends AbstractController
     {
         foreach ($stocks as $stock) {
             $productId = $stock->getItem()->getId();
-            if (array_key_exists($productId, $productChartsData)) {
-                $quantityValue = $stock->getQuantity()->getValue();
-                $this->updateStockProgress($productChartsData, $productId, $quantityValue);
+            // dump(["processStock $productId" => $productChartsData]);
+            if (!array_key_exists($productId, $productChartsData)) {
+                $date = new DateTime('now');
+                $dateStr = $date->format('d/m/Y');
+                $productChartsData[$productId] ??= ['labels' => [$dateStr], 'stockMinimum' => [0], 'stockProgress' => [0]];
             }
+            $quantityValue = $stock->getQuantity()->getValue();
+            $this->updateStockProgress($productChartsData, $productId, $quantityValue);
         }
     }
 
     private function updateStockProgress(array &$productChartsData, int $productId, float $quantityValue): void
     {
+        // dump(["updateStockProgress $productId + $quantityValue" => $productChartsData]);
         if (!array_key_exists($productId, $productChartsData)) {
             return;
         }
@@ -729,22 +777,23 @@ class NeedsController extends AbstractController
 
         foreach ($stockProgress as &$value) {
             $value += $quantityValue;
+            // dump(["stockProgress product $productId + $quantityValue" => $stockProgress]);
         }
     }
 
 
     private function sortLabels(array &$productChartsData): void
     {
-        foreach ($productChartsData as &$product) {
+        foreach ($productChartsData as $key => &$product) {
             $product['labels'] = array_values(array_unique($product['labels']));
             sort($product['labels']);
 
             // Initialisation de 'stockProgress' comme tableau pour chaque date
             foreach ($product['labels'] as $date) {
                 $product['stockProgress'][$date] = 0;
-
+                // dump(["productChartsData product $key" => $product ]);
                 $confirmedQuantity = $product['confirmed_quantity_value'][$date] ?? 0;
-                $product['stockProgress'][$date] += $confirmedQuantity;
+                $product['stockProgress'][$date] -= $confirmedQuantity;
 
                 $quantityRequested = $product['quantity_requested_value'][$date] ?? 0;
                 $product['stockProgress'][$date] += $quantityRequested;
@@ -761,13 +810,10 @@ class NeedsController extends AbstractController
     }
 
 
-    private function updateProductChartsData(array $productChartsData, int $productId, string $date, float $quantity): array
+    private function updateProductChartsData(array $productChartsData, int $productId, string $date, float $quantity, string $quantityKey = 'confirmed_quantity_value'): array
     {
-        $productChartsData[$productId] ??= ['labels' => [], 'stockMinimum' => [], 'stockProgress' => []];
-
         $productChartsData[$productId]['labels'][] = $date;
-        $productChartsData[$productId]['confirmed_quantity_value'][$date] = $quantity;
-
+        $productChartsData[$productId][$quantityKey][$date] = $quantity;
         return $productChartsData;
     }
 

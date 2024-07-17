@@ -182,7 +182,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.redis.rule=Host(`redis.${DOMAIN}`)"
-      - "traefik.http.routers.redis.entrypoints=websecure"
+      - "traefik.http.routers.redis.entrypoints=web"
       - "traefik.http.routers.redis.tls=true"
       - "traefik.http.routers.redis.tls.certresolver=myresolver"
       - "traefik.http.services.redis.loadbalancer.server.port=6379"

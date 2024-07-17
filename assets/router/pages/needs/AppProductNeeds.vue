@@ -9,8 +9,9 @@
     const listDisplayed = useNeeds()
 
     onMounted(async () => {
-        listDisplayed.fetch()
+        await listDisplayed.fetch()
         listDisplayed.showProduct()
+        console.log(listDisplayed.needsProduct)
         loaded.value = true
     })
     onUnmounted(async () => {

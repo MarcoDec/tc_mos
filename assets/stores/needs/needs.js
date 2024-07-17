@@ -4,8 +4,11 @@ import api from '../../api'
 export default defineStore('needs', {
     actions: {
         async fetch() {
-            this.items = await api('/api/needs/products', 'GET')
+            await this.fetchProducts()
             await this.fetchComponents() 
+        },
+        async fetchProducts() {
+            this.items = await api('/api/needs/products', 'GET')
         },
         async fetchComponents() {
             this.components = await api('/api/needs/components', 'GET')
@@ -32,8 +35,8 @@ export default defineStore('needs', {
             this.page++
             }
         },
-        async showProduct() {
-            const needs = await this.items.products;
+        showProduct() {
+            const needs = this.items.products;
             if (needs && typeof needs === 'object') {
                 const entries = Object.entries(needs);
                 const len = entries.length;
@@ -41,6 +44,7 @@ export default defineStore('needs', {
                 for (let i = 0; i < 15 && i < len; i++) {
                     const [productId, need] = entries[i];
                     this.displayed[productId] = need;
+                    console.log(`showProducts this.displayed ${i} - ${productId}`, need)
                     delete this.needsProduct[productId];
                 }
                 this.page++;
@@ -71,7 +75,8 @@ export default defineStore('needs', {
         },
         normalizedChartProd() {
             return productId => {
-                const data = this.chartsProduct(productId)
+                const chartData = this.chartsProduct(productId)
+                // console.log('chartData', productId, chartData)
                 return {
                     data: {
                         datasets: [
@@ -93,7 +98,7 @@ export default defineStore('needs', {
                                     'rgba(255, 159, 64, 1)'
                                 ],
                                 borderWidth: 1,
-                                data: data.stockProgress,
+                                data: chartData.stockProgress,
                                 id: 'line',
                                 label: 'stockProgress',
                                 type: 'line'
@@ -116,13 +121,13 @@ export default defineStore('needs', {
                                     'rgba(255, 159, 64, 1)'
                                 ],
                                 borderWidth: 1,
-                                data: data.stockMinimum,
+                                data: chartData.stockMinimum,
                                 id: 'bar',
                                 label: 'stockMinimum',
                                 type: 'line'
                             }
                         ],
-                        labels: data.labels
+                        labels: chartData.labels
                     },
                     id: 'chart',
                     options: {
