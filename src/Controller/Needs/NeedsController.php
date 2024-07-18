@@ -117,7 +117,7 @@ class NeedsController extends AbstractController
         $cacheItemCreationDate = $cache->getItem($cacheKeyCreationDate);
         $cacheCreationDates = $cacheItemCreationDate->get();
 
-        //region Vérifie si les données de fabrication sont en cache
+        //region Vérifie si les données de produit sont en cache
         $cacheproducts = $cache->getItem($cacheKeyProducts);
         if (!$cacheproducts->isHit()) {
             // $products = $this->productRepository->findByEmbBlockerAndEmbState();
@@ -189,7 +189,7 @@ class NeedsController extends AbstractController
 
         $productFamilies = $this->getProductFamilies($products);
         $customersData = $this->generateCustomersData($productcustomers);
-
+        $productsData = [];
         foreach ($products as $prod) {
             $productsData[] = $this->generateProductData($prod, $productChartsData, $stocks);
         }
@@ -205,7 +205,7 @@ class NeedsController extends AbstractController
             }
         }
         // Récupère les dates de création du cache
-        $cacheCreationDates = $cache->getItem($cacheKeyCreationDate)->get();
+        // $cacheCreationDates = $cache->getItem($cacheKeyCreationDate)->get();
         return new JsonResponse([
             'productChartsData' => $productChartsData,
             'productFamilies' => $productFamilies,
@@ -240,7 +240,7 @@ class NeedsController extends AbstractController
         $cacheItemCreationDateComponent = $cache->getItem($cacheKeyCreationDateComponent);
         $cacheCreationDatesComponent = $cacheItemCreationDateComponent->get();
 
-        //region Vérifie si les données de fabrication sont en cache
+        //region Vérifie si les données de produit sont en cache
         $cacheproducts = $cache->getItem($cacheKeyProducts);
         if (!$cacheproducts->isHit()) {
             // $products = $this->productRepository->findByEmbBlockerAndEmbState();
@@ -249,35 +249,34 @@ class NeedsController extends AbstractController
             $cache->save($cacheproducts);
             $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
             $cacheCreationDates[$cacheKeyProducts] = $cacheItemCreationDate->get();
-        }else {
+        } else {
             /** @var Product $products */
             $products = $cacheproducts->get();
         }
         //endregion
         //region Vérifie si les données stocks sont en cache
-        $cacheItemStocks = $cache->getItem($cacheKeyStocks);
-        if (!$cacheItemStocks->isHit()) {
+        $cacheProductStocks = $cache->getItem($cacheKeyStocks);
+        if (!$cacheProductStocks->isHit()) {
             // Les données stocks ne sont pas en cache, donc on les génère et on les met en cache
             // $stocks = $this->productStockRepository->findAll();
             $stocks = $this->productStockRepository->findBy(['deleted' => false, 'jail' => false]);
-            $cacheItemStocks->set($stocks);
-            $cache->save($cacheItemStocks);
+            $cacheProductStocks->set($stocks);
+            $cache->save($cacheProductStocks);
+            // if (!$cacheCreationDates->isHit()) {
             $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
             $cacheCreationDates[$cacheKeyStocks] = $cacheItemCreationDate->get();
-        } else {
-            /** @var ProductStock $stock */
-            $stocks = $cacheItemStocks->get();
+            // }
+        }else {
+            /** @var ProductStock $stocks */
+            $stocks = $cacheProductStocks->get();
         }
         //endregion
-        //region Vérifie si les données selling sont en cache
+        //region Vérifie si les données de vente sont en cache
         $cacheItemSelling = $cache->getItem($cacheKeySelling);
         if (!$cacheItemSelling->isHit()) {
-            $sellingItems = $this->productItemRepository->findByEmbBlockerAndEmbState();
-            $sellingItems = $this->productItemRepository->findBy([
-                'embState.state' => ['agreed', 'partially_delivered'],
-                'embBlocker.state' => ['enabled'],
-                'deleted' => false
-            ]);
+            // Les données de vente ne sont pas en cache, donc on les génère et on les met en cache
+            // $sellingItems = $this->productItemRepository->findByEmbBlockerAndEmbState();
+            $sellingItems = $this->productItemRepository->findBy(['embState.state' => ['agreed', 'partially_delivered'], 'embBlocker.state' => ['enabled'], 'deleted' => false]);
             $cacheItemSelling->set($sellingItems);
             $cache->save($cacheItemSelling);
             $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
@@ -287,25 +286,107 @@ class NeedsController extends AbstractController
             $sellingItems = $cacheItemSelling->get();
         }
         //endregion
-        //region Vérifie si les données manufacturingOrders sont en cache
+        //region Vérifie si les données fabrication sont en cache
         $cacheItemManufacturing = $cache->getItem($cacheKeymanufacturingOrders);
         if (!$cacheItemManufacturing->isHit()) {
-            $manufacturingOrders = $this->manufacturingProductItemRepository->findByEmbBlockerAndEmbState();
+            // Les données de fabrication ne sont pas en cache, donc on les génère et on les met en cache
+            $manufacturingOrders = $this->manufacturingProductItemRepository->findBy(['embState.state' => ['asked', 'agreed'], 'embBlocker.state' => 'enabled', 'deleted' => false]);
+            // $manufacturingOrders = $this->manufacturingProductItemRepository->findByEmbBlockerAndEmbState();
             $cacheItemManufacturing->set($manufacturingOrders);
             $cache->save($cacheItemManufacturing);
             $cacheItemCreationDate->set(date('Y-m-d H:i:s'));
             $cacheCreationDates[$cacheKeymanufacturingOrders] = $cacheItemCreationDate->get();
-        } else {
+        }else {
             /** @var ManufacturingOrder $manufacturingOrders */
             $manufacturingOrders = $cacheItemManufacturing->get();
         }
         //endregion
         $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks, $products);
-        
+        $productsData = [];
+        foreach ($products as $prod) {
+            $productsData[] = $this->generateProductData($prod, $productChartsData, $stocks);
+        }
+        $productChartsData = $this->finalizeProductChartsData($productChartsData);
+
+        //region On initialise le calcul des besoins en composants à partir des 'newOfsNeeds' dans productsData et des 'quantity_requested_value' dans productChartsData
+        $componentsNeeds = [];
+        foreach ($products as $prod) {
+            $productId = $prod->getId();
+            $productData = $this->generateProductData($prod, $productChartsData, $stocks);
+            //region On récupère les besoins d'OF associé au produit courant
+            $currentProductData = array_values(array_filter($productsData, function ($productData) use ($productId) {
+                return $productData['productId'] === $productId;
+            }))[0];
+            $currentProductChartData = array_values(array_filter($productChartsData, function ($productChartData) use ($productId) {
+                return $productChartData['productId'] === $productId;
+            }))[0];
+            dump([
+                'currentProductData' => $currentProductData,
+                'currentProductChartData' => $currentProductChartData
+            ]);
+            $newOFNeedsData = $currentProductData['newOFNeeds'] ?? [];
+            $ofNeedsData = $currentProductChartData['quantity_requested_value'] ?? [];
+            //endregion
+            //region on récupère la nomenclature du produit
+            $cacheKeyNomenclature = 'api_needs_nomenclature_' . $productId;
+            $cacheItemNomenclature = $cache->getItem($cacheKeyNomenclature);
+            if (!$cacheItemNomenclature->isHit()) {
+                $nomenclatures = $this->nomenclatureRepository->findBy(['product' => $productId, 'deleted' => false]);
+                $cacheItemNomenclature->set($nomenclatures);
+                $cache->save($cacheItemNomenclature);
+                $cacheItemCreationDateComponent->set(date('Y-m-d H:i:s'));
+                $cacheCreationDatesComponent[$cacheKeyNomenclature] = $cacheItemCreationDateComponent->get();
+            } else {
+                $nomenclatures = $cacheItemNomenclature->get();
+            }
+            //endregion
+            //region On parcourt chaque item de la nomenclature et on calcule les besoins en composants
+            /** @var Nomenclature $itemNomenclature */
+            foreach ($nomenclatures as $itemNomenclature) {
+                $currentComponent = $itemNomenclature->getComponent();
+                $bomQuantity = $itemNomenclature->getQuantity()->getValue();
+                $componentId = $currentComponent->getId();
+                //region on ajoute les besoins issus des nouveaux OFs
+                foreach ($newOFNeedsData as $newOFNeed) {
+                    $date = $newOFNeed['date'];
+                    $quantity = $newOFNeed['quantity'];
+                    $needs = $quantity * $bomQuantity;
+                    if (!isset($componentsNeeds[$componentId])) {
+                        $componentsNeeds[$componentId] = [];
+                    }
+                    if (!isset($componentsNeeds[$componentId][$date])) {
+                        $componentsNeeds[$componentId][$date] = 0;
+                    }
+                    $componentsNeeds[$componentId][$date] += $needs;
+                }
+                //endregion
+                //region on ajoute les besoins issus des OFs en cours
+                foreach ($ofNeedsData as $date => $ofQuantity) {
+                    $date = $date;
+                    $quantity = $ofQuantity;
+                    $needs = $quantity * $bomQuantity;
+                    if (!isset($componentsNeeds[$componentId])) {
+                        $componentsNeeds[$componentId] = [];
+                    }
+                    if (!isset($componentsNeeds[$componentId][$date])) {
+                        $componentsNeeds[$componentId][$date] = 0;
+                    }
+                    $componentsNeeds[$componentId][$date] += $needs;
+                }
+                //endregion
+            }
+            //endregion
+        }
+        //endregion
+        dump([
+            'productChartsData' => $productChartsData,
+            'products' => $productsData,
+            'componentsNeeds' => $componentsNeeds
+        ]);
         //region New Vérifie si les données ComponentStock sont en cache
-       $cacheItemComponentStock = $cache->getItem($cachekeyComponentStock);
+        $cacheItemComponentStock = $cache->getItem($cachekeyComponentStock);
         if (!$cacheItemComponentStock->isHit()) {
-            $filteredStocks = $this->componentStockRepository->findAll();
+            $filteredStocks = $this->componentStockRepository->findBy(['deleted' => false, 'jail' => false]);
             $cacheItemComponentStock->set($filteredStocks);
             $cache->save($cacheItemComponentStock);
             $cacheItemCreationDateComponent->set(date('Y-m-d H:i:s'));
@@ -318,30 +399,28 @@ class NeedsController extends AbstractController
         //region Vérifie si les données PurchaseItem sont en cache
         $cachePurchaseItem = $cache->getItem($cachekeyPurchaseItem);
         if (!$cachePurchaseItem->isHit()) {
-            $purchaseItems = $this->purchaseItemRepository->findByEmbBlockerAndEmbState();
+            $purchaseItems = $this->purchaseItemRepository->findBy(['embState.state' => ['forecast', 'agreed', 'partially_received'], 'embBlocker.state' => ['enabled', 'delayed'], 'deleted' => false]);
             $cachePurchaseItem->set($purchaseItems);
             $cache->save($cachePurchaseItem);
             $cacheItemCreationDateComponent->set(date('Y-m-d H:i:s'));
             $cacheCreationDatesComponent[$cachekeyPurchaseItem] = $cacheItemCreationDateComponent->get();
         } else {
             /** @var PurchaseItem $purchaseItems */
-           $purchaseItems = $cachePurchaseItem->get();
+            $purchaseItems = $cachePurchaseItem->get();
         }
         //endregion
         //region inversion de la matrice
         $invertedMatrix = [];
-
         $componentChartData = [];
-
         $componentfield = [];
 
         foreach ($products as $prod) {
             $productId = $prod->getId();
+            //region on récupère la nomenclature du produit
             $cacheKeyNomenclature = 'api_needs_nomenclature_' . $productId;
             $cacheItemNomenclature = $cache->getItem($cacheKeyNomenclature);
             if (!$cacheItemNomenclature->isHit()) {
-                $nomenclatures = $this->nomenclatureRepository->findByProductId($productId);
-                //$serializedNomenclatures = serialize($nomenclatures);
+                $nomenclatures = $this->nomenclatureRepository->findBy(['product' => $productId, 'deleted' => false]);
                 $cacheItemNomenclature->set($nomenclatures);
                 $cache->save($cacheItemNomenclature);
             $cacheItemCreationDateComponent->set(date('Y-m-d H:i:s'));
@@ -349,13 +428,23 @@ class NeedsController extends AbstractController
             } else {
                 /** @var Nomenclature $nomenclatures */
                 $nomenclatures = $cacheItemNomenclature->get();
-               // $nomenclatures = unserialize($serializedData);
             }
+            //endregion
+
+
+
+            //TODO: voir l'intérêt, c'est louche
             $minStock = $this->generateMinStock($prod);
             $this->updateStockMinimumForProduct($productChartsData, $productId, $minStock);
-            $productsData[$productId] = $this->generateProductData($prod, $productChartsData, $stocks);
-            $newOFNeedsData = $productsData[$productId]['newOFNeeds'];
-            $maxQuantity = $productsData[$productId]['productToManufacturing'];
+
+
+            //TODO: Voir si on supprime la définition de la clé $productId
+            $productsData[$productId] = $productData;
+
+
+            $newOFNeedsData = $productData['newOFNeeds'];
+            $maxQuantity = $productData['totalSellingQuantity'];
+
             if (!empty($maxQuantity)) {
                 $this->processNewOFNeedsData($newOFNeedsData, $nomenclatures, $productId, $productChartsData, $invertedMatrix);
             }
@@ -1136,9 +1225,10 @@ class NeedsController extends AbstractController
 
     private function updateStockMinimumForProduct(array &$productChartsData, int $productId, float $minStock): void
     {
-        if (array_key_exists($productId, $productChartsData)) {
-            $labels = $productChartsData[$productId]['labels'];
-            $productChartsData[$productId]['stockMinimum'] = array_fill_keys($labels, $minStock);
-        }
+        $currentProductChartsData = array_values(array_filter($productChartsData, function ($productChartData) use ($productId) {
+            return $productChartData['productId'] === $productId;
+        }))[0];
+        $labels = $currentProductChartsData['labels'];
+        $currentProductChartsData['stockMinimum'] = array_fill_keys($labels, $minStock);
     }
 }
