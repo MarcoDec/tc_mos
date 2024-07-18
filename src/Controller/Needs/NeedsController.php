@@ -186,14 +186,11 @@ class NeedsController extends AbstractController
         //endregion
 
         $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks, $products);
-//        dump(['productChartsData initial' => $productChartsData]);
+
         $productFamilies = $this->getProductFamilies($products);
         $customersData = $this->generateCustomersData($productcustomers);
 
         foreach ($products as $prod) {
-            $productId = $prod->getId();
-            $minStock = $this->generateMinStock($prod);
-            $this->updateStockMinimumForProduct($productChartsData, $productId, $minStock);
             $productsData[] = $this->generateProductData($prod, $productChartsData, $stocks);
         }
         $productChartsData = $this->finalizeProductChartsData($productChartsData);
@@ -1000,30 +997,26 @@ class NeedsController extends AbstractController
     private function generateNewOFNeedsData(Product $prod, array $productChartsData): array
     {
         $newOFNeeds = [];
-
-        if (array_key_exists($prod->getId(), $productChartsData)) {
-            $stockDefault = [];
-            $maxQuantity = null;
-
-            foreach ($productChartsData[$prod->getId()]['labels'] as $date) {
-                if (isset($productChartsData[$prod->getId()]['stockProgress'][$date]) && isset($productChartsData[$prod->getId()]['stockMinimum'][$date])) {
-                    $stockProgress = $productChartsData[$prod->getId()]['stockProgress'][$date];
-                    $stockMinimum = $productChartsData[$prod->getId()]['stockMinimum'][$date];
-
-                    if ($stockProgress < $stockMinimum) {
-                        $dateTime = DateTime::createFromFormat('d/m/Y', $date);
-                        if ($dateTime) {
-                            $dateTime->sub(new DateInterval('P1W'));
-                            $quantity = $stockMinimum - $stockProgress;
-
-                            if (!isset($maxQuantity) || $quantity > $maxQuantity) {
-                                $maxQuantity = $quantity;
-                            }
-
+        //On récupère les données de productChartsData pour le produit $prod
+        $currentProductChartsData = array_values(array_filter($productChartsData, function ($productChartData) use ($prod) {
+            return $productChartData['productId'] === $prod->getId();
+        }))[0];
+        $cumulatedNewOFQuantity = 0;
+        foreach ($currentProductChartsData['labels'] as $index => $date) {
+            if (isset($currentProductChartsData['stockProgress'][$index]) && isset($currentProductChartsData['stockMinimum'][$index])) {
+                $stockProgress = $currentProductChartsData['stockProgress'][$index];
+                $stockMinimum = $currentProductChartsData['stockMinimum'][$index];
+                if ($stockProgress + $cumulatedNewOFQuantity < $stockMinimum) {
+                    $dateTime = DateTime::createFromFormat('d/m/Y', $date);
+                    if ($dateTime) {
+                        $dateTime->sub(new DateInterval('P1W'));
+                        $quantity = $stockMinimum - $stockProgress - $cumulatedNewOFQuantity;
+                        if ($quantity > 0) {
                             $newOFNeeds[] = [
                                 'date' => $dateTime->format('d/m/Y'),
                                 'quantity' => $quantity,
                             ];
+                            $cumulatedNewOFQuantity += $quantity;
                         }
                     }
                 }

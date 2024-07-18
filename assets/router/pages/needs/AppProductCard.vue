@@ -83,7 +83,7 @@
                         </table>
                     </div>
                     <h5 class="card-title">
-                        Besoins lancement nouveaux OFs <Fa icon="info-circle"/>
+                        Besoins lancement nouveaux OFs <Fa icon="info-circle" title="Les dates correspondent à la date de défaut de stock moins 1 semaine pour intégrer le temps de fabrication"/>
                     </h5>
 
                     <ul class="divUl">
