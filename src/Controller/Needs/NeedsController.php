@@ -194,7 +194,6 @@ class NeedsController extends AbstractController
             $productsData[] = $this->generateProductData($prod, $productChartsData, $stocks);
         }
         $productChartsData = $this->finalizeProductChartsData($productChartsData);
-//        dump(['productChartsData final' => $productChartsData]);
         if($cacheItemCreationDate->isHit() === false) {
             if($cacheItemCreationDate->getMetadata() === []) {
                 $cacheItemCreationDate->set($cacheCreationDates);
@@ -868,7 +867,7 @@ class NeedsController extends AbstractController
             return $productChartData;
         }, $productChartsData);
     }
-    private function updateProductChartsDataWithSellingItem(array $productChartsData, int $productId, string $date, float $quantity, Object $sellingItem): array
+    private function updateProductChartsDataWithSellingItem(array $productChartsData, int $productId, string $date, float $quantity, ProductItem $sellingItem): array
     {
         // On récupère l'élément de productChartsData dont le productId = $productId, si l'élément n'existe pas on le crée
         $foundProductChartDataArray = array_filter($productChartsData, function ($productChartData) use ($productId) {
@@ -882,14 +881,15 @@ class NeedsController extends AbstractController
                 'labels' => [$date],
                 'stockMinimum' => [],
                 'stockProgress' => [],
-                'sellingOrderItems' => [$date => [$sellingItem]],
+                'sellingOrderItems' => [$date => $sellingItem->getConfirmedQuantity()->getValue()],
                 'productId' => $productId
             ];
             return $foundProductChartData;
         } else {
             $foundProductChartData['labels'][] = $date;
             $foundProductChartData['confirmed_quantity_value'][$date] = $quantity;
-            $foundProductChartData['sellingOrderItems'][$date][] = $sellingItem;
+            if (isset($foundProductChartData['sellingOrderItems'][$date])) $foundProductChartData['sellingOrderItems'][$date] += $sellingItem->getConfirmedQuantity()->getValue();
+            else $foundProductChartData['sellingOrderItems'][$date] = $sellingItem->getConfirmedQuantity()->getValue();
             // On met à jour le tableau productChartsData avec l'élément modifié
             $newProductsChartData = array_map(function ($productChartData) use ($productId, $foundProductChartData) {
                 if ($productChartData['productId'] === $productId) {
@@ -1035,24 +1035,14 @@ class NeedsController extends AbstractController
      */
     private function generateMaxQuantityData(Product $prod, array $productChartsData): ?float
     {
-        $maxQuantity = null;
-
-        if (array_key_exists($prod->getId(), $productChartsData)) {
-            foreach ($productChartsData[$prod->getId()]['labels'] as $date) {
-                if (isset($productChartsData[$prod->getId()]['stockProgress'][$date]) && isset($productChartsData[$prod->getId()]['stockMinimum'][$date])) {
-                    $stockProgress = $productChartsData[$prod->getId()]['stockProgress'][$date];
-                    $stockMinimum = $productChartsData[$prod->getId()]['stockMinimum'][$date];
-
-                    $quantity = $stockMinimum - $stockProgress;
-
-                    if (!isset($maxQuantity) || $quantity > $maxQuantity) {
-                        $maxQuantity = $quantity;
-                    }
-                }
-            }
-        }
-
-        return $maxQuantity;
+        $currentProductChartsData = array_values(array_filter($productChartsData, function ($productChartData) use ($prod) {
+            return $productChartData['productId'] === $prod->getId();
+        }))[0];
+        if (!isset($currentProductChartsData['confirmed_quantity_value'])) return 0.0;
+        $confirmedQuantityValues = array_values($currentProductChartsData['confirmed_quantity_value']);
+        // On revoie la somme des valeurs de $confirmedQuantityValues
+        $sumConfirmedQuantityValues = array_sum($confirmedQuantityValues);
+        return $sumConfirmedQuantityValues;
     }
 
     /**
@@ -1097,7 +1087,16 @@ class NeedsController extends AbstractController
 
         return $stockDefault;
     }
-
+    private function generateTotalOnGoingManufacturing(Product $prod, array $productChartsData): float
+    {
+        $currentProductChartsData = array_values(array_filter($productChartsData, function ($productChartData) use ($prod) {
+            return $productChartData['productId'] === $prod->getId();
+        }))[0];
+        if (!isset($currentProductChartsData['quantity_requested_value'])) return 0.0;
+        $requestedQuantityValues = array_values($currentProductChartsData['quantity_requested_value']);
+        // On revoie la somme des valeurs de $requestedQuantityValues
+        return array_sum($requestedQuantityValues);
+    }
     private function generateProductData(Product $prod, $productChartsData, $stocks): array
     {
         $components = $this->generateComponentsData($prod);
@@ -1106,7 +1105,8 @@ class NeedsController extends AbstractController
         $minStock = $prod->getMinStock()->getValue();
         $newOFNeeds = $this->generateNewOFNeedsData($prod, $productChartsData);
         $allStock = $this->generateProductStockData($prod, $stocks);
-        $maxQuantity = $this->generateMaxQuantityData($prod, $productChartsData);
+        $totalSellingQuantity = $this->generateMaxQuantityData($prod, $productChartsData);
+        $totalOnGoingManufacturing = $this->generateTotalOnGoingManufacturing($prod, $productChartsData);
         $stockDefault = $this->generateStockDefault($prod, $productChartsData);
 
         return [
@@ -1118,9 +1118,10 @@ class NeedsController extends AbstractController
             'productRef' => $prod->getCode(),
             'productIndex' => $prod->getIndex(),
             'productStock' => $allStock,
-            'productToManufacturing' => $maxQuantity,
+            'totalSellingQuantity' => $totalSellingQuantity,
             'stockDefault' => $stockDefault,
-            'productId' => $prod->getId()
+            'productId' => $prod->getId(),
+            'totalOnGoingManufacturing' => $totalOnGoingManufacturing
         ];
     }
 
@@ -1129,7 +1130,6 @@ class NeedsController extends AbstractController
         foreach ($productChartsData as &$product) {
             $product['stockProgress'] = array_values($product['stockProgress']);
             $product['stockMinimum'] = array_values($product['stockMinimum']);
-           // unset($product['quantity_requested_value'], $product['confirmed_quantity_value']);
         }
         return $productChartsData;
     }

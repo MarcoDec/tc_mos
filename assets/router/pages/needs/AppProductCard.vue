@@ -10,6 +10,17 @@
     console.log('props', props)
     const listDisplayed = useNeeds()
     const normalizedChart = computed(() => listDisplayed.normalizedChartProd(props.productId))
+    const totalSynthesis = computed(() => {
+        return props.list.minStock
+            + props.list.totalSellingQuantity
+            - props.list.productStock
+            - props.list.totalOnGoingManufacturing
+    })
+    const totalToProduced = computed(() => {
+        const totalToProduced = totalSynthesis.value
+        return totalToProduced > 0 ? totalToProduced : 0
+    })
+    const isOverStock = computed(() => totalSynthesis.value < 0)
 </script>
 
 <template>
@@ -31,62 +42,50 @@
                     <table
                         class="table table-bordered table-hover table-responsive table-sm table-striped">
                         <thead>
+                            <tr class="bg-primary">
+                                <th colspan="3" class="thNeeds">Besoins</th>
+                                <th colspan="3" class="currentState">Etat courant</th>
+                                <th colspan="2" class="synthesis">Synthèse</th>
+                            </tr>
                             <tr class="bg-primary text-center text-white">
-                                <th>Product Ref</th>
-                                <th>Total Besoin</th>
-                                <th>Stock Min</th>
-                                <th>A Faire</th>
-                                <th>Total Stocks</th>
-                                <th>Reste a Produire</th>
-                                <th>Etat</th>
+                                <th class="thNeeds">Stock Min Produit</th>
+                                <th class="thNeeds">Total Besoin Commandes</th>
+                                <th class="thNeeds">Total</th>
+                                <th class="currentState">Stocks courant</th>
+                                <th class="currentState">Qté OFs en cours</th>
+                                <th class="currentState">Total</th>
+                                <th class="synthesis">Total à Produire</th>
+                                <th class="synthesis">Etat</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>{{ list.productRef }}</td>
-                                <td>{{ list.productToManufactring }}</td>
                                 <td>{{ list.minStock }}</td>
-                                <td>{{ list.minStock + list.productToManufactring }}</td>
-                                <td>{{ list.productStock }}</td>
+                                <td>{{ list.totalSellingQuantity }}</td>
+                                <td>{{ list.minStock + list.totalSellingQuantity }}</td>
+                                <td :class="{'bg-warning': isOverStock}">{{ list.productStock }}</td>
+                                <td>{{ list.totalOnGoingManufacturing }}</td>
+                                <td>{{
+                                        list.totalOnGoingManufacturing
+                                        +  list.productStock
+                                    }}</td>
                                 <td>
-                                    {{
-                                        list.minStock
-                                            + list.productToManufactring
-                                            - list.productStock
-                                    }}
+                                    {{ totalToProduced }}
                                 </td>
-                                <td class="bg-warning text-white">
+                                <td class="bg-danger text-white" v-if="totalToProduced > 0">
                                     Un lancement en production nécessaire
+                                </td>
+                                <td v-else class="bg-success text-white">
+                                    Stocks suffisants
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                    <h5 class="card-title">
-                        Dates stock épuisés
-                    </h5>
-                    <div class="table-wrapper">
-                        <table
-                            class="table table-bordered table-hover table-responsive table-sm table-striped">
-                            <thead>
-                                <tr>
-                                    <th class="bg-primary text-center text-white">
-                                        Dates
-                                    </th>
-                                    <th
-                                        v-for="(stockDefault, dateId) in list.stockDefault"
-                                        :key="dateId"
-                                        class="bg-warning text-white">
-                                        {{ stockDefault.date }}
-                                    </th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                    <h5 class="card-title">
+                    <h5 class="card-title" v-if="totalToProduced > 0">
                         Besoins lancement nouveaux OFs <Fa icon="info-circle" title="Les dates correspondent à la date de défaut de stock moins 1 semaine pour intégrer le temps de fabrication"/>
                     </h5>
 
-                    <ul class="divUl">
+                    <ul class="divUl" v-if="totalToProduced > 0">
                         <li v-for="(newOFNeeds, dateId) in list.newOFNeeds" :key="dateId">
                             <b>{{ newOFNeeds.date }} :</b> quantité à lancer en fabrication =>
                             <b>{{ newOFNeeds.quantity }}</b>
@@ -99,6 +98,22 @@
 </template>
 
 <style>
+    .thNeeds {
+        background-color: #43abd7 !important;
+        color: #ffffff !important;
+    }
+    .currentState {
+        background-color: #1bac06 !important;
+        color: #ffffff !important;
+    }
+    .synthesis {
+        background-color: #a0a0a0 !important;
+        color: white !important;
+    }
+    tr, th, td {
+        text-align: center;
+        vertical-align: middle;
+    }
     .table-wrapper {
         overflow-x: auto;
     }
@@ -113,5 +128,6 @@
         white-space: normal; /* Permettre le retour à la ligne */
         overflow: hidden; /* Masquer le contenu dépassant */
         text-overflow: ellipsis; /* Afficher des points de suspension (...) pour indiquer le texte coupé */
+        vertical-align: middle;
     }
 </style>
