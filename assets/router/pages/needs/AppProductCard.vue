@@ -56,7 +56,7 @@
                                     }}
                                 </td>
                                 <td class="bg-warning text-white">
-                                    Production nécessaire
+                                    Un lancement en production nécessaire
                                 </td>
                             </tr>
                         </tbody>
@@ -88,7 +88,7 @@
 
                     <ul class="divUl">
                         <li v-for="(newOFNeeds, dateId) in list.newOFNeeds" :key="dateId">
-                            <b>{{ newOFNeeds.date }} :</b> quantité à commander =>
+                            <b>{{ newOFNeeds.date }} :</b> quantité à lancer en fabrication =>
                             <b>{{ newOFNeeds.quantity }}</b>
                         </li>
                     </ul>

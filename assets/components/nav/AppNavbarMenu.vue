@@ -10,6 +10,39 @@
 
     defineProps({id: {required: true, type: String}})
     const emit = defineEmits(['closeMenu'])
+    //region définition des Ids uniques des sous-menus
+    const subMenuIds = {
+        purchase: {
+            admin: 'purchase-admin'
+        },
+        management: {
+            admin: 'management-admin'
+        },
+        it: {
+            admin: 'it-admin'
+        },
+        logistic: {
+            admin: 'logistic-admin'
+        },
+        production: {
+            equipment: '1',
+            label: '2',
+            admin: 'production-admin'
+        },
+        project: {
+            admin: 'project-admin'
+        },
+        quality: {
+            admin: 'quality-admin'
+        },
+        hr: {
+            admin: 'hr-admin'
+        },
+        selling: {
+            admin: 'selling-admin'
+        }
+    }
+    //endregion
     // const cookies = useCookies()
     // function getTableFromString(str) {
     //     return JSON.parse(str.replace(/'/g, '"'))
@@ -69,38 +102,6 @@
         e.stopPropagation()
         emit('closeMenu')
     }
-    //region définition des Ids uniques des sous-menus
-    const subMenuIds = {
-        purchase: {
-            admin: 'purchase-admin'
-        },
-        management: {
-            admin: 'management-admin'
-        },
-        it: {
-            admin: 'it-admin'
-        },
-        logistic: {
-            admin: 'logistic-admin'
-        },
-        production: {
-            equipment: '1',
-            label: '2'
-        },
-        project: {
-            admin: 'project-admin'
-        },
-        quality: {
-            admin: 'quality-admin'
-        },
-        hr: {
-            admin: 'hr-admin'
-        },
-        selling: {
-            admin: 'selling-admin'
-        }
-    }
-    //endregion
 </script>
 
 <template>
@@ -199,7 +200,7 @@
                     Transporteurs
                 </AppNavbarLink>
                 <template v-if="user.isLogisticsAdmin">
-                    <AppNavbarItem :id="subMenuIds.it.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.it.admin)">
+                    <AppNavbarItem :id="subMenuIds.logistic.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.logistic.admin)">
                         <AppNavbarLink icon="file-contract" to="incoterms" :variant="variantLogistics" @click="emit('closeMenu')">
                             Incoterms
                         </AppNavbarLink>

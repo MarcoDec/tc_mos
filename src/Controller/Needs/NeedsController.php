@@ -4,10 +4,10 @@ namespace App\Controller\Needs;
 
 use DateTime;
 use DateInterval;
-use Psr\Log\LoggerInterface;
+//use Psr\Log\LoggerInterface;
 use App\Service\MeasureManager;
 use App\Entity\Project\Product\Product;
-use Doctrine\ORM\EntityManagerInterface;
+//use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
@@ -32,26 +32,26 @@ use App\Service\RedisService;
 use App\EventSubscriber\CacheUpdateSubscriber;
 use App\Entity\Purchase\Order\Item as PurchaseItem;
 Use App\Entity\Purchase\Component\Component;
-/**
- * @ApiResource(
- *     collectionOperations={
- *         "get"={
- *             "method"="GET",
- *             "path"="/api/needs/products",
- *         },
- *         "get_components"={
- *             "method"="GET",
- *             "path"="/api/needs/components",
- *         }
- *     },
- *     itemOperations={
- *         "get"={
- *             "method"="GET",
- *             "path"="/api/needs/{id}"
- *         }
- *     }
- * )
- */
+#[
+    ApiResource(
+        collectionOperations: [
+            'get' => [
+                'method' => 'GET',
+                'path' => '/api/needs/products',
+            ],
+            'get_components' => [
+                'method' => 'GET',
+                'path' => '/api/needs/components',
+            ]
+        ],
+        itemOperations: [
+            'get' => [
+                'method' => 'GET',
+                'path' => '/api/needs/{id}'
+            ]
+        ]
+    )
+]
 class NeedsController extends AbstractController
 {
     private ProductItemRepository $productItemRepository;
@@ -65,10 +65,10 @@ class NeedsController extends AbstractController
     private ComponentStockRepository $componentStockRepository;
     private MeasureManager $measureManager;
     private RedisService $redisService;
-    private CacheUpdateSubscriber $cacheUpdateSubscriber;
+//    private CacheUpdateSubscriber $cacheUpdateSubscriber;
 
     public function __construct(
-        private readonly EntityManagerInterface $em,
+//        private readonly EntityManagerInterface $em,
         ProductItemRepository $productItemRepository,
         ProductStockRepository $productStockRepository,
         ProductRepository $productRepository,
@@ -79,7 +79,7 @@ class NeedsController extends AbstractController
         ComponentRepository $componentRepository,
         ComponentStockRepository $componentStockRepository,
         MeasureManager $measureManager,
-        private LoggerInterface $logger,
+//        private LoggerInterface $logger,
         RedisService $redisService,
         CacheUpdateSubscriber $cacheUpdateSubscriber,
 
@@ -98,9 +98,7 @@ class NeedsController extends AbstractController
         $this->cacheUpdateSubscriber = $cacheUpdateSubscriber;
     }
 
-    /**
-     * @Route("/api/needs/products", name="needs_products", methods={"GET"})
-     */
+    #[Route('/api/needs/products', name: 'needs_products', methods: ['GET'])]
     public function index(): JsonResponse
     {
         //region récupération de cache via redis
@@ -188,6 +186,7 @@ class NeedsController extends AbstractController
         //endregion
 
         $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks, $products);
+//        dump(['productChartsData initial' => $productChartsData]);
         $productFamilies = $this->getProductFamilies($products);
         $customersData = $this->generateCustomersData($productcustomers);
 
@@ -195,10 +194,10 @@ class NeedsController extends AbstractController
             $productId = $prod->getId();
             $minStock = $this->generateMinStock($prod);
             $this->updateStockMinimumForProduct($productChartsData, $productId, $minStock);
-            $productsData[$productId] = $this->generateProductData($prod, $productChartsData, $stocks);
+            $productsData[] = $this->generateProductData($prod, $productChartsData, $stocks);
         }
         $productChartsData = $this->finalizeProductChartsData($productChartsData);
-
+//        dump(['productChartsData final' => $productChartsData]);
         if($cacheItemCreationDate->isHit() === false) {
             if($cacheItemCreationDate->getMetadata() === []) {
                 $cacheItemCreationDate->set($cacheCreationDates);
@@ -699,6 +698,21 @@ class NeedsController extends AbstractController
     private function generateProductChartsData(array $sellingItems, array $manufacturingOrders, array $stocks, array $products): array
     {
         $productChartsData = [];
+        // On initialise productChartData avec les stocks actuels à la date du jour
+        $date = new DateTime('now');
+        $dateStr = $date->format('d/m/Y');
+        /** Product $product */
+        foreach ($products as $product) {
+            $productId = $product->getId();
+            $productChartsData[] = [
+                'labels' => [$dateStr],
+                'stockMinimum' => [$product->getMinStock()->getValue()],
+                'stockProgress' => [0],
+                'productId' => $productId,
+                'sellingOrderItems' => [],
+                'manufacturingOrders' => []
+            ];
+        }
 
         // Traitement des ventes (remplis productChartsData[productId][confirmed_quantity_value])
         $this->processSellingItems($sellingItems, $productChartsData);
@@ -706,37 +720,39 @@ class NeedsController extends AbstractController
         // Traitement des items de manufacturing (remplis aussi ? productChartsData[productId][confirmed_quantity_value])
         $this->processManufacturingOrders($manufacturingOrders, $productChartsData);
 
+
+        // Ordonner les labels et les stocks progress
+        $this->sortLabelsAndStockProgress($productChartsData);
+
+        // On ajoute le stock courant à la 1ère date pour chaque produit
         // Traitement des stocks (remplis aussi ? productChartsData[productId][stockProgress])
         $this->processStocks($stocks, $productChartsData);
 
-        // Ajout d'un graphique élémentaire pour les produits actifs sans ventes, sans OFs et sans stocks
-        $date = new DateTime('now');
-        $dateStr = $date->format('d/m/Y');
-        /** Product $product */
-        foreach ($products as $product) {
-            $productId = $product->getId();
-            if (!isset($productChartsData[$productId])) {
-                $productChartsData[$productId] = [
-                    'labels' => [$dateStr],
-                    'stockMinimum' => [$product->getMinStock()->getValue()],
-                    'stockProgress' => [0]
-                ];
-            }
-        }
-
-        // Ordonner les labels
-        $this->sortLabels($productChartsData);
+        // Cumuler les stocks progress pour chaque produit en y ajoutant le stock courant à chaque date
+        $this->cumulateStockProgress($productChartsData);
         return $productChartsData;
+    }
+
+    private function cumulateStockProgress(array &$productChartsData): void
+    {
+        foreach ($productChartsData as &$productChartData) {
+            $stockProgress = $productChartData['stockProgress'];
+            $cumulatedStockProgress = [];
+            $cumulatedStockProgress[0] = $stockProgress[0];
+            for ($i = 1; $i < count($stockProgress); $i++) {
+                $cumulatedStockProgress[$i] = $cumulatedStockProgress[$i - 1] + $stockProgress[$i];
+            }
+            $productChartData['stockProgress'] = $cumulatedStockProgress;
+        }
     }
 
     private function processSellingItems(array $sellingItems, array &$productChartsData): void
     {
         foreach ($sellingItems as $sellingItem) {
             $productId = $sellingItem->getItem()->getId();
-            $productChartsData[$productId] ??= ['labels' => [], 'stockMinimum' => [], 'stockProgress' => [], 'sellingOrderItem'];
             $confirmedDate = $sellingItem->getConfirmedDate()->format('d/m/Y');
             $confirmedQuantityValue = $sellingItem->getConfirmedQuantity()->getValue();
-            $productChartsData = $this->updateProductChartsData($productChartsData, $productId, $confirmedDate, $confirmedQuantityValue);
+            $productChartsData = $this->updateProductChartsDataWithSellingItem($productChartsData, $productId, $confirmedDate, $confirmedQuantityValue, $sellingItem);
         }
     }
 
@@ -744,10 +760,9 @@ class NeedsController extends AbstractController
     {
         foreach ($manufacturingOrders as $manufacturingOrder) {
             $productId = $manufacturingOrder->getProduct()->getId();
-            $productChartsData[$productId] ??= ['labels' => [], 'stockMinimum' => [], 'stockProgress' => [], 'sellingOrderItem'];
             $manufacturingDate = $manufacturingOrder->getManufacturingDate()->format('d/m/Y');
             $quantityRequestedValue = $manufacturingOrder->getQuantityRequested()->getValue();
-            $productChartsData = $this->updateProductChartsData($productChartsData, $productId, $manufacturingDate, $quantityRequestedValue, 'quantity_requested_value');
+            $productChartsData = $this->updateProductChartsDataWithManufacturingOrder($productChartsData, $productId, $manufacturingDate, $quantityRequestedValue, $manufacturingOrder);
         }
     }
 
@@ -755,12 +770,6 @@ class NeedsController extends AbstractController
     {
         foreach ($stocks as $stock) {
             $productId = $stock->getItem()->getId();
-            // dump(["processStock $productId" => $productChartsData]);
-            if (!array_key_exists($productId, $productChartsData)) {
-                $date = new DateTime('now');
-                $dateStr = $date->format('d/m/Y');
-                $productChartsData[$productId] ??= ['labels' => [$dateStr], 'stockMinimum' => [0], 'stockProgress' => [0]];
-            }
             $quantityValue = $stock->getQuantity()->getValue();
             $this->updateStockProgress($productChartsData, $productId, $quantityValue);
         }
@@ -768,55 +777,117 @@ class NeedsController extends AbstractController
 
     private function updateStockProgress(array &$productChartsData, int $productId, float $quantityValue): void
     {
-        // dump(["updateStockProgress $productId + $quantityValue" => $productChartsData]);
-        if (!array_key_exists($productId, $productChartsData)) {
-            return;
-        }
-
-        $stockProgress = &$productChartsData[$productId]['stockProgress'];
-
-        foreach ($stockProgress as &$value) {
-            $value += $quantityValue;
-            // dump(["stockProgress product $productId + $quantityValue" => $stockProgress]);
-        }
+        //On récupère la valeur de 'stockProgress' pour le produit $productId à partir d'un filtre sur $productChartsData
+        $currentStockProgressColl = array_values(array_filter($productChartsData, function ($productChartData) use ($productId) {
+            return $productChartData['productId'] === $productId;
+        }));
+        $currentStockProgress = $currentStockProgressColl[0]['stockProgress'];
+        $currentStockProgress[0] += $quantityValue;
+        //On met à jour la valeur de 'stockProgress' pour le produit $productId
+        $productChartsData = array_map(function ($productChartData) use ($productId, $currentStockProgress) {
+            if ($productChartData['productId'] === $productId) {
+                $productChartData['stockProgress'] = $currentStockProgress;
+            }
+            return $productChartData;
+        }, $productChartsData);
     }
 
 
-    private function sortLabels(array &$productChartsData): void
+    private function sortLabelsAndStockProgress(array &$productChartsData): void
     {
-        foreach ($productChartsData as $key => &$product) {
-            $product['labels'] = array_values(array_unique($product['labels']));
-            sort($product['labels']);
-
-            // Initialisation de 'stockProgress' comme tableau pour chaque date
-            foreach ($product['labels'] as $date) {
-                $product['stockProgress'][$date] = 0;
-                // dump(["productChartsData product $key" => $product ]);
-                $confirmedQuantity = $product['confirmed_quantity_value'][$date] ?? 0;
-                $product['stockProgress'][$date] -= $confirmedQuantity;
-
-                $quantityRequested = $product['quantity_requested_value'][$date] ?? 0;
-                $product['stockProgress'][$date] += $quantityRequested;
-            }
-
-            // Ordonner les labels
-            usort($product['labels'], function ($a, $b) {
+        foreach ($productChartsData as &$product) {
+//            $product['labels'] = array_values(array_unique($product['labels']));
+            $uniqueLabelsValues = array_values(array_unique($product['labels']));
+            usort($uniqueLabelsValues, function($a, $b) {
                 $dateA = \DateTime::createFromFormat('d/m/Y', $a);
                 $dateB = \DateTime::createFromFormat('d/m/Y', $b);
-
                 return $dateA <=> $dateB;
             });
+            $newStockProgress = [];
+            // Initialisation de 'stockProgress' comme tableau pour chaque date
+            foreach ($uniqueLabelsValues as $key => $date) {
+                // On récupère l'ancien index de la date
+                $oldIndex = array_search($date, $product['labels']);
+                // On récupère l'ancienne valeur de 'stockProgress' à l'ancien index
+                $oldStockProgressValue = $product['stockProgress'][$oldIndex] ?? 0;
+                // On initialise $newStockProgress avec la valeur de 'stockProgress' à l'ancien index
+                $newStockProgress[] = $oldStockProgressValue;
+
+                $confirmedQuantity = $product['confirmed_quantity_value'][$date] ?? 0;
+                $newStockProgress[$key] -= $confirmedQuantity;
+
+                $quantityRequested = $product['quantity_requested_value'][$date] ?? 0;
+                $newStockProgress[$key] += $quantityRequested;
+            }
+            $product['labels'] = $uniqueLabelsValues;
+            $product['stockProgress'] = $newStockProgress;
         }
     }
 
 
-    private function updateProductChartsData(array $productChartsData, int $productId, string $date, float $quantity, string $quantityKey = 'confirmed_quantity_value'): array
+    private function updateProductChartsDataWithManufacturingOrder(array $productChartsData, int $productId, string $date, float $quantity, Object $manufacturingOrder): array
     {
-        $productChartsData[$productId]['labels'][] = $date;
-        $productChartsData[$productId][$quantityKey][$date] = $quantity;
-        return $productChartsData;
+        // On récupère l'élément de productChartsData dont le productId = $productId, si l'élément n'existe pas on le crée
+        $foundProductChartDataArray = array_filter($productChartsData, function ($productChartData) use ($productId) {
+            return $productChartData['productId'] === $productId;
+        });
+        // On récupère le premier élément de la collection $foundProductChartDataArray (pas forcément index 0)
+        $keys = array_keys($foundProductChartDataArray);
+        $foundProductChartData = $foundProductChartDataArray[$keys[0]] ?? null;
+        if (empty($foundProductChartData)) {
+            $productChartsData[] = [
+                'labels' => [$date],
+                'stockMinimum' => [],
+                'stockProgress' => [],
+                'sellingOrderItems' => [],
+                'manufacturingOrderItems' => [$date => [$manufacturingOrder]],
+                'productId' => $productId
+            ];
+        } else {
+            $foundProductChartData['labels'][] = $date;
+            $foundProductChartData['quantity_requested_value'][$date] = $quantity;
+            $foundProductChartData['manufacturingOrderItems'][$date][] = $manufacturingOrder;
+        }
+        // On met à jour le tableau productChartsData avec l'élément modifié
+        return array_map(function ($productChartData) use ($productId, $foundProductChartData) {
+            if ($productChartData['productId'] === $productId) {
+                $productChartData = $foundProductChartData;
+            }
+            return $productChartData;
+        }, $productChartsData);
     }
-
+    private function updateProductChartsDataWithSellingItem(array $productChartsData, int $productId, string $date, float $quantity, Object $sellingItem): array
+    {
+        // On récupère l'élément de productChartsData dont le productId = $productId, si l'élément n'existe pas on le crée
+        $foundProductChartDataArray = array_filter($productChartsData, function ($productChartData) use ($productId) {
+            return $productChartData['productId'] === $productId;
+        });
+        // On récupère le premier élément de la collection $foundProductChartDataArray (pas forcément index 0)
+        $keys = array_keys($foundProductChartDataArray);
+        $foundProductChartData = $foundProductChartDataArray[$keys[0]] ?? null;
+        if (empty($foundProductChartData)) {
+            $foundProductChartData[] = [
+                'labels' => [$date],
+                'stockMinimum' => [],
+                'stockProgress' => [],
+                'sellingOrderItems' => [$date => [$sellingItem]],
+                'productId' => $productId
+            ];
+            return $foundProductChartData;
+        } else {
+            $foundProductChartData['labels'][] = $date;
+            $foundProductChartData['confirmed_quantity_value'][$date] = $quantity;
+            $foundProductChartData['sellingOrderItems'][$date][] = $sellingItem;
+            // On met à jour le tableau productChartsData avec l'élément modifié
+            $newProductsChartData = array_map(function ($productChartData) use ($productId, $foundProductChartData) {
+                if ($productChartData['productId'] === $productId) {
+                    $productChartData = $foundProductChartData;
+                }
+                return $productChartData;
+            }, $productChartsData);
+            return $newProductsChartData;
+        }
+    }
 
     private function getProductFamilies(array $products): array
     {
@@ -1019,7 +1090,7 @@ class NeedsController extends AbstractController
         return $stockDefault;
     }
 
-    private function generateProductData($prod, $productChartsData, $stocks): array
+    private function generateProductData(Product $prod, $productChartsData, $stocks): array
     {
         $components = $this->generateComponentsData($prod);
 
@@ -1041,6 +1112,7 @@ class NeedsController extends AbstractController
             'productStock' => $allStock,
             'productToManufacturing' => $maxQuantity,
             'stockDefault' => $stockDefault,
+            'productId' => $prod->getId()
         ];
     }
 
@@ -1049,9 +1121,8 @@ class NeedsController extends AbstractController
         foreach ($productChartsData as &$product) {
             $product['stockProgress'] = array_values($product['stockProgress']);
             $product['stockMinimum'] = array_values($product['stockMinimum']);
-            unset($product['quantity_requested_value'], $product['confirmed_quantity_value']);
+           // unset($product['quantity_requested_value'], $product['confirmed_quantity_value']);
         }
-
         return $productChartsData;
     }
 

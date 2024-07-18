@@ -8,75 +8,59 @@ export default defineStore('needs', {
             await this.fetchComponents() 
         },
         async fetchProducts() {
-            this.items = await api('/api/needs/products', 'GET')
+            // On charge toutes les données de besoin produit d'un coup, mais on n'affiche pas tout d'un coup
+            this.products = await api('/api/needs/products', 'GET')
         },
         async fetchComponents() {
+            // On charge toutes les données de besoin composant d'un coup, mais on n'affiche pas tout d'un coup
             this.components = await api('/api/needs/components', 'GET')
         },
         async initiale(state) {
-            state.items = await { ...state.initiale.products }
-            state.displayed = {}
+            state.products = await { ...state.initiale.products }
+            state.components = await { ...state.initiale.components }
+            state.displayedProducts = {}
+            state.displayedComponents = {}
         },
-        show(infinite) {
-            return this.hasNeeds ? infinite.loaded() : infinite.complete()
+        productShow(infinite) {
+            return this.hasProductNeeds ? infinite.loaded() : infinite.complete()
         },
-        async showComponent() {
-            const needs = await this.components.component
-            if (needs && typeof needs === 'object') {
-                const entries = Object.entries(needs);
-                const len = Object.keys(needs).length
-
-            for (let i = 0; i < 15 && i < len; i++) {
-                const [componentId, need] = entries[i]
-                this.displayed[componentId] = need
-
-                delete this.needsComponent[componentId]
-            }
-            this.page++
-            }
+        componentShow(infinite) {
+            return this.hasComponentNeeds ? infinite.loaded() : infinite.complete()
+        },
+        showComponent() {
+            this.componentsPage++
+            const needs = this.components.components;
+            //needs est in tableau d'objets, on ne doit garder que les 15 * componentsPage premiers éléments
+            this.displayedComponents = needs.slice(0, this.componentsPage * 15)
         },
         showProduct() {
-            const needs = this.items.products;
-            if (needs && typeof needs === 'object') {
-                const entries = Object.entries(needs);
-                const len = entries.length;
-                
-                for (let i = 0; i < 15 && i < len; i++) {
-                    const [productId, need] = entries[i];
-                    this.displayed[productId] = need;
-                    console.log(`showProducts this.displayed ${i} - ${productId}`, need)
-                    delete this.needsProduct[productId];
-                }
-                this.page++;
-            }
+            this.productsPage++
+            const needs = this.products.products;
+            //needs est in tableau d'objets, on ne doit garder que les 15 * productsPage premiers éléments
+            this.displayedProducts = needs.slice(0, this.productsPage * 15)
+            // console.log('showProduct', this.displayedProducts)
         }        
     },
     getters: {
         chartsComp(state) {
-            return componentId => {
-                const componentChartsData = { ...state.components.componentChartData }
-                return componentChartsData[componentId]
-            }
+            return index => state.components.componentChartData[index]
         },
         chartsProduct(state) {
-            return productId => {
-                const productChartsData = { ...state.items.productChartsData }
-                return productChartsData[productId]
-            }
+            return index => state.products.productChartsData[index]
         },
-        hasNeeds: state => state.items.length > 0,
+        hasProductNeeds: state => state.products.length > 0,
+        hasComponentNeeds: state => state.components.length > 0,
         needsComponent: state => {
-            const components = { ...state.components.component }
-            return components
+            return {...state.displayedComponents}
         },
         needsProduct: state => {
-            const products = { ...state.items.products }
-            return products
+            return {...state.displayedProducts}
         },
         normalizedChartProd() {
             return productId => {
+                console.log('normalizedChartProd', productId)
                 const chartData = this.chartsProduct(productId)
-                // console.log('chartData', productId, chartData)
+                console.log('chartData', productId, chartData)
                 return {
                     data: {
                         datasets: [
@@ -154,7 +138,7 @@ export default defineStore('needs', {
                                         family: 'Comic Sans MS',
                                         lineHeight: 1.2,
                                         size: 20,
-                                        style: 'bold'
+                                        // style: 'bold'
                                     },
                                     padding: {bottom: 0, left: 0, right: 0, top: 10},
                                     text: 'Jours'
@@ -183,7 +167,7 @@ export default defineStore('needs', {
         },
         normalizedChartComp() {
             return componentId => {
-                const data = this.chartsComp(componentId)
+                const componentsData = this.chartsComp(componentId)
                 return {
                     data: {
                         datasets: [
@@ -205,7 +189,7 @@ export default defineStore('needs', {
                                     'rgba(255, 159, 64, 1)'
                                 ],
                                 borderWidth: 1,
-                                data: data.stockProgress,
+                                data: componentsData.stockProgress,
                                 id: 'line',
                                 label: 'stockProgress',
                                 type: 'line'
@@ -228,13 +212,13 @@ export default defineStore('needs', {
                                     'rgba(255, 159, 64, 1)'
                                 ],
                                 borderWidth: 1,
-                                data: data.stockMinimum,
+                                data: componentsData.stockMinimum,
                                 id: 'bar',
                                 label: 'stockMinimum',
                                 type: 'line'
                             }
                         ],
-                        labels: data.labels
+                        labels: componentsData.labels
                     },
                     id: 'chart',
                     options: {
@@ -261,7 +245,7 @@ export default defineStore('needs', {
                                         family: 'Comic Sans MS',
                                         lineHeight: 1.2,
                                         size: 20,
-                                        style: 'bold'
+                                        // style: 'bold'
                                     },
                                     padding: {bottom: 0, left: 0, right: 0, top: 10},
                                     text: 'Jours'
@@ -288,16 +272,18 @@ export default defineStore('needs', {
                 }
             }
         },
-        options: state =>
-            state.items
+        productOptions: state =>
+            state.products
                 .map(need => need.option)
                 .sort((a, b) => a.text.localeCompare(b.text))
     },
     state: () => ({
-        displayed: {},
         initiale: {},
-        items: {},
-        page: 0,
+        displayedComponents: {},
+        displayedProducts: {},
+        productsPage: 0,
+        componentsPage: 0,
+        products: [],
         components: []
     })
 })

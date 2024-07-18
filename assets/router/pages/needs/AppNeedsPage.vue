@@ -1,37 +1,13 @@
 <script setup>
-    import {computed, onMounted, onUnmounted, ref, watchPostEffect} from 'vue'
+    import {ref} from 'vue'
     import AppComponentNeeds from './AppComponentNeeds.vue'
     import AppProductNeeds from './AppProductNeeds.vue'
 
     const active = ref('gui-start-prod')
-    const height = ref(0)
-    const width = ref(0)
-
-    const needs = ref()
-
-    const heightpx = computed(() => `${height.value}px`)
 
     function click(tab) {
         active.value = tab
     }
-    function resize() {
-        if (typeof needs.value === 'undefined') return
-
-        const rect = needs.value.getBoundingClientRect()
-        height.value = rect.top
-
-        if (window.top !== null) {
-            height.value = window.top.innerHeight - rect.top - 5
-            width.value = window.top.innerWidth - 25
-        }
-    }
-    watchPostEffect(resize)
-    onMounted(() => {
-        window.addEventListener('resize', resize)
-    })
-    onUnmounted(() => {
-        window.removeEventListener('resize', resize)
-    })
 </script>
 
 <template>
@@ -57,40 +33,40 @@
 </template>
 
 <style scoped>
-.bcontent {
-  margin-top: 10px;
-}
-.card {
-  border: 1px solid #2a2a4b;
-  box-shadow: black 3px 3px;
-  margin-bottom: 10px;
-}
-.needs {
-  overflow: hidden !important;
-}
-.over {
-  overflow: auto;
-  height: v-bind("heightpx");
-  max-height: v-bind("heightpx");
-  min-height: v-bind("heightpx");
-}
-
-@media (min-width: 1140px) {
-  .needs {
-    overflow: hidden !important;
-  }
-}
-
-@media (min-width: 1140px) {
-  .over {
-    overflow: auto;
-    height: v-bind("heightpx");
-    max-height: v-bind("heightpx");
-    min-height: v-bind("heightpx");
-  }
-}
-div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
-    .gui-start-content {
-        font-size: 14px;
+    .bcontent {
+      margin-top: 10px;
     }
+    .card {
+      border: 1px solid #2a2a4b;
+      box-shadow: black 3px 3px;
+      margin-bottom: 10px;
+    }
+    .needs {
+      overflow: hidden !important;
+    }
+    .over {
+      overflow: auto;
+      height: v-bind("heightpx");
+      max-height: v-bind("heightpx");
+      min-height: v-bind("heightpx");
+    }
+
+    @media (min-width: 1140px) {
+      .needs {
+        overflow: hidden !important;
+      }
+    }
+
+    @media (min-width: 1140px) {
+      .over {
+        overflow: auto;
+        height: v-bind("heightpx");
+        max-height: v-bind("heightpx");
+        min-height: v-bind("heightpx");
+      }
+    }
+    div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
+        .gui-start-content {
+            font-size: 14px;
+        }
 </style>
