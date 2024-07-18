@@ -730,7 +730,22 @@ class NeedsController extends AbstractController
 
         // Cumuler les stocks progress pour chaque produit en y ajoutant le stock courant à chaque date
         $this->cumulateStockProgress($productChartsData);
+        // On positionne stockMin pour toutes les dates à la valeur de stockMin à la date du jour
+        $this->updateStockMinimum($productChartsData, $products);
+
         return $productChartsData;
+    }
+
+    private function updateStockMinimum(array &$productChartsData, array $products): void
+    {
+        foreach ($productChartsData as &$productChartData) {
+            $productId = $productChartData['productId'];
+            $product = array_values(array_filter($products, function ($product) use ($productId) {
+                return $product->getId() === $productId;
+            }))[0];
+            $stockMinimum = $product->getMinStock()->getValue();
+            $productChartData['stockMinimum'] = array_fill(0, count($productChartData['labels']), $stockMinimum);
+        }
     }
 
     private function cumulateStockProgress(array &$productChartsData): void
