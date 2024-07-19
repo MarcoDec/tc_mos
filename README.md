@@ -29,12 +29,52 @@ suivante&nbsp;:
 sudo apt install make
 ```
 
-### Docker
+### Git
+Il faut bien évidemment installer git pour ce projet.
+Plus particulièrement, comme ce projet intègre des sous-modules, 
+lors de la première installation (clonage), il faut lancer la commande suivante :
+````sh
+git submodule update --init
+````
 
+### Docker
+#### Installation
 Ce projet utilise Docker pour la gestion des conteneurs. Pour l'installer, suivez les instructions sur le site
 officiel&nbsp;: [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/).
 Plus particulièrement, le projet utilise Docker Compose. Pour l'installer, suivez les instructions sur le site
 officiel&nbsp;: [https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/).
+
+#### Droits
+
+
+### Traefik
+Ce projet utilise traefik comme proxy afin de gérer les sous-domaines.
+Par contre ce projet ne définit pas l'instance docker de traefik.
+Cette définition doit faire l'objet d'un mini-projet à part. Et vu la simplicité du fichier de défintion docker-compose,
+on donne ci-dessous un exemple fonctionnel simple compatible du projet actuel.
+````yaml
+services:
+  traefik:
+    image: "traefik:v2.9"
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    restart: always
+    volumes:
+      - "/var/run/.docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - reseau_tc
+networks:
+  reseau_tc:
+    driver: bridge
+````
 
 ### Variables d'environnement
 Les variables d'environnement sont définies dans le fichier `.env`. Pour les modifier, copiez le fichier `.env`.
