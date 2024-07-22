@@ -29,17 +29,17 @@ export default defineStore('needs', {
         },
         showComponent() {
             this.componentsPage++
-            const needs = this.components.components;
+            const needs = this.components.component
+            console.log('this.components', this.components)
             //needs est in tableau d'objets, on ne doit garder que les 15 * componentsPage premiers éléments
             this.displayedComponents = needs.slice(0, this.componentsPage * 15)
         },
         showProduct() {
             this.productsPage++
-            const needs = this.products.products;
+            const needs = this.products.products
             //needs est in tableau d'objets, on ne doit garder que les 15 * productsPage premiers éléments
             this.displayedProducts = needs.slice(0, this.productsPage * 15)
-            // console.log('showProduct', this.displayedProducts)
-        }        
+        }
     },
     getters: {
         chartsComp(state) {
@@ -50,17 +50,13 @@ export default defineStore('needs', {
         },
         hasProductNeeds: state => state.products.length > 0,
         hasComponentNeeds: state => state.components.length > 0,
-        needsComponent: state => {
-            return {...state.displayedComponents}
-        },
-        needsProduct: state => {
-            return {...state.displayedProducts}
-        },
+        needsComponent: state => ({...state.displayedComponents}),
+        needsProduct: state => ({...state.displayedProducts}),
         normalizedChartProd() {
             return productId => {
-                console.log('normalizedChartProd', productId)
+                // console.log('normalizedChartProd', productId)
                 const chartData = this.chartsProduct(productId)
-                console.log('chartData', productId, chartData)
+                // console.log('chartData', productId, chartData)
                 return {
                     data: {
                         datasets: [
@@ -137,7 +133,7 @@ export default defineStore('needs', {
                                     font: {
                                         family: 'Comic Sans MS',
                                         lineHeight: 1.2,
-                                        size: 20,
+                                        size: 20
                                         // style: 'bold'
                                     },
                                     padding: {bottom: 0, left: 0, right: 0, top: 10},
@@ -244,7 +240,7 @@ export default defineStore('needs', {
                                     font: {
                                         family: 'Comic Sans MS',
                                         lineHeight: 1.2,
-                                        size: 20,
+                                        size: 20
                                         // style: 'bold'
                                     },
                                     padding: {bottom: 0, left: 0, right: 0, top: 10},

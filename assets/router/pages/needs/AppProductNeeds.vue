@@ -11,7 +11,7 @@
     onMounted(async () => {
         await listDisplayed.fetchProducts()
         listDisplayed.showProduct()
-        console.log('needsProduct', listDisplayed.needsProduct)
+        // console.log('needsProduct', listDisplayed.needsProduct)
         loaded.value = true
 
     })

@@ -1,13 +1,21 @@
 <script setup>
     import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
-    import {defineProps} from 'vue'
+    import {computed, defineProps} from 'vue'
     import useNeeds from '../../../stores/needs/needs'
 
-    defineProps({
+    const props = defineProps({
         componentId: {required: true, type: String},
         list: {required: true, type: Object}
     })
+    console.log(props)
     const listDisplayed = useNeeds()
+    const totalToBuy = computed(() => {
+        const total = props.list.totalManufacturingQuantity + props.list.minStock - props.list.totalCurrentStock - props.list.totalComponentPurchaseQuantity
+        if (total < 0) {
+            return 0
+        }
+        return total
+    })
 </script>
 
 <template>
@@ -23,20 +31,62 @@
             <div class="col-sm-7">
                 <div class="card-body">
                     <h3 class="card-title">
-                        {{ list.ref }}
+                        {{ list.componentCode }} <span class="text-small">{{ list.componentName }}</span>
                     </h3>
-                    <h6>
-                        Famille : {{ list.family }}
-                    </h6>
-                    <h5 class="card-text">
-                        Besoins lancement nouveaux OFs <Fa icon="info-circle"/>
+                    <div>
+                        <table
+                        class="table table-bordered table-hover table-responsive table-sm table-striped">
+                        <thead>
+                            <tr class="bg-primary">
+                                <th colspan="3" class="thNeeds">Besoins</th>
+                                <th colspan="3" class="currentState">Etat courant</th>
+                                <th colspan="2" class="synthesis">Synthèse</th>
+                            </tr>
+                            <tr class="bg-primary text-center text-white">
+                                <th class="thNeeds">Stock Min Composant</th>
+                                <th class="thNeeds">Total Besoin Fabrication</th>
+                                <th class="thNeeds">Total</th>
+                                <th class="currentState">Stocks courant</th>
+                                <th class="currentState">Qté Commandes Achat en cours</th>
+                                <th class="currentState">Total</th>
+                                <th class="synthesis">Total à Approvisionner</th>
+                                <th class="synthesis">Etat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ list.minStock }}</td>
+                                <td>{{ list.totalManufacturingQuantity }}</td>
+                                <td>{{ list.minStock + list.totalManufacturingQuantity }}</td>
+                                <td :class="{'bg-warning': isOverStock}">{{ list.totalCurrentStock }}</td>
+                                <td>{{ list.totalComponentPurchaseQuantity }}</td>
+                                <td>{{
+                                        list.totalComponentPurchaseQuantity
+                                        +  list.totalCurrentStock
+                                    }}</td>
+                                <td>
+                                    {{ totalToBuy }}
+                                </td>
+                                <td class="bg-danger text-white" v-if="totalToBuy > 0">
+                                    Un approvisionnement est nécessaire
+                                </td>
+                                <td v-else class="bg-success text-white">
+                                    Stocks suffisants
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                    <h5 class="card-text" v-if="totalToBuy > 0">
+                        Besoins Nouvel Approvisionnement <Fa icon="info-circle"/>
                     </h5>
                     <table
+                        v-if="totalToBuy > 0"
                         class="table table-bordered table-hover table-responsive table-sm table-striped">
                         <thead>
                             <tr>
                                 <th class="bg-warning text-white" colspan="2">
-                                    Production nécessaire
+                                    Passage de commande nécessaire nécessaire
                                 </th>
                             </tr>
                             <tr class="bg-primary text-center text-white">
@@ -51,27 +101,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <h5 class="card-title">
-                        Dates stock épuisés
-                    </h5>
-                    <div class="table-wrapper">
-                        <table
-                            class="table table-bordered table-hover table-responsive table-sm table-striped">
-                            <thead>
-                                <tr>
-                                    <th class="bg-primary text-center text-white">
-                                        Dates
-                                    </th>
-                                    <th
-                                        v-for="(stockDefault, dateId) in list.componentStockDefaults"
-                                        :key="dateId"
-                                        class="bg-warning text-white">
-                                        {{ stockDefault.date }}
-                                    </th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -79,6 +109,9 @@
 </template>
 
 <style>
+    .text-small {
+        font-size: 0.8rem;
+    }
     .table-wrapper {
         overflow-x: auto;
     }

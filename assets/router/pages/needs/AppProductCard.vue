@@ -7,7 +7,7 @@
         list: {required: true, type: Object},
         productId: {required: true, type: String}
     })
-    console.log('props', props)
+    // console.log('props', props)
     const listDisplayed = useNeeds()
     const normalizedChart = computed(() => listDisplayed.normalizedChartProd(props.productId))
     const totalSynthesis = computed(() => {
@@ -82,7 +82,14 @@
                         </tbody>
                     </table>
                     <h5 class="card-title" v-if="totalToProduced > 0">
-                        Besoins lancement nouveaux OFs <Fa icon="info-circle" title="Les dates correspondent à la date de défaut de stock moins 1 semaine pour intégrer le temps de fabrication"/>
+                        Besoins lancement nouveaux OFs
+                        <Fa
+                            icon="info-circle"
+                            title="Les dates correspondent à la date de défaut de stock moins 4 semaines pour intégrer:
+                            -le temps d'expédition (1sem),
+                            -le temps de stockage Rioz (1sem), 
+                            -le temps de transfert site FAB -> Rioz (1sem),
+                            -et le temps de fabrication (1sem)"/>
                     </h5>
 
                     <ul class="divUl" v-if="totalToProduced > 0">
