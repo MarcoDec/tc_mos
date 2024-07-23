@@ -90,14 +90,14 @@
                                 </th>
                             </tr>
                             <tr class="bg-primary text-center text-white">
-                                <th>Date</th>
                                 <th>Quantité a commander</th>
+                                <th>Pour le</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(orderNeed, index) in list.newSupplierOrderNeeds" :key="index">
-                                <td>{{ orderNeed.date }}</td>
-                                <td>{{ orderNeed.quantity }}</td>
+                            <tr v-for="(orderNeed, index) in list.purchaseNeeds" :key="index">
+                                <td>{{ orderNeed }}</td>
+                                <td>{{ index }}</td>
                             </tr>
                         </tbody>
                     </table>
