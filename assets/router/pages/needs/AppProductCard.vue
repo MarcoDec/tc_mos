@@ -1,8 +1,12 @@
 <script setup>
     import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
+    import zoomPlugin from 'chartjs-plugin-zoom'
     import {computed, defineProps} from 'vue'
     import useNeeds from '../../../stores/needs/needs'
+    import { Chart, registerables } from 'chart.js'
 
+    Chart.register(...registerables)
+    Vue3ChartJs.registerGlobalPlugins([zoomPlugin])
     const props = defineProps({
         list: {required: true, type: Object},
         productId: {required: true, type: String}

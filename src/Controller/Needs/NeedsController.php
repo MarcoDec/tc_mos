@@ -793,14 +793,14 @@ class NeedsController extends AbstractController
 
 
         // Ordonner les labels et les stocks progress
-        $this->sortLabelsAndStockProgress($productChartsData);
+        $this->sortLabelsAndStockProgress($productChartsData, $products);
 
         // On ajoute le stock courant à la 1ère date pour chaque produit
         // Traitement des stocks (remplis aussi ? productChartsData[productId][stockProgress])
         $this->processStocks($stocks, $productChartsData);
 
         // Cumuler les stocks progress pour chaque produit en y ajoutant le stock courant à chaque date
-        $this->cumulateStockProgress($productChartsData);
+        $this->cumulateStockProgress($productChartsData, $stocks);
         // On positionne stockMin pour toutes les dates à la valeur de stockMin à la date du jour
         $this->updateStockMinimum($productChartsData, $products);
 
@@ -819,7 +819,7 @@ class NeedsController extends AbstractController
         }
     }
 
-    private function cumulateStockProgress(array &$productChartsData): void
+    private function cumulateStockProgress(array &$productChartsData, array $stocks): void
     {
         foreach ($productChartsData as &$productChartData) {
             $stockProgress = $productChartData['stockProgress'];
@@ -830,6 +830,29 @@ class NeedsController extends AbstractController
             }
             $productChartData['stockProgress'] = $cumulatedStockProgress;
         }
+        // On recupère le stock courant
+        $totalStocks = [];
+        foreach ($stocks as $stock) {
+            $productId = $stock->getItem()->getId();
+            $quantityValue = $stock->getQuantity()->getValue();
+            if (!isset($totalStocks[$productId])) {
+                $totalStocks[$productId] = 0;
+            }
+            $totalStocks[$productId] += $quantityValue;
+        }
+        foreach ($productChartsData as &$productChartData) {
+            // On récupère la date du 1er stockprogress
+            $date = $productChartData['labels'][0];
+            $previousDate = \DateTime::createFromFormat('d/m/Y', $date);
+            $previousDate->sub(new DateInterval('P1D'));
+            $previousDateStr = $previousDate->format('d/m/Y');
+            $productId = $productChartData['productId'];
+            $totalStock = $totalStocks[$productId];
+            //on ajoute le stock courant à la date précédente
+            $productChartData['stockProgress'] = array_merge([$totalStock], $productChartData['stockProgress']);
+            $productChartData['labels'] = array_merge([$previousDateStr], $productChartData['labels']);
+        }
+
     }
 
     private function processSellingItems(array $sellingItems, array &$productChartsData): void
@@ -879,9 +902,9 @@ class NeedsController extends AbstractController
     }
 
 
-    private function sortLabelsAndStockProgress(array &$productChartsData): void
+    private function sortLabelsAndStockProgress(array &$productChartsData, array $products): void
     {
-        foreach ($productChartsData as &$product) {
+        foreach ($productChartsData as $index => &$product) {
 //            $product['labels'] = array_values(array_unique($product['labels']));
             $uniqueLabelsValues = array_values(array_unique($product['labels']));
             usort($uniqueLabelsValues, function($a, $b) {
@@ -913,6 +936,7 @@ class NeedsController extends AbstractController
 
     private function updateProductChartsDataWithManufacturingOrder(array $productChartsData, int $productId, string $date, float $quantity, Object $manufacturingOrder): array
     {
+
         // On récupère l'élément de productChartsData dont le productId = $productId, si l'élément n'existe pas on le crée
         $foundProductChartDataArray = array_filter($productChartsData, function ($productChartData) use ($productId) {
             return $productChartData['productId'] === $productId;
@@ -927,12 +951,17 @@ class NeedsController extends AbstractController
                 'stockProgress' => [],
                 'sellingOrderItems' => [],
                 'manufacturingOrderItems' => [$date => [$manufacturingOrder]],
+                'manufacturingOrderItemsInfo' => [$date => "+".$quantity." Produits (OF)"],
                 'productId' => $productId
             ];
         } else {
             $foundProductChartData['labels'][] = $date;
             $foundProductChartData['quantity_requested_value'][$date] = $quantity;
             $foundProductChartData['manufacturingOrderItems'][$date][] = $manufacturingOrder;
+            if (!isset($foundProductChartData['manufacturingOrderItemsInfo'][$date])) {
+                $foundProductChartData['manufacturingOrderItemsInfo'][$date] = "+".$quantity." Produits (OF)";
+            }
+            else $foundProductChartData['manufacturingOrderItemsInfo'][$date] .= "+".$quantity." Produits (OF)";
         }
         // On met à jour le tableau productChartsData avec l'élément modifié
         return array_map(function ($productChartData) use ($productId, $foundProductChartData) {
@@ -957,14 +986,21 @@ class NeedsController extends AbstractController
                 'stockMinimum' => [],
                 'stockProgress' => [],
                 'sellingOrderItems' => [$date => $sellingItem->getConfirmedQuantity()->getValue()],
+                'sellingOrderItemsInfo' => [$date => "-".$sellingItem->getConfirmedQuantity()->getValue()." Produits (Expédition)"],
                 'productId' => $productId
             ];
             return $foundProductChartData;
         } else {
             $foundProductChartData['labels'][] = $date;
             $foundProductChartData['confirmed_quantity_value'][$date] = $quantity;
-            if (isset($foundProductChartData['sellingOrderItems'][$date])) $foundProductChartData['sellingOrderItems'][$date] += $sellingItem->getConfirmedQuantity()->getValue();
-            else $foundProductChartData['sellingOrderItems'][$date] = $sellingItem->getConfirmedQuantity()->getValue();
+            if (isset($foundProductChartData['sellingOrderItems'][$date])) {
+                $foundProductChartData['sellingOrderItems'][$date] += $sellingItem->getConfirmedQuantity()->getValue();
+                $foundProductChartData['sellingOrderItemsInfo'][$date] .= "-".$sellingItem->getConfirmedQuantity()->getValue()." Produits (Expédition)";
+            }
+            else {
+                $foundProductChartData['sellingOrderItems'][$date] = $sellingItem->getConfirmedQuantity()->getValue();
+                $foundProductChartData['sellingOrderItemsInfo'][$date] = "-".$sellingItem->getConfirmedQuantity()->getValue()." Produits (Expédition)";
+            }
             // On met à jour le tableau productChartsData avec l'élément modifié
             $newProductsChartData = array_map(function ($productChartData) use ($productId, $foundProductChartData) {
                 if ($productChartData['productId'] === $productId) {

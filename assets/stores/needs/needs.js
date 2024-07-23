@@ -61,22 +61,8 @@ export default defineStore('needs', {
                     data: {
                         datasets: [
                             {
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.2)',
-                                    'rgba(54, 162, 235, 0.2)',
-                                    'rgba(255, 206, 86, 0.2)',
-                                    'rgba(75, 192, 192, 0.2)',
-                                    'rgba(153, 102, 255, 0.2)',
-                                    'rgba(255, 159, 64, 0.2)'
-                                ],
-                                borderColor: [
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 206, 86, 1)',
-                                    'rgba(75, 192, 192, 1)',
-                                    'rgba(153, 102, 255, 1)',
-                                    'rgba(255, 159, 64, 1)'
-                                ],
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(153, 102, 255, 1)',
                                 borderWidth: 1,
                                 data: chartData.stockProgress,
                                 id: 'line',
@@ -84,22 +70,8 @@ export default defineStore('needs', {
                                 type: 'line'
                             },
                             {
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.2)',
-                                    'rgba(54, 162, 235, 0.2)',
-                                    'rgba(255, 206, 86, 0.2)',
-                                    'rgba(75, 192, 192, 0.2)',
-                                    'rgba(153, 102, 255, 0.2)',
-                                    'rgba(255, 159, 64, 0.2)'
-                                ],
-                                borderColor: [
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 206, 86, 1)',
-                                    'rgba(75, 192, 192, 1)',
-                                    'rgba(153, 102, 255, 1)',
-                                    'rgba(255, 159, 64, 1)'
-                                ],
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
                                 borderWidth: 1,
                                 data: chartData.stockMinimum,
                                 id: 'bar',
@@ -112,6 +84,24 @@ export default defineStore('needs', {
                     id: 'chart',
                     options: {
                         plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        let texte = []
+                                        const datasetLabel = tooltipItem.dataset.label || ''
+                                        const dataPoint = tooltipItem.raw;
+                                        texte.push(`${datasetLabel}: ${dataPoint} unités`)
+                                        // Si chartData.sellingOrderItemsInfo[tooltipItem.label] est défini, on affiche ce texte
+                                        if (chartData.sellingOrderItemsInfo && chartData.sellingOrderItemsInfo[tooltipItem.label]) {
+                                            texte.push(chartData.sellingOrderItemsInfo[tooltipItem.label])
+                                        }
+                                        if (chartData.manufacturingOrderItemsInfo && chartData.manufacturingOrderItemsInfo[tooltipItem.label]) {
+                                            texte.push(chartData.manufacturingOrderItemsInfo[tooltipItem.label])
+                                        }
+                                        return texte
+                                    }
+                                }
+                            },
                             zoom: {
                                 zoom: {
                                     mode: 'x',
