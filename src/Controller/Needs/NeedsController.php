@@ -479,6 +479,9 @@ class NeedsController extends AbstractController
         //region Itérer sur les stocks filtrés pour calculer les sommes des quantités de stock
         /** var ComponentStock $filteredStock */
         $stockQuantities = [];
+        foreach($componentIds as $componentId) {
+            $stockQuantities[$componentId] = 0;
+        }
         foreach ($filteredStocks as $filteredStock) {
             $stockComponentId = $filteredStock->getItem()->getId();
             $stockComponentQuantity = $this->calculateConvertQuantity($filteredStock->getQuantity());
@@ -512,9 +515,6 @@ class NeedsController extends AbstractController
                 $stockProgress -= $componentsNeeds[$componentId][$date] ?? 0;
                 //On ajoute les quantités reçues des commandes fournisseurs
                 foreach ($purchaseItems as $purchaseItem) {
-                    dump([
-                        'purchaseItem' => $purchaseItem
-                    ]);
                     $purchaseItemComponent = $purchaseItem->getItem()->getId();
                     $purchaseItemDate = $purchaseItem->getConfirmedDate()->format('d/m/Y');
                     if ($purchaseItemComponent === $componentId && $purchaseItemDate === $date) {
@@ -527,7 +527,37 @@ class NeedsController extends AbstractController
                 //On ajoute le stockProgress à la date courante
                 $componentStocksProgress[$componentId][$date] = $stockProgress;
             }
+            //On ajoute le total des stocks courant le jour précédent le premier jour de la base de temps
+            $previousDate = DateTime::createFromFormat('d/m/Y', $currentTimeBase[0]);
+            $previousDate->sub(new DateInterval('P1D'));
+            $previousDateStr = $previousDate->format('d/m/Y');
+            //On ajoute la date en premier dans la base de temps
+            array_unshift($componentTimeBase[$componentId], $previousDateStr);
+            //On ajoute le stock courant en premier dans le tableau de stockProgress
+            $componentStocksProgress[$componentId][$previousDateStr] = $stockQuantities[$componentId];
         }
+        dump([
+            'componentStocksProgress' => $componentStocksProgress
+        ]);
+        // On trie la base de temps et les componentStocksProgress selon les mêmes index
+        foreach ($componentTimeBase as $componentId => $componentTime) {
+            usort($componentTime, function ($a, $b) {
+                $dateA = DateTime::createFromFormat('d/m/Y', $a);
+                $dateB = DateTime::createFromFormat('d/m/Y', $b);
+                return $dateA <=> $dateB;
+            });
+            $componentTimeBase[$componentId] = $componentTime;
+            $currentComponentStockProgress = $componentStocksProgress[$componentId];
+            uksort($currentComponentStockProgress, function ($a, $b){
+                $dateA = DateTime::createFromFormat('d/m/Y', $a);
+                $dateB = DateTime::createFromFormat('d/m/Y', $b);
+                return $dateA <=> $dateB;
+            });
+            $componentStocksProgress[$componentId] = $currentComponentStockProgress;
+        };
+        dump([
+            'componentStocksProgress sorted' => $componentStocksProgress
+        ]);
         //endregion
         //region On génère les données de stockMinimum pour le composant itéré sur la base de temps
         $componentsStockMinimum = [];
@@ -567,9 +597,7 @@ class NeedsController extends AbstractController
                 }
             }
         }
-        dump([
-            'componentsPurchaseNeeds' => $componentsPurchaseNeeds
-        ]);
+        
         //endregion
         //region génération des données des graphiques composants
         $componentChartData = [];
