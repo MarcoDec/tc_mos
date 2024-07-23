@@ -55,6 +55,7 @@ Use App\Entity\Purchase\Component\Component;
 ]
 class NeedsController extends AbstractController
 {
+    //region déclaration des propriétés, constantes et constructeur
     private ProductItemRepository $productItemRepository;
     private ProductStockRepository $productStockRepository;
     private ProductRepository $productRepository;
@@ -110,7 +111,8 @@ class NeedsController extends AbstractController
 
     const MANUFACURING_ORDER_DELAY_BEFORE_CUSTOMER_RECEPTION = 'P4W';
     const PURCHASE_ORDER_DELAY_BEFORE_COMPONENT_USE = 'P1W';
-
+    //endregion
+    
     #[Route('/api/needs/products', name: 'needs_products', methods: ['GET'])]
     public function index(): JsonResponse
     {
@@ -536,9 +538,6 @@ class NeedsController extends AbstractController
             //On ajoute le stock courant en premier dans le tableau de stockProgress
             $componentStocksProgress[$componentId][$previousDateStr] = $stockQuantities[$componentId];
         }
-        dump([
-            'componentStocksProgress' => $componentStocksProgress
-        ]);
         // On trie la base de temps et les componentStocksProgress selon les mêmes index
         foreach ($componentTimeBase as $componentId => $componentTime) {
             usort($componentTime, function ($a, $b) {
@@ -555,9 +554,6 @@ class NeedsController extends AbstractController
             });
             $componentStocksProgress[$componentId] = $currentComponentStockProgress;
         };
-        dump([
-            'componentStocksProgress sorted' => $componentStocksProgress
-        ]);
         //endregion
         //region On génère les données de stockMinimum pour le composant itéré sur la base de temps
         $componentsStockMinimum = [];
@@ -617,7 +613,13 @@ class NeedsController extends AbstractController
             $componentStockProgress = array_values($componentStocksProgress[$componentId] ?? []);
             $componentStockMinimum = array_values($componentsStockMinimum[$componentId] ?? []);
             $componentPurchaseNeeds = $componentsPurchaseNeeds[$componentId] ?? [];
-            $currentPurchaseItems = $purchaseItems[$componentId] ?? [];
+            $currentFilteredPurchaseItems = array_filter($purchaseItems, function ($purchaseItem) use ($componentId) {
+                return $purchaseItem->getItem()->getId() === $componentId;
+            });
+            $currentPurchaseItems = array_map(function ($purchaseItem) {
+                return $purchaseItem->getConfirmedQuantity()->getValue() - $purchaseItem->getReceivedQuantity()->getValue();
+            }, $currentFilteredPurchaseItems);
+            //$currentPurchaseItems = $purchaseItems[$componentId] ?? [];
             $totalComponentPurchaseQuantity = array_sum($currentPurchaseItems);
             $componentChartData[] = [
                 'componentId' => $id,
@@ -1156,9 +1158,14 @@ class NeedsController extends AbstractController
      * @param array $productChartsData
      * @return array
      */
-    private function generateNewOFNeedsData(Product $prod, array $productChartsData): array
+    private function generateNewOFNeedsData(Product $prod, array $productChartsData, $totalSellingQuantity, $totalOnGoingManufacturing, $allStock): array
     {
         $newOFNeeds = [];
+        $minStock = $prod->getMinStock()->getValue();
+        $maximumToOrder = $minStock + $totalSellingQuantity - $allStock -$totalOnGoingManufacturing;
+        if ($maximumToOrder < 0) {
+            $maximumToOrder = 0;
+        }
         //On récupère les données de productChartsData pour le produit $prod
         $currentProductChartsData = array_values(array_filter($productChartsData, function ($productChartData) use ($prod) {
             return $productChartData['productId'] === $prod->getId();
@@ -1168,12 +1175,14 @@ class NeedsController extends AbstractController
             if (isset($currentProductChartsData['stockProgress'][$index]) && isset($currentProductChartsData['stockMinimum'][$index])) {
                 $stockProgress = $currentProductChartsData['stockProgress'][$index];
                 $stockMinimum = $currentProductChartsData['stockMinimum'][$index];
-                if ($stockProgress + $cumulatedNewOFQuantity < $stockMinimum) {
+                if ($stockProgress + $cumulatedNewOFQuantity < $stockMinimum && $maximumToOrder > $cumulatedNewOFQuantity) {
                     $dateTime = DateTime::createFromFormat('d/m/Y', $date);
                     if ($dateTime) {
                         $dateTime->sub(new DateInterval(self::MANUFACURING_ORDER_DELAY_BEFORE_CUSTOMER_RECEPTION));
                         $quantity = $stockMinimum - $stockProgress - $cumulatedNewOFQuantity;
+                        // On vérifie si la quantité est positive
                         if ($quantity > 0) {
+                            $quantity = $quantity > $maximumToOrder ? $maximumToOrder : $quantity;
                             $newOFNeeds[] = [
                                 'date' => $dateTime->format('d/m/Y'),
                                 'quantity' => $quantity,
@@ -1265,10 +1274,10 @@ class NeedsController extends AbstractController
 
         $familyId = $prod->getFamily()->getId();
         $minStock = $prod->getMinStock()->getValue();
-        $newOFNeeds = $this->generateNewOFNeedsData($prod, $productChartsData);
         $allStock = $this->generateProductStockData($prod, $stocks);
         $totalSellingQuantity = $this->generateMaxQuantityData($prod, $productChartsData);
         $totalOnGoingManufacturing = $this->generateTotalOnGoingManufacturing($prod, $productChartsData);
+        $newOFNeeds = $this->generateNewOFNeedsData($prod, $productChartsData, $totalSellingQuantity, $totalOnGoingManufacturing, $allStock);
         $stockDefault = $this->generateStockDefault($prod, $productChartsData);
 
         return [
