@@ -7,7 +7,6 @@
         componentId: {required: true, type: String},
         list: {required: true, type: Object}
     })
-    console.log(props)
     const listDisplayed = useNeeds()
     const totalToBuy = computed(() => {
         const total = props.list.totalManufacturingQuantity + props.list.minStock - props.list.totalCurrentStock - props.list.totalComponentPurchaseQuantity
@@ -78,7 +77,7 @@
                     </table>
                     </div>
                     <h5 class="card-text" v-if="totalToBuy > 0">
-                        Besoins Nouvel Approvisionnement <Fa icon="info-circle"/>
+                        Besoins Nouvel Approvisionnement <Fa icon="info-circle" title="Les dates correspondent aux dates de début de fabrication moins le temps de stockage avant production (1 sem)"/>
                     </h5>
                     <table
                         v-if="totalToBuy > 0"
@@ -91,7 +90,7 @@
                             </tr>
                             <tr class="bg-primary text-center text-white">
                                 <th>Quantité a commander</th>
-                                <th>Pour le</th>
+                                <th>Pour une réception le</th>
                             </tr>
                         </thead>
                         <tbody>

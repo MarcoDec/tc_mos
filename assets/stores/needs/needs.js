@@ -30,7 +30,6 @@ export default defineStore('needs', {
         showComponent() {
             this.componentsPage++
             const needs = this.components.component
-            console.log('this.components', this.components)
             //needs est in tableau d'objets, on ne doit garder que les 15 * componentsPage premiers éléments
             this.displayedComponents = needs.slice(0, this.componentsPage * 15)
         },
@@ -54,9 +53,7 @@ export default defineStore('needs', {
         needsProduct: state => ({...state.displayedProducts}),
         normalizedChartProd() {
             return productId => {
-                // console.log('normalizedChartProd', productId)
                 const chartData = this.chartsProduct(productId)
-                // console.log('chartData', productId, chartData)
                 return {
                     data: {
                         datasets: [

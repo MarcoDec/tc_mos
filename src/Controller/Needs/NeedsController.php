@@ -229,7 +229,7 @@ class NeedsController extends AbstractController
      */
     public function getComponents(): JsonResponse
     {
-        // Récupérer l'instance de Predis\Client à partir de RedisService
+        //region On récupére l'instance de Predis\Client à partir de RedisService
         $redisClient = $this->redisService->getClient();
         // Créer une instance de RedisAdapter en passant l'instance de Predis\Client
         $redisAdapter = new RedisAdapter($redisClient);
@@ -243,8 +243,9 @@ class NeedsController extends AbstractController
         $cacheCreationDatesComponent = $cacheItemCreationDateComponent->get();
 
         $cacheDateComponent = $cache->getItem(self::API_NEEDS_COMPONENTS);
-
-        //region Vérifie si les données de produit sont en cache
+        //endregion
+        //region Récupération des données d'entrée
+        //region On vérifie si les données de produit sont en cache
         $cacheproducts = $cache->getItem(self::API_NEEDS_PRODUCTS);
         if (!$cacheproducts->isHit()) {
             // $products = $this->productRepository->findByEmbBlockerAndEmbState();
@@ -258,7 +259,7 @@ class NeedsController extends AbstractController
             $products = $cacheproducts->get();
         }
         //endregion
-        //region Vérifie si les données stocks sont en cache
+        //region On vérifie si les données stocks sont en cache
         $cacheProductStocks = $cache->getItem(self::API_NEEDS_STOCKS_PRODUCT);
         if (!$cacheProductStocks->isHit()) {
             // Les données stocks ne sont pas en cache, donc on les génère et on les met en cache
@@ -275,7 +276,7 @@ class NeedsController extends AbstractController
             $stocks = $cacheProductStocks->get();
         }
         //endregion
-        //region Vérifie si les données de vente sont en cache
+        //region On vérifie si les données de vente sont en cache
         $cacheItemSelling = $cache->getItem(self::API_NEEDS_SELLING_ORDER_ITEM);
         if (!$cacheItemSelling->isHit()) {
             // Les données de vente ne sont pas en cache, donc on les génère et on les met en cache
@@ -290,7 +291,7 @@ class NeedsController extends AbstractController
             $sellingItems = $cacheItemSelling->get();
         }
         //endregion
-        //region Vérifie si les données fabrication sont en cache
+        //region On vérifie si les données fabrication sont en cache
         $cacheItemManufacturing = $cache->getItem(self::API_NEEDS_MANUFACTURING_ORDERS);
         if (!$cacheItemManufacturing->isHit()) {
             // Les données de fabrication ne sont pas en cache, donc on les génère et on les met en cache
@@ -305,21 +306,16 @@ class NeedsController extends AbstractController
             $manufacturingOrders = $cacheItemManufacturing->get();
         }
         //endregion
-        // dump([
-        //     "Before generateProductChartsData" => [
-        //         "products" => $products 
-        //     ]
-        // ]);
+        //region On génère les données graphiques produits
         $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks, $products);
-        // dump([
-        //     "After generateProductChartsData" => $productChartsData
-        // ]);
         $productsData = [];
         foreach ($products as $prod) {
             $productsData[] = $this->generateProductData($prod, $productChartsData, $stocks);
         }
         $productChartsData = $this->finalizeProductChartsData($productChartsData);
-
+        //endregion
+        //endregion
+        
         //region On initialise le calcul des besoins en composants à partir des 'newOfsNeeds' dans productsData et des 'quantity_requested_value' dans productChartsData
         $componentsNeeds = [];
         foreach ($products as $prod) {
@@ -347,9 +343,6 @@ class NeedsController extends AbstractController
             } else {
                 $nomenclatures = $cacheItemNomenclature->get();
             }
-            // dump([
-            //     'nomenclatures' => $nomenclatures
-            // ]);
             //endregion
             //region On parcourt chaque item de la nomenclature et on calcule les besoins en composants
             /** @var Nomenclature $itemNomenclature */
@@ -406,9 +399,10 @@ class NeedsController extends AbstractController
             $componentsNeeds[$componentId] = $componentNeeds;
         }
         //endregion
-        //On récupère les ids des composants
+        
+        //region On récupère les ids des composants
         $componentIds = array_keys($componentsNeeds);
-
+        //endregion
         //region Récupération des données composants
         $cacheCreationDateComponent = $cache->getItem(self::API_NEEDS_CREATION_DATE_COMPONENT);
         $cacheComponents = $cache->getItem(self::API_NEEDS_COMPONENTS);
@@ -448,23 +442,31 @@ class NeedsController extends AbstractController
             /** @var PurchaseItem $purchaseItems */
             $purchaseItems = $cachePurchaseItem->get();
         }
-        dump([
-            'filteredStocks' => $filteredStocks,
-            'purchaseItems' => $purchaseItems
-        ]);
         //endregion
-        // On établit la base de temps commune pour les componentsNeeds, et les purchaseItems
+        
+        //region ## $totalManufacturingQuantity $totalOnGoingPurchaseQuantity ## On établit la base de temps commune pour les componentsNeeds, et les purchaseItems
         $componentTimeBase = [];
+        $totalManufacturingQuantity = [];
         foreach ($componentsNeeds as $componentId => $componentNeeds) {
             foreach ($componentNeeds as $date => $quantity) {
+                if (!isset($totalManufacturingQuantity[$componentId])) {
+                    $totalManufacturingQuantity[$componentId] = 0;
+                }
+                $totalManufacturingQuantity[$componentId] += $quantity;
                 if (!in_array($date, $componentTimeBase)) {
                     $componentTimeBase[$componentId][] = $date;
                 }
             }
         }
+        $totalOnGoingPurchaseQuantity = [];
         foreach ($purchaseItems as $purchaseItem) {
             $purchaseItemComponent = $purchaseItem->getItem()->getId();
             $purchaseItemDate = $purchaseItem->getConfirmedDate()->format('d/m/Y');
+            if (!isset($totalOnGoingPurchaseQuantity[$purchaseItemComponent])) {
+                $totalOnGoingPurchaseQuantity[$purchaseItemComponent] = 0;
+            }
+            $totalOnGoingPurchaseQuantity[$purchaseItemComponent] += $purchaseItem->getConfirmedQuantity()->getValue();
+            $totalOnGoingPurchaseQuantity[$purchaseItemComponent] -= $purchaseItem->getReceivedQuantity()->getValue();
             if (!in_array($purchaseItemDate, $componentTimeBase)) {
                 $componentTimeBase[$purchaseItemComponent][] = $purchaseItemDate;
             }
@@ -478,7 +480,9 @@ class NeedsController extends AbstractController
             });
             $componentTimeBase[$componentId] = $componentTime;
         };
-        //region Itérer sur les stocks filtrés pour calculer les sommes des quantités de stock
+        //endregion
+        
+        //region ## $stockQuantities[$stockComponentId] ## Itérer sur les stocks filtrés pour calculer les sommes des quantités de stock 
         /** var ComponentStock $filteredStock */
         $stockQuantities = [];
         foreach($componentIds as $componentId) {
@@ -487,11 +491,7 @@ class NeedsController extends AbstractController
         foreach ($filteredStocks as $filteredStock) {
             $stockComponentId = $filteredStock->getItem()->getId();
             $stockComponentQuantity = $this->calculateConvertQuantity($filteredStock->getQuantity());
-            // dump([
-            //     'stockComponentId' => $stockComponentId,
-            //     'filteredStock Quantity' => $filteredStock->getQuantity(),
-            //     'stockComponentQuantity' => $stockComponentQuantity
-            // ]);
+
             if (!isset($stockQuantities[$stockComponentId])) {
                 $stockQuantities[$stockComponentId] = 0;
             }
@@ -499,6 +499,7 @@ class NeedsController extends AbstractController
             $stockQuantities[$stockComponentId] += $stockComponentQuantity;
         }
         //endregion
+
         //region A partir de la base de temps pour chaque composant, on calcule l'évolution des stocks
         // On récupère les id de composant à partir de la base de temps
         $componentStocksProgress = [];
@@ -555,8 +556,10 @@ class NeedsController extends AbstractController
             $componentStocksProgress[$componentId] = $currentComponentStockProgress;
         };
         //endregion
-        //region On génère les données de stockMinimum pour le composant itéré sur la base de temps
+        
+        //region ## $stocksMinimum[$componentId] ## On génère les données de stockMinimum pour le composant et on l'itère sur la base de temps
         $componentsStockMinimum = [];
+        $stocksMinimum = [];
         foreach ($componentTimeBase as $componentId => $componentTime) {
             // On récupère le stockMinimum pour le composant courant dans $filteredComponents
             $currentFilteredComponents = array_filter($filteredComponents, function ($component) use ($componentId) {
@@ -565,14 +568,22 @@ class NeedsController extends AbstractController
             $currentComponent = array_values($currentFilteredComponents)[0];
             // $currentComponent = $filteredComponents[$componentId];
             $stockMinimum = $currentComponent->getMinStock()->getValue();
+            $stocksMinimum[$componentId] = $stockMinimum;
             foreach ($componentTime as $date) {
                 $componentsStockMinimum[$componentId][$date] = $stockMinimum;
             }
         }
         //endregion
+        
         //region Calcul des besoins de commande fournisseur pour chaque composant
         $componentsPurchaseNeeds = [];
-        foreach ($componentTimeBase as $componentTime) {
+
+        foreach ($componentTimeBase as $componentId => $componentTime) {
+            $maximumToOrder = $stocksMinimum[$componentId] + $totalManufacturingQuantity[$componentId] - $stockQuantities[$componentId] - $totalOnGoingPurchaseQuantity[$componentId];
+
+            if ($maximumToOrder < 0) {
+                $maximumToOrder = 0;
+            }
             $componentsPurchaseNeeds[$componentId] = [];
             $cumulatedPurchaseNeeds = 0;
             foreach ($componentTime as $date) {
@@ -583,18 +594,23 @@ class NeedsController extends AbstractController
                     $stockProgress = 0;
                 }
                 $stockMinimum = $componentsStockMinimum[$componentId][$date];
-                if (($stockProgress + $cumulatedPurchaseNeeds) < $stockMinimum) {
+                if (($stockProgress + $cumulatedPurchaseNeeds) < $stockMinimum && $cumulatedPurchaseNeeds < $maximumToOrder) {
                     $quantity = $stockMinimum - ($stockProgress + $cumulatedPurchaseNeeds);
                     //On positionne la date de besoin de commande fournisseur à 1 mois avant la date courante en utilisant la constante MANUFACURING_ORDER_DELAY_BEFORE_CUSTOMER_RECEPTION
                     $dateObject = DateTime::createFromFormat('d/m/Y', $date); //new DateInterval(self::MANUFACURING_ORDER_DELAY_BEFORE_CUSTOMER_RECEPTION)
                     $dateObject->sub(new DateInterval(self::PURCHASE_ORDER_DELAY_BEFORE_COMPONENT_USE));
-                    $componentsPurchaseNeeds[$componentId][$date] = $quantity;
-                    $cumulatedPurchaseNeeds += $quantity;
+                    //On vérifie si la quantité est positive
+                    if ($quantity > 0) {
+                        $quantity = $cumulatedPurchaseNeeds + $quantity > $maximumToOrder ? $maximumToOrder - $cumulatedPurchaseNeeds : $quantity;
+                        $componentsPurchaseNeeds[$componentId][$dateObject->format('d/m/Y')] = $quantity;
+                        $cumulatedPurchaseNeeds += $quantity;
+                    }
                 }
             }
         }
         
         //endregion
+        
         //region génération des données des graphiques composants
         $componentChartData = [];
         $componentfield = [];
@@ -642,7 +658,9 @@ class NeedsController extends AbstractController
                 'purchaseNeeds' => $componentPurchaseNeeds
             ];
         }
-
+        //endregion
+        
+        //region mise en cache ?
         if($cacheItemCreationDate->isHit() === false) {
             if($cacheItemCreationDate->getMetadata() === []) {
                 $cacheItemCreationDate->set($cacheCreationDates);
@@ -666,7 +684,7 @@ class NeedsController extends AbstractController
             }
         }  
         $cacheCreationDatesComponent = $cache->getItem(self::API_NEEDS_CREATION_DATE_COMPONENT)->get();
-
+        //endregion
         return new JsonResponse([
             'componentChartData' => $componentChartData,
             'component' => $componentfield
