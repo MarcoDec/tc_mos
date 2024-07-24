@@ -162,4 +162,7 @@ const app = createApp(App)
     .component('Fa', Fa)
     .use(pinia)
     .use(PortalVue)
+app.config.errorHandler = (err, vm, info) => {
+    console.error('Captured in errorHandler:', err, info)
+    }
 useUser().fetch().then(() => app.use(router).mount('#vue'))
