@@ -15,6 +15,9 @@
         }
         return total
     })
+    const formatNumber = (number) => {
+    return number.toFixed(2);
+}
 </script>
 
 <template>
@@ -54,17 +57,14 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>{{ list.minStock }}</td>
-                                <td>{{ list.totalManufacturingQuantity }}</td>
-                                <td>{{ list.minStock + list.totalManufacturingQuantity }}</td>
+                                <td>{{ formatNumber(list.minStock) }}</td>
+                                <td>{{ formatNumber(list.totalManufacturingQuantity) }}</td>
+                                <td>{{ formatNumber(list.minStock + list.totalManufacturingQuantity) }}</td>
                                 <td :class="{'bg-warning': isOverStock}">{{ list.totalCurrentStock }}</td>
-                                <td>{{ list.totalComponentPurchaseQuantity }}</td>
-                                <td>{{
-                                        list.totalComponentPurchaseQuantity
-                                        +  list.totalCurrentStock
-                                    }}</td>
+                                <td>{{ formatNumber(list.totalComponentPurchaseQuantity) }}</td>
+                                <td>{{ formatNumber(list.totalComponentPurchaseQuantity +  list.totalCurrentStock) }}</td>
                                 <td>
-                                    {{ totalToBuy }}
+                                    {{ formatNumber(totalToBuy) }}
                                 </td>
                                 <td class="bg-danger text-white" v-if="totalToBuy > 0">
                                     Un approvisionnement est nécessaire
@@ -95,7 +95,7 @@
                         </thead>
                         <tbody>
                             <tr v-for="(orderNeed, index) in list.purchaseNeeds" :key="index">
-                                <td>{{ orderNeed }}</td>
+                                <td>{{ formatNumber(orderNeed) }}</td>
                                 <td>{{ index }}</td>
                             </tr>
                         </tbody>

@@ -458,9 +458,16 @@ class NeedsController extends AbstractController
                 }
             }
         }
+        dump([
+            'totalManufacturingQuantity' => $totalManufacturingQuantity,
+        ]);
         $totalOnGoingPurchaseQuantity = [];
         foreach ($purchaseItems as $purchaseItem) {
             $purchaseItemComponent = $purchaseItem->getItem()->getId();
+            //Si l'id du composant n'est pas dans componentIds, on zappe
+            if (!in_array($purchaseItemComponent, $componentIds)) {
+                continue;
+            }
             $purchaseItemDate = $purchaseItem->getConfirmedDate()->format('d/m/Y');
             if (!isset($totalOnGoingPurchaseQuantity[$purchaseItemComponent])) {
                 $totalOnGoingPurchaseQuantity[$purchaseItemComponent] = 0;
@@ -469,6 +476,12 @@ class NeedsController extends AbstractController
             $totalOnGoingPurchaseQuantity[$purchaseItemComponent] -= $purchaseItem->getReceivedQuantity()->getValue();
             if (!in_array($purchaseItemDate, $componentTimeBase)) {
                 $componentTimeBase[$purchaseItemComponent][] = $purchaseItemDate;
+            }
+        }
+        //On ajoute à totalOngoingPurchaseQuantity les valeurs pour les componentIds qui n'ont pas de purchaseItems et on positionne la quantité à 0
+        foreach ($componentIds as $componentId) {
+            if (!isset($totalOnGoingPurchaseQuantity[$componentId])) {
+                $totalOnGoingPurchaseQuantity[$componentId] = 0;
             }
         }
         // On trie la base de temps
@@ -620,7 +633,6 @@ class NeedsController extends AbstractController
             }))[0];
             $component = $currentComponent;
             $minStock = $component->getMinStock()->getValue();
-            $totalManufacturingQuantity = array_sum($componentsNeeds[$componentId]);
             $totalCurrentStock = $stockQuantities[$componentId] ?? 0;
             $id = $component->getId();
             $componentName = $component->getName();
@@ -652,7 +664,7 @@ class NeedsController extends AbstractController
                 'componentCode' => $componentCode,
                 'componentUnit' => $componentUnit,
                 'minStock' => $minStock,
-                'totalManufacturingQuantity' => $totalManufacturingQuantity,
+                'totalManufacturingQuantity' => $totalManufacturingQuantity[$componentId],
                 'totalCurrentStock' => $totalCurrentStock,
                 'totalComponentPurchaseQuantity' => $totalComponentPurchaseQuantity,
                 'purchaseNeeds' => $componentPurchaseNeeds
@@ -919,6 +931,9 @@ class NeedsController extends AbstractController
             $previousDate->sub(new DateInterval('P1D'));
             $previousDateStr = $previousDate->format('d/m/Y');
             $productId = $productChartData['productId'];
+            if (!isset($totalStocks[$productId])) {
+                $totalStocks[$productId] = 0;
+            }
             $totalStock = $totalStocks[$productId];
             //on ajoute le stock courant à la date précédente
             $productChartData['stockProgress'] = array_merge([$totalStock], $productChartData['stockProgress']);
