@@ -13,7 +13,7 @@
         loaded.value = true
     })
     onUnmounted(async () => {
-        listDisplayed.initiale()
+        listDisplayed.initialise()
     })
 </script>
 

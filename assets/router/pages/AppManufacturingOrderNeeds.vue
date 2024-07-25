@@ -56,10 +56,17 @@
         {{ title }} - {{ company.name }}
     </h1>
     <AppTabs id="gui-start">
-        <AppTab id="collapse-new-ofs" active icon="tools" title="Calcul des besoins de création d'OF" tabs="gui-start">
+        <AppTab id="collapse-on-going-local-of" active icon="tools" title="OFs actuellement en cours" tabs="gui-start">
             <div class="tab-container">
-                <h4>{{ storeCollapseNewOfsItems.items.length }} Commandes/OFs TCONCEPT à passer pour les 2 prochaines semaines</h4>
-                <AppManufacturingTable v-if="isLoaded" :id="route.name" :form="form" :fields="fieldsCollapsenewOfs" :items="storeCollapseNewOfsItems.items" title="collapse new Ofs"/>
+                <h4> {{ storeCollapseOnGoingLocalOfItems.items.length }} OFs TCONCEPT en cours de fabrication localement</h4>
+                <AppManufacturingTable
+                    v-if="isLoaded"
+                    :id="route.name"
+                    :key="`collapse-on-going-local-of-${ofToConfirmed}`"
+                    :form="form"
+                    :fields="fieldsCollapseOnGoingLocalOf"
+                    :items="storeCollapseOnGoingLocalOfItems.items"
+                    title="collapse onGoing LocalOf"/>
             </div>
         </AppTab>
         <AppTab id="collapse-ofs-to-confirm" icon="tools" title="Ordres de fabrication en attente de confirmation" tabs="gui-start">
@@ -76,17 +83,10 @@
                     @o-fs-confirmed="onOFsConfirmed"/>
             </div>
         </AppTab>
-        <AppTab id="collapse-on-going-local-of" icon="tools" title="OFs actuellement en cours" tabs="gui-start">
+        <AppTab id="collapse-new-ofs" icon="tools" title="Calcul des besoins de création d'OF" tabs="gui-start">
             <div class="tab-container">
-                <h4> {{ storeCollapseOnGoingLocalOfItems.items.length }} OFs TCONCEPT en cours de fabrication localement</h4>
-                <AppManufacturingTable
-                    v-if="isLoaded"
-                    :id="route.name"
-                    :key="`collapse-on-going-local-of-${ofToConfirmed}`"
-                    :form="form"
-                    :fields="fieldsCollapseOnGoingLocalOf"
-                    :items="storeCollapseOnGoingLocalOfItems.items"
-                    title="collapse onGoing LocalOf"/>
+                <h4>{{ storeCollapseNewOfsItems.items.length }} Commandes/OFs TCONCEPT à passer pour les 2 prochaines semaines</h4>
+                <AppManufacturingTable v-if="isLoaded" :id="route.name" :form="form" :fields="fieldsCollapsenewOfs" :items="storeCollapseNewOfsItems.items" title="collapse new Ofs"/>
             </div>
         </AppTab>
     </AppTabs>

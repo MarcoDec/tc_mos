@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, ref} from 'vue'
+    import {computed, ref, useAttrs} from 'vue'
     import AppSupplierShowTabAccounting from './tabs/AppSupplierShowTabAccounting.vue'
     import AppSupplierShowTabAddresses from './tabs/AppSupplierShowTabAddresses.vue'
     import AppSupplierShowTabContacts from './tabs/AppSupplierShowTabContacts.vue'
@@ -18,7 +18,7 @@
 
     const route = useRoute()
     const idSupplier = route.params.id_supplier
-
+    const attrs = useAttrs()
     //Création des variables locales
     const isError2 = ref(false)
     const violations2 = ref([])
@@ -68,7 +68,7 @@
 </script>
 
 <template>
-    <div>
+    <div v-bind="attrs">
         <div v-if="isError2" class="alert alert-danger" role="alert">
             <div v-for="violation in violations2" :key="violation">
                 <li>{{ violation.propertyPath }} {{ violation.message }}</li>

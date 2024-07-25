@@ -72,6 +72,10 @@ export const useEngineStore = defineStore('engines', {
     state: () => ({
         items: [],
         currentPage: 1,
+        firstPage: 1,
+        lastPage: "1",
+        nextPage: "1",
+        previousPage: "1",
         pagination: true,
         engines: {},
         isLoaded: false,

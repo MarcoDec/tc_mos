@@ -16,7 +16,7 @@
 
     })
     onUnmounted(async () => {
-        listDisplayed.initiale()
+        listDisplayed.initialise()
     })
 </script>
 

@@ -35,10 +35,12 @@ final class ComponentRepository extends ServiceEntityRepository {
     public function find($id, $lockMode = null, $lockVersion = null): ?Component {
         $query = $this->createQueryBuilder('c')
             ->addSelect('u')
-            ->leftJoin('c.unit', 'u', Join::WITH, 'u.deleted = FALSE')
-            ->leftJoin( 'c.family', 'f', Join::WITH, 'f.deleted = FALSE')
+            ->leftJoin('c.unit', 'u')
+            ->leftJoin( 'c.family', 'f')
             ->where('c.deleted = FALSE')
             ->andWhere('c.id = :id')
+            ->andWhere('u.deleted = FALSE')
+            ->andWhere('f.deleted = FALSE')
             ->setParameter('id', $id)
             ->getQuery();
         try {
@@ -55,8 +57,9 @@ final class ComponentRepository extends ServiceEntityRepository {
         return $this->createQueryBuilder('c')
             ->select('partial c.{id}')
             ->addSelect('partial f.{code, id}')
-            ->innerJoin('c.family', 'f', Join::WITH, 'f.deleted = FALSE')
+            ->innerJoin('c.family', 'f')
             ->where('c.deleted = FALSE')
+            ->andWhere('f.deleted = FALSE')
             ->orderBy('c.id')
             ->getQuery()
             ->getResult();
@@ -73,8 +76,9 @@ final class ComponentRepository extends ServiceEntityRepository {
     {
         $queryBuilder = $this->createQueryBuilder('c')
             ->addSelect('u') // Add the related entities to the select
-            ->leftJoin('c.unit', 'u', Join::WITH, 'u.deleted = FALSE')
+            ->leftJoin('c.unit', 'u')
             ->where('c.deleted = FALSE')
+            ->andWhere('u.deleted = FALSE')
             ->andWhere('c.id = :id')
             ->setParameter('id', $id);
     

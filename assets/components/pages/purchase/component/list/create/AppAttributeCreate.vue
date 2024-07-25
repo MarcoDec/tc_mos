@@ -8,7 +8,8 @@
     await storeAttributes.getAttributes()
 
     defineProps({
-        fieldsAttributs: {required: true, type: Array}
+        fieldsAttributs: {required: true, type: Array},
+        myBooleanFamily: {required: true, type: Boolean}
         // familyValueChanged: {required: true, type: Boolean}
     })
 

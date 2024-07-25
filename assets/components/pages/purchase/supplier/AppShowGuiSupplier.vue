@@ -2,6 +2,8 @@
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
     import AppSupplierFormShow from './AppSupplierFormShow.vue'
     import AppSupplierShowInlist from './bottom/AppSupplierShowInlist.vue'
+    import { useAttrs } from 'vue'
+    const attrs = useAttrs()
     // import {useRoute} from 'vue-router'
     //
     // const route = useRoute()
@@ -16,11 +18,11 @@
                 </div>
             </template>
             <template #gui-left>
-                <AppSuspense> <AppSupplierFormShow/></AppSuspense>
+                <AppSuspense><AppSupplierFormShow v-bind="attrs"/></AppSuspense>
             </template>
             <template #gui-bottom>
                 <AppSuspense>
-                    <AppSupplierShowInlist/>
+                    <AppSupplierShowInlist v-bind="attrs"/>
                 </AppSuspense>
             </template>
             <template #gui-right/>

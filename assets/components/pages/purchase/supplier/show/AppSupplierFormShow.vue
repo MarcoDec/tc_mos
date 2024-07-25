@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, ref} from 'vue'
+    import {computed, ref, useAttrs} from 'vue'
     import AppSupplierShowTabAccounting from './tabs/AppSupplierShowTabAccounting.vue'
     import AppSupplierShowTabAddresses from './tabs/AppSupplierShowTabAddresses.vue'
     import AppSupplierShowTabContacts from './tabs/AppSupplierShowTabContacts.vue'
@@ -17,6 +17,7 @@
     import AppPricesTablePage from "../../../prices/AppPricesTablePage.vue"
     import useUser from "../../../../../stores/security"
 
+    const attrs = useAttrs()
     const route = useRoute()
     const idSupplier = route.params.id_supplier
 
@@ -90,7 +91,7 @@
             <li>{{ violation.propertyPath }} {{ violation.message }}</li>
         </div>
     </div>
-    <AppTabs id="gui-start" class="gui-start-content">
+    <AppTabs id="gui-start" class="gui-start-content" v-bind="attrs">
         <AppTab
             id="gui-start-files"
             active

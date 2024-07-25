@@ -60,7 +60,7 @@
                                 <td>{{ formatNumber(list.minStock) }}</td>
                                 <td>{{ formatNumber(list.totalManufacturingQuantity) }}</td>
                                 <td>{{ formatNumber(list.minStock + list.totalManufacturingQuantity) }}</td>
-                                <td :class="{'bg-warning': isOverStock}">{{ list.totalCurrentStock }}</td>
+                                <td>{{ list.totalCurrentStock }}</td>
                                 <td>{{ formatNumber(list.totalComponentPurchaseQuantity) }}</td>
                                 <td>{{ formatNumber(list.totalComponentPurchaseQuantity +  list.totalCurrentStock) }}</td>
                                 <td>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, nextTick, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, nextTick, onMounted, onBeforeUnmount, useAttrs } from 'vue'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 
 // Références pour les éléments DOM
@@ -8,6 +8,7 @@ const guiHeader = ref(null)
 const leftElement = ref(null)
 const rightElement = ref(null)
 const bottomElement = ref(null)
+const attrs = useAttrs()
 
 // Etat pour le plein écran
 const isFullscreen = ref({
@@ -132,7 +133,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div id="gui-wrapper" :style="guiWrapperStyle">
+  <div id="gui-wrapper" :style="guiWrapperStyle" v-bind="attrs">
     <div id="gui-header" ref="guiHeader" :style="guiHeaderStyle">
       <slot name="gui-header"/>
     </div>
@@ -202,9 +203,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-#gui-wrapper {
-}
-
 #gui-header {
   position: fixed;
 }

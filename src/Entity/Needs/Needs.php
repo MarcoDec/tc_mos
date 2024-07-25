@@ -5,26 +5,27 @@ namespace App\Entity\Needs;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 
-/**
- * @ApiResource(
- *     collectionOperations={
- *         "get"={
- *             "method"="GET",
- *             "path"="/api/needs/products",
- *         },
- *         "get_components"={
- *             "method"="GET",
- *             "path"="/api/needs/components",
- *         }
- *     },
- *     itemOperations={
- *         "get"={
- *             "method"="GET",
- *             "path"="/api/needs/{id}"
- *         }
- *     }
- * )
- */
+#[
+    ApiResource(
+        collectionOperations: [
+            'get' => [
+                'method' => 'GET',
+                'path' => '/api/needs/products',
+            ],
+            'get_components' => [
+                'method' => 'GET',
+                'path' => '/api/needs/components',
+            ],
+        ],
+        itemOperations: [
+            'get' => [
+                'method' => 'GET',
+                'path' => '/api/needs/{id}',
+            ],
+        ]
+    )
+
+]
 class Needs {
     private $componentChartsData;
     private $components;

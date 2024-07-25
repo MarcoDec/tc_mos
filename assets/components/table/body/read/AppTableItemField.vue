@@ -25,7 +25,7 @@
             case 'link':
                 return thevalue || ''
             case 'boolean':
-                return thevalue ? 'Oui' : 'Non'
+                return thevalue ? true : false
             case 'color': {
                 if (props.field.optionsList?.length > 0) return props.field.optionsList.find(element => element.value === thevalue).text
                 return thevalue || '#000000'

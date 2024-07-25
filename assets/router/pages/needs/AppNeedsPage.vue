@@ -25,6 +25,7 @@
                 id="gui-start-comp"
                 icon="route"
                 tabs="gui-start"
+                :active="active === 'gui-start-comp'"
                 title="Components Needs Synthesis">
                 <AppComponentNeeds/>
             </AppTab>

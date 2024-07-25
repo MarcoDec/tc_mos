@@ -15,11 +15,11 @@ export default defineStore('needs', {
             // On charge toutes les données de besoin composant d'un coup, mais on n'affiche pas tout d'un coup
             this.components = await api('/api/needs/components', 'GET')
         },
-        async initiale(state) {
-            state.products = await { ...state.initiale.products }
-            state.components = await { ...state.initiale.components }
-            state.displayedProducts = {}
-            state.displayedComponents = {}
+        async initialise() {
+            this.products = await { ...this.initiale.products }
+            this.components = await { ...this.initiale.components }
+            this.displayedProducts = {}
+            this.displayedComponents = {}
         },
         productShow(infinite) {
             return this.hasProductNeeds ? infinite.loaded() : infinite.complete()
