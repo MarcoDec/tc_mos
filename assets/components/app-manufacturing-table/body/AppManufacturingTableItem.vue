@@ -8,13 +8,24 @@
         item: {required: true, type: Object},
         title: {required: true, type: String}
     })
+    // console.log('props', props)
     const localItem = ref(null)
     localItem.value = props.item
     function onModelValueUpdated(fieldName, value) {
+        // console.log('onModelValueUpdated', fieldName, value)
         //On positionnne la valeur dans l'objet localItem pour la propriété fieldName
         localItem.value[fieldName] = value
         //On émet l'événement update:modelValue avec la nouvelle valeur
         emits('update:modelValue', localItem.value)
+    }
+    function getComponentType(field) {
+        if (field.name === 'quantite' && title === 'collapse new Ofs') {
+            return 'AppManufacturingTableItemQuantite'
+        }
+        if (field.name === 'siteDeProduction' && title === 'collapse new Ofs') {
+            return 'AppManufacturingTableItemSiteDeProduction'
+        }
+        return 'AppManufacturingTableItemField'
     }
 </script>
 

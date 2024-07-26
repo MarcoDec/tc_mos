@@ -48,6 +48,15 @@
             ofToConfirmed.value++
         })
     }
+    function onNewOFsCreated() {
+        const promises = []
+        promises.push(storeCollapseNewOfsItems.fetchItems(company.value.id))
+        promises.push(storeCollapseOfsToConfirmItems.fetchItems(company.value.id))
+        promises.push(storeCollapseOnGoingLocalOfItems.fetchItems(company.value.id))
+        Promise.all(promises).then(() => {
+            ofToConfirmed.value++
+        })
+    }
 </script>
 
 <template>
@@ -61,9 +70,9 @@
                 <h4> {{ storeCollapseOnGoingLocalOfItems.items.length }} OFs TCONCEPT en cours de fabrication localement</h4>
                 <AppManufacturingTable
                     v-if="isLoaded"
-                    :id="route.name"
+                    :id="`${route.name}_ongoing_of`"
                     :key="`collapse-on-going-local-of-${ofToConfirmed}`"
-                    :form="form"
+                    :form="`${form}_ongoing_of`"
                     :fields="fieldsCollapseOnGoingLocalOf"
                     :items="storeCollapseOnGoingLocalOfItems.items"
                     title="collapse onGoing LocalOf"/>
@@ -74,9 +83,9 @@
                 <h4> {{ storeCollapseOfsToConfirmItems.items.length }} OFs TCONCEPT en draft à confirmer</h4>
                 <AppManufacturingTable
                     v-if="isLoaded"
-                    :id="route.name"
+                    :id="`${route.name}_of_to_confirm`"
                     :key="`collapse-ofs-to-confirm-${ofToConfirmed}`"
-                    :form="form"
+                    :form="`${form}_of_to_confirm`"
                     :fields="fieldsCollapseOfsToConfirm"
                     :items="storeCollapseOfsToConfirmItems.items"
                     title="collapse ofs ToConfirm"
@@ -85,8 +94,19 @@
         </AppTab>
         <AppTab id="collapse-new-ofs" icon="tools" title="Calcul des besoins de création d'OF" tabs="gui-start">
             <div class="tab-container">
-                <h4>{{ storeCollapseNewOfsItems.items.length }} Commandes/OFs TCONCEPT à passer pour les 2 prochaines semaines</h4>
-                <AppManufacturingTable v-if="isLoaded" :id="route.name" :form="form" :fields="fieldsCollapsenewOfs" :items="storeCollapseNewOfsItems.items" title="collapse new Ofs"/>
+                <h4>{{ storeCollapseNewOfsItems.items.length }} OFs à lancer prochainement</h4>
+                <p class="bg-warning text-white p-2 text-center">
+                    <strong>Attention:</strong> Cette liste n'intègre pas les OFs en attente de confirmation
+                </p>
+                <AppManufacturingTable
+                    v-if="isLoaded"
+                    :id="`${route.name}_new_of`"
+                    :key="`collapse-new-of-${ofToConfirmed}`"
+                    :form="`${form}_new_of`"
+                    :fields="fieldsCollapsenewOfs"
+                    :items="storeCollapseNewOfsItems.items"
+                    title="collapse new Ofs"
+                    @on-new-ofs-created="onNewOFsCreated"/>
             </div>
         </AppTab>
     </AppTabs>

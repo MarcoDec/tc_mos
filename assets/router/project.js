@@ -105,7 +105,7 @@ export default [
         name: 'product-list',
         path: '/product-list',
         props: {
-            icon: 'product-hunt',
+            icon: 'fa-brands fa-product-hunt',
             title: 'Liste des produits'
         }
     }

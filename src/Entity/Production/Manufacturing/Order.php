@@ -258,7 +258,7 @@ class Order extends Entity implements BarCodeInterface {
     #[
         ApiProperty(description: 'Quantité demandée', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order','read:manufacturing-operation', 'read:operation-employee:collection'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order','read:manufacturing-operation', 'read:operation-employee:collection', 'write:measure'])
     ]
     private Measure $quantityRequested;
 
