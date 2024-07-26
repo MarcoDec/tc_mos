@@ -54,7 +54,7 @@
         promises.push(storeCollapseOfsToConfirmItems.fetchItems(company.value.id))
         promises.push(storeCollapseOnGoingLocalOfItems.fetchItems(company.value.id))
         Promise.all(promises).then(() => {
-            ofToConfirmed.value++
+            window.location.reload()
         })
     }
 </script>
