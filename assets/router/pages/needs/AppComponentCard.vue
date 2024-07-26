@@ -90,7 +90,7 @@
                             </tr>
                             <tr class="bg-primary text-center text-white">
                                 <th>Quantité a commander</th>
-                                <th>Pour une réception le</th>
+                                <th>Pour une réception FR le</th>
                             </tr>
                         </thead>
                         <tbody>

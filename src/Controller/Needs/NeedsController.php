@@ -30,7 +30,6 @@ use App\Entity\Logistics\Stock\ComponentStock;
 use App\Entity\Project\Product\Nomenclature;
 use App\Entity\Production\Manufacturing\Order as ManufacturingOrder;
 use App\Service\RedisService;
-use App\EventSubscriber\CacheUpdateSubscriber;
 use App\Entity\Purchase\Order\Item as PurchaseItem;
 Use App\Entity\Purchase\Component\Component;
 #[
@@ -67,7 +66,6 @@ class NeedsController extends AbstractController
     private ComponentStockRepository $componentStockRepository;
     private MeasureManager $measureManager;
     private RedisService $redisService;
-    private CacheUpdateSubscriber $cacheUpdateSubscriber;
 
     public function __construct(
 //        private readonly EntityManagerInterface $em,
@@ -83,7 +81,6 @@ class NeedsController extends AbstractController
         MeasureManager $measureManager,
 //        private LoggerInterface $logger,
         RedisService $redisService,
-        CacheUpdateSubscriber $cacheUpdateSubscriber
     ) {
         $this->productItemRepository = $productItemRepository;
         $this->productStockRepository = $productStockRepository;
@@ -96,7 +93,6 @@ class NeedsController extends AbstractController
         $this->componentStockRepository = $componentStockRepository;
         $this->measureManager = $measureManager;
         $this->redisService = $redisService;
-        $this->cacheUpdateSubscriber = $cacheUpdateSubscriber;
     }
     const API_NEEDS_CREATION_DATE_PRODUCT = 'api_needs_creation_date_product';
     const API_NEEDS_STOCKS_PRODUCT = 'api_needs_stocks_product';
@@ -110,7 +106,7 @@ class NeedsController extends AbstractController
     const API_NEEDS_COMPONENTS = 'api_needs_components';
 
     const MANUFACURING_ORDER_DELAY_BEFORE_CUSTOMER_RECEPTION = 'P4W';
-    const PURCHASE_ORDER_DELAY_BEFORE_COMPONENT_USE = 'P1W';
+    const PURCHASE_ORDER_DELAY_BEFORE_COMPONENT_USE = 'P3W'; // Réception FR + 1 semaine trajet site de fab + 1 semaine de stockage
     //endregion
     
     #[Route('/api/needs/products', name: 'needs_products', methods: ['GET'])]
@@ -306,6 +302,7 @@ class NeedsController extends AbstractController
             $manufacturingOrders = $cacheItemManufacturing->get();
         }
         //endregion
+        //endregion
         //region On génère les données graphiques produits
         $productChartsData = $this->generateProductChartsData($sellingItems, $manufacturingOrders, $stocks, $products);
         $productsData = [];
@@ -313,7 +310,6 @@ class NeedsController extends AbstractController
             $productsData[] = $this->generateProductData($prod, $productChartsData, $stocks);
         }
         $productChartsData = $this->finalizeProductChartsData($productChartsData);
-        //endregion
         //endregion
         
         //region On initialise le calcul des besoins en composants à partir des 'newOfsNeeds' dans productsData et des 'quantity_requested_value' dans productChartsData
@@ -852,8 +848,8 @@ class NeedsController extends AbstractController
 
     private function generateProductChartsData(array $sellingItems, array $manufacturingOrders, array $stocks, array $products): array
     {
+        //region On initialise productChartData avec les stocks actuels à la date du jour
         $productChartsData = [];
-        // On initialise productChartData avec les stocks actuels à la date du jour
         $date = new DateTime('now');
         $dateStr = $date->format('d/m/Y');
         /** Product $product */
@@ -865,9 +861,15 @@ class NeedsController extends AbstractController
                 'stockProgress' => [0],
                 'productId' => $productId,
                 'sellingOrderItems' => [],
-                'manufacturingOrders' => []
+                'manufacturingOrders' => [],
+                'confirmed_quantity_value' => [],
+                'sellingOrderItemsInfo' => [],
+                'quantity_requested_value' => [],
+                'manufacturingOrderItemsInfo' => [],
+                'manufacturingOrderItems' => [],
             ];
         }
+        //endregion
 
         // Traitement des ventes (remplis productChartsData[productId][confirmed_quantity_value])
         $this->processSellingItems($sellingItems, $productChartsData);
@@ -1038,17 +1040,21 @@ class NeedsController extends AbstractController
                 'stockProgress' => [],
                 'sellingOrderItems' => [],
                 'manufacturingOrderItems' => [$date => [$manufacturingOrder]],
+                'quantity_requested_value' => [$date => $quantity],
                 'manufacturingOrderItemsInfo' => [$date => "+".$quantity." Produits (OF)"],
                 'productId' => $productId
             ];
         } else {
             $foundProductChartData['labels'][] = $date;
-            $foundProductChartData['quantity_requested_value'][$date] = $quantity;
             $foundProductChartData['manufacturingOrderItems'][$date][] = $manufacturingOrder;
             if (!isset($foundProductChartData['manufacturingOrderItemsInfo'][$date])) {
                 $foundProductChartData['manufacturingOrderItemsInfo'][$date] = "+".$quantity." Produits (OF)";
+                $foundProductChartData['quantity_requested_value'][$date] = $quantity;
             }
-            else $foundProductChartData['manufacturingOrderItemsInfo'][$date] .= "+".$quantity." Produits (OF)";
+            else {
+                $foundProductChartData['manufacturingOrderItemsInfo'][$date] .= "+" . $quantity . " Produits (OF)";
+                $foundProductChartData['quantity_requested_value'][$date] += $quantity;
+            }
         }
         // On met à jour le tableau productChartsData avec l'élément modifié
         return array_map(function ($productChartData) use ($productId, $foundProductChartData) {
@@ -1067,13 +1073,16 @@ class NeedsController extends AbstractController
         // On récupère le premier élément de la collection $foundProductChartDataArray (pas forcément index 0)
         $keys = array_keys($foundProductChartDataArray);
         $foundProductChartData = $foundProductChartDataArray[$keys[0]] ?? null;
+        $sellingOrderItemQuantityLeft = $sellingItem->getConfirmedQuantity()->getValue() - $sellingItem->getSentQuantity()->getValue();
+        $sellingOrderItemInfo = "-".$sellingOrderItemQuantityLeft." Produits (Expédition)";
         if (empty($foundProductChartData)) {
             $foundProductChartData[] = [
                 'labels' => [$date],
                 'stockMinimum' => [],
                 'stockProgress' => [],
-                'sellingOrderItems' => [$date => $sellingItem->getConfirmedQuantity()->getValue()],
-                'sellingOrderItemsInfo' => [$date => "-".$sellingItem->getConfirmedQuantity()->getValue()." Produits (Expédition)"],
+                'sellingOrderItems' => [$date => $sellingOrderItemQuantityLeft],
+                'sellingOrderItemsInfo' => [$date => $sellingOrderItemInfo],
+                'sellingOrderItemsDetails' => [$date => $sellingItem],
                 'productId' => $productId
             ];
             return $foundProductChartData;
@@ -1081,12 +1090,14 @@ class NeedsController extends AbstractController
             $foundProductChartData['labels'][] = $date;
             $foundProductChartData['confirmed_quantity_value'][$date] = $quantity;
             if (isset($foundProductChartData['sellingOrderItems'][$date])) {
-                $foundProductChartData['sellingOrderItems'][$date] += $sellingItem->getConfirmedQuantity()->getValue();
-                $foundProductChartData['sellingOrderItemsInfo'][$date] .= "-".$sellingItem->getConfirmedQuantity()->getValue()." Produits (Expédition)";
+                $foundProductChartData['sellingOrderItems'][$date] += $sellingOrderItemQuantityLeft;
+                $foundProductChartData['sellingOrderItemsInfo'][$date] .= $sellingOrderItemInfo;
+                $foundProductChartData['sellingOrderItemsDetails'][$date] = $sellingItem;
             }
             else {
-                $foundProductChartData['sellingOrderItems'][$date] = $sellingItem->getConfirmedQuantity()->getValue();
-                $foundProductChartData['sellingOrderItemsInfo'][$date] = "-".$sellingItem->getConfirmedQuantity()->getValue()." Produits (Expédition)";
+                $foundProductChartData['sellingOrderItems'][$date] = $sellingOrderItemQuantityLeft;
+                $foundProductChartData['sellingOrderItemsInfo'][$date] = $sellingOrderItemInfo;
+                $foundProductChartData['sellingOrderItemsDetails'][$date] = $sellingItem;
             }
             // On met à jour le tableau productChartsData avec l'élément modifié
             $newProductsChartData = array_map(function ($productChartData) use ($productId, $foundProductChartData) {
@@ -1219,6 +1230,7 @@ class NeedsController extends AbstractController
                             $newOFNeeds[] = [
                                 'date' => $dateTime->format('d/m/Y'),
                                 'quantity' => $quantity,
+                                'details' => $currentProductChartsData
                             ];
                             $cumulatedNewOFQuantity += $quantity;
                         }

@@ -33,9 +33,20 @@ class CacheUpdateSubscriber implements EventSubscriber
     private string $cacheKeyComponent = 'api_needs_component_%s';
     private EntityManagerInterface $entityManager;
 
-    public function __construct(Client $redis,EntityManagerInterface $entityManager, 
-    string $cacheKeyStocks, string $cacheKeySelling, string $cacheKeymanufacturingOrders, string $cacheKeyProducts, string $cacheKeyCreationDate,
-    string $cacheKeyCreationDateComponent, string $cachekeyComponentStock, string $cachekeyPurchaseItem , string $cacheKeyNomenclature, string $cacheKeyComponent)
+    public function __construct(
+        Client $redis,
+        EntityManagerInterface $entityManager,
+        string $cacheKeyStocks,
+        string $cacheKeySelling,
+        string $cacheKeymanufacturingOrders,
+        string $cacheKeyProducts,
+        string $cacheKeyCreationDate,
+        string $cacheKeyCreationDateComponent,
+        string $cachekeyComponentStock,
+        string $cachekeyPurchaseItem,
+        string $cacheKeyNomenclature,
+        string $cacheKeyComponent
+    )
     {
         $this->redis = $redis;
         $this->entityManager = $entityManager;
