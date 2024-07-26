@@ -7,7 +7,6 @@ export const useProductionPlanningsFieldsStore = defineStore('productionPlanning
             try {
                 const response = await api('/api/manufacturingSchedule', 'GET')
                 this.items = response.items
-                console.log('Réponse de l\'API :', response)
                 this.fields = response.fields.map(field => ({
                     label: field.label,
                     name: field.name,
