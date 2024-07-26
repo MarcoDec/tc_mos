@@ -36,10 +36,22 @@ final class ProductRepository extends ServiceEntityRepository {
             ->join('pc.customer', 'c')
             ->where('p.id = :productId')
             ->setParameter('productId', $productId);
-    
+
         $result = $qb->getQuery()->getResult();
         return $result ;
     }
 
-    
+
+    public function findByEmbBlockerAndEmbState(): array
+    {
+        return $this->createQueryBuilder('i')
+            ->where('i.embBlocker.state = :enabled')
+            ->andWhere('i.embState.state IN (:states)')
+            ->setParameters([
+                'enabled' => 'enabled',
+                'states' => ['agreed', 'to_validate'],
+            ])
+            ->getQuery()
+            ->getResult();
+    }
 }

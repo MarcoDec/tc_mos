@@ -124,6 +124,9 @@ class Component extends Entity
             usort($filteredPrices, function ($a, $b) {
                 return $b->getPrice()->getValue() < $a->getPrice()->getValue();
             });
+            if (!isset($filteredPrices[0])) {
+                return $bestPrice;
+            }
             $bestPrice = $filteredPrices[0]->getPrice();
         }
         return $bestPrice;

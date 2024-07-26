@@ -64,3 +64,11 @@ clean-logs:
 php:
 	docker exec -ti tconcept_gpao_php zsh
 .PHONY: all build up down rebuild
+
+redis-cli:
+	docker exec -it tconcept_gpao_redis redis-cli
+
+redis:
+	docker start tconcept_gpao_redis
+redis-stop:
+	docker stop tconcept_gpao_redis

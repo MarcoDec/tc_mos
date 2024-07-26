@@ -58,6 +58,8 @@ abstract class AbstractUnit extends Entity {
     #[Pure]
     public function __construct() {
         $this->children = new ArrayCollection();
+        $this->parent = null;
+
     }
 
     /**

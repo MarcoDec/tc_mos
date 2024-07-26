@@ -36,7 +36,6 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
-use PHPUnit\TextUI\XmlConfiguration\File;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -273,7 +272,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne(targetEntity: Family::class, fetch: 'LAZY', inversedBy: 'components'),
-        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin'])
+        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'read:stock'])
     ]
     private ?Family $family = null;
 
@@ -416,7 +415,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         Assert\NotBlank(groups: ['Component-create', 'Component-logistics']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(fetch:'LAZY'),
+        ORM\ManyToOne(targetEntity: Unit::class, fetch:'EAGER'),
         Serializer\Groups(['read:component:collection', 'create:component', 'read:component', 'write:component', 'write:component:logistics'])
     ]
     private ?Unit $unit = null;
@@ -460,7 +459,6 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         $this->supplierComponents = new ArrayCollection();
         $this->customerComponents = new ArrayCollection();
         $this->weight = new Measure();
-        $this->code = '';
         $this->code = $this->getCode();
         $this->preparationComponents = new ArrayCollection();
     }

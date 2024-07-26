@@ -1,5 +1,6 @@
 <script setup>
     import {defineProps, ref} from 'vue'
+    import AppMultiselectFetch from '../../form/field/input/select/AppMultiselectFetch.vue'
 
     const emits = defineEmits(['update:modelValue'])
     const props = defineProps({
@@ -13,6 +14,7 @@
     localItemValue.value = props.item[props.field.name]
     const isBlocked = props.item.Blocker === 'blocked'
     function onSelectChange(value) {
+        // console.log('onSelectChange', value)
         localItemValue.value = value
         emits('update:modelValue', localItemValue.value)
     }
@@ -21,7 +23,10 @@
 <template>
     <template v-if="title === 'collapse new Ofs'">
         <td v-if="field.type === 'date' || field.type === 'select' || field.type === 'boolean'">
-            <AppInputGuesser :id="id" :field="field" :model-value="localItemValue" no-label :form="form"/>
+            <AppInputGuesser :id="id" :field="field" :model-value="localItemValue" no-label :form="form"  @update:model-value="onSelectChange"/>
+        </td>
+        <td v-else-if="field.type === 'multiselect-fetch'">
+            <AppMultiselectFetch :id="id" :field="field" :model-value="localItemValue" no-label :form="form"  @update:model-value="onSelectChange"/>
         </td>
         <td v-else>
             {{ localItemValue }}

@@ -37,4 +37,17 @@ class ProductRepository extends ServiceEntityRepository {
             return null;
         }
     }
+
+    public function findByCustomerIdSocieties($customerId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.customer', 'c')
+            ->join('c.society', 's') 
+            ->andWhere('c.id = :customerId')
+            ->setParameter('customerId', $customerId)
+            ->select('DISTINCT s.id ') 
+            ->getQuery()
+            ->getResult();
+    }
+
 }

@@ -48,7 +48,6 @@
         mandated: false,
         product: `/api/products/${idProduct}`
     })
-
     const addComponentItem = ref({
         quantity: {
             code: '/api/units/1',
@@ -241,7 +240,6 @@
             type: 'measure'
         }
     ]
-
     addComponentFormField.value = [
         {
             label: 'Mandat',
@@ -319,7 +317,6 @@
             type: 'measure'
         }
     ]
-
     addEquivalentFormField.value = [
         {
             label: 'Mandat',

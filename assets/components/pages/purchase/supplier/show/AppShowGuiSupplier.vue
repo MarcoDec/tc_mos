@@ -6,12 +6,13 @@
     import AppImg from '../../../../AppImg.vue'
     import AppBtn from '../../../../AppBtn.vue'
     import AppSuspense from '../../../../AppSuspense.vue'
-    import {computed, onBeforeMount, ref} from 'vue'
+    import {computed, onBeforeMount, ref, useAttrs} from 'vue'
     import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
     import {useRoute} from 'vue-router'
     import AppSupplierShowTabGeneral from './tabs/AppSupplierShowTabGeneral.vue'
     import AppWorkflowShow from '../../../../workflow/AppWorkflowShow.vue'
 
+    const attrs = useAttrs()
     const isFullScreen = ref(false)
 
     const beforeMountDataLoaded = ref(false)
@@ -59,7 +60,7 @@
 
 <template>
     <AppSuspense>
-        <AppShowGuiGen v-if="beforeMountDataLoaded">
+        <AppShowGuiGen v-if="beforeMountDataLoaded" v-bind="attrs">
             <template #gui-left>
                 <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
                     <div class="d-flex flex-row">

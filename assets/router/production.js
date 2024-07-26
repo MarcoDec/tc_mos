@@ -130,7 +130,6 @@ export default [
         name: 'manufacturer-engines',
         path: '/manufacturer-engines',
         props: {
-            icon: 'city',
             title: 'Modèle d\'équipement'
         }
     },
@@ -312,16 +311,6 @@ export default [
         props: {
             fieldsCollapseOfsToConfirm: [
                 {
-                    label: 'Client',
-                    name: 'client',
-                    type: 'text'
-                },
-                {
-                    label: 'Cmde',
-                    name: 'cmde',
-                    type: 'text'
-                },
-                {
                     label: 'Début Prod.',
                     name: 'debutProd',
                     type: 'date'
@@ -363,17 +352,6 @@ export default [
                 }
             ],
             fieldsCollapseOnGoingLocalOf: [
-
-                {
-                    label: 'Client',
-                    name: 'client',
-                    type: 'text'
-                },
-                {
-                    label: 'Cmde',
-                    name: 'cmde',
-                    type: 'text'
-                },
                 {
                     label: 'Début Prod.',
                     name: 'debutProd',
@@ -427,49 +405,28 @@ export default [
             ],
             fieldsCollapsenewOfs: [
                 {
-                    label: 'Client',
-                    name: 'client',
-                    type: 'text'
-                },
-                {
-                    label: 'Cmde',
-                    name: 'cmde',
-                    type: 'text'
-                },
-                {
-                    label: 'Début Prod.',
-                    name: 'debutProd',
-                    type: 'date'
-                },
-                {
-                    label: 'Fin Prod.',
-                    name: 'finProd',
-                    type: 'date'
+                    label: 'Début Prod. sur site de fabrication',
+                    name: 'date',
+                    type: 'date',
+                    readonly: true
                 },
                 {
                     label: 'Produit',
-                    name: 'produit',
+                    name: 'product',
                     type: 'text'
                 },
                 {
                     label: 'Quantité',
-                    name: 'quantite',
+                    name: 'quantity',
                     type: 'text'
                 },
                 {
                     label: 'Site de production',
                     name: 'siteDeProduction',
-                    type: 'text'
-                },
-                {
-                    label: 'Etat initial OF',
-                    name: 'etatInitialOF',
-                    type: 'text'
-                },
-                {
-                    label: 'Minimum de lancement',
-                    name: 'minDeLancement',
-                    type: 'number'
+                    type: 'multiselect-fetch',
+                    api: '/api/companies',
+                    filteredProperty: 'name',
+                    max: 1
                 },
                 {
                     label: 'Lancer OF',

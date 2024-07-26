@@ -105,4 +105,19 @@ class ItemRepository extends ServiceEntityRepository {
         return $this->_em->getRepository(ComponentItem::class)->findOneByReceipt($id,$resourceClass)
             ?? $this->_em->getRepository(ProductItem::class)->findOneByReceipt($id,$resourceClass);
     }
+
+    
+    public function findByEmbBlockerAndEmbState(): array
+    {
+        return $this->_em->createQuery('
+            SELECT i
+            FROM App\Entity\Purchase\Order\ComponentItem i
+            WHERE i.embState.state IN (:states)
+        ')
+        ->setParameters([
+            'states' => ['agreed', 'partially_dellivered'],
+        ])
+        ->getResult();
+    }
+    
 }

@@ -103,6 +103,7 @@ import {
     faRetweet,
     faRightToBracket,
     faRotateLeft,
+    faRoute,
     faRulerHorizontal,
     faRulerVertical,
     faSave,
@@ -250,6 +251,7 @@ library.add(faQuestionCircle)
 library.add(faReceipt)
 library.add(faRepeat)
 library.add(faRetweet)
+library.add(faRoute)
 library.add(faRightToBracket)
 library.add(faRotateLeft)
 library.add(faRulerHorizontal)

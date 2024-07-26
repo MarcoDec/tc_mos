@@ -109,4 +109,9 @@ class Unit extends AbstractUnit {
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
     protected ?AbstractUnit $parent;
+
+    public function __construct() {
+        parent::__construct();
+
+    }
 }

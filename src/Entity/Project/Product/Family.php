@@ -111,7 +111,7 @@ class Family extends AbstractFamily {
         ORM\Column(length: 50),
         Serializer\Groups(['read:product-family', 'write:family', 'read:product-family:option'])
     ]
-    protected ?string $name = null;
+    public ?string $name = null;
 
     #[
         ApiProperty(description: 'Famille parente', readableLink: false, example: '/api/product-families/1'),

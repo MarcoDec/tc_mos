@@ -133,3 +133,15 @@ Le taux de change des devises est mis à jour par une tâche cron selon la comma
 
 Pour modifier et contrôler le code quant aux standards définis pour le projet, utilisez la
 commande&nbsp;: `gpao:fix:code`.
+
+## Redis
+
+Ce projet utilise Redis pour gérer une partie du cache.
+
+Pour ce connecter à redis en mode client, utiliser la commande suivante depuis WSL
+`make redis-cli`
+
+Les principales commandes 'redis' à connaitre sont les suivantes:
+
+   - Lister toutes les clés présentes: `keys "*"`
+   - Supprimer toutes les clés présentes: `flushall`

@@ -2,7 +2,6 @@ import {createRouter, createWebHistory} from 'vue-router'
 import AppHome from '../components/pages/AppHome'
 import AppLogin from '../components/pages/AppLogin.vue'
 import hr from './hr'
-import it from './it'
 import logistics from './logistics'
 import management from './management'
 import production from './production'
@@ -11,6 +10,8 @@ import purchase from './purchase'
 import quality from './quality'
 import selling from './selling'
 import useUser from '../stores/security'
+import it from './it'
+import needs from './routes/needs'
 
 const router = createRouter({
     history: createWebHistory(), routes: [
@@ -18,6 +19,7 @@ const router = createRouter({
         ...it,
         ...logistics,
         ...management,
+        ...needs,
         ...production,
         ...project,
         ...purchase,

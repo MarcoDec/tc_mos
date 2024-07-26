@@ -23,6 +23,6 @@ final class CountryDataProvider implements CollectionDataProviderInterface, Rest
      * @param mixed[] $context
      */
     public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool {
-        return $resourceClass === Country::class;
+        return $resourceClass === AppCountry::class;
     }
 }

@@ -10,6 +10,39 @@
 
     defineProps({id: {required: true, type: String}})
     const emit = defineEmits(['closeMenu'])
+    //region définition des Ids uniques des sous-menus
+    const subMenuIds = {
+        purchase: {
+            admin: 'purchase-admin'
+        },
+        management: {
+            admin: 'management-admin'
+        },
+        it: {
+            admin: 'it-admin'
+        },
+        logistic: {
+            admin: 'logistic-admin'
+        },
+        production: {
+            equipment: '1',
+            label: '2',
+            admin: 'production-admin'
+        },
+        project: {
+            admin: 'project-admin'
+        },
+        quality: {
+            admin: 'quality-admin'
+        },
+        hr: {
+            admin: 'hr-admin'
+        },
+        selling: {
+            admin: 'selling-admin'
+        }
+    }
+    //endregion
     // const cookies = useCookies()
     // function getTableFromString(str) {
     //     return JSON.parse(str.replace(/'/g, '"'))
@@ -69,38 +102,6 @@
         e.stopPropagation()
         emit('closeMenu')
     }
-    //region définition des Ids uniques des sous-menus
-    const subMenuIds = {
-        purchase: {
-            admin: 'purchase-admin'
-        },
-        management: {
-            admin: 'management-admin'
-        },
-        it: {
-            admin: 'it-admin'
-        },
-        logistic: {
-            admin: 'logistic-admin'
-        },
-        production: {
-            equipment: '1',
-            label: '2'
-        },
-        project: {
-            admin: 'project-admin'
-        },
-        quality: {
-            admin: 'quality-admin'
-        },
-        hr: {
-            admin: 'hr-admin'
-        },
-        selling: {
-            admin: 'selling-admin'
-        }
-    }
-    //endregion
 </script>
 
 <template>
@@ -118,6 +119,9 @@
                 </AppNavbarLink>
                 <AppNavbarLink icon="shopping-cart" to="purchaseOrderList" :variant="variantPurchase" @click="emit('closeMenu')">
                     Commandes
+                </AppNavbarLink>
+                <AppNavbarLink icon="gauge-high" to="needs" :variant="variantPurchase" @click="emit('closeMenu')">
+                    Calcul des besoins
                 </AppNavbarLink>
                 <template v-if="user.isPurchaseAdmin">
                     <AppNavbarItem :id="subMenuIds.purchase.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.purchase.admin)">
@@ -179,18 +183,14 @@
                 <AppNavbarLink icon="laptop-code" to="informatiques" :variant="variantIt" @click="emit('closeMenu')">
                     Eléments informatiques
                 </AppNavbarLink>
-                <template v-if="user.isItAdmin">
-                    <AppNavbarItem :id="subMenuIds.it.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.it.admin)">
-                        <a :href="database" class="dropdown-item text-danger" target="_blank" @click="emit('closeMenu')">
-                            <Fa icon="database"/>
-                            Base de données
-                        </a>
-                        <a :href="api" class="dropdown-item text-danger" target="_blank" @click="emit('closeMenu')">
-                            <Fa icon="database"/>
-                            Application Programming Interface (API)
-                        </a>
-                    </AppNavbarItem>
-                </template>
+                <a :href="database" class="dropdown-item text-danger" target="_blank" @click="emit('closeMenu')">
+                    <Fa icon="database"/>
+                    Base de données
+                </a>
+                <a :href="api" class="dropdown-item text-danger" target="_blank" @click="emit('closeMenu')">
+                    <Fa icon="database"/>
+                    Application Programming Interface (API)
+                </a>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isLogisticsReader" id="logistics" icon="boxes" title="Logistique">
                 <AppNavbarLink icon="warehouse" to="warehouse-list" :variant="variantLogistics" @click="emit('closeMenu')">
@@ -200,7 +200,7 @@
                     Transporteurs
                 </AppNavbarLink>
                 <template v-if="user.isLogisticsAdmin">
-                    <AppNavbarItem :id="subMenuIds.it.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.it.admin)">
+                    <AppNavbarItem :id="subMenuIds.logistic.admin" title="Administration" icon="screwdriver-wrench" disabled variant="secondary" :drop-end="true" @click="(e) => onSubMenuClick(e, subMenuIds.logistic.admin)">
                         <AppNavbarLink icon="file-contract" to="incoterms" :variant="variantLogistics" @click="emit('closeMenu')">
                             Incoterms
                         </AppNavbarLink>

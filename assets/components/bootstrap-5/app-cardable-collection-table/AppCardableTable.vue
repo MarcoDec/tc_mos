@@ -5,16 +5,16 @@
     import AppCardableTableHeader from './head/AppCardableTableHeader.vue'
 
     const props = defineProps({
-        currentPage: {required: true, type: String},
+        currentPage: {required: true, type: [String, Number]},
         fields: {required: true, type: Array},
-        firstPage: {required: true, type: String},
+        firstPage: {required: true, type: [String, Number]},
         form: {required: true, type: String},
         items: {required: true, type: Array},
-        lastPage: {required: true, type: String},
+        lastPage: {required: true, type: [String, null]},
         min: {type: Boolean},
-        nextPage: {required: true, type: String},
+        nextPage: {required: true, type: [String, null]},
         pag: {required: true, type: Boolean},
-        previousPage: {required: true, type: String},
+        previousPage: {required: true, type: [String, null]},
         user: {required: true, type: String},
         shouldDelete: {required: false, default: true},
         shouldSee: {required: false, default: true},

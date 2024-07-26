@@ -200,7 +200,7 @@ abstract class Item extends BaseItem {
         ORM\OneToMany(mappedBy: 'item', targetEntity: Receipt::class),
         Serializer\Groups(['read:item'])
     ]
-    
+
     private DoctrineCollection $receipts;
 
     #[

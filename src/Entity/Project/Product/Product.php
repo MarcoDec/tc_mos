@@ -224,7 +224,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
         ORM\OneToMany(mappedBy: 'product', targetEntity: ProductCustomer::class)
     ]
     private DoctrineCollection $productCustomers;
-
+    
     #[
         ApiProperty(description: 'Association produit-fournisseur', required: false, example: ['/api/supplier-products/1']),
         ORM\OneToMany(mappedBy: 'product', targetEntity: \App\Entity\Purchase\Supplier\Product::class),
