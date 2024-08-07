@@ -5,14 +5,15 @@ namespace App\Serializer;
 use App\Entity\Interfaces\FileEntity;
 use App\Filesystem\FileManager;
 use Symfony\Component\Serializer\Exception\LogicException;
-use Symfony\Component\Serializer\Normalizer\ContextAwareNormalizerInterface;
+//use Symfony\Component\Serializer\Normalizer\ContextAwareNormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
  * @phpstan-type Context array{FILE_ENTITY_NORMALIZER_CALLED_FOR?: array<class-string, int[]>}
  */
-final class FileEntityNormalizer implements ContextAwareNormalizerInterface, NormalizerAwareInterface {
+final class FileEntityNormalizer implements NormalizerInterface, NormalizerAwareInterface {
     use NormalizerAwareTrait;
 
     private const CALLED = 'FILE_ENTITY_NORMALIZER_CALLED_FOR';
@@ -41,7 +42,9 @@ final class FileEntityNormalizer implements ContextAwareNormalizerInterface, Nor
         if (!is_array($normalized)) {
             throw new LogicException(sprintf('Unexpected value. Require array, get %s.', gettype($normalized)));
         }
-        $normalized['filepath'] = $this->fm->normalizePath($normalized['filepath']);
+        if (isset($normalized['filepath'])) {
+            $normalized['filepath'] = $this->fm->normalizePath($normalized['filepath']);
+        }
         return $normalized;
     }
 

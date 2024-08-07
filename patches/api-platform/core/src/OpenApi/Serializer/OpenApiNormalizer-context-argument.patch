@@ -1,0 +1,13 @@
+diff --git a/vendor/api-platform/core/src/OpenApi/Serializer/OpenApiNormalizer.php b/patches/tmp/OpenApiNormalizer.php
+index db37bffbb..bdce3f316 100644
+--- a/vendor/api-platform/core/src/OpenApi/Serializer/OpenApiNormalizer.php
++++ b/patches/tmp/OpenApiNormalizer.php
+@@ -74,7 +74,7 @@ final class OpenApiNormalizer implements NormalizerInterface, CacheableSupportsM
+     /**
+      * {@inheritdoc}
+      */
+-    public function supportsNormalization($data, $format = null): bool
++    public function supportsNormalization($data, $format = null, array $context = []): bool
+     {
+         return self::FORMAT === $format && $data instanceof OpenApi;
+     }

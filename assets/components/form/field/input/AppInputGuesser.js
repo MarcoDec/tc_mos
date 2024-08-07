@@ -1,6 +1,8 @@
 import {h, resolveComponent} from 'vue'
 import AppInputFile from './AppInputFile'
 import AppInputNumber from './AppInputNumber'
+import AppPhoneFlag from './AppPhoneFlag.vue'
+import AppRadioGroup from './AppRadioGroup.vue'
 import AppSelect from './select/AppSelect'
 import AppSwitch from './AppSwitch.vue'
 import {generateField} from '../../../props'
@@ -15,6 +17,10 @@ function getType(field) {
         return AppInputNumber
     case 'select':
         return AppSelect
+    case 'phone':
+        return AppPhoneFlag
+    case 'radio':
+        return AppRadioGroup
     default:
         return resolveComponent('AppInput')
     }
@@ -35,8 +41,8 @@ AppInputGuesser.emits = ['update:modelValue']
 AppInputGuesser.props = {
     disabled: {type: Boolean},
     field: generateField(),
-    form: {required: true, type: String},
-    id: {required: true, type: String},
+    form: {required: false, type: String},
+    id: {required: false, type: String},
     modelValue: {}
 }
 

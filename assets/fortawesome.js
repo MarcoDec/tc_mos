@@ -42,7 +42,9 @@ import {
     faUserCircle,
     faUserGraduate,
     faUserTag,
-    faWrench
+    faWrench,
+    faHourglassHalf,
+    faPlusCircle
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -92,3 +94,5 @@ library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
 library.add(faWrench)
+library.add(faHourglassHalf)
+library.add(faPlusCircle)

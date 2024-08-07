@@ -15,9 +15,9 @@ class CronJob extends Entity {
     #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $next;
 
-    final public function __construct(
-        #[ORM\Column(type: 'char', length: 20)] private string $command,
-        #[ORM\Column(type: 'char', length: 6)] private string $period
+    public function __construct(
+        #[ORM\Column(type: 'char', length: 20)] private readonly string $command,
+        #[ORM\Column(type: 'char', length: 6)] private string           $period
     ) {
         $this->setNext();
     }
@@ -53,6 +53,9 @@ class CronJob extends Entity {
         return new CronExpression($this->period);
     }
 
+    /**
+     * @throws \Exception
+     */
     private function setNext(): self {
         $this->next = DateTimeImmutable::createFromMutable($this->getCronExpression()->getNextRunDate());
         return $this;

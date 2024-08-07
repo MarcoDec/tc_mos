@@ -1,6 +1,6 @@
 import {generateField, generateLabelCols} from '../../props'
 import {h, resolveComponent} from 'vue'
-import AppLabel from './AppLabel'
+import AppLabel from './AppLabel.vue'
 
 function AppFormGroup(props, context) {
     const id = `${props.form}-${props.field.name}`
@@ -9,12 +9,12 @@ function AppFormGroup(props, context) {
         field: props.field,
         form: props.form,
         id,
-        modelValue: props.modelValue,
-        'onUpdate:modelValue': value => context.emit('update:modelValue', value)
+        modelValue: props.modelValue[props.field.name],
+        'onUpdate:modelValue': value => context.emit('update:modelValue', {...props.modelValue, [props.field.name]: value})
     }
     const children = []
     if (props.violation) {
-        attrs['class'] = 'is-invalid'
+        attrs.class = 'is-invalid'
         children.push(h(resolveComponent('AppInputGuesser'), attrs))
         children.push(h('div', {class: 'invalid-feedback'}, props.violation.message))
     } else
@@ -24,7 +24,6 @@ function AppFormGroup(props, context) {
         h('div', {class: 'col'}, children)
     ])
 }
-
 AppFormGroup.emits = ['update:modelValue']
 AppFormGroup.props = {
     disabled: {type: Boolean},

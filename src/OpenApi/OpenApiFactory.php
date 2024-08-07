@@ -35,7 +35,7 @@ use UnexpectedValueException;
 final class OpenApiFactory implements OpenApiFactoryInterface {
     use FilterLocatorTrait;
 
-    public const BASE_URL = 'base_url';
+    final public const BASE_URL = 'base_url';
 
     /**
      * @param array<string, string[]> $formats
@@ -77,7 +77,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                         content: new ArrayObject([
                             'application/ld+json' => [
                                 'schema' => [
-                                    '$ref' => '#/components/schemas/Employee.jsonld-Employee-read'
+                                    '$ref' => '#/components/schemas/Employee.jsonld-Employee-user'
                                 ]
                             ]
                         ])
@@ -89,6 +89,40 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 ],
                 summary: 'Connexion',
                 description: 'Connexion',
+                requestBody: new Model\RequestBody(
+                    description: 'Identifiants',
+                    content: new ArrayObject([
+                        'application/json' => [
+                            'schema' => [
+                                '$ref' => '#/components/schemas/Auth'
+                            ]
+                        ]
+                    ])
+                )
+            )
+        ));
+        $paths->addPath($this->getMobileLogin(), new PathItem(
+            post: new Model\Operation(
+                operationId: 'mobile-login',
+                tags: ['Auth'],
+                responses: [
+                    200 => new Model\Response(
+                        description: 'Utilisateur connecté',
+                        content: new ArrayObject([
+                            'application/ld+json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/Employee.jsonld-Employee-user'
+                                ]
+                            ]
+                        ])
+                    ),
+                    400 => new Model\Response(description: 'Bad request'),
+                    401 => new Model\Response(description: 'Unauthorized'),
+                    405 => new Model\Response(description: 'Method Not Allowed'),
+                    500 => new Model\Response(description: 'Internal Server Error')
+                ],
+                summary: 'Connexion sur l\'application mobile',
+                description: 'Connexion sur l\'application mobile',
                 requestBody: new Model\RequestBody(
                     description: 'Identifiants',
                     content: new ArrayObject([
@@ -137,6 +171,114 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 'required' => ['password', 'username'],
                 'type' => 'object'
             ]),
+            'Employee.jsonld-Employee-user' => new ArrayObject([
+                'description' => 'Utilisateur',
+                'properties' => [
+                    '@context' => [
+                        'example' => '/api/contexts/Employee',
+                        'oneOf' => [
+                            ['type' => 'string'],
+                            [
+                                'additionalProperties' => true,
+                                'properties' => [
+                                    '@vocab' => ['type' => 'string'],
+                                    'hydra' => ['enum' => ['http://www.w3.org/ns/hydra/core#'], 'type' => 'string']
+                                ],
+                                'required' => ['@vocab', 'hydra'],
+                                'type' => 'object'
+                            ]
+                        ],
+                        'readOnly' => true
+                    ],
+                    '@id' => [
+                        'example' => '/api/employees/1',
+                        'readOnly' => true,
+                        'type' => 'string'
+                    ],
+                    '@type' => [
+                        'example' => 'Employee',
+                        'readOnly' => true,
+                        'type' => 'string'
+                    ],
+                    'company' => [
+                        'description' => 'Compagnie',
+                        'example' => '/api/companies/1',
+                        'format' => 'iri-reference',
+                        'nullable' => true,
+                        'title' => 'Compagnie',
+                        'type' => 'string'
+                    ],
+                    'embBlocker' => ['$ref' => '#/components/schemas/Blocker.jsonld-Employee-read'],
+                    'embState' => ['$ref' => '#/components/schemas/Employee.jsonld-Employee-read'],
+                    'id' => [
+                        'description' => 'id',
+                        'example' => 1,
+                        'nullable' => false,
+                        'readOnly' => true,
+                        'title' => 'id',
+                        'type' => 'string'
+                    ],
+                    'initials' => [
+                        'description' => 'Initiales',
+                        'example' => 'C.R.',
+                        'title' => 'Initiales',
+                        'type' => 'string'
+                    ],
+                    'name' => [
+                        'description' => 'Prénom',
+                        'example' => 'Super',
+                        'nullable' => false,
+                        'title' => 'Prénom',
+                        'type' => 'string'
+                    ],
+                    'roles' => [
+                        'description' => 'Rôles',
+                        'example' => ['ROLE_USER'],
+                        'items' => ['type' => 'string'],
+                        'title' => 'Rôles',
+                        'type' => 'array'
+                    ],
+                    'surname' => [
+                        'description' => 'Nom',
+                        'example' => 'Roosevelt',
+                        'title' => 'Nom',
+                        'type' => 'string'
+                    ],
+                    'token' => [
+                        'description' => 'Token',
+                        'example' => '47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707',
+                        'nullable' => true,
+                        'readOnly' => true,
+                        'title' => 'Token',
+                        'type' => 'string'
+                    ],
+                    'username' => [
+                        'description' => 'identifiant',
+                        'example' => 'super',
+                        'nullable' => true,
+                        'title' => 'identifiant',
+                        'type' => 'string'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
+            'Measure-generic' => new ArrayObject([
+                'description' => 'Mesure générique',
+                'properties' => [
+                    'code' => [
+                        'default' => 's',
+                        'description' => 'Code (example donné pour les secondes)',
+                        'example' => 's',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 1,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
             'Measure-duration' => new ArrayObject([
                 'description' => 'Temps',
                 'properties' => [
@@ -149,6 +291,97 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                     'value' => [
                         'description' => 'Valeur',
                         'example' => 1,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
+            'Measure-linear-density' => new ArrayObject([
+                'description' => 'Masse linéique',
+                'properties' => [
+                    'code' => [
+                        'default' => 'kg',
+                        'description' => 'Code',
+                        'example' => 'kg',
+                        'type' => 'string'
+                    ],
+                    'denominator' => [
+                        'default' => 'm',
+                        'description' => 'Dénominateur',
+                        'example' => 'm',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 1,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
+            'Measure-generic' => new ArrayObject([
+                'description' => 'Mesure composant',
+                'properties' => [
+                    'code' => [
+                        'default' => 'm',
+                        'description' => 'Code',
+                        'example' => 'm',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 1,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
+            'Measure-length' => new ArrayObject([
+                'description' => 'Masse linéique',
+                'properties' => [
+                    'code' => [
+                        'default' => 'm',
+                        'description' => 'Code',
+                        'example' => 'm',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 1,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
+            'Measure-section' => new ArrayObject([
+                'description' => 'Surface',
+                'properties' => [
+                    'code' => [
+                        'default' => 'm²',
+                        'description' => 'Code',
+                        'example' => 'm²',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 0.00025,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
+            'Measure-strength' => new ArrayObject([
+                'description' => 'Force',
+                'properties' => [
+                    'code' => [
+                        'default' => 'N',
+                        'description' => 'Code',
+                        'example' => 'N',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 5.2,
                         'type' => 'number'
                     ]
                 ],
@@ -175,9 +408,9 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 'description' => 'Prix',
                 'properties' => [
                     'code' => [
-                        'default' => '€',
+                        'default' => 'EUR',
                         'description' => 'Code',
-                        'example' => '€',
+                        'example' => 'EUR',
                         'type' => 'string'
                     ],
                     'value' => [
@@ -486,7 +719,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 array_filter($operation['openapi_context'] ?? [], static fn ($item) => preg_match('/^x-.*$/i', (string) $item), ARRAY_FILTER_USE_KEY)
             );
 
-            $pathItem = $pathItem->{'with'.ucfirst($method)}($modelOperation->withSecurity([['bearerAuth' => []]]));
+            $pathItem = $pathItem->{'with'.ucfirst((string) $method)}($modelOperation->withSecurity([['bearerAuth' => []]]));
 
             $paths->addPath($path, $pathItem);
         }
@@ -566,6 +799,10 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         $responseMimeTypes = $this->flattenMimeTypes($responseFormats);
 
         return [$requestMimeTypes, $responseMimeTypes];
+    }
+
+    private function getMobileLogin(): string {
+        return $this->urlGenerator->generate('mobile.login');
     }
 
     /**

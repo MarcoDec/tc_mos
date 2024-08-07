@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Entity\It;
+
+class EdiTypes
+{
+    CONST EDI_ORDER="ORDERS";
+    CONST EDI_DELFOR="DELFOR";
+    CONST EDI_ORDERCHANGE="ORDERCHANGE";
+    CONST EDI_DESADV="DESADV";
+    CONST EDI_ASN="ASN";
+    CONST EDI_MODE_TEST="TEST";
+    CONST EDI_MODE_PROD="PROD";
+
+    CONST ORDERS=[self::EDI_ORDER, self::EDI_DELFOR];
+    CONST ASNS=[self::EDI_DESADV, self::EDI_ASN];
+    CONST MODES=[self::EDI_MODE_TEST, self::EDI_MODE_PROD];
+}

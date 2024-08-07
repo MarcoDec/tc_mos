@@ -2,43 +2,47 @@
 
 namespace App\DataPersister;
 
-use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
+use ApiPlatform\Core\DataPersister\DataPersisterInterface;
 use App\Entity\Family;
 use App\Entity\Interfaces\FileEntity;
 use App\Filesystem\FileManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
-final class FileDataPersister implements ContextAwareDataPersisterInterface {
-    public function __construct(private readonly EntityManagerInterface $em, private readonly FileManager $fm) {
+final class FileDataPersister implements DataPersisterInterface {
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly FileManager $fm,
+        private readonly RequestStack $requests
+    ) {
     }
 
     /**
      * @param FileEntity $data
-     * @param mixed[]    $context
      */
-    public function persist($data, array $context = []): FileEntity {
+    public function persist($data): FileEntity {
         $this->em->persist($data);
         $this->em->flush();
+//        dump('FileDataPersister::persist');
         if ($data instanceof Family) {
             $this->fm->uploadFamilyIcon($data);
+            $this->em->flush();
+        } else {
+//            dump('FileDataPersister::persist::uploadFileEntityImage', $data);
+            $this->fm->uploadFileEntityImage($data);
+            $this->em->flush();
         }
         return $data;
     }
 
-    /**
-     * @param FileEntity $data
-     * @param mixed[]    $context
-     */
-    public function remove($data, array $context = []): void {
-        $this->em->remove($data);
-        $this->em->flush();
+    public function remove($data): void {
     }
 
-    /**
-     * @param mixed   $data
-     * @param mixed[] $context
-     */
-    public function supports($data, array $context = []): bool {
-        return $data instanceof FileEntity;
+    public function supports($data): bool {
+        $request = $this->requests->getCurrentRequest();
+        return !empty($request)
+            && $request->isMethod(Request::METHOD_POST)
+            && $data instanceof FileEntity;
     }
 }

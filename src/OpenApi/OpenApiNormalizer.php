@@ -2,7 +2,7 @@
 
 namespace App\OpenApi;
 
-use Illuminate\Support\Collection;
+use App\Collection;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
@@ -34,13 +34,13 @@ final class OpenApiNormalizer implements NormalizerInterface {
                 if (isset($operation['parameters']) && !empty($operation['parameters'])) {
                     /** @var mixed[] $parameters */
                     $parameters = $operation['parameters'];
-                    $operation['parameters'] = collect($parameters)->sortBy('name')->values()->all();
+                    $operation['parameters'] = Collection::collect($parameters)->sortBy('name')->all();
                 }
 
                 $item[$method] = $operation;
                 $tag = $operation['tags'][0];
             }
-            if (!$sorted->offsetExists($tag)) {
+            if (!$sorted->has($tag)) {
                 /** @var Collection<string, mixed> $empty */
                 $empty = new Collection();
                 $sorted->put($tag, $empty);
@@ -52,7 +52,7 @@ final class OpenApiNormalizer implements NormalizerInterface {
         return $sorted
             ->map(static fn (Collection $paths): array => $paths->sortKeys()->all())
             ->sortKeys()
-            ->collapse()
+            ->flatten(1, true)
             ->all();
     }
 
@@ -62,12 +62,18 @@ final class OpenApiNormalizer implements NormalizerInterface {
     public function normalize($object, ?string $format = null, array $context = []): array {
         /** @var array{components: array{schemas: array<string, mixed>}, paths: Paths} $normalized */
         $normalized = $this->decorated->normalize($object, $format, $context);
-        $normalized['components']['schemas'] = collect($normalized['components']['schemas'])->sortKeys()->all();
+        $normalized['components']['schemas'] = Collection::collect($normalized['components']['schemas'])->sortKeys()->all();
         $normalized['paths'] = self::sortPaths($normalized['paths']);
         return $normalized;
     }
 
-    public function supportsNormalization($data, ?string $format = null): bool {
+    /**
+     * @param $data
+     * @param string|null $format
+     * @param array $context
+     * @return bool
+     */
+    public function supportsNormalization($data, ?string $format = null, array $context = []): bool {
         return $this->decorated->supportsNormalization($data, $format);
     }
 }

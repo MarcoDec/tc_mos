@@ -1,36 +1,18 @@
 <script setup>
-    import {computed, onMounted, onUnmounted, ref} from 'vue'
-    import {Dropdown} from 'bootstrap'
+    import {computed} from 'vue'
 
-    const dropdown = ref(null)
-    const el = ref()
     const props = defineProps({
         icon: {required: true, type: String},
         id: {required: true, type: String},
-        title: {required: true, type: String}
+        title: {required: true, type: String},
+        dropEnd: {default: false, type: Boolean},
+        dropStart: {default: false, type: Boolean}
     })
-    const dropdownId = computed(() => `top-navbar-${props.id}`)
-
-    function dispose() {
-        if (dropdown.value !== null) {
-            dropdown.value.dispose()
-            dropdown.value = null
-        }
-    }
-
-    function instantiate() {
-        if (el.value) {
-            dispose()
-            dropdown.value = new Dropdown(el.value)
-        }
-    }
-
-    onMounted(instantiate)
-    onUnmounted(dispose)
+    const dropdownId = computed(() => `${props.id}-dropdown`)
 </script>
 
 <template>
-    <li ref="el" class="dropdown nav-item">
+    <li :id="id" class="dropdown nav-item" :class="{'dropend': dropEnd, 'dropstart': dropStart}">
         <span
             :id="dropdownId"
             aria-expanded="false"
@@ -40,7 +22,7 @@
             <Fa :icon="icon"/>
             {{ title }}
         </span>
-        <ul :aria-labelledby="dropdownId" class="dropdown-menu dropdown-menu-dark">
+        <ul :aria-labelledby="dropdownId" class="dropdown-menu dropdown-menu-dark m-0">
             <slot/>
         </ul>
     </li>

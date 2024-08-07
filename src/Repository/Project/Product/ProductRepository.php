@@ -2,7 +2,7 @@
 
 namespace App\Repository\Project\Product;
 
-use App\Doctrine\DBAL\Types\Project\Product\CurrentPlaceType;
+use App\Doctrine\DBAL\Types\Embeddable\BlockerStateType;
 use App\Entity\Project\Product\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -23,10 +23,35 @@ final class ProductRepository extends ServiceEntityRepository {
     public function expires(): void {
         $this->_em->createQueryBuilder()
             ->update($this->getClassName(), 'p')
-            ->set('p.currentPlace.name', ':place')
-            ->setParameter('place', CurrentPlaceType::TYPE_DISABLED)
-            ->where('p.expirationDate >= NOW()')
+            ->set('p.embBlocker.state', ':place')
+            ->setParameter('place', BlockerStateType::TYPE_STATE_DISABLED)
+            ->where('p.endOfLife >= NOW()')
             ->getQuery()
             ->execute();
+    }
+    public function getCustomerName(int $productId): array {
+        $qb = $this->createQueryBuilder('p')
+            ->select('c.name')
+            ->join('p.productCustomers', 'pc')
+            ->join('pc.customer', 'c')
+            ->where('p.id = :productId')
+            ->setParameter('productId', $productId);
+
+        $result = $qb->getQuery()->getResult();
+        return $result ;
+    }
+
+
+    public function findByEmbBlockerAndEmbState(): array
+    {
+        return $this->createQueryBuilder('i')
+            ->where('i.embBlocker.state = :enabled')
+            ->andWhere('i.embState.state IN (:states)')
+            ->setParameters([
+                'enabled' => 'enabled',
+                'states' => ['agreed', 'to_validate'],
+            ])
+            ->getQuery()
+            ->getResult();
     }
 }

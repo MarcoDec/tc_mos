@@ -16,7 +16,11 @@ export default function generateOptions(type, valueProp = '@id') {
         },
         getters: {
             label: state => value => state.items.find(item => item[valueProp] === value)?.text ?? null,
-            options: state => state.items.map(item => ({text: item.text, value: item[valueProp]})),
+            options: state => state.items.map(item => ({
+                text: item.text,
+                value: item[valueProp],
+                code: item.code
+            })),
             url: state => `/api/${state.type}/options`
         },
         state: () => ({items: [], type})

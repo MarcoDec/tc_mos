@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')',
             ],
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        itemOperations: ['get'],
         shortName: 'CounterPartGroup',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
@@ -47,7 +47,8 @@ use Doctrine\ORM\Mapping as ORM;
             'groups' => ['read:engine-group', 'read:id'],
             'openapi_definition_name' => 'CounterPartGroup-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationEnabled: false
     ),
     ORM\Entity
 ]

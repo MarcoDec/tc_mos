@@ -1,0 +1,254 @@
+[
+  {
+    "name": "COMPONENT_ID_CORDON",
+    "description": "Liste des id des familles de composant de type cordon.\r\nSe présente comme une liste de numéros séparés par un virgule",
+    "process": "purchase",
+    "value": "12",
+    "type": "ARRAY"
+  },
+  {
+    "name": "COMPONENT_ID_CORDON_FIL",
+    "description": "Liste des id des familles de composant de type fil ou cordon.\r\nSe présente sous forme de liste d'entier avec des virgules pour séparer.",
+    "process": "purchase",
+    "value": "11,12",
+    "type": "ARRAY"
+  },
+  {
+    "name": "COMPONENT_ID_COSSES",
+    "description": "Liste des id des familles de composant de type cosse",
+    "process": "purchase",
+    "value": "22,23,24",
+    "type": "ARRAY"
+  },
+  {
+    "name": "COMPONENT_ID_GAINES",
+    "description": "Liste des id des familles de composant de type gaine",
+    "process": "purchase",
+    "value": "19,16,17,18",
+    "type": "ARRAY"
+  },
+  {
+    "name": "COMPONENT_EXPIRATION_DATE_WARNING",
+    "description": "Défini combien de jours l'alerte doit s'afficher avant la fin de vie d'un composant.",
+    "process": "purchase",
+    "value": "30",
+    "type": "INTEGER"
+  },
+  {
+    "name": "COMPONENT_ATTACHMENT_CATEGORIES",
+    "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Component\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
+    "process": "purchase",
+    "value": "doc_a_date,qualité,technique,rohs,reach",
+    "type": "ARRAY"
+  },
+  {
+    "name": "COMPONENT_EXPIRATION_DIRECTORIES",
+    "description": "Répertoires où sont stockés les fichiers périssables des composants.",
+    "process": "purchase",
+    "value": "doc_a_date",
+    "type": "ARRAY"
+  },
+  {
+    "name": "COMPONENT_EXPIRATION_DURATION",
+    "description": "Durée en mois d'expiration des répertoires où sont stockés les fichiers périssables des composants..",
+    "process": "purchase",
+    "value": "84",
+    "type": "ARRAY"
+  },
+  {
+    "name": "SUPPLIER_ATTACHMENT_CATEGORIES",
+    "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Supplier\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
+    "process": "purchase",
+    "value": "contrats,contrats/CGA,contrats/CGV,contrats/logistique,doc_a_date,doc_a_date/assurances,doc_a_date/audits,doc_a_date/certificats_qualités,docs,qualité",
+    "type": "ARRAY"
+  },
+  {
+    "name": "SUPPLIER_EXPIRATION_DIRECTORIES",
+    "description": "Répertoires où sont stockés les fichiers périssables des fournisseurs.",
+    "process": "purchase",
+    "value": "doc_a_date",
+    "type": "ARRAY"
+  },
+  {
+    "name": "SUPPLIER_EXPIRATION_DURATION",
+    "description": "Durée en mois d'expiration des répertoires où sont stockés les fichiers périssables des fournisseurs..",
+    "process": "purchase",
+    "value": "84",
+    "type": "ARRAY"
+  },
+  {
+    "name": "ENGINE_ATTACHMENT_CATEGORIES",
+    "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Engine\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
+    "process": "production",
+    "value": "doc_a_date,doc_a_date/capabilité,maintenance",
+    "type": "ARRAY"
+  },
+  {
+    "name": "ENGINE_EXPIRATION_DURATION",
+    "description": "Durée en mois avant expiration",
+    "process": "production",
+    "value": "12",
+    "type": "INTEGER"
+  },
+  {
+    "name": "ENGINE_EXPIRATION_DIRECTORIES",
+    "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Engine\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
+    "process": "production",
+    "value": "doc_a_date,doc_a_date/capabilité,maintenance",
+    "type": "ARRAY"
+  },
+  {
+    "name": "ENGINE_CHECK_MAINTENANCE",
+    "description": "Active ou non la vérification des maintenances lors de démarrage de production",
+    "process": "production",
+    "value": "TRUE",
+    "type": "INTEGER"
+  },
+  {
+    "name": "ENGINE_IDS_CONNECTEURS",
+    "description": "Ids des familles de Connecteur à prendre en compte pour les associations avec les outillages de test. Ne pas intégrer les accessoires",
+    "process": "production",
+    "value": "4,20,21,45",
+    "type": "ARRAY"
+  },
+  {
+    "name": "PRODUCT_IDS_TERMINAUX",
+    "description": "Ids des terminaux à prendre en compte pour les gammes de fabrication. Ne pas intégrer les joints",
+    "process": "project",
+    "value": "22,23,24,46",
+    "type": "ARRAY"
+  },
+  {
+    "name": "PRODUCT_IDS_JOINTS",
+    "description": "Ids des Joints à prendre en compte pour les gammes de fabrication. Ne pas intégrer les autres terminaux",
+    "process": "project",
+    "value": "25",
+    "type": "ARRAY"
+  },
+  {
+    "name": "PRODUCT_ATTACHMENT_CATEGORIES",
+    "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Product\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
+    "process": "project",
+    "value": "doc_a_date,doc_a_date/audits,dossier_affaires,dossiers_fabrication,PPAP,rapports_de_controle,technique",
+    "type": "ARRAY"
+  },
+  {
+    "name": "PRODUCT_EXPIRATION_DIRECTORIES",
+    "description": "Répertoires où sont stockés les fichiers périssables des produits.",
+    "process": "project",
+    "value": "doc_a_date",
+    "type": "ARRAY"
+  },
+  {
+    "name": "PRODUCT_EXPIRATION_DURATION",
+    "description": "Durée d'expiration en mois des éléments des dossiers expirables",
+    "process": "project",
+    "value": "84",
+    "type": "INTEGER"
+  },
+  {
+    "name": "CUSTOMER_ATTACHMENT_CATEGORIES",
+    "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Customer\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
+    "process": "selling",
+    "value": "doc_a_date,doc_a_date/contrats,doc_a_date/contrats_qualités,doc_a_date/CSR,doc_a_date/résultats_audits,réclamations",
+    "type": "ARRAY"
+  },
+  {
+    "name": "CUSTOMER_EXPIRATION_DIRECTORIES",
+    "description": "Répertoires où sont stockés les fichiers périssables des clients.",
+    "process": "selling",
+    "value": "doc_a_date",
+    "type": "ARRAY"
+  },
+  {
+    "name": "CUSTOMER_EXPIRATION_DURATION",
+    "description": "Durée de rétention des fichiers périssables des clients.",
+    "process": "selling",
+    "value": "30",
+    "type": "INTEGER"
+  },
+  {
+    "name": "EMPLOYEE_DIRECTORIES",
+    "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Employee\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
+    "process": "hr",
+    "value": "contrats,doc_a_date,doc_a_date/formations,doc,qualité",
+    "type": "ARRAY"
+  },
+  {
+    "name": "EMPLOYEE_ATTACHMENT_CATEGORIES",
+    "description": "Catégories de pièce jointe",
+    "process": "hr",
+    "value": "contrats,doc,formations,qualité",
+    "type": "ARRAY"
+  },
+  {
+    "name": "EMPLOYEE_EXPIRATION_DIRECTORIES",
+    "description": "Répertoires où sont stockés les fichiers périssables des employés.",
+    "process": "hr",
+    "value": "doc_a_date",
+    "type": "ARRAY"
+  },
+  {
+    "name": "EMPLOYEE_EXPIRATION_DURATION",
+    "description": "Durée en mois d'expiration des répertoires où sont stockés les fichiers périssables des employés.",
+    "process": "hr",
+    "value": "84",
+    "type": "INTEGER"
+  },
+  {
+    "name": "EMPLOYEE_MISSING_CHART_CATEGORY",
+    "description": "Catégories d'événements à inclure sur la courbe d'absentéïsme",
+    "process": "hr",
+    "value": "ABSENCE,mise a pied,ABANDON DE POSTE",
+    "type": "ARRAY"
+  },
+  {
+    "name": "EMPLOYEE_COMPETENCE_REMINDER",
+    "description": "Nombre de jours avant le prochain rappel de formation",
+    "process": "hr",
+    "value": "180",
+    "type": "INTEGER"
+  },
+  {
+    "name": "EMPLOYEE_CHANGE_WARNING_WORKFLOW",
+    "description": "Nombre de jours avant le passage de « sous-surveillance » à « actif »",
+    "process": "hr",
+    "value": "90",
+    "type": "INTEGER"
+  },
+  {
+    "name": "EMPLOYEE_BLOCKED_TO_WATCHDOG_DURATION",
+    "description": "Nombre de jours avant le passage de « bloqué » à « sous-surveillance »",
+    "process": "hr",
+    "value": "180",
+    "type" : "INTEGER"
+  },
+  {
+    "name": "WAREHOUSE_DIRECTORIES",
+    "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté pour un entrepôt\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
+    "process": "logistic",
+    "value": "plans,divers",
+    "type": "ARRAY"
+  },
+  {
+    "name": "WAREHOUSE_ATTACHMENT_CATEGORIES",
+    "description": "Catégories de pièce jointe",
+    "process": "logistic",
+    "value": "plans,divers",
+    "type": "ARRAY"
+  },
+  {
+    "name": "WAREHOUSE_EXPIRATION_DIRECTORIES",
+    "description": "Répertoires où sont stockés les fichiers périssables des entrepôts.",
+    "process": "logistic",
+    "value": "",
+    "type": "ARRAY"
+  },
+  {
+    "name": "WAREHOUSE_EXPIRATION_DURATION",
+    "description": "Durée en mois d'expiration des répertoires où sont stockés les fichiers périssables des entrepôts.",
+    "process": "logistic",
+    "value": "84",
+    "type": "INTEGER"
+  }
+]

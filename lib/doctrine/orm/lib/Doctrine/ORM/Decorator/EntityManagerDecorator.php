@@ -28,4 +28,8 @@ final class EntityManagerDecorator extends DoctrineEntityManagerDecorator {
         }
         return null;
     }
+    function isUninitializedObject(mixed $value): bool
+    {
+        return true; //TODO: Implement isUninitializedObject() method.
+    }
 }

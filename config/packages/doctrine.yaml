@@ -1,3 +1,10 @@
+parameters:
+  profiling_collect_backtrace: false
+
+when@dev:
+  parameters:
+    profiling_collect_backtrace: true
+
 doctrine:
   dbal:
     connections:
@@ -5,29 +12,76 @@ doctrine:
         driver: pdo_mysql
         mapping_types:
           enum: string
-        url: '%env(resolve:DATABASE_URL)%'
+        profiling_collect_backtrace: '%profiling_collect_backtrace%'
+        # url: '%env(resolve:DATABASE_URL)%'
+        dbname: '%env(resolve:DATABASE_DBNAME)%'
+        password: '%env(resolve:DATABASE_PASSWORD)%'
+        user: '%env(resolve:DATABASE_USER)%'
+        server_version: '%env(resolve:SERVER_VERSION)%'
+        host: '%env(resolve:DATABASE_HOST)%'
+        port: '%env(resolve:DATABASE_PORT)%'
         wrapper_class: App\Doctrine\DBAL\Connection
       migrations:
         driver: pdo_mysql
         mapping_types:
           enum: string
-        url: '%env(resolve:DATABASE_ROOT_URL)%'
+        # url: '%env(resolve:DATABASE_URL)%'
+        dbname: '%env(resolve:DATABASE_DBNAME)%'
+        password: '%env(resolve:DATABASE_ROOT_PASSWORD)%'
+        user: '%env(resolve:DATABASE_ROOT_USER)%'
+        server_version: '%env(resolve:SERVER_VERSION)%'
+        host: '%env(resolve:DATABASE_HOST)%'
+        port: '%env(resolve:DATABASE_PORT)%'
     default_connection: default
     types:
+      attribute: App\Doctrine\DBAL\Types\Purchase\Component\AttributeType
+      bill_state: App\Doctrine\DBAL\Types\Embeddable\Accounting\BillStateType
+      blocker_state: App\Doctrine\DBAL\Types\Embeddable\BlockerStateType
       char: App\Doctrine\DBAL\Types\CharType
-      copper_type: App\Doctrine\DBAL\Types\Embeddable\CopperType
+      check: App\Doctrine\DBAL\Types\Quality\Reception\Check\CheckType
+      check_kind: App\Doctrine\DBAL\Types\Quality\Reception\Check\KindType
+      check_state: App\Doctrine\DBAL\Types\Embeddable\Quality\Reception\CheckStateType
+      closer_state: App\Doctrine\DBAL\Types\Embeddable\CloserStateType
+      component_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Component\ComponentStateType
+      copper: App\Doctrine\DBAL\Types\Embeddable\CopperType
+      contact: App\Doctrine\DBAL\Types\Management\Society\ContactType
+      customer_address: App\Doctrine\DBAL\Types\Selling\Customer\AddressType
+      customer_state: App\Doctrine\DBAL\Types\Embeddable\Selling\Customer\CustomerStateType
+      delivery_note_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\DeliveryNoteStateType
       !php/const Doctrine\DBAL\Types\Types::SIMPLE_ARRAY: App\Doctrine\DBAL\Types\SimpleArrayType
       !php/const Doctrine\DBAL\Types\Types::TEXT: App\Doctrine\DBAL\Types\TextType
-      employee_current_place: App\Doctrine\DBAL\Types\Hr\Employee\CurrentPlaceType
-      engine_type: App\Doctrine\DBAL\Types\Production\Engine\EngineType
+      employee_state: App\Doctrine\DBAL\Types\Embeddable\Hr\Employee\EmployeeStateType
+      employee_event_state: App\Doctrine\DBAL\Types\Embeddable\Hr\Event\EventStateType
+      engine_state: App\Doctrine\DBAL\Types\Embeddable\Production\Engine\EngineStateType
+      engine_event: App\Doctrine\DBAL\Types\Production\Engine\EventType
+      engine: App\Doctrine\DBAL\Types\Production\Engine\EngineType
+      event_state: App\Doctrine\DBAL\Types\Embeddable\EventStateType
+      expedition_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\ExpeditionStateType
+      gender_place: App\Doctrine\DBAL\Types\Hr\Employee\GenderType
+      item: App\Doctrine\DBAL\Types\ItemType
+      manufacturing_operation_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\OperationStateType
+      manufacturing_order_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\OrderStateType
       notification_category: App\Doctrine\DBAL\Types\Hr\Employee\NotificationCategoryType
-      product_current_place: App\Doctrine\DBAL\Types\Project\Product\CurrentPlaceType
+      preparation_state: App\Doctrine\DBAL\Types\Embeddable\Logistics\Component\PreparationStateType
+      printer_color: App\Doctrine\DBAL\Types\Management\PrinterColorType
+      product_state: App\Doctrine\DBAL\Types\Embeddable\Project\Product\ProductStateType
       product_kind: App\Doctrine\DBAL\Types\Project\Product\KindType
+      purchase_order_item_closer_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Order\CloserStateType
+      purchase_order_item_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Order\ItemStateType
+      receipt_state: App\Doctrine\DBAL\Types\Embeddable\Logistics\Order\ReceiptStateType
+      selling_order_item_state: App\Doctrine\DBAL\Types\Embeddable\Selling\Order\SellingOrderItemStateType
+      selling_order_state: App\Doctrine\DBAL\Types\Embeddable\Selling\Order\SellingOrderStateType
+      situation_place: App\Doctrine\DBAL\Types\Hr\Employee\SituationType
+      purchase_order_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Order\OrderStateType
+      supplier_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Supplier\SupplierStateType
       tinyint: App\Doctrine\DBAL\Types\Tinyint
+      type: App\Doctrine\Type\Type
       vat_message_force: App\Doctrine\DBAL\Types\Management\VatMessageForce
+      warehouse_families: App\Doctrine\DBAL\Types\Logistics\FamilyType
   orm:
     auto_generate_proxy_classes: true
     default_entity_manager: default
+    enable_lazy_ghost_objects: true
     entity_managers:
       default:
         connection: default
@@ -78,3 +132,5 @@ when@test:
   doctrine:
     dbal:
       dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+    orm:
+      enable_lazy_ghost_objects: true

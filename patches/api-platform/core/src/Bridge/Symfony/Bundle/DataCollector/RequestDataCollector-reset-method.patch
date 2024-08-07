@@ -1,0 +1,13 @@
+diff --git a/vendor/api-platform/core/src/Bridge/Symfony/Bundle/DataCollector/RequestDataCollector.php b/patches/tmp/RequestDataCollector.php
+index 2b7c993cf..74ef92cfe 100644
+--- a/vendor/api-platform/core/src/Bridge/Symfony/Bundle/DataCollector/RequestDataCollector.php
++++ b/patches/tmp/RequestDataCollector.php
+@@ -187,7 +187,7 @@ final class RequestDataCollector extends DataCollector
+     /**
+      * {@inheritdoc}
+      */
+-    public function reset()
++    public function reset():void
+     {
+         $this->data = [];
+     }
