@@ -25,12 +25,12 @@ const router = createRouter({
         ...purchase,
         ...quality,
         ...selling,
-        {
-            component: async () => import('./pages/AppOverview.vue'),
-            meta: {requiresAuth: true},
-            name: 'overview',
-            path: '/overview'
-        },
+        // {
+        //     component: async () => import('./pages/AppOverview.vue'),
+        //     meta: {requiresAuth: true},
+        //     name: 'overview',
+        //     path: '/overview'
+        // },
         {component: AppLogin, meta: {title: 'Connexion — T-Concept GPAO'}, name: 'login', path: '/login'},
         {component: AppHome, meta: {title: 'T-Concept GPAO'}, name: 'home', path: '/'},
         {meta: {title: 'T-Concept GPAO'}, name: 'all', path: '/:pathMatch(.*)*'}
