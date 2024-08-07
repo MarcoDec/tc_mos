@@ -9,6 +9,9 @@ export default defineStore('units', {
             // console.log('responseListUnits', response)
             this.listUnits = response['hydra:member']
         },
+        async fetch() {
+            await this.getUnits()
+        },
         reset() {
             this.listUnits = []
         }

@@ -293,14 +293,14 @@
 
 <template>
     <AppModal :id="modalId" class="four" :title="title">
-        <AppTabs id="gui-start" class="gui-start-content">
-            <AppTab id="gui-start-general" active icon="sitemap" tabs="gui-start" title="Général">
+        <AppTabs id="gui-add-customer" class="gui-start-content">
+            <AppTab id="gui-start-general" active icon="sitemap" tabs="gui-add-customer" title="Général">
                 <AppFormJS id="supplier" :fields="fields" :violations="violations" @update:model-value="generalForm"/>
             </AppTab>
-            <AppTab id="gui-start-comptabilite" icon="chart-line" tabs="gui-start" title="Comptabilité">
+            <AppTab id="gui-start-comptabilite" icon="chart-line" tabs="gui-add-customer" title="Comptabilité">
                 <AppFormJS id="comptabilite" :fields="fieldsComp" :violations="violations" @update:model-value="comptabilityForm"/>
             </AppTab>
-            <AppTab id="gui-start-cuivre" icon="clipboard-list" tabs="gui-start" title="Cuivre">
+            <AppTab id="gui-start-cuivre" icon="clipboard-list" tabs="gui-add-customer" title="Cuivre">
                 <AppFormJS id="cuivre" :key="copperKey" :fields="fieldsCuivre" :violations="violations" :model-value="cuivreData" @update:model-value="cuivreForm"/>
             </AppTab>
         </AppTabs>

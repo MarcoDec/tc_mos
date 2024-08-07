@@ -1,54 +1,101 @@
 # TConcept-GPAO
 
-## Objectifs de la branche preprod
-La branche de `preprod` a pour objectif de mettre l'application dans des conditions proches de la production.
-Elle dérive de la branche `develop` et est destinée à être fusionnée dans la branche `master`.
+## Logique des branches principales
+Ce projet comporte les branches principales suivantes:
+   - develop
+   - test
+   - preprod
+   - master
+
+La logique d'enchainement de ces branches est la suivante:
+   - develop --> test --> preprod --> master
+   - La branche develop est la branche de développement. C'est sur cette branche que les développeurs travaillent.
+   - La branche test est la branche de test. C'est sur cette branche que les responsables métiers testent toutes les fonctionnalités développées.
+   - La branche preprod est la branche de pré-production. C'est sur cette branche que les fonctionnalités sont validées par les utilisateurs finaux.
+   - La branche master est la branche de production. C'est sur cette branche que les fonctionnalités sont déployées pour les utilisateurs finaux.
 
 ## Installation
 
 Le projet est prévu pour s'installer sur un système d'exploitation en base Linux. Il est possible sur Windows d'utiliser
 des outils comme le [WSL 2](https://docs.microsoft.com/fr-fr/windows/wsl/install).
 
-### Alias
+### Make
 
-Certains alias ont été définis pour rendre plus pratique la gestion des conteneurs Docker. Pour les utiliser&nbsp;:
-
-1. vérifiez que les alias présents dans le fichier [`.bash_aliases`](./.bash_aliases) n'entrent pas en conflit avec vos
-   propres alias&nbsp;;
-2. ajoutez les lignes suivantes dans votre fichier de configuration de votre shell (par exemple `~/.bashrc` si vous
-   utilisez BASH)&nbsp;:
+Le processus d'installation est automatisé grâce à la commande `make`. Pour l'utiliser, assurez-vous que le paquet
+`make` est installé sur votre système. Pour l'installer sur une distribution basée sur Debian, exécutez la commande
+suivante&nbsp;:
 
 ```sh
-# Aliases TConcept-GPAO
-if [ -f [chemin vers le clone du projet]/.bash_aliases ]; then
-    . [chemin vers le clone du projet]/.bash_aliases
-fi
+sudo apt install make
 ```
 
-### Conteneurs Docker
+### Git
+Il faut bien évidemment installer git pour ce projet.
+Plus particulièrement, comme ce projet intègre des sous-modules, 
+lors de la première installation (clonage), il faut lancer la commande suivante :
+````sh
+git submodule update --init
+````
 
-Depuis la racine du projet, exécutez la commande `docker:recreate`.
+### Docker
+#### Installation
+Ce projet utilise Docker pour la gestion des conteneurs. Pour l'installer, suivez les instructions sur le site
+officiel&nbsp;: [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/).
+Plus particulièrement, le projet utilise Docker Compose. Pour l'installer, suivez les instructions sur le site
+officiel&nbsp;: [https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/).
 
-### Composer
+#### Droits
 
-Exécutez la commande `docker:php` pour entrer dans le conteneur `tconcept_gpao_php`. Une fois dans le conteneur,
-exécutez la commande `composer install` pour installer les différentes dépendances.
 
-### Base de données
+### Traefik
+Ce projet utilise traefik comme proxy afin de gérer les sous-domaines.
+Par contre ce projet ne définit pas l'instance docker de traefik.
+Cette définition doit faire l'objet d'un mini-projet à part. Et vu la simplicité du fichier de défintion docker-compose,
+on donne ci-dessous un exemple fonctionnel simple compatible du projet actuel.
+````yaml
+services:
+  traefik:
+    image: "traefik:v2.9"
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    restart: always
+    volumes:
+      - "/var/run/.docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - reseau_tc
+networks:
+  reseau_tc:
+    driver: bridge
+````
 
-Pour charger la base de données, exécutez la commande `gpao:database:load`.
+### Variables d'environnement
+Les variables d'environnement sont définies dans le fichier `.env`. Pour les modifier, copiez le fichier `.env`.
+Les différents environnements sont les suivants&nbsp;:
+   - `dev`&nbsp;: environnement de développement&nbsp;;
+   - `test`&nbsp;: environnement de test&nbsp;;
+   - `preprod`&nbsp;: environnement de pré-production&nbsp;;
+   - `prod`&nbsp;: environnement de production&nbsp;.
 
-### Vite & Vue
+En fonction de l'environnement choisi, le fichier `.env` doit être renommé en `.env.dev.local` pour l'environnement de développement
+ou en `.env.test.local` pour l'environnement de test, etc.
 
-La partie *front* est développée avec le *framework* Vue.js. Les différents fichiers composants les *assets* sont
-transcompilés grâce au *bundler* Vite.
-
-```sh
-yarn # Installe les dépendances
-yarn build # Compile les assets en mode production
-
-yarn dev # À utiliser pour lancer le serveur de développement
-```
+### Processus d'installation
+   1. Copiez le fichier `.env` en fonction de l'environnement choisi&nbsp;;
+   2. Exécuter la commande `make build` pour construire les conteneurs Docker&nbsp;;
+   3. Exécuter la commande `make up-dev` pour démarrer les conteneurs Docker en mode develop&nbsp;;
+   4. Exécuter la commande `make php` pour entrer dans le conteneur PHP&nbsp;;
+   5. Exécuter la commande `composer install` pour installer les dépendances PHP&nbsp;;
+   6. Exécuter la commande `yarn` pour installer les dépendances JavaScript&nbsp;;
+   7. Exécuter la commande `gpao:database:load` pour charger la base de données&nbsp;;
+   8. Exécuter la commande `yarn dev` pour compiler les assets en mode développement&nbsp;; ou `yarn build` pour compiler les assets en mode production
 
 ### PhpStorm
 
@@ -58,7 +105,8 @@ peut poser des problèmes d'indexation. Pour les résoudre, il faut ignorer les 
 
 ## Conteneurs
 
-Différents conteneurs Docker sont utilisés pour les différents services du projet&nbsp;:
+Différents conteneurs Docker sont utilisés pour les différents services du projet&nbsp;: (attention les noms de conteneurs 
+peuvent varier en fonction de l'environnement choisi)
 
 - `tconcept_gpao_apache`&nbsp;: conteneur responsable d'Apache 2, le serveur HTTP accessible grâce
   à [http://localhost:8000](http://localhost:8000). C'est ici que l'on peut utiliser l'application&nbsp;;
@@ -77,8 +125,7 @@ suivantes&nbsp;:
 gpao:cron --scan # Analyse les commandes et créer les CRON en base de données.
 gpao:cron # Lance les CRON.
 ```
-
-## Devises
+### Devises
 
 Le taux de change des devises est mis à jour par une tâche cron selon la commande `gpao:currency:rate`.
 
@@ -86,3 +133,15 @@ Le taux de change des devises est mis à jour par une tâche cron selon la comma
 
 Pour modifier et contrôler le code quant aux standards définis pour le projet, utilisez la
 commande&nbsp;: `gpao:fix:code`.
+
+## Redis
+
+Ce projet utilise Redis pour gérer une partie du cache.
+
+Pour ce connecter à redis en mode client, utiliser la commande suivante depuis WSL
+`make redis-cli`
+
+Les principales commandes 'redis' à connaitre sont les suivantes:
+
+   - Lister toutes les clés présentes: `keys "*"`
+   - Supprimer toutes les clés présentes: `flushall`

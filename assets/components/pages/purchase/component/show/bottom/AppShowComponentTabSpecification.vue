@@ -17,7 +17,33 @@
             return {text, value}
         }))
     const specificationFields = [
-        {disabled: true, label: 'Prix', measure: {code: 'Devise', value: 'valeur'}, name: 'price', type: 'measure'},
+        {
+            disabled: true,
+            label: 'Prix',
+            measure:
+                {
+                    code: {
+                        label: 'Devise',
+                        type: 'select',
+                        name: 'price.code',
+                        options: {
+                            label: value => value,
+                            options: [
+                                {text: 'Euro', value: 'EUR'},
+                                {text: 'Dollar', value: 'USD'},
+                                {text: 'Franc CFA', value: 'XOF'}
+                            ]
+                        }
+                    },
+                    value: {
+                        label: 'Valeur',
+                        type: 'number',
+                        name: 'price.value'
+                    }
+                },
+            name: 'price',
+            type: 'measure'
+        },
         {
             label: 'Poids Cuivre',
             name: 'copperWeight',

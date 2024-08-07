@@ -11,7 +11,7 @@ export default [
         component: AppTablePageSuspense,
         meta: {title: 'Couleurs — T-Concept GPAO'},
         name: 'colors',
-        path: '/colors',
+        path: '/couleurs',
         props: {
             apiBaseRoute: 'colors',
             fields: [{label: 'Nom', name: 'name'}, {label: 'RGB', name: 'rgb', type: 'color'}],

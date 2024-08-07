@@ -12,6 +12,14 @@
         const id = Number(props.item['@id'].match(/\d+/)[0])
         emit('deleted', id)
     }
+    function getItemLabel(item, field) {
+        //Si field.name est de la forme "customer.name", on doit retourner item.customer.name
+        if (field.name.includes('.')) {
+            const [relation, name] = field.name.split('.')
+            return item[relation][name]
+        }
+        return item[field.name]
+    }
 </script>
 
 <template>
@@ -20,6 +28,6 @@
         <AppBtn icon="trash" label="Supprimer" variant="danger" @click="deleted"/>
     </td>
     <td v-for="field in fields" :key="field.name">
-        {{ item[field.name] }}
+        {{ getItemLabel(item, field) }}
     </td>
 </template>

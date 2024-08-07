@@ -29,3 +29,13 @@ node_modules
 /public/uploads
 /edi/_.txt
 /edi/_test_orders_old.txt
+/edi/test_delfor/ORDERS_AN20231027101146-805.json
+/docker/redis/data/dump.rdb
+/vendor/
+/vendor/composer/
+vendor/composer/autoload_classmap.php
+vendor/composer/autoload_static.
+vendor/composer/installed.php
+vendor/rector/rector/vendor/phpstan/phpstan/phpstan.phar
+vendor/rector/rector/vendor/symfony/console/Resources/bin/hiddeninput.exe
+vendor/symfony/console/Resources/bin/hiddeninput.exe

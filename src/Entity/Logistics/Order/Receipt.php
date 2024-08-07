@@ -19,18 +19,28 @@ use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
 use App\Entity\Purchase\Component\Family as ComponentFamily;
 use App\Entity\Purchase\Order\Item;
+use App\Entity\Purchase\Order\Order;
 use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Quality\Reception\Check;
+use App\Filter\SetFilter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Filter\RelationFilter;
+use App\Filter\CustomGetterFilter;
 
 /**
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state' => 'partial', 'embBlocker.state' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['date' => 'exact']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['item', 'stocks', 'checks']),
+    ApiFilter(filterClass: CustomGetterFilter::class, properties: ['getterFilter'=>['fields'=>['item']]]),
     ApiResource(
         description: 'Réception',
         collectionOperations: [
@@ -42,7 +52,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             ]
         ],
         itemOperations: [
-            'get' => NO_ITEM_GET_OPERATION,
+            'get',
             'promote' => [
                 'controller' => PlaceholderAction::class,
                 'deserialize' => false,
@@ -133,7 +143,20 @@ class Receipt extends Entity implements MeasuredInterface {
         $this->quantity = new Measure();
         $this->stocks = new ArrayCollection();
     }
-
+    #[
+        ApiProperty(description: 'Nom complet', example: 'Roosevelt Super'),
+        Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection'])
+    ]
+    final public function getGetterFilter(): string {
+        return $this->getPurchaseOrder()?->getId();
+    }
+    #[
+        ApiProperty(description: 'Commande', example: '/api/purchase-order/1'),
+        Serializer\Groups(['read:receipt', 'write:receipt'])
+    ]
+    public function getPurchaseOrder(){
+        return $this->item?->getParentOrder();
+    }
     /**
      * @param Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier> $check
      *

@@ -16,7 +16,7 @@
         * Récupère la valeur d'un champ en fonction de son type
      */
     const getLabelValue = thevalue => {
-        if (!props.field || typeof thevalue === 'undefined') return ''
+        if (!props.field || typeof thevalue === 'undefined' || thevalue === null) return ''
         switch (props.field.type) {
             case 'address':
                 return theValue.address || ''
@@ -25,7 +25,7 @@
             case 'link':
                 return thevalue || ''
             case 'boolean':
-                return thevalue ? 'Oui' : 'Non'
+                return thevalue ? true : false
             case 'color': {
                 if (props.field.optionsList?.length > 0) return props.field.optionsList.find(element => element.value === thevalue).text
                 return thevalue || '#000000'

@@ -167,6 +167,7 @@
                     :pag="storeSuppliersList.pagination"
                     :previous-page="storeSuppliersList.previousPage"
                     :user="roleuser"
+                    top-offset="48px"
                     form="formSupplierCardableTable"
                     @deleted="deleted"
                     @get-page="getPage"

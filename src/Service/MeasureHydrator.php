@@ -41,7 +41,6 @@ final class MeasureHydrator {
     }
 
     public function hydrateIn(MeasuredInterface $entity): MeasuredInterface {
-//        dump(["MeasureHydrator:hydrateIn Before" => $entity]);
         if ($this->isSafe()) {
             foreach ($entity->getUnitMeasures() as $measure) {
                 $this->hydrateUnit($measure);
@@ -50,7 +49,6 @@ final class MeasureHydrator {
                 $this->hydrateCurrency($measure);
             }
         }
-//        dump(["MeasureHydrator:hydrateIn After" => $entity]);
         return $entity;
     }
 

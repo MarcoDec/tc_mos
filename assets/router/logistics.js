@@ -44,27 +44,6 @@ export default [
         name: 'warehouse-list',
         path: '/warehouse-list',
         props: {
-            fields: [
-                {
-                    create: false,
-                    filter: true,
-                    label: 'Nom',
-                    name: 'name',
-                    sort: true,
-                    type: 'text',
-                    update: true
-                },
-                {
-                    create: false,
-                    filter: true,
-                    label: 'Famille',
-                    name: 'getFamilies',
-                    // options: [{text: 'prison', value: 'prison'}, {text: 'production', value: 'production'}, {text: 'réception', value: 'réception'}, {text: 'magasin piéces finies', value: 'magasinPiécesFinies'}, {text: 'expédition', value: 'expédition'}, {text: 'magasin matières premiéres', value: 'magasinMatièresPremiéres'}, {text: 'camion', value: 'camion'}],
-                    sort: false,
-                    type: 'text',
-                    update: true
-                }
-            ],
             icon: 'warehouse',
             title: 'Listes Entrepots'
         }

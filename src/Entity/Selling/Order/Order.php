@@ -8,22 +8,35 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Project\Product\KindType;
 use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Selling\Order\State;
 use App\Entity\Entity;
+use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Society\Company\Company;
-use App\Entity\Selling\Customer\BillingAddress;
+use App\Entity\Management\Unit;
+use App\Entity\Selling\Customer\Address\BillingAddress;
+use App\Entity\Selling\Customer\Contact;
 use App\Entity\Selling\Customer\Customer;
-use App\Entity\Selling\Customer\DeliveryAddress;
+use App\Entity\Selling\Customer\Address\DeliveryAddress;
 use App\Entity\Selling\Order\Item;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Filter\SetFilter;
+use App\Filter\RelationFilter;
 
 #[
+    ApiFilter(OrderFilter::class, properties: ['id', 'ref', 'createdAt', 'updatedAt', 'orderFamily']),
+    ApiFilter(SetFilter::class, properties: ['embState.state', 'embBlocker.state']),
+    ApiFilter(SearchFilter::class, properties: ['id' => 'exact', 'ref' => 'partial', 'createdAt' => 'exact', 'updatedAt' => 'exact', 'orderFamily' => 'partial']),
+    ApiFilter(RelationFilter::class, properties: ['billedTo', 'company', 'customer', 'destination']),
     ApiResource(
-        description: 'Commande',
+        description: 'Commande Client',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -105,13 +118,20 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity,
     ORM\Table(name: 'selling_order')
 ]
-class Order extends Entity {
+class Order extends Entity implements MeasuredInterface {
     #[
-        ApiProperty(description: 'Destinataire de la commande', readableLink: false, example: '/api/billing-addresses/1'),
+        ApiProperty(description: 'Adresse de facturation de la commande', readableLink: false, example: '/api/billing-addresses/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?BillingAddress $billedTo = null;
+
+    #[
+        ApiProperty(description: 'Contact client', example: '/api/customer-contacts/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:order', 'write:order'])
+    ]
+    private ?Contact $contact = null;
 
     #[
         ApiProperty(description: 'Company', example: '/api/companies/1'),
@@ -147,12 +167,32 @@ class Order extends Entity {
     private State $embState;
 
     #[
+        ApiProperty(description: 'Ouverte', example: true),
+        ORM\Column(type: 'boolean', options: ['default' => true]),
+        Serializer\Groups(['read:order', 'write:order'])
+    ]
+    private bool $isOpenOrder = true;
+
+    #[
         ApiProperty(description: 'Type', example: KindType::TYPE_PROTOTYPE, openapiContext: ['enum' => KindType::TYPES]),
         Assert\Choice(choices: KindType::TYPES),
         ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_PROTOTYPE]),
         Serializer\Groups(['read:order', 'write:order', 'read:item'])
     ]
     private ?string $kind = KindType::TYPE_PROTOTYPE;
+
+    const FAMILY_FREE = 'free'; // Commande libre (sans lien avec un produit)
+    const FAMILY_FIXED = 'fixed'; // Commande ferme (avec lien avec un produit) mais hors EDI
+    const FAMILY_FORECAST = 'forecast'; // Commande de prévisionnelle (avec lien avec un produit) mais hors EDI
+    const FAMILY_EDI_ORDERS = 'edi_orders'; // Commande ferme EDI (avec lien avec un produit)
+    const FAMILY_EDI_DELFOR = 'edi_delfor'; // Commande de prévisionnelle EDI (avec lien avec un produit)
+    const FAMILY_EDI_ORDCHG = 'edi_ordchg'; // Commande de changement de commande EDI (avec lien avec un produit)
+    #[
+        ApiProperty(description: 'Famille', example: 'fixed', openapiContext: ['enum' => [self::FAMILY_FREE, self::FAMILY_FIXED, self::FAMILY_FORECAST, self::FAMILY_EDI_ORDERS, self::FAMILY_EDI_DELFOR, self::FAMILY_EDI_ORDCHG]]),
+        ORM\Column(type: 'string', options: ['default' => self::FAMILY_FIXED]),
+        Serializer\Groups(['read:order', 'write:order'])
+    ]
+    private string $orderFamily = '';
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
@@ -169,14 +209,30 @@ class Order extends Entity {
     private ?string $ref = null;
 
     #[
-        ORM\OneToMany(targetEntity: Item::class, mappedBy: 'order')
+        ORM\OneToMany(mappedBy: 'parentOrder', targetEntity: Item::class)
     ]
     private Collection $sellingOrderItems;
+
+    #[
+        ApiProperty(description: 'Total prix fixe', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
+        Serializer\Groups(['read:order', 'write:order'])
+    ]
+    private Measure $totalFixedPrice;
+
+    #[
+        ApiProperty(description: 'Total prix prévisionnel', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
+        Serializer\Groups(['read:order', 'write:order'])
+    ]
+    private Measure $totalForecastPrice;
 
     public function __construct() {
         $this->embBlocker = new Closer();
         $this->embState = new State();
         $this->sellingOrderItems = new ArrayCollection();
+        $this->totalFixedPrice = new Measure();
+        $this->totalForecastPrice = new Measure();
     }
 
     final public function getBilledTo(): ?BillingAddress {
@@ -290,5 +346,111 @@ class Order extends Entity {
     final public function setState(string $state): self {
         $this->embState->setState($state);
         return $this;
+    }
+
+    public function getContact(): ?Contact
+    {
+        return $this->contact;
+    }
+
+    public function setContact(?Contact $contact): void
+    {
+        $this->contact = $contact;
+    }
+
+    public function getOrderFamily(): string
+    {
+        return $this->orderFamily;
+    }
+
+    public function setOrderFamily(string $orderFamily): void
+    {
+        $this->orderFamily = $orderFamily;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOpenOrder(): bool
+    {
+        return $this->isOpenOrder;
+    }
+
+    /**
+     * @param bool $isOpenOrder
+     * @return Order
+     */
+    public function setIsOpenOrder(bool $isOpenOrder): Order
+    {
+        $this->isOpenOrder = $isOpenOrder;
+        return $this;
+    }
+
+    public function getTotalFixedPrice(): Measure
+    {
+        return $this->totalFixedPrice;
+    }
+
+    public function setTotalFixedPrice(Measure $totalFixedPrice): void
+    {
+        $this->totalFixedPrice = $totalFixedPrice;
+    }
+
+    public function getTotalForecastPrice(): Measure
+    {
+        return $this->totalForecastPrice;
+    }
+
+    public function setTotalForecastPrice(Measure $totalForecastPrice): void
+    {
+        $this->totalForecastPrice = $totalForecastPrice;
+    }
+
+
+    public function getMeasures(): array
+    {
+        return [$this->totalFixedPrice, $this->totalForecastPrice];
+    }
+
+    public function getUnitMeasures(): array
+    {
+        return [];
+    }
+
+    public function getCurrencyMeasures(): array
+    {
+        return [$this->totalFixedPrice, $this->totalForecastPrice];
+    }
+
+    public function getUnit(): ?Unit
+    {
+        return null;
+    }
+    #[
+        ApiProperty(description: 'Total prix de vente', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        Serializer\Groups(['read:order'])
+    ]
+    public function getTotalSellingPrice(): Measure
+    {
+        return $this->totalFixedPrice->add($this->totalForecastPrice);
+    }
+    public function updateTotalSellingPrice(): void
+    {
+        $totalFixedPrice = new Measure();
+        $totalFixedPrice->setCode($this->customer->getCurrency()->getCode());
+        $totalFixedPrice->setValue(0);
+        $totalForecastPrice = new Measure();
+        $totalForecastPrice->setCode($this->customer->getCurrency()->getCode());
+        $totalForecastPrice->setValue(0);
+        /** @var Item $item */
+        foreach ($this->getSellingOrderItems() as $item) {
+            if ($item->getIsForecast()) {
+                $totalForecastPrice->add($item->getTotalItemPrice());
+            } else {
+                $totalFixedPrice->add($item->getTotalItemPrice());
+            }
+        }
+        $this->setTotalFixedPrice($totalFixedPrice);
+        $this->setTotalForecastPrice($totalForecastPrice);
     }
 }

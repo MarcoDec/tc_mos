@@ -27,6 +27,9 @@ import AppInputGuesserJS from './components/form/field/input/AppInputGuesserJS'
 import AppInputJS from './components/form/field/input/AppInputJS'
 import AppLabel from './components/form/field/AppLabel.vue'
 import AppLabelJS from './components/form/field/AppLabelJS'
+import AppManufacturingTable from './components/app-manufacturing-table/AppManufacturingTable.vue'
+import AppManufacturingTableItemField from './components/app-manufacturing-table/body/AppManufacturingTableItemField.vue'
+import AppManufacturingTableItemQuantite from './components/app-manufacturing-table/body/AppManufacturingTableItemQuantite.vue'
 import AppModal from './components/modal/AppModal.vue'
 import AppMultiselect from './components/form/field/input/select/AppMultiselect.vue'
 import AppOptions from './components/form/field/input/select/AppOptions.vue'
@@ -34,11 +37,14 @@ import AppOverlayJS from './components/AppOverlayJS'
 import AppPaginationItem from './components/table/pagination/AppPaginationItem'
 import AppRadio from './components/form/field/input/AppRadio'
 import AppRadioGroup from './components/form/field/input/AppRadioGroup.vue'
+import PortalVue from 'portal-vue'
 // import AppOverlay from './components/AppOverlayJS'
 import AppRouterLink from './components/nav/link/AppRouterLink.vue'
 import AppRouterLinkJS from './components/nav/link/AppRouterLinkJS'
 import AppRow from './components/AppRow'
 import AppShowGuiCard from './components/gui/AppShowGuiCard.vue'
+import AppScheduleTable from './components/app-schedule-table/AppScheduleTable.vue'
+import AppScheduleTableItemField from './components/app-schedule-table/body/AppScheduleTableItemField.vue'
 import AppSuspense from './components/AppSuspense.vue'
 import AppTab from './components/tab/AppTab.vue'
 import AppTable from './components/table/AppTable.vue'
@@ -83,38 +89,43 @@ const app = createApp(App)
     .component('AppBtn', AppBtn)
     .component('AppBtnJS', AppBtnJS)
     .component('AppCard', AppCard)
-    .component('AppCol', AppCol)
-    .component('AppContainer', AppContainer)
     .component('AppCardJS', AppCardJS)
     .component('AppCardShow', AppCardShow)
     .component('AppCardableTable', AppCardableTable)
+    .component('AppCol', AppCol)
     .component('AppCollectionTable', AppCollectionTable)
+    .component('AppContainer', AppContainer)
     .component('AppDropdownItem', AppDropdownItem)
     .component('AppDropdownItemJS', AppDropdownItemJS)
     .component('AppForm', AppForm)
     .component('AppFormCardable', AppFormCardable)
     .component('AppFormFieldset', AppFormFieldset)
     .component('AppFormGenerator', AppFormGenerator)
-    .component('AppFormTabs', AppFormTabs)
     .component('AppFormGroup', AppFormGroup)
     .component('AppFormGroupJS', AppFormGroupJS)
     .component('AppFormJS', AppFormJS)
+    .component('AppFormTabs', AppFormTabs)
     .component('AppInput', AppInput)
     .component('AppInputGuesser', AppInputGuesser)
     .component('AppInputGuesserJS', AppInputGuesserJS)
     .component('AppInputJS', AppInputJS)
     .component('AppLabel', AppLabel)
     .component('AppLabelJS', AppLabelJS)
+    .component('AppManufacturingTable', AppManufacturingTable)
+    .component('AppManufacturingTableItemField', AppManufacturingTableItemField)
+    .component('AppManufacturingTableItemQuantite', AppManufacturingTableItemQuantite)
     .component('AppModal', AppModal)
     .component('AppMultiselect', AppMultiselect)
     .component('AppOptions', AppOptions)
     .component('AppOverlay', AppOverlayJS)
     .component('AppPaginationItem', AppPaginationItem)
-    .component('AppRadioGroup', AppRadioGroup)
     .component('AppRadio', AppRadio)
+    .component('AppRadioGroup', AppRadioGroup)
     .component('AppRouterLink', AppRouterLink)
     .component('AppRouterLinkJS', AppRouterLinkJS)
     .component('AppRow', AppRow)
+    .component('AppScheduleTable', AppScheduleTable)
+    .component('AppScheduleTableItemField', AppScheduleTableItemField)
     .component('AppShowGuiCard', AppShowGuiCard)
     .component('AppSuspense', AppSuspense)
     .component('AppTab', AppTab)
@@ -131,8 +142,6 @@ const app = createApp(App)
     .component('AppTableHeadersJS', AppTableHeadersJS)
     .component('AppTableItem', AppTableItem)
     .component('AppTableItemField', AppTableItemField)
-    .component('AppTabs', AppTabs)
-    .component('AppTrafficLight', AppTrafficLight)
     .component('AppTableItemJS', AppTableItemJS)
     .component('AppTableItemUpdate', AppTableItemUpdate)
     .component('AppTableItemUpdateField', AppTableItemUpdateField)
@@ -144,6 +153,8 @@ const app = createApp(App)
     .component('AppTablePage', AppTablePage)
     .component('AppTableSearch', AppTableSearch)
     .component('AppTableSearchJS', AppTableSearchJS)
+    .component('AppTabs', AppTabs)
+    .component('AppTrafficLight', AppTrafficLight)
     .component('AppTreeForm', AppTreeForm)
     .component('AppTreeLabel', AppTreeLabel)
     .component('AppTreeNodes', AppTreeNodes)
@@ -151,5 +162,9 @@ const app = createApp(App)
     .component('CountryFlag', CountryFlag)
     .component('Fa', Fa)
     .use(pinia)
+    .use(PortalVue)
+app.config.errorHandler = (err, vm, info) => {
+    console.error('Captured in errorHandler:', err, info)
+    }
     .use(PDFPlugin)
 useUser().fetch().then(() => app.use(router).mount('#vue'))

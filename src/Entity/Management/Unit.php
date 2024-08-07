@@ -66,7 +66,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère une unité',
+                    'summary' => 'Récupère une unité'
+                ]
+            ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une unité',
@@ -104,4 +109,9 @@ class Unit extends AbstractUnit {
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
     protected ?AbstractUnit $parent;
+
+    public function __construct() {
+        parent::__construct();
+
+    }
 }

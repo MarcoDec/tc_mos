@@ -3,7 +3,6 @@ import {defineStore} from 'pinia'
 import useOption from './option'
 
 function sort(a, b) {
-    // console.log(a.text, b.text)
     if (typeof a.text === 'undefined' || typeof b.text === 'undefined') return 0
     return a.text.localeCompare(b.text)
 }
@@ -52,6 +51,30 @@ export default function useOptions(base, valueProp = '@id') {
                 this.isLoaded = false
                 for (const option of options)
                     option.$dispose()
+            },
+
+            // fonctions utiles pour récupération des labels des options
+            getLabelFromCode(value) {
+                let option = this.options.find(item => item.code === value)
+                if (option) {
+                    return option.text
+                }
+                option = this.options.find(item => item.value === value)
+                if (option) {
+                    return option.text
+                }
+                return this.getLabelFromValue(value)
+            },
+            getLabelFromValue(value) {
+                return this.options.find(option => option.value === value)?.text ?? value
+            },
+            getOptionsMap() {
+                return this.options.map(op => {
+                    const text = op.text
+                    const value = op.value
+                    const code = op.code
+                    return {text, value, code}
+                })
             }
         },
         getters: {
@@ -59,6 +82,7 @@ export default function useOptions(base, valueProp = '@id') {
                 return !this.hasGroups && state.options.length > 30
             },
             find: state => value => state.options.find(option => option.value === value),
+
             groups: state => {
                 if (!state.options.every(option => Boolean(option.group)))
                     return []
@@ -81,6 +105,13 @@ export default function useOptions(base, valueProp = '@id') {
                 return state.options.length > 0
             }
         },
-        state: () => ({base, fetchable: false, id, isLoaded: false, options: [], valueProp, items: []})
+        state: () => ({
+            base,
+            fetchable: false,
+            id, isLoaded: false,
+            options: [],
+            valueProp,
+            items: []
+        })
     })()
 }

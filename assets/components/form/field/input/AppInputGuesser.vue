@@ -1,5 +1,4 @@
 <script setup>
-    /* eslint-disable vue/no-unused-properties */
     import AppInput from './AppInput.vue'
     import AppInputMeasure from './AppInputMeasure.vue'
     import AppInputNumber from './AppInputNumber.vue'
@@ -11,7 +10,8 @@
     import AppTextArea from './AppTextArea.vue'
     import AppMultiselectFetch from './select/AppMultiselectFetch.vue'
 
-    const emit = defineEmits(['update:modelValue', 'searchChange'])
+    const emit = defineEmits(['update:modelValue', 'searchChange', 'focusOut'])
+    // on échappe eslint pour les no-unused-properties
     const props = defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
@@ -49,8 +49,20 @@
     function searchChange(data) {
         emit('searchChange', {field: props.field, data})
     }
+    function onFocusOut() {
+        emit('focusOut', props.field.name)
+    }
 </script>
 
 <template>
-    <component :is="kind" v-bind="$props" @update:model-value="input" @search-change="searchChange"/>
+    <component
+        :is="kind"
+        :id="id"
+        :disabled="disabled"
+        :field="field"
+        :form="form"
+        :model-value="modelValue"
+        @update:model-value="input"
+        @focusout="onFocusOut"
+        @search-change="searchChange"/>
 </template>

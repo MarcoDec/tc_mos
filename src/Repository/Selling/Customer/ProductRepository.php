@@ -2,7 +2,7 @@
 
 namespace App\Repository\Selling\Customer;
 
-use App\Entity\Selling\Customer\Product;
+use App\Entity\Selling\Customer\Price\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -37,4 +37,17 @@ class ProductRepository extends ServiceEntityRepository {
             return null;
         }
     }
+
+    public function findByCustomerIdSocieties($customerId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.customer', 'c')
+            ->join('c.society', 's') 
+            ->andWhere('c.id = :customerId')
+            ->setParameter('customerId', $customerId)
+            ->select('DISTINCT s.id ') 
+            ->getQuery()
+            ->getResult();
+    }
+
 }

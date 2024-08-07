@@ -96,7 +96,7 @@ use App\Controller\Logistics\Stock\ItemComponentStockQuantiteSumController;
 ]
 class ComponentStock extends Stock {
     #[
-        ApiProperty(description: 'Composant', example: '/api/components/1'),
+        ApiProperty(description: 'Composant', readableLink:true, example: '/api/components/1'),
         ORM\JoinColumn(name: 'component_id'),
         ORM\ManyToOne(targetEntity: Component::class, fetch: 'EAGER'),
         Serializer\Groups(['read:stock', 'write:stock'])

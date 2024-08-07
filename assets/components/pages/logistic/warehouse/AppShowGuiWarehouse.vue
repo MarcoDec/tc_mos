@@ -66,15 +66,15 @@
             }
         )
         initializeLocalData()
-        console.log('', Generalitesfields.value)
+        // console.log('', Generalitesfields.value)
         key++
     }
     onBeforeMount(() => {
-        console.log('onBeforeMount')
+        // console.log('onBeforeMount')
         loadData()
     })
     onBeforeUpdate(() => {
-        console.log('onBeforeUpdate')
+        // console.log('onBeforeUpdate')
         loadData()
     })
     const optionsCompany = computed(() => fecthCompanyOptions.options.map(op => ({text: op.text, value: op['@id']})))
@@ -187,7 +187,7 @@
     //     }))
     const optionsDestination = computed(() => [
         {text: '', value: null},
-        ...optionsCompany
+        ...optionsCompany.value
     ])
     //endregion
 </script>

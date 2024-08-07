@@ -23,8 +23,8 @@
     const storeProductListComposition = useProductStocksListStore()
     storeProductListComposition.setIdProduct(productId)
     await storeProductListComposition.fetch()
-    console.log('productComposition', storeProductListComposition.productComposition)
-    console.log('itemsProductComposition', storeProductListComposition.itemsProductComposition)
+    // console.log('productComposition', storeProductListComposition.productComposition)
+    // console.log('itemsProductComposition', storeProductListComposition.itemsProductComposition)
     itemsTable.value = storeProductListComposition.itemsProductComposition
     const formData = ref({
         refDesignation: null, photo: null, famille: null, quantity: null, stkSite: null, capFabSite: null, stkTotal: null, capFabTconcept: null

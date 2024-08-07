@@ -10,7 +10,7 @@
     import {Modal} from 'bootstrap'
 
     defineProps({
-        // icon: {required: true, type: String},
+        icon: {required: true, type: String},
         title: {required: true, type: String}
     })
     const router = useRouter()
@@ -187,7 +187,7 @@
     <div class="row">
         <div class="col">
             <h1>
-                <FontAwesomeIcon icon="fa-brands fa-product-hunt"/>
+                <FontAwesomeIcon :icon="icon"/>
                 <!--    fa-brands fa-product-hunt-->
                 {{ title }}
                 <span v-if="isProjectWriterOrAdmin" class="btn-float-right">
@@ -229,6 +229,7 @@
                     :pag="storeProductsList.pagination"
                     :previous-page="storeProductsList.previousPage"
                     :user="roleuser"
+                    top-offset="48px"
                     form="formProductCardableTable"
                     @cancel-search="cancelSearch"
                     @deleted="deleted"

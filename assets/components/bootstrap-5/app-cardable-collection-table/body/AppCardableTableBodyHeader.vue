@@ -22,9 +22,11 @@
     function search() {
         emit('search', inputValues.value)
     }
+    const headerKey = ref(0)
     async function cancelSearch() {
         inputValues.value = []
-        emit('cancelSearch', inputValues.value)
+        headerKey.value++
+        emit('cancelSearch')
     }
     function onUpdateModelValue(event, fieldName) {
         emit('update:model-value', {field: fieldName, event})
@@ -32,7 +34,7 @@
 </script>
 
 <template>
-    <tr class="header">
+    <tr :key="headerKey" class="header">
         <td class="px100">
             <button class="btngris" @click="search">
                 <Fa icon="search"/>

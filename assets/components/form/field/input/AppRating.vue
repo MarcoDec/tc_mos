@@ -2,10 +2,10 @@
     import {ref} from 'vue'
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
-        disabled: {type: Boolean},
+        disabled: {type: [Boolean, Number]},
         form: {required: true, type: String},
         id: {required: true, type: String},
-        modelValue: {type: Boolean}
+        modelValue: {type: [Boolean, Number]},
     })
 
     const ratingValue = ref(props.modelValue)

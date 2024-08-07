@@ -86,7 +86,10 @@
         {
             label: 'Composant',
             name: 'component',
-            options: {label: value => optionComposant.value.find(option => option.value === value)?.text ?? null, options: optionComposant.value},
+            options: {
+                label: value => optionComposant.value.find(option => option.value === value)?.text ?? null,
+                options: optionComposant.value
+            },
             type: 'multiselect',
             max: 1
         },

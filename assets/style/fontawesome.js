@@ -33,9 +33,12 @@ import {
     faChevronDown,
     faChevronRight,
     faChevronUp,
+    faCircleChevronDown,
+    faCircleChevronUp,
     faCircleDollarToSlot,
     faCircleInfo,
     faCity,
+    faClipboard,
     faClipboardCheck,
     faClipboardList,
     faClock,
@@ -51,6 +54,7 @@ import {
     faFileContract,
     faFileInvoice,
     faFileInvoiceDollar,
+    faFilePdf,
     faFilter,
     faFlask,
     faFolder,
@@ -99,6 +103,7 @@ import {
     faRetweet,
     faRightToBracket,
     faRotateLeft,
+    faRoute,
     faRulerHorizontal,
     faRulerVertical,
     faSave,
@@ -126,6 +131,7 @@ import {
     faTruck,
     faTruckField,
     faTruckLoading,
+    faTruckMoving,
     faUnlock,
     faUserCircle,
     faUserGraduate,
@@ -134,7 +140,7 @@ import {
     faUsers,
     faWallet,
     faWarehouse,
-    faWrench
+    faWrench, faTableList, faCodeFork, faFileCsv
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -173,12 +179,17 @@ library.add(faCheckDouble)
 library.add(faChevronDown)
 library.add(faChevronRight)
 library.add(faChevronUp)
+library.add(faFileCsv)
 library.add(faCircleDollarToSlot)
+library.add(faCircleChevronDown)
+library.add(faCircleChevronUp)
 library.add(faCircleInfo)
 library.add(faCity)
+library.add(faClipboard)
 library.add(faClipboardCheck)
 library.add(faClipboardList)
 library.add(faClock)
+library.add(faCodeFork)
 library.add(faCogs)
 library.add(faCommentsDollar)
 library.add(faCubesStacked)
@@ -192,6 +203,7 @@ library.add(faEye)
 library.add(faFileContract)
 library.add(faFileInvoice)
 library.add(faFileInvoiceDollar)
+library.add(faFilePdf)
 library.add(faFilter)
 library.add(faFlask)
 library.add(faFolder)
@@ -239,6 +251,7 @@ library.add(faQuestionCircle)
 library.add(faReceipt)
 library.add(faRepeat)
 library.add(faRetweet)
+library.add(faRoute)
 library.add(faRightToBracket)
 library.add(faRotateLeft)
 library.add(faRulerHorizontal)
@@ -257,6 +270,7 @@ library.add(faSitemap)
 library.add(faSquare)
 library.add(faSquarePlus)
 library.add(faStar)
+library.add(faTableList)
 library.add(faTags)
 library.add(faTimes)
 library.add(faTimesCircle)
@@ -277,3 +291,12 @@ library.add(faUsers)
 library.add(faWallet)
 library.add(faWarehouse)
 library.add(faWrench)
+library.add(faCubesStacked)
+library.add(faRulerVertical)
+library.add(faStar)
+library.add(faGaugeHigh)
+library.add(faMoneyBill1)
+library.add(faRightToBracket)
+library.add(faTruck)
+library.add(faTruckMoving)
+library.add(faBusinessTime)

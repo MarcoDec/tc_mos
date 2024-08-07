@@ -68,7 +68,7 @@ final class ProductItemRepository extends ItemRepository {
         }
     }
 
-    public function findOneByReceipt(int $id, string $ressourceClass): ?ProductItem {
+    public function findOneByReceipt(int $id, string $resourceClass): ?ProductItem {
         $query = $this->createReceiptQueryBuilder($id)->getQuery();
         try {
             /** @phpstan-ignore-next-line */

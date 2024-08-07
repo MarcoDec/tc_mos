@@ -1,7 +1,7 @@
 <script setup>
     import {computed} from 'vue'
 
-    const emit = defineEmits(['update:modelValue'])
+    const emit = defineEmits(['update:modelValue', 'focusout'])
     const props = defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
@@ -11,7 +11,6 @@
     })
     const theValue = computed(() => {
         if (typeof props.modelValue === 'boolean') {
-            console.warn('AppInput.vue entrée booléenne détectée, remplacement valeur par chaine texte vide', props.field)
             return ''
         }
         return props.modelValue
@@ -20,6 +19,16 @@
     const multiple = computed(() => props.field.multiple ?? true)
     function input(e) {
         emit('update:modelValue', e.target.value)
+    }
+    function change(e) {
+        emit('update:modelValue', e.target.value)
+    }
+    function keyup(e) {
+        e.preventDefault()
+        e.stopPropagation()
+    }
+    function onFocusout(e) {
+        emit('focusout', e)
     }
 </script>
 
@@ -37,5 +46,16 @@
         autocomplete="off"
         :step="field.step ? field.step : .01"
         class="form-control form-control-sm"
+        @focusout="onFocusout"
+        @blur="change"
+        @change="change"
+        @keyup.enter="keyup"
         @input="input"/>
 </template>
+
+<style scoped>
+    input {
+        font-size: xx-small !important;
+        min-width: 50px;
+    }
+</style>

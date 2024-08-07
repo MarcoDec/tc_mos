@@ -96,7 +96,7 @@ services:
         name: kernel.event_listener
         priority: 2
 
-  App\EventListener\FamilyListener:
+  App\EventListener\Project\Product\FamilyListener:
     autoconfigure: false
     tags:
       - entity: App\Entity\Family\Project\Product
@@ -194,3 +194,25 @@ services:
   App\EventListener\It\NewFileEventListener:
     tags:
       - { name: kernel.event_listener, event: App\Entity\Event\NewFileDetectedEvent }
+
+  App\Service\RedisService:
+    arguments:
+      $scheme: '%env(REDIS_SCHEME)%'
+      $host: '%env(REDIS_HOST)%'
+      $port: '%env(int:REDIS_PORT)%'
+
+  App\EventSubscriber\CacheUpdateSubscriber:
+    arguments:
+      $redis: '@snc_redis.default'
+      $cacheKeyStocks: 'api_needs_stocks_product'
+      $cacheKeySelling: 'api_needs_selling_order_item'
+      $cacheKeymanufacturingOrders: 'api_needs_manufacturing_orders'
+      $cacheKeyProducts: 'api_needs_products'
+      $cacheKeyCreationDate: 'api_needs_creation_date_product'
+      $cacheKeyCreationDateComponent: 'api_needs_creation_date_component'
+      $cachekeyComponentStock: 'api_needs_stock_component'
+      $cachekeyPurchaseItem: 'api_needs_purchase_item'
+      $cacheKeyNomenclature: 'api_needs_nomenclature_%s' # %s c'est l'id du produit
+      $cacheKeyComponent: 'api_needs_component_%s' # %s c'est l'id du component
+    tags:
+      - { name: 'doctrine.event_subscriber', connection: 'default' }
