@@ -21,12 +21,12 @@ export default defineStore('needs', {
             this.displayedProducts = {}
             this.displayedComponents = {}
         },
-        productShow(infinite) {
-            return this.hasProductNeeds ? infinite.loaded() : infinite.complete()
-        },
-        componentShow(infinite) {
-            return this.hasComponentNeeds ? infinite.loaded() : infinite.complete()
-        },
+        // productShow(infinite) {
+        //     return this.hasProductNeeds ? infinite.loaded() : infinite.complete()
+        // },
+        // componentShow(infinite) {
+        //     return this.hasComponentNeeds ? infinite.loaded() : infinite.complete()
+        // },
         showComponent() {
             this.componentsPage++
             const needs = this.components.component

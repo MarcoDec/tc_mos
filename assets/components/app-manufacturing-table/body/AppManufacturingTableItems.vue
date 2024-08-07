@@ -37,7 +37,7 @@
         //const month = (today.getMonth() + 1).toString().padStart(2, '0')
         //const day = (today.getDate()).toString().padStart(2, '0')
         //const ref = `${year}${month}${day}`
-        console.log('selectedItems', localSelectedItems.value)
+        // console.log('selectedItems', localSelectedItems.value)
         await localSelectedItems.value.forEach(async item => {
             //const product = await api(item.productIri, 'GET')
             //si item.siteDeProduction ne contient pas la chaine texte '/api/compagnies' alors on affiche un message d'erreur

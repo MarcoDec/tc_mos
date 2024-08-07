@@ -164,7 +164,7 @@
         <div v-else-if="select" :key="keySelect">
             {{ label }}
         </div>
-        <ul v-else-if="multiselectFetch" :key="keySelect">
+        <ul v-else-if="multiselectFetch" :key="`velse_${keySelect}`">
             <li v-for="(v, i) in itemMultiSelectFetchLoaded" :key="`multiselect-${i}`">
                 {{ v }}
             </li>
