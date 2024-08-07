@@ -28,6 +28,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.40",
+    "pdfmake": "^0.2.10",
     "pinia": "^2.0.23",
     "portal-vue": "^3.0.0-beta.0",
     "universal-cookie": "^4.0.4",
@@ -37,6 +38,7 @@
     "vue-country-flag-next": "^2.3.2",
     "vue-jstree": "^2.1.6",
     "vue-router": "^4.1.6",
+    "vue3-pdfmake": "^2.2.0",
     "xstate": "^4.34.0"
   },
   "devDependencies": {

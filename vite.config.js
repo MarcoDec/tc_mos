@@ -31,8 +31,8 @@ export default defineConfig({
         checker({eslint: {lintCommand: 'eslint -c .eslintrc.js .eslintrc.js vite.config.js ./assets/**/*.{js,vue}'}})
     ],
     define: {
-        '__VUE_PROD_HYDRATION_MISMATCH_DETAILS__': false,
-      },
+        __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false
+    },
     root: './',
     server: {
         fs: {allow: ['..'], strict: false},

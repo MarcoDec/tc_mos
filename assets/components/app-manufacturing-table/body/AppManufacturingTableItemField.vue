@@ -23,10 +23,10 @@
 <template>
     <template v-if="title === 'collapse new Ofs'">
         <td v-if="field.type === 'date' || field.type === 'select' || field.type === 'boolean'">
-            <AppInputGuesser :id="id" :field="field" :model-value="localItemValue" no-label :form="form"  @update:model-value="onSelectChange"/>
+            <AppInputGuesser :id="id" :field="field" :model-value="localItemValue" no-label :form="form" @update:model-value="onSelectChange"/>
         </td>
         <td v-else-if="field.type === 'multiselect-fetch'">
-            <AppMultiselectFetch :id="id" :field="field" :model-value="localItemValue" no-label :form="form"  @update:model-value="onSelectChange"/>
+            <AppMultiselectFetch :id="id" :field="field" :model-value="localItemValue" no-label :form="form" @update:model-value="onSelectChange"/>
         </td>
         <td v-else>
             {{ localItemValue }}

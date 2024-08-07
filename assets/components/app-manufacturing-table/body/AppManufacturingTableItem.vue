@@ -18,15 +18,15 @@
         //On émet l'événement update:modelValue avec la nouvelle valeur
         emits('update:modelValue', localItem.value)
     }
-    function getComponentType(field) {
-        if (field.name === 'quantite' && title === 'collapse new Ofs') {
-            return 'AppManufacturingTableItemQuantite'
-        }
-        if (field.name === 'siteDeProduction' && title === 'collapse new Ofs') {
-            return 'AppManufacturingTableItemSiteDeProduction'
-        }
-        return 'AppManufacturingTableItemField'
-    }
+    // function getComponentType(field) {
+    //     if (field.name === 'quantite' && title === 'collapse new Ofs') {
+    //         return 'AppManufacturingTableItemQuantite'
+    //     }
+    //     if (field.name === 'siteDeProduction' && title === 'collapse new Ofs') {
+    //         return 'AppManufacturingTableItemSiteDeProduction'
+    //     }
+    //     return 'AppManufacturingTableItemField'
+    // }
 </script>
 
 <template>

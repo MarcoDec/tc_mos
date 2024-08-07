@@ -11,7 +11,7 @@
 </script>
 
 <template>
-    <div ref="needs" class="needs w-100">
+    <div class="needs w-100">
         <AppTabs id="gui-start" class="gui-start-content" @click="click">
             <AppTab
                 id="gui-start-prod"
@@ -47,9 +47,6 @@
     }
     .over {
       overflow: auto;
-      height: v-bind("heightpx");
-      max-height: v-bind("heightpx");
-      min-height: v-bind("heightpx");
     }
 
     @media (min-width: 1140px) {
@@ -61,9 +58,6 @@
     @media (min-width: 1140px) {
       .over {
         overflow: auto;
-        height: v-bind("heightpx");
-        max-height: v-bind("heightpx");
-        min-height: v-bind("heightpx");
       }
     }
     div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}

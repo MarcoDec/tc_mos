@@ -12,6 +12,7 @@ import selling from './selling'
 import useUser from '../stores/security'
 import it from './it'
 import needs from './routes/needs'
+import template from './template'
 
 const router = createRouter({
     history: createWebHistory(), routes: [
@@ -25,6 +26,7 @@ const router = createRouter({
         ...purchase,
         ...quality,
         ...selling,
+        ...template,
         {component: AppLogin, meta: {title: 'Connexion — T-Concept GPAO'}, name: 'login', path: '/login'},
         {component: AppHome, meta: {title: 'T-Concept GPAO'}, name: 'home', path: '/'},
         {meta: {title: 'T-Concept GPAO'}, name: 'all', path: '/:pathMatch(.*)*'}
