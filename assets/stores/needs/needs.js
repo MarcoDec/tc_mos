@@ -16,8 +16,8 @@ export default defineStore('needs', {
             this.components = await api('/api/needs/components', 'GET')
         },
         async initialise() {
-            this.products = {...this.initiale.products}
-            this.components = {...this.initiale.components}
+            this.products = await {...this.initiale.products}
+            this.components = await {...this.initiale.components}
             this.displayedProducts = {}
             this.displayedComponents = {}
         },

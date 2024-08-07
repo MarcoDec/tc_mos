@@ -83,6 +83,7 @@ import {createApp} from 'vue'
 import pinia from './stores'
 import router from './router'
 import useUser from './stores/security'
+import {PDFPlugin} from 'vue3-pdfmake'
 
 const app = createApp(App)
     .component('AppBtn', AppBtn)
@@ -162,6 +163,7 @@ const app = createApp(App)
     .component('Fa', Fa)
     .use(pinia)
     .use(PortalVue)
+    .use(PDFPlugin)
 app.config.errorHandler = (err, vm, info) => {
     console.error('Captured in errorHandler:', err, info)
 }

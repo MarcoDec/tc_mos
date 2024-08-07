@@ -1,7 +1,6 @@
 <script setup>
     import {ref, computed, nextTick, onMounted, onBeforeUnmount, useAttrs} from 'vue'
     import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome"
-
     // Références pour les éléments DOM
     const gui = ref(null)
     const guiHeader = ref(null)
@@ -9,33 +8,27 @@
     const rightElement = ref(null)
     const bottomElement = ref(null)
     const attrs = useAttrs()
-
     // Etat pour le plein écran
     const isFullscreen = ref({
         left: false,
         right: false,
         bottom: false
     })
-
     // Proportions de l'interface utilisateur
     const guiRatio = ref(0.5)
-
     // Dimensions de la fenêtre
     const windowSize = ref({height: window.innerHeight, width: window.innerWidth})
     const appNavBarHeight = computed(() => document.getElementById('app-nav-bar').getBoundingClientRect().height)
-
     // Styles calculés
     const guiWrapperStyle = computed(() => ({
         height: `${windowSize.value.height - appNavBarHeight.value - 5}px`
     }))
-
     const guiHeaderStyle = computed(() => ({
         height: 'auto',
         top: `${appNavBarHeight.value}px`,
         width: '100%',
         zIndex: '1'
     }))
-
     const guiStyle = ref({})
 
     const guiTopStyle = computed(() => ({
@@ -49,7 +42,6 @@
         maxHeight: `${(1 - guiRatio.value) * windowSize.value.height}px`,
         height: `${(1 - guiRatio.value) * windowSize.value.height}px`
     }))
-
     // Mettre à jour le style de l'interface utilisateur
     function updateGuiStyle() {
         if (guiHeader.value) {
@@ -59,7 +51,6 @@
             }
         }
     }
-
     // Fonction de redimensionnement de la fenêtre
     function onWindowResize() {
         windowSize.value = {
@@ -76,7 +67,6 @@
             isFullscreen.value.bottom = false
             const element = section === 'left' ? leftElement.value : rightElement.value
             const otherElement = section === 'left' ? rightElement.value : leftElement.value
-
             if (isFullscreen.value[section]) {
                 guiRatio.value = 1
                 element.style.maxWidth = '100%'
@@ -104,17 +94,14 @@
     function resize(event) {
         const startY = event.clientY
         const startHeight = guiRatio.value * windowSize.value.height
-
         function onMouseMove(e) {
             const newHeight = startHeight + (e.clientY - startY)
             guiRatio.value = newHeight / windowSize.value.height
         }
-
         function onMouseUp() {
             window.removeEventListener('mousemove', onMouseMove)
             window.removeEventListener('mouseup', onMouseUp)
         }
-
         window.addEventListener('mousemove', onMouseMove)
         window.addEventListener('mouseup', onMouseUp)
     }

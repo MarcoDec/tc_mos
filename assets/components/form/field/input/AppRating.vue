@@ -5,7 +5,6 @@
         disabled: {default: 0, type: [Boolean, Number]},
         form: {required: true, type: String},
         id: {required: true, type: String},
-        // eslint-disable-next-line vue/require-default-prop
         modelValue: {default: 0, type: [Boolean, Number]}
     })
 

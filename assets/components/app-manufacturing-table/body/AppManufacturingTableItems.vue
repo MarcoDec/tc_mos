@@ -32,11 +32,11 @@
         //console.log('createNewOFs', localSelectedItems.value, props.items)
         const promises = []
         //On récupère la date du jour et on la met au format texte Ymd
-        // const today = new Date()
-        // const year = today.getFullYear()
-        // const month = (today.getMonth() + 1).toString().padStart(2, '0')
-        // const day = (today.getDate()).toString().padStart(2, '0')
-        // const ref = `${year}${month}${day}`
+        //const today = new Date()
+        //const year = today.getFullYear()
+        //const month = (today.getMonth() + 1).toString().padStart(2, '0')
+        //const day = (today.getDate()).toString().padStart(2, '0')
+        //const ref = `${year}${month}${day}`
         // console.log('selectedItems', localSelectedItems.value)
         await localSelectedItems.value.forEach(async item => {
             //const product = await api(item.productIri, 'GET')
