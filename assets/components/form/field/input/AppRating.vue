@@ -2,10 +2,11 @@
     import {ref} from 'vue'
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
-        disabled: {type: [Boolean, Number]},
+        disabled: {default: 0, type: [Boolean, Number]},
         form: {required: true, type: String},
         id: {required: true, type: String},
-        modelValue: {type: [Boolean, Number]},
+        // eslint-disable-next-line vue/require-default-prop
+        modelValue: {default: 0, type: [Boolean, Number]}
     })
 
     const ratingValue = ref(props.modelValue)

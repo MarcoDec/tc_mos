@@ -2,7 +2,7 @@
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
     import AppSupplierFormShow from './AppSupplierFormShow.vue'
     import AppSupplierShowInlist from './bottom/AppSupplierShowInlist.vue'
-    import { useAttrs } from 'vue'
+    import {useAttrs} from 'vue'
     const attrs = useAttrs()
     // import {useRoute} from 'vue-router'
     //

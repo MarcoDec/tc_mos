@@ -5,7 +5,7 @@ export default defineStore('needs', {
     actions: {
         async fetch() {
             await this.fetchProducts()
-            await this.fetchComponents() 
+            await this.fetchComponents()
         },
         async fetchProducts() {
             // On charge toutes les données de besoin produit d'un coup, mais on n'affiche pas tout d'un coup
@@ -16,17 +16,17 @@ export default defineStore('needs', {
             this.components = await api('/api/needs/components', 'GET')
         },
         async initialise() {
-            this.products = await { ...this.initiale.products }
-            this.components = await { ...this.initiale.components }
+            this.products = {...this.initiale.products}
+            this.components = {...this.initiale.components}
             this.displayedProducts = {}
             this.displayedComponents = {}
         },
-        productShow(infinite) {
-            return this.hasProductNeeds ? infinite.loaded() : infinite.complete()
-        },
-        componentShow(infinite) {
-            return this.hasComponentNeeds ? infinite.loaded() : infinite.complete()
-        },
+        // productShow(infinite) {
+        //     return this.hasProductNeeds ? infinite.loaded() : infinite.complete()
+        // },
+        // componentShow(infinite) {
+        //     return this.hasComponentNeeds ? infinite.loaded() : infinite.complete()
+        // },
         showComponent() {
             this.componentsPage++
             const needs = this.components.component
@@ -83,10 +83,10 @@ export default defineStore('needs', {
                         plugins: {
                             tooltip: {
                                 callbacks: {
-                                    label: function(tooltipItem) {
-                                        let texte = []
+                                    label: tooltipItem => {
+                                        const texte = []
                                         const datasetLabel = tooltipItem.dataset.label || ''
-                                        const dataPoint = tooltipItem.raw;
+                                        const dataPoint = tooltipItem.raw
                                         texte.push(`${datasetLabel}: ${dataPoint} unités`)
                                         // Si chartData.sellingOrderItemsInfo[tooltipItem.label] est défini, on affiche ce texte
                                         if (chartData.sellingOrderItemsInfo && chartData.sellingOrderItemsInfo[tooltipItem.label]) {

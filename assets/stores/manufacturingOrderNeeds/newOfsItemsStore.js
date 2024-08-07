@@ -8,7 +8,9 @@ export const useCollapseNewOfsItemsStore = defineStore('collapseNewOfsItems', {
                 const response = await api('/api/collapseNewOfsItems', 'GET', {companyId})
                 this.items = response
                 //à chaque item on ajoute une propriété 'id' qui est l'index de l'item dans le tableau
-                this.items.forEach((item, index) => item.id = index)
+                this.items.forEach((item, index) => {
+                    item.id = index
+                })
                 this.page = response.page
                 this.limit = response.limit
                 this.totalPages = response.totalPages

@@ -9,6 +9,7 @@
 
     defineProps({
         fieldsAttributs: {required: true, type: Array},
+        // eslint-disable-next-line vue/no-unused-properties
         myBooleanFamily: {required: true, type: Boolean}
         // familyValueChanged: {required: true, type: Boolean}
     })

@@ -32,14 +32,14 @@
         //console.log('createNewOFs', localSelectedItems.value, props.items)
         const promises = []
         //On récupère la date du jour et on la met au format texte Ymd
-        const today = new Date()
-        const year = today.getFullYear()
-        const month = (today.getMonth() + 1).toString().padStart(2, '0')
-        const day = (today.getDate()).toString().padStart(2, '0')
-        const ref = `${year}${month}${day}`
-        console.log('selectedItems', localSelectedItems.value)
+        // const today = new Date()
+        // const year = today.getFullYear()
+        // const month = (today.getMonth() + 1).toString().padStart(2, '0')
+        // const day = (today.getDate()).toString().padStart(2, '0')
+        // const ref = `${year}${month}${day}`
+        // console.log('selectedItems', localSelectedItems.value)
         await localSelectedItems.value.forEach(async item => {
-            const product = await api(item.productIri, 'GET')
+            //const product = await api(item.productIri, 'GET')
             //si item.siteDeProduction ne contient pas la chaine texte '/api/compagnies' alors on affiche un message d'erreur
             if (typeof item.siteDeProduction === 'undefined' || !item.siteDeProduction.includes('/api/companies')) {
                 console.error('Erreur lors de la création de l\'OF, le site de production n\'est pas valide', item)
@@ -54,7 +54,7 @@
                 quantityRequested: {
                     value: item.quantity,
                     code: 'U'
-                },
+                }
                 // ref: ref => doit être autogénéré coté serveur
             }
             const apiRequest = api('/api/manufacturing-orders', 'POST', data)
@@ -84,7 +84,7 @@
         localItems.value[index] = newItem
         //On met à jour les items sélectionnés. Si l'item a sa propriété confirmerOF à true, on l'ajoute sinon on le retire
         if (newItem.confirmedOF || newItem.lancerOF) addSelectedItems(newItem)
-        else if(!newItem.confirmedOF || !newItem.lancerOF) removeSelectedItems(newItem)
+        else if (!newItem.confirmedOF || !newItem.lancerOF) removeSelectedItems(newItem)
     }
 </script>
 
