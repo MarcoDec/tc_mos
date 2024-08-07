@@ -163,8 +163,8 @@ const app = createApp(App)
     .component('Fa', Fa)
     .use(pinia)
     .use(PortalVue)
+    .use(PDFPlugin)
 app.config.errorHandler = (err, vm, info) => {
     console.error('Captured in errorHandler:', err, info)
-    }
-    .use(PDFPlugin)
+}
 useUser().fetch().then(() => app.use(router).mount('#vue'))

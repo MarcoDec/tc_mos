@@ -15,9 +15,7 @@
         }
         return total
     })
-    const formatNumber = (number) => {
-    return number.toFixed(2);
-}
+    const formatNumber = number => number.toFixed(2)
 </script>
 
 <template>
@@ -37,46 +35,68 @@
                     </h3>
                     <div>
                         <table
-                        class="table table-bordered table-hover table-responsive table-sm table-striped">
-                        <thead>
-                            <tr class="bg-primary">
-                                <th colspan="3" class="thNeeds">Besoins</th>
-                                <th colspan="3" class="currentState">Etat courant</th>
-                                <th colspan="2" class="synthesis">Synthèse</th>
-                            </tr>
-                            <tr class="bg-primary text-center text-white">
-                                <th class="thNeeds">Stock Min Composant</th>
-                                <th class="thNeeds">Total Besoin Fabrication</th>
-                                <th class="thNeeds">Total</th>
-                                <th class="currentState">Stocks courant</th>
-                                <th class="currentState">Qté Commandes Achat en cours</th>
-                                <th class="currentState">Total</th>
-                                <th class="synthesis">Total à Approvisionner</th>
-                                <th class="synthesis">Etat</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>{{ formatNumber(list.minStock) }}</td>
-                                <td>{{ formatNumber(list.totalManufacturingQuantity) }}</td>
-                                <td>{{ formatNumber(list.minStock + list.totalManufacturingQuantity) }}</td>
-                                <td>{{ list.totalCurrentStock }}</td>
-                                <td>{{ formatNumber(list.totalComponentPurchaseQuantity) }}</td>
-                                <td>{{ formatNumber(list.totalComponentPurchaseQuantity +  list.totalCurrentStock) }}</td>
-                                <td>
-                                    {{ formatNumber(totalToBuy) }}
-                                </td>
-                                <td class="bg-danger text-white" v-if="totalToBuy > 0">
-                                    Un approvisionnement est nécessaire
-                                </td>
-                                <td v-else class="bg-success text-white">
-                                    Stocks suffisants
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                            class="table table-bordered table-hover table-responsive table-sm table-striped">
+                            <thead>
+                                <tr class="bg-primary">
+                                    <th colspan="3" class="thNeeds">
+                                        Besoins
+                                    </th>
+                                    <th colspan="3" class="currentState">
+                                        Etat courant
+                                    </th>
+                                    <th colspan="2" class="synthesis">
+                                        Synthèse
+                                    </th>
+                                </tr>
+                                <tr class="bg-primary text-center text-white">
+                                    <th class="thNeeds">
+                                        Stock Min Composant
+                                    </th>
+                                    <th class="thNeeds">
+                                        Total Besoin Fabrication
+                                    </th>
+                                    <th class="thNeeds">
+                                        Total
+                                    </th>
+                                    <th class="currentState">
+                                        Stocks courant
+                                    </th>
+                                    <th class="currentState">
+                                        Qté Commandes Achat en cours
+                                    </th>
+                                    <th class="currentState">
+                                        Total
+                                    </th>
+                                    <th class="synthesis">
+                                        Total à Approvisionner
+                                    </th>
+                                    <th class="synthesis">
+                                        Etat
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{ formatNumber(list.minStock) }}</td>
+                                    <td>{{ formatNumber(list.totalManufacturingQuantity) }}</td>
+                                    <td>{{ formatNumber(list.minStock + list.totalManufacturingQuantity) }}</td>
+                                    <td>{{ list.totalCurrentStock }}</td>
+                                    <td>{{ formatNumber(list.totalComponentPurchaseQuantity) }}</td>
+                                    <td>{{ formatNumber(list.totalComponentPurchaseQuantity + list.totalCurrentStock) }}</td>
+                                    <td>
+                                        {{ formatNumber(totalToBuy) }}
+                                    </td>
+                                    <td v-if="totalToBuy > 0" class="bg-danger text-white">
+                                        Un approvisionnement est nécessaire
+                                    </td>
+                                    <td v-else class="bg-success text-white">
+                                        Stocks suffisants
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <h5 class="card-text" v-if="totalToBuy > 0">
+                    <h5 v-if="totalToBuy > 0" class="card-text">
                         Besoins Nouvel Approvisionnement <Fa icon="info-circle" title="Les dates correspondent aux dates de début de fabrication moins le temps de stockage avant production (1 sem)"/>
                     </h5>
                     <table
@@ -100,7 +120,6 @@
                             </tr>
                         </tbody>
                     </table>
-                    
                 </div>
             </div>
         </div>

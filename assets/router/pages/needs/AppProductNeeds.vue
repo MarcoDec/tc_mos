@@ -13,7 +13,6 @@
         listDisplayed.showProduct()
         // console.log('needsProduct', listDisplayed.needsProduct)
         loaded.value = true
-
     })
     onUnmounted(async () => {
         listDisplayed.initialise()
