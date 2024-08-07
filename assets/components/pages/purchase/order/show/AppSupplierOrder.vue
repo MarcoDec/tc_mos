@@ -3,13 +3,7 @@
     import useOptions from '../../../../../stores/option/options'
     import useUser from '../../../../../stores/security'
     import AppPurchaseOrderBottom from './AppPurchaseOrderBottom.vue'
-    // import AppCollectionTableCommande from './bottom/AppCollectionTableCommande.vue'
-    // import AppCollectionTableEchange from './AppCollectionTableEchange.vue'
-    // import AppCollectionTableGestion from './AppCollectionTableGestion.vue'
-    // import AppCollectionTableQualite from './AppCollectionTableQualite.vue'
-    // import AppCollectionTableReception from './bottom/AppCollectionTableReception.vue'
     import AppSuspense from '../../../../AppSuspense.vue'
-    // import AppUnderDevelopment from "../../../../gui/AppUnderDevelopment.vue"
     import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome"
     import AppWorkflowShow from "../../../../workflow/AppWorkflowShow.vue"
     import AppBtn from "../../../../AppBtn.vue"
@@ -269,7 +263,7 @@
                             : {{ fetchPurchaseOrderStore.purchaseOrder.id }}
                         </div>
                         <AppSuspense>
-                            <AppWorkflowShow :workflow-to-show="['purchase_order_state', 'blocker']" :item-iri="iriPurchaseOrder"/>
+                            <AppWorkflowShow :workflow-to-show="['purchase_order', 'closer']" :item-iri="iriPurchaseOrder"/>
                         </AppSuspense>
                         <span class="ml-auto">
                             <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
