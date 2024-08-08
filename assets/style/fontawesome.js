@@ -120,6 +120,7 @@ import {
     faSquare,
     faSquarePlus,
     faStar,
+    faSyncAlt,
     faTags,
     faTimes,
     faTimesCircle,
@@ -297,6 +298,7 @@ library.add(faStar)
 library.add(faGaugeHigh)
 library.add(faMoneyBill1)
 library.add(faRightToBracket)
+library.add(faSyncAlt)
 library.add(faTruck)
 library.add(faTruckMoving)
 library.add(faBusinessTime)
