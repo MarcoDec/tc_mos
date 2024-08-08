@@ -12,6 +12,7 @@
     import AppShowComponentTabGeneral from './left/AppShowComponentTabGeneral.vue'
     import AppSuspense from '../../../../AppSuspense.vue'
     import AppWorkflowShow from '../../../../workflow/AppWorkflowShow.vue'
+    import AppLogTable from '../../../../logger/AppLogTable.vue'
 
     //region définition des constantes
     const route = useRoute()
@@ -104,6 +105,7 @@
                     @update:file-path="onImageUpdate"/>
                 <AppShowComponentTabGeneral :key="`form-${keyTabs}`" class="width70" @updated="onUpdated"/>
             </div>
+            <AppLogTable class="m-2" :iri="useFetchComponentStore.component['@id']"/>
         </template>
         <template #gui-bottom>
             <div class="bg-warning-subtle font-small">

@@ -26,6 +26,7 @@ abstract class State {
     final public const TR_REJECT = 'reject';
     final public const TR_SUBMIT_VALIDATION = 'submit_validation';
     final public const TR_SUPERVISE = 'supervise';
+    final public const TR_SUBROGATE = 'subrogate';
     final public const TR_UNDER_MAINTENANCE = 'under_maintenance';
     final public const TR_UNLOCK = 'unlock';
     final public const TR_VALIDATE = 'validate';

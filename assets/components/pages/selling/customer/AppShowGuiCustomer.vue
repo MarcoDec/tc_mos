@@ -11,6 +11,7 @@
     import AppImg from '../../../AppImg.vue'
     import AppShowCustomerTabGeneral from './tabs/AppShowCustomerTabGeneral.vue'
     import AppWorkflowShow from '../../../workflow/AppWorkflowShow.vue'
+    import AppLogTable from '../../../logger/AppLogTable.vue'
 
     const route = useRoute()
     const router = useRouter()
@@ -88,6 +89,7 @@
                             @updated="onUpdated"/>
                     </AppSuspense>
                 </div>
+                <AppLogTable class="m-2" :iri="iriCustomer"/>
             </template>
             <template #gui-bottom>
                 <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small">

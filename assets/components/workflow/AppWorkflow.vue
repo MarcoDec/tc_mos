@@ -56,6 +56,8 @@
         to_validate: 'check-circle',
         // eslint-disable-next-line camelcase
         under_maintenance: 'wrench',
+        // eslint-disable-next-line camelcase
+        under_waiver: 'sync-alt',
         warning: 'exclamation-triangle'
     }
     const stateColors = {
@@ -117,6 +119,7 @@
         reject: 'times',
         // eslint-disable-next-line camelcase
         submit_validation: 'paper-plane',
+        subrogate: 'sync-alt',
         supervise: 'eye',
         // eslint-disable-next-line camelcase
         under_maintenance: 'tools',
@@ -150,6 +153,8 @@
         supervise: '#607D8B',
         // eslint-disable-next-line camelcase
         under_maintenance: '#FF9800',
+        // eslint-disable-next-line camelcase
+        under_waiver: '#FF9800',
         unlock: '#FFC107',
         validate: '#8BC34A'
     }
@@ -187,7 +192,12 @@
     function launchTransition() {
         const confirmation = window.confirm(`Lancer la transition ${currentAction.value}?`)
         if (confirmation) {
-            emit('applyTransition', {transition: currentAction.value, workflowName: props.workflowName})
+            const userMessage = window.prompt("Veuillez entrer votre message pour cette transition :")
+            emit('applyTransition', {
+                transition: currentAction.value,
+                workflowName: props.workflowName,
+                message: userMessage
+            })
         }
     }
     function getBackgroundColor(workflowName) {

@@ -32,6 +32,7 @@ abstract class StateType extends EnumType {
     final public const TYPE_STATE_RECEIVED = 'received';
     final public const TYPE_STATE_SENT = 'sent';
     final public const TYPE_STATE_WARNING = 'warning';
+    final public const TYPE_STATE_UNDER_WAIVER = 'under_waiver';
     final public const TYPE_STATE_UNDER_MAINTENANCE = 'under_maintenance';
 
 }

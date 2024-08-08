@@ -73,6 +73,31 @@ use ApiPlatform\Core\Annotation\ApiProperty;
                         ]
                     ]
                 ]
+            ],
+            'get_history' => [
+                'method' => 'POST',
+                'path' => '/workflows/history',
+                'security' => "is_granted('ROLE_USER')",
+                'controller' => 'App\Controller\Workflow\GetHistoryController',
+                'normalization_context' => [
+                    'groups' => ['workflow:history']
+                ],
+                'openapi_context' => [
+                    'requestBody' => [
+                        'content' => [
+                            'application/json' => [
+                                'schema' => [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'iri' => [
+                                            'type' => 'string'
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
             ]
         ],
         itemOperations: [

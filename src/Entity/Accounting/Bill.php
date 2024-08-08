@@ -29,14 +29,14 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Filter\RelationFilter;
 
 #[          
-    ApiFilter(filterClass: OrderFilter::class, properties: ['dueDate', 'ref', 'billingDate', 'dueDate', 'exclTax.value', 'inclTax.value', 'vat.value', 'customer', 'sellingOrder.ref']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['dueDate', 'ref', 'billingDate', 'exclTax.value', 'inclTax.value', 'vat.value', 'customer', 'sellingOrder.ref']),
     ApiFilter(filterClass: SearchFilter::class, properties: [
         'ref' => 'partial',
         'billingDate' => 'partial',
         'dueDate' => 'partial',
         'forceVat' => 'partial',
-        'notes' => 'partial','v
-        atMessage.name' => 'partial',
+        'notes' => 'partial',
+        'vatMessage.name' => 'partial',
         'exclTax.value' => 'partial',
         'exclTax.code' => 'partial',
         'inclTax.value' => 'partial',

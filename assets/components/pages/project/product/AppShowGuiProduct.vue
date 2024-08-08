@@ -9,10 +9,15 @@
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
     import {onBeforeMount, onBeforeUnmount, ref} from 'vue'
     import {useProductStore} from '../../../../stores/project/product/products'
-    import {useRoute} from 'vue-router'
+    import {useRoute, useRouter} from 'vue-router'
+    import AppWorkflowShow from "../../../workflow/AppWorkflowShow.vue"
+    import AppSuspense from "../../../AppSuspense.vue"
+    import AppLogTable from "../../../logger/AppLogTable.vue"
 
+    const router = useRouter()
     const route = useRoute()
     const idProduct = Number(route.params.id_product)
+    const iriProduct = `/api/products/${idProduct}`
     const fetchUnits = useOptions('units')
     const useFetchProductStore = useProductStore()
     const beforeMountDataLoaded = ref(false)
@@ -57,18 +62,28 @@
     const deactivateFullScreen = () => {
         isFullScreen.value = false
     }
+    function goToTheList() {
+        router.push({name: 'product-list'})
+    }
 </script>
 
 <template>
     <AppShowGuiGen v-if="beforeMountDataLoaded">
         <template #gui-left>
             <div :key="`title-${keyTitle}`" class="bg-white border-1 p-1">
-                <FontAwesomeIcon icon="fa-brands fa-product-hunt"/>
-                <b>{{ useFetchProductStore.product.code }}</b>: {{ useFetchProductStore.product.name }}
-                <span class="btn-float-right">
-                    <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
-                    <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
-                </span>
+                <div class="d-flex flex-row">
+                    <button class="text-dark" @click="goToTheList">
+                        <FontAwesomeIcon icon="fa-brands fa-product-hunt"/>
+                    </button>
+                    <b>{{ useFetchProductStore.product.code }}</b>: {{ useFetchProductStore.product.name }}
+                    <AppSuspense>
+                        <AppWorkflowShow :workflow-to-show="['product', 'blocker']" :item-iri="iriProduct"/>
+                    </AppSuspense>
+                    <span class="ml-auto">
+                        <AppBtn :class="{'selected-detail': modeDetail}" label="Détails" icon="eye" variant="secondary" @click="requestDetails"/>
+                        <AppBtn :class="{'selected-detail': !modeDetail}" label="Exploitation" icon="industry" variant="secondary" @click="requestExploitation"/>
+                    </span>
+                </div>
             </div>
             <div class="d-flex flex-row">
                 <AppImg
@@ -78,6 +93,7 @@
                     @update:file-path="onImageUpdate"/>
                 <AppSuspense><AppShowProductTabGeneral :key="`form-${keyTabs}`" class="width70" @updated="onUpdated"/></AppSuspense>
             </div>
+            <AppLogTable class="m-2" :iri="useFetchProductStore.product['@id']"/>
         </template>
         <template #gui-bottom>
             <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small">
