@@ -11,7 +11,11 @@ use Symfony\Component\Workflow\Registry;
 
 class ApplyWorkflowController
 {
-    public function __construct(private readonly IriConverterInterface $iriConverter, private readonly Registry $workflowRegistry, private EntityManagerInterface $entityManager)
+    public function __construct(
+        private readonly IriConverterInterface $iriConverter,
+        private readonly Registry $workflowRegistry,
+        private readonly EntityManagerInterface $entityManager
+    )
     {
     }
 
