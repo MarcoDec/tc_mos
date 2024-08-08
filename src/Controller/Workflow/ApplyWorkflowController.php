@@ -38,10 +38,20 @@ class ApplyWorkflowController
         if (!$workflow->can($entity, $transitionToApply)) {
             return new JsonResponse(['error' => 'Transition not allowed'], 400);
         }
+        // On récupère l'état de workflow courant de l'entité
+        $currentPlace = $workflow->getMarking($entity)->getPlaces();
+        // On récupère l'état de workflow après application de la transition
+        $nextPlace = $workflow->getEnabledTransition($entity, $transitionToApply)->getTos();
         $workflow->apply($entity, $transitionToApply);
         $user = $this->security->getUser();
         $this->entityManager->flush();
-        $this->historyLogger->logChange($entity::class, $entity->getId(), [], $message, $user->getUserIdentifier());
+        $changes = [
+            'workflow' => $workflowName,
+            'transition' => $transitionToApply,
+            'initialState' => $currentPlace,
+            'finalState' => $nextPlace
+        ];
+        $this->historyLogger->logChange($entity::class, $entity->getId(), $changes, $message, $user->getUserIdentifier());
         return new JsonResponse('Transition applied', 200);
     }
 }
