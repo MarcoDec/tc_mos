@@ -11,6 +11,7 @@
     import {useRoute} from 'vue-router'
     import AppSupplierShowTabGeneral from './tabs/AppSupplierShowTabGeneral.vue'
     import AppWorkflowShow from '../../../../workflow/AppWorkflowShow.vue'
+    import AppLogTable from '../../../../logger/AppLogTable.vue'
 
     const attrs = useAttrs()
     const isFullScreen = ref(false)
@@ -92,6 +93,7 @@
                             @updated="onUpdated"/>
                     </AppSuspense>
                 </div>
+                <AppLogTable class="m-2" :iri="fetchSupplierStore.supplier['@id']"/>
             </template>
             <template #gui-bottom>
                 <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small">

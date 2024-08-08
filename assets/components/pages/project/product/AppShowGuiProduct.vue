@@ -12,6 +12,7 @@
     import {useRoute, useRouter} from 'vue-router'
     import AppWorkflowShow from "../../../workflow/AppWorkflowShow.vue"
     import AppSuspense from "../../../AppSuspense.vue"
+    import AppLogTable from "../../../logger/AppLogTable.vue"
 
     const router = useRouter()
     const route = useRoute()
@@ -92,6 +93,7 @@
                     @update:file-path="onImageUpdate"/>
                 <AppSuspense><AppShowProductTabGeneral :key="`form-${keyTabs}`" class="width70" @updated="onUpdated"/></AppSuspense>
             </div>
+            <AppLogTable class="m-2" :iri="useFetchProductStore.product['@id']"/>
         </template>
         <template #gui-bottom>
             <div :class="{'full-screen': isFullScreen}" class="bg-warning-subtle font-small">

@@ -40,6 +40,8 @@ class ApplyWorkflowController
         }
         // On récupère l'état de workflow courant de l'entité
         $currentPlace = $workflow->getMarking($entity)->getPlaces();
+        // On récupère l'état activé de currentPlace
+        $currentPlace = array_keys($currentPlace)[0];
         // On récupère l'état de workflow après application de la transition
         $nextPlace = $workflow->getEnabledTransition($entity, $transitionToApply)->getTos();
         $workflow->apply($entity, $transitionToApply);
@@ -49,7 +51,7 @@ class ApplyWorkflowController
             'workflow' => $workflowName,
             'transition' => $transitionToApply,
             'initialState' => $currentPlace,
-            'finalState' => $nextPlace
+            'finalState' => $nextPlace[0]
         ];
         $this->historyLogger->logChange($entity::class, $entity->getId(), $changes, $message, $user->getUserIdentifier());
         return new JsonResponse('Transition applied', 200);
