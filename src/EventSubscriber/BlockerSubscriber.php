@@ -174,7 +174,7 @@ class BlockerSubscriber implements EventSubscriberInterface
                 //les commandes fournisseurs qui sont en cours passe a enabled si le composant passe a enabled
                 $compo = $object->getId();
                 $componentItemRepository = $this->entityManager->getRepository(ComponentItem::class);
-                $items = $componentItemRepository->findByComponentId($compo);
+                $items = $componentItemRepository->findBy(['item' => $compo]);
                 foreach ($items as $item) {
                     $state = $item->getEmbState()->getState();
                     if ($state === 'agreed' || $state === 'partially_received') {

@@ -38,7 +38,8 @@
         const formData = {
             iri: props.itemIri,
             transition: data.transition,
-            workflowName: data.workflowName
+            workflowName: data.workflowName,
+            message: data.message
         }
         api('/api/workflows/apply', 'POST', formData).then(response => {
             console.log(response)

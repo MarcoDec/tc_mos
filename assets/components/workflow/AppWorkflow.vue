@@ -192,7 +192,12 @@
     function launchTransition() {
         const confirmation = window.confirm(`Lancer la transition ${currentAction.value}?`)
         if (confirmation) {
-            emit('applyTransition', {transition: currentAction.value, workflowName: props.workflowName})
+            const userMessage = window.prompt("Veuillez entrer votre message pour cette transition :")
+            emit('applyTransition', {
+                transition: currentAction.value,
+                workflowName: props.workflowName,
+                message: userMessage
+            })
         }
     }
     function getBackgroundColor(workflowName) {
