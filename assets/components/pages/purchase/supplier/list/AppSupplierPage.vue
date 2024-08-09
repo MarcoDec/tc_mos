@@ -62,8 +62,8 @@
             filter: false
         },
         {label: 'Nom', name: 'name', trie: true, type: 'text'},
-        {label: 'CP', name: 'zipCode', trie: true, type: 'text', width: 80},
-        {label: 'Ville', name: 'city', trie: true, type: 'text', width: 200},
+        {label: 'CP', name: 'zipCode', trie: true, type: 'text', width: 80, sourceName: 'address.zipCode'},
+        {label: 'Ville', name: 'city', trie: true, type: 'text', width: 200, sourceName: 'address.city'},
         {
             label: 'Etat',
             name: 'state',
@@ -74,7 +74,8 @@
             },
             trie: false,
             type: 'select',
-            width: 80
+            width: 80,
+            sourceName: 'embState.state'
         }
     ])
 
@@ -159,6 +160,8 @@
                 <AppCardableTable
                     v-if="isLoaded"
                     :current-page="storeSuppliersList.currentPage"
+                    :current-filter-and-sort-iri="`/api/suppliers${supplierListCriteria.getFetchCriteriaWithoutPage}`"
+                    :can-export-table="isPurchaseWriterOrAdmin"
                     :fields="fields"
                     :first-page="storeSuppliersList.firstPage"
                     :items="itemsTable"

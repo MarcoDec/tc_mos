@@ -83,7 +83,8 @@
             },
             trie: false,
             type: 'select',
-            width: 120
+            width: 120,
+            sourceName: 'embState.state'
         },
         {
             label: 'Etat Qualité',
@@ -95,7 +96,8 @@
             },
             trie: false,
             type: 'select',
-            width: 80
+            width: 80,
+            sourceName: 'embBlocker.state'
         }
     ])
 
@@ -171,6 +173,8 @@
             <AppSuspense>
                 <AppCardableTable
                     :current-page="storeCustomerOrderList.currentPage.toString()"
+                    :current-filter-and-sort-iri="`/api/selling-orders${customerOrderListCriteria.getFetchCriteriaWithoutPage}`"
+                    :can-export-table="fetchUser.isSellingAmin || fetchUser.isSellingWriter"
                     :fields="fields"
                     :first-page="storeCustomerOrderList.firstPage.toString()"
                     :items="itemsTable"

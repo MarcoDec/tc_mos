@@ -57,9 +57,9 @@
             filter: false
         },
         {label: 'Raison sociale', name: 'name', trie: true, type: 'text'},
-        {label: 'CP', name: 'address.zipCode', trie: true, type: 'text', filter: false, width: 80},
-        {label: 'Ville', name: 'address.city', trie: true, type: 'text', filter: false},
-        {label: 'Indice Cu', name: 'copper.index.value', trie: true, type: 'number', filter: false, width: 80},
+        {label: 'CP', name: 'address.zipCode', trie: true, type: 'text', filter: false, width: 80, sourceName: 'address.zipCode'},
+        {label: 'Ville', name: 'address.city', trie: true, type: 'text', filter: false, sourceName: 'address.city'},
+        {label: 'Indice Cu', name: 'copper.index.value', trie: true, type: 'number', filter: false, width: 80, sourceName: 'copper.index.value'},
         {
             label: 'Etat',
             name: 'state',
@@ -70,7 +70,8 @@
             },
             trie: false,
             type: 'select',
-            width: 80
+            width: 80,
+            sourceName: 'embState.state'
         }
     ])
 
@@ -143,6 +144,8 @@
             <AppSuspense>
                 <AppCardableTable
                     :current-page="storeCustomersList.currentPage"
+                    :current-filter-and-sort-iri="`/api/customers${customerListCriteria.getFetchCriteriaWithoutPage}`"
+                    :can-export-table="fetchUser.isSellingAmin || fetchUser.isSellingWriter"
                     :fields="fields"
                     :first-page="storeCustomersList.firstPage"
                     :items="itemsTable"

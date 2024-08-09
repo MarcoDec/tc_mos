@@ -118,7 +118,8 @@
             },
             trie: false,
             type: 'select',
-            width: 80
+            width: 80,
+            sourceName: 'embState.state'
         },
         {
             label: 'Etat de de blocage',
@@ -130,7 +131,8 @@
             },
             trie: false,
             type: 'select',
-            width: 80
+            width: 80,
+            sourceName: 'embBlocker.state'
         }
     ])
     async function deleted(id){
@@ -221,6 +223,8 @@
             <AppSuspense>
                 <AppCardableTable
                     :current-page="storeProductsList.currentPage"
+                    :current-filter-and-sort-iri="`/api/products${productListCriteria.getFetchCriteriaWithoutPage}`"
+                    :can-export-table="isProjectWriterOrAdmin"
                     :fields="fields"
                     :first-page="storeProductsList.firstPage"
                     :items="itemsTable"

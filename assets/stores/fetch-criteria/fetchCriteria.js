@@ -102,6 +102,34 @@ export default function useFetchCriteria(id) {
                 }
                 //endregion
                 return `${fetchCriteria}`
+            },
+            getFetchCriteriaWithoutPage: state => {
+                let fetchCriteria = '?'
+                let filterStr = ''
+                let sortStr = ''
+                //region gestion des filtres
+                if (state.filters.length > 0) {
+                    state.filters.forEach(filter => {
+                        filterStr += `${filter.field}=${filter.value}&`
+                    })
+                    filterStr = filterStr.substring(0, filterStr.length - 1) // Suppression du dernier '&'
+                    fetchCriteria += filterStr
+                }
+                //endregion
+                //region gestion des tris
+                if (state.sorts.length > 0) {
+                    state.sorts.forEach(sortElement => {
+                        sortStr += `order[${sortElement.field}]=${sortElement.direction}&`
+                    })
+                    sortStr = sortStr.substring(0, sortStr.length - 1) // suppression du dernier '&'
+                    if (filterStr.length > 0) fetchCriteria += '&'
+                    fetchCriteria += sortStr
+                }
+                //endregion
+                if (filterStr.length > 0 || sortStr.length > 0) {
+                    return `${fetchCriteria}&pagination=false`
+                }
+                return `${fetchCriteria}pagination=false`
             }
         },
         state: () => ({

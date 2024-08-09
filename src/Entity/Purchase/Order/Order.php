@@ -113,6 +113,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
             'openapi_definition_name' => 'PurchaseOrder-read',
             'skip_null_values' => false
         ],
+        paginationClientEnabled: true
     ),
     ORM\Entity,
     ORM\Table(name: 'purchase_order')

@@ -176,7 +176,8 @@
                 label: itemValue => itemValue,
                 options: optionsFamilies
             },
-            type: 'select'
+            type: 'select',
+            isArray: true
         },
         {
             label: 'Destination',
@@ -247,6 +248,8 @@
                 <AppSuspense>
                     <AppCardableTable
                         :current-page="storeWarehouseList.currentPage"
+                        :current-filter-and-sort-iri="`/api/warehouses${warehouseListCriteria.getFetchCriteriaWithoutPage}`"
+                        :can-export-table="fetchUser.isLogisticsAdmin || fetchUser.isLogisticsWriter"
                         :fields="tabFields"
                         :first-page="storeWarehouseList.firstPage"
                         :items="itemsTable"

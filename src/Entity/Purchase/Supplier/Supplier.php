@@ -38,8 +38,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\Purchase\Supplier\SupplierPatchController;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial', 'id' => 'exact', 'society.name' => 'partial', 'embState.state' => 'exact', 'embBlocker.state' => 'exact']),
-    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state', 'address.zipCode', 'address.city']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.zipCode' => 'partial', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial', 'id' => 'exact', 'society.name' => 'partial', 'embState.state' => 'partial', 'embBlocker.state' => 'exact']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state'/* , 'address.zipCode', 'address.city' */]),
     ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'address.zipCode', 'address.city', 'id']),
     ApiResource(
         description: 'Fournisseur',

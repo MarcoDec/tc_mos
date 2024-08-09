@@ -134,6 +134,8 @@
                 <AppSuspense>
                     <AppCardableTable
                         :current-page="fetchCompanies.currentPage"
+                        :current-filter-and-sort-iri="`/api/companies${companyListCriteria.getFetchCriteriaWithoutPage}`"
+                        :can-export-table="isWriterOrAdmin"
                         :fields="tabFields"
                         :first-page="fetchCompanies.firstPage"
                         :items="itemsTable"
