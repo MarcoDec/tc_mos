@@ -69,7 +69,8 @@
             },
             trie: false,
             type: 'select',
-            width: 80
+            width: 80,
+            sourceName: 'embState.state'
         }
     ])
 
@@ -171,6 +172,8 @@
                 <AppCardableTable
                     :key="tableKey"
                     :current-page="storeEmployeesList.currentPage"
+                    :current-filter-and-sort-iri="`/api/employees${employeeListCriteria.getFetchCriteriaWithoutPage}`"
+                    :can-export-table="isHrWriterOrAdmin"
                     :fields="fields"
                     :first-page="storeEmployeesList.firstPage"
                     :items="itemsTable"
