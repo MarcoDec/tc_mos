@@ -1,12 +1,15 @@
 <script setup>
     import {computed, ref} from 'vue'
     import {useSocietyListStore} from '../../../../../stores/management/societies/societyList'
+    import useUser from '../../../../../stores/security'
 
     defineProps({
         icon: {required: true, type: String},
         title: {required: true, type: String}
     })
 
+    const user = useUser()
+    const isManagementWriterOrAdmin = false/* user.isManagementWriter || user.isManagementAdmin */
     const roleuser = ref('reader')
     let violations = []
     const updated = ref(false)
@@ -209,6 +212,8 @@
             <AppCol>
                 <AppCardableTable
                     :current-page="storeSocietyList.currentPage"
+                    :current-filter-and-sort-iri="`/api/societies${storeSocietyList.getFetchCriteriaWithoutPage}`"
+                    :can-export-table="isManagementWriterOrAdmin"
                     :fields="tabFields"
                     :first-page="storeSocietyList.firstPage"
                     :items="itemsTable"

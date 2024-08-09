@@ -77,6 +77,7 @@
             const items = response['hydra:member']
             // Utilisation de Promise.all pour gérer les appels asynchrones
             const mappedItemsPromises = items.map(item => {
+                //console.log('item', item)
                 const mappedItem = {}
                 const promises = []
                 displayedFields.value.forEach(field => {
@@ -89,8 +90,14 @@
                         })
                         mappedItem[field.name] = source
                     } else if (field.type === 'select') {
+                        //console.log('field', field)
                         // On récupère la valeur de l'option
-                        const option = field.options.options.find(option2 => option2.value === item[field.name]);
+                        const option = field.options.options.find(option2 => {
+                            if (typeof item[field.name] === 'object') {
+                                return option2.value === item[field.name]['@id']
+                            }
+                            return option2.value === item[field.name]
+                        })
                         mappedItem[field.name] = option ? option.text : null
                     } else if (field.type === 'multiselect-fetch') {
                         // On récupère la valeur depuis l'API
