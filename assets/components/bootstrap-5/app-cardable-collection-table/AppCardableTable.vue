@@ -48,6 +48,7 @@
         'search',
         'cancelSearch'
     ])
+    const isExporting = ref(false)
     function update(item){
         emit('update', item)
     }
@@ -72,6 +73,9 @@
         emit('update:searchModelValue', input.value)
     }
     function exportTable() {
+        //console.log('exportTable')
+        isExporting.value = true
+        console.log('isExporting', isExporting.value)
         // On récupère les données du back
         api(props.currentFilterAndSortIri, 'GET').then(response => {
             const items = response['hydra:member']
@@ -81,6 +85,7 @@
                 const mappedItem = {}
                 const promises = []
                 displayedFields.value.forEach(field => {
+                    //console.log('field', field)
                     if (typeof field.sourceName !== 'undefined') {
                         // Si le champ a un sourceName, on l'utilise pour mapper l'item
                         const sourceNames = field.sourceName.split('.')
@@ -90,15 +95,21 @@
                         })
                         mappedItem[field.name] = source
                     } else if (field.type === 'select') {
-                        //console.log('field', field)
                         // On récupère la valeur de l'option
-                        const option = field.options.options.find(option2 => {
-                            if (typeof item[field.name] === 'object') {
-                                return option2.value === item[field.name]['@id']
-                            }
-                            return option2.value === item[field.name]
-                        })
-                        mappedItem[field.name] = option ? option.text : null
+                        if (typeof field.isArray !== 'undefined' && field.isArray) {
+                            const values = item[field.name]
+                            console.log('isArray', values)
+                            // On regroupe les valeurs dans une chaine texte
+                            mappedItem[field.name] = values.join(' & ')
+                        } else {
+                            const option = field.options.options.find(option2 => {
+                                if (typeof item[field.name] === 'object' && item[field.name] !== null) {
+                                    return option2.value === item[field.name]['@id']
+                                }
+                                return option2.value === item[field.name]
+                            })
+                            mappedItem[field.name] = option ? option.text : null
+                        }
                     } else if (field.type === 'multiselect-fetch') {
                         // On récupère la valeur depuis l'API
                         const promesse = api(item[field.name], 'GET').then(response3 => {
@@ -131,7 +142,12 @@
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
+                isExporting.value = false
             })
+        }).catch(error => {
+            window.alert('Erreur lors de l\'export, Veuillez tenter de nouveau avec un filtre réduisant le nombre d\'éléments à exporter')
+            console.error(error)
+            isExporting.value = false
         })
     }
 </script>
@@ -141,7 +157,12 @@
         <table class="table table-bordered table-hover table-striped">
             <AppCardableTableHeader :fields="displayedFields" :title="currentTitle" :top-offset="topOffset" @trier-alphabet="trierAlphabet">
                 <template #title>
-                    <button v-if="canExportTable" class="btn-export" @click="exportTable">
+                    <button
+                        v-if="canExportTable"
+                        class="btn-export"
+                        :class="[{'blinking': isExporting}]"
+                        :disabled="isExporting"
+                        @click="exportTable">
                         Export CSV
                     </button>
                     <slot name="title"/>
@@ -205,5 +226,25 @@
 
     .btn-export:hover {
         background-color: #0056b3;
+    }
+
+    .btn-export:disabled {
+    background-color: grey;
+    cursor: not-allowed;
+    }
+
+    .blinking {
+        animation: blinking 1s infinite;
+    }
+    @keyframes blinking {
+        0% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
     }
 </style>

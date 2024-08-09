@@ -17,12 +17,18 @@
         engineType: {required: true, type: String},
         icon: {required: true, type: String}
     })
+    //console.log('props', props)
     // console.log('props', props)
+    const user = useUser()
     const roleuser = ref('reader')
     const AddForm = ref(false)
     const formData = ref({})
     let key = 0
     const currentCompany = useUser().company
+    const isWriterOrAdmin = computed(() => {
+        if (props.engineType === 'informatique') return user.isItWriter || user.isItAdmin
+        return roleuser.value === 'writer' || roleuser.value === 'admin'
+    })
     //region Initialisation des champs et listes associées
     //region récupération des types de machine
     const fetchEngineTypes = useEngineTypeStore()
@@ -380,6 +386,8 @@
                 <AppSuspense>
                     <AppCardableTable
                         :current-page="storeEngines.currentPage"
+                        :current-filter-and-sort-iri="`/api/engines${tableCriteria.getFetchCriteriaWithoutPage}`"
+                        :can-export-table="isWriterOrAdmin"
                         :fields="tabFields"
                         :first-page="storeEngines.firstPage"
                         :items="storeEngines.engines"
