@@ -24,9 +24,6 @@
         title: {default: null, required: false, type: String},
         topOffset: {default: '0px', type: String}
     })
-    console.log('title', props.title)
-    console.log('currentFilterAndSort', props.currentFilterAndSortIri)
-    console.log('canExportTable', props.canExportTable)
     const currentTitle = computed(() => {
         if (props.title === null && props.canExportTable) {
             return ''
@@ -75,44 +72,49 @@
         emit('update:searchModelValue', input.value)
     }
     function exportTable() {
-        console.log('export table')
-        // On récupères les données du back
-        api(props.currentFilterAndSortIri, 'GET').then(
-            response => {
-                const items = response['hydra:member']
-                const mappedItems = items.map(item => {
-                    const mappedItem = {}
-                    console.log('item', item)
-                    displayedFields.value.forEach(field => {
-                        console.log('field', field)
-                        if (typeof field.sourceName !== 'undefined') {
-                            // If the field has a sourceName, use it to map the item
-                            // If sourceName is composed of dots, we need to navigate through the item object
-                            const sourceNames = field.sourceName.split('.')
-                            let source = item
-                            sourceNames.forEach(sourceName => {
-                                source = source[sourceName]
-                            })
-                            mappedItem[field.name] = source
-                            return
-                        }
-                        if (field.type === 'select') {
-                            // On récupère la valeur de l'option
-                            const option = field.options.options.find(option2 => option2.value === item[field.name])
-                            mappedItem[field.name] = option ? option.text : null
-                            return
-                        }
+        // On récupère les données du back
+        api(props.currentFilterAndSortIri, 'GET').then(response => {
+            const items = response['hydra:member']
+            // Utilisation de Promise.all pour gérer les appels asynchrones
+            const mappedItemsPromises = items.map(item => {
+                const mappedItem = {}
+                const promises = []
+                displayedFields.value.forEach(field => {
+                    if (typeof field.sourceName !== 'undefined') {
+                        // Si le champ a un sourceName, on l'utilise pour mapper l'item
+                        const sourceNames = field.sourceName.split('.')
+                        let source = item
+                        sourceNames.forEach(sourceName => {
+                            source = source[sourceName]
+                        })
+                        mappedItem[field.name] = source
+                    } else if (field.type === 'select') {
+                        // On récupère la valeur de l'option
+                        const option = field.options.options.find(option2 => option2.value === item[field.name]);
+                        mappedItem[field.name] = option ? option.text : null
+                    } else if (field.type === 'multiselect-fetch') {
+                        // On récupère la valeur depuis l'API
+                        const promesse = api(item[field.name], 'GET').then(response3 => {
+                            mappedItem[field.name] = response3[field.filteredProperty]
+                        })
+                        promises.push(promesse)
+                    } else {
                         mappedItem[field.name] = item[field.name]
-                    })
-                    return mappedItem
+                    }
                 })
-                // Transform items into CSV format
+                // Attendre que toutes les promesses soient résolues avant de retourner l'objet mappé
+                return Promise.all(promises).then(() => mappedItem)
+            })
+
+            // Une fois que toutes les promesses de mapping sont résolues, on procède à l'export
+            Promise.all(mappedItemsPromises).then(mappedItems => {
+                // Transformer les items en format CSV
                 const csvContent = [
-                    displayedFields.value.map(field => field.label).join(','), // Header row
+                    displayedFields.value.map(field => field.label).join(','), // Ligne d'en-tête
                     ...mappedItems.map(item => displayedFields.value.map(field => item[field.name]).join(','))
                 ].join('\n')
 
-                // Create a Blob with the CSV
+                // Créer un Blob avec le contenu CSV
                 const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'})
                 const link = document.createElement('a')
                 const url = URL.createObjectURL(blob)
@@ -122,8 +124,8 @@
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
-            }
-        )
+            })
+        })
     }
 </script>
 
