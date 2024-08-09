@@ -161,7 +161,7 @@
                     v-if="isLoaded"
                     :current-page="storeSuppliersList.currentPage"
                     :current-filter-and-sort-iri="`/api/suppliers${supplierListCriteria.getFetchCriteriaWithoutPage}`"
-                    :can-export-table="true"
+                    :can-export-table="isPurchaseWriterOrAdmin"
                     :fields="fields"
                     :first-page="storeSuppliersList.firstPage"
                     :items="itemsTable"

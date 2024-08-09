@@ -96,6 +96,12 @@
                             mappedItem[field.name] = source
                             return
                         }
+                        if (field.type === 'select') {
+                            // On récupère la valeur de l'option
+                            const option = field.options.options.find(option2 => option2.value === item[field.name])
+                            mappedItem[field.name] = option ? option.text : null
+                            return
+                        }
                         mappedItem[field.name] = item[field.name]
                     })
                     return mappedItem

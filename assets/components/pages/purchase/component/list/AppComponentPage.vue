@@ -75,7 +75,8 @@
                 label: value =>
                     optionsComponentFamilies.value.find(option => option.value === value)?.text ?? null,
                 options: optionsComponentFamilies.value
-            }
+            },
+            isIri: true
         },
         // {
         //     label: 'Fournisseurs',
@@ -105,7 +106,8 @@
                 options: optionsEtat
             },
             type: 'select',
-            width: 100
+            width: 100,
+            sourceName: 'embState.state'
         }
     ])
     const itemsTable = computed(() => StoreComponents.componentItems)
@@ -209,6 +211,8 @@
                 <AppCardableTable
                     :key="tableKey"
                     :current-page="StoreComponents.currentPage?.toString() ?? ''"
+                    :current-filter-and-sort-iri="`/api/components${componentListCriteria.getFetchCriteriaWithoutPage}`"
+                    :can-export-table="isPurchaseWriterOrAdmin"
                     :fields="fields"
                     :first-page="StoreComponents.firstPage?.toString() ?? ''"
                     :items="itemsTable"
