@@ -23,7 +23,7 @@
         disable.value = false
     }
     function success() {
-        emit('update')
+        emit('update', localData.value)
         updated.value = false
         disable.value = true
     }

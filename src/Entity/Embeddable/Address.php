@@ -79,7 +79,7 @@ class Address {
         Assert\Email,
         Assert\Length(max: 80),
         ORM\Column(length: 80, nullable: true),
-        Serializer\Groups(['read:address', 'write:address', 'read:society:collection', 'write:customer', 'write:customer:main', 'write:employee:hr'])
+        Serializer\Groups(['read:address', 'write:address', 'read:society:collection', 'write:customer', 'write:customer:main', 'write:employee:hr', 'write:employee:main'])
     ]
     private ?string $email = null;
 

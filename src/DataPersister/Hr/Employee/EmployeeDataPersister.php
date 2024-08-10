@@ -7,7 +7,6 @@ use App\Entity\Hr\Employee\Employee;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface AS Logger;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use function PHPUnit\Framework\isEmpty;
 
 class EmployeeDataPersister implements ContextAwareDataPersisterInterface
 {
@@ -24,15 +23,14 @@ class EmployeeDataPersister implements ContextAwareDataPersisterInterface
 
     public function persist($data, array $context = [])
     {
-        dump("Persist Employee", $data);
         /** @var Employee $data */
         if ($data->getPlainPassword() != "") {
             $hashedPassword = $this->passwordHasher->hashPassword($data, $data->getPlainPassword());
-            dump($hashedPassword);
             $data->setPassword($hashedPassword);
-            $this->em->flush();
             $this->logger->info(`Changement du mot de passe de l'utilisateur `.$data->getId());
         }
+        $this->em->persist($data);
+        $this->em->flush();
     }
 
     public function remove($data, array $context = [])

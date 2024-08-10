@@ -216,3 +216,23 @@ services:
       $cacheKeyComponent: 'api_needs_component_%s' # %s c'est l'id du component
     tags:
       - { name: 'doctrine.event_subscriber', connection: 'default' }
+
+  App\DataPersister\FileDataPersister:
+    arguments:
+      $em: '@doctrine.orm.entity_manager'  # Injecte l'EntityManager
+      $fm: '@App\Filesystem\FileManager'      # Injecte votre service FileManager
+      $requests: '@request_stack'          # Injecte le RequestStack
+    tags: ['api_platform.data_persister']
+  
+  App\DataPersister\Hr\Employee\EmployeePostDataPersister:
+    arguments:
+      $passwordHasher: '@security.password_hasher'  # Injecte l'instance de UserPasswordHasherInterface
+      $logger: '@logger'                            # Injecte le service de Logger de Symfony
+      $em: '@doctrine.orm.entity_manager'           # Injecte l'EntityManager
+      $requests: '@request_stack'                   # Injecte le RequestStack
+    tags: ['api_platform.data_persister']
+  
+  App\DataPersister\CompositeDataPersister:
+    arguments:
+      - [ '@App\DataPersister\FileDataPersister', '@App\DataPersister\Hr\Employee\EmployeePostDataPersister' ]
+    tags: ['api_platform.data_persister']

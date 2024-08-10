@@ -9,7 +9,8 @@
     })
 
     const user = useUser()
-    const isManagementWriterOrAdmin = false/* user.isManagementWriter || user.isManagementAdmin */
+    const isManagementWriterOrAdmin = ref(user.isManagementWriter || user.isManagementAdmin)
+    isManagementWriterOrAdmin.value = false
     const roleuser = ref('reader')
     let violations = []
     const updated = ref(false)

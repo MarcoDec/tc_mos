@@ -27,9 +27,9 @@
 </script>
 
 <template>
-    <div class="table-responsive" style="height: 400px; overflow-y: auto;">
+    <div class="table-responsive containerOverflow">
         <table v-if="showTable" class="table table-stripped table-hover table-bordered">
-            <thead class="thead-dark" style="position: sticky; top: 0; z-index: 100;">
+            <thead class="thead-dark thSticky">
                 <tr>
                     <th colspan="6" class="text-center bg-dark text-white">
                         Historique des modifications
@@ -88,3 +88,15 @@
         </table>
     </div>
 </template>
+
+<style scoped>
+    .containerOverflow {
+        height: 400px;
+        overflow: auto;
+    }
+    .thSticky {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+</style>

@@ -36,7 +36,7 @@
         const data = {
             company: formData.get('company'),
             plainPassword: formData.get('plainPassword'),
-            timeCard: formData.get('timeCard'),
+            timeCard: Number(formData.get('timeCard')),
             userEnabled: JSON.parse(formData.get('userEnabled')),
             username: formData.get('username')
         }

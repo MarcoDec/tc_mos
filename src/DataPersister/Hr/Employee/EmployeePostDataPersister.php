@@ -3,6 +3,7 @@
 namespace App\DataPersister\Hr\Employee;
 
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
+use App\DataPersister\FileDataPersister;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Hr\Employee\Employee;
 use Doctrine\DBAL\Driver\Statement;
@@ -66,12 +67,60 @@ class EmployeePostDataPersister implements ContextAwareDataPersisterInterface
         /** @var Employee $data */
         if ($data->getPlainPassword() != "") {
             $hashedPassword = $this->passwordHasher->hashPassword($data, $data->getPlainPassword());
-            //dump($hashedPassword);
             $data->setPassword($hashedPassword);
-            $this->em->persist($data);
-            $this->em->flush();
             $this->logger->info(`Création du mot de passe de l'utilisateur `.$data->getId());
         }
+        // On récupère le niveau de l'employé parmis les rôles suivants:
+        // ROLE_LEVEL_OPERATOR, ROLE_LEVEL_ANIMATOR, ROLE_LEVEL_MANAGER, ROLE_LEVEL_DIRECTOR
+
+        // Si le manager est défini, on récupère ses informations
+        if ($content->manager != null) {
+            // On récupère l'id du manager à partir de l'iri qui correspond au nombre terminant l'iri
+            $idManager = explode('/', $content->manager)[count(explode('/', $content->manager)) - 1];
+            $manager = $this->em->getRepository(Employee::class)->findOneBy(['id' => $idManager]);
+            $data->setManager($manager);
+            // On récupère les rôles du manager
+            $managerRoles = $manager->getRoles();
+            // Pour chaque rôle READER du manager on l'ajoute à l'employé en tant que READER
+            $roles = $data->getRoles();
+            $employeeLevel = null;
+            if (in_array(Roles::ROLE_LEVEL_OPERATOR, $roles)) {
+                $employeeLevel = Roles::ROLE_LEVEL_OPERATOR;
+            } elseif (in_array(Roles::ROLE_LEVEL_ANIMATOR, $roles)) {
+                $employeeLevel = Roles::ROLE_LEVEL_ANIMATOR;
+            } elseif (in_array(Roles::ROLE_LEVEL_MANAGER, $roles)) {
+                $employeeLevel = Roles::ROLE_LEVEL_MANAGER;
+            } elseif (in_array(Roles::ROLE_LEVEL_DIRECTOR, $roles)) {
+                $employeeLevel = Roles::ROLE_LEVEL_DIRECTOR;
+            }
+            foreach ($managerRoles as $role) {
+                if (strpos($role, '_READER') !== false 
+                    && in_array($employeeLevel, [Roles::ROLE_LEVEL_ANIMATOR, Roles::ROLE_LEVEL_MANAGER, Roles::ROLE_LEVEL_DIRECTOR] )) {
+                    $roles[] = $role;
+                }
+                if (strpos($role, '_WRITER') !== false) {
+                    if (in_array($employeeLevel, [Roles::ROLE_LEVEL_ANIMATOR, Roles::ROLE_LEVEL_MANAGER, Roles::ROLE_LEVEL_DIRECTOR] )) {
+                        $roles[] = $role;
+                    } else {
+                        $roles[] = str_replace('_WRITER', '_READER', $role);
+                    }
+                }
+                if (strpos($role, '_ADMIN') !== false) {
+                    if (in_array($employeeLevel, [Roles::ROLE_LEVEL_MANAGER, Roles::ROLE_LEVEL_DIRECTOR] )) {
+                        $roles[] = $role;
+                    } else {
+                        if (in_array($employeeLevel, [Roles::ROLE_LEVEL_ANIMATOR])) {
+                            $roles[] = str_replace('_ADMIN', '_WRITER', $role);
+                        } else {
+                            $roles[] = str_replace('_ADMIN', '_READER', $role);
+                        }
+                    }
+                }
+            }
+            $data->setRoles($roles);
+        }
+        $this->em->persist($data);
+        $this->em->flush();
         return $data;
     }
 

@@ -106,7 +106,8 @@
                 surname: employeeData.value.surname ?? '',
                 // userEnabled: employeeData.value.userEnabled ?? false,
                 // username: employeeData.value.username ?? '',
-                company: employeeData.value.company ?? props.currentCompany
+                company: employeeData.value.company ?? props.currentCompany,
+                manager: employeeData.value.manager ?? null
             }
             await storeEmployeesList.addEmployee(employee)
             isPopupVisible.value = false
