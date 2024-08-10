@@ -212,7 +212,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         Assert\Valid(groups: ['Default', 'creation', 'update']),
         ORM\Embedded(Address::class),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr', 'write:employee:main'])
     ]
     private Address $address;
 
@@ -273,7 +273,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Date d\'arrivée', example: '2021-01-12'),
         ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr', 'create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr', 'create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'write:employee:main'])
     ]
 
     private ?DateTimeImmutable $entryDate = null;
@@ -289,7 +289,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         ApiProperty(description: 'Sexe', example: GenderType::TYPE_MALE, openapiContext: ['enum' => GenderType::TYPES]),
         Assert\Choice(choices: GenderType::TYPES),
         ORM\Column(type: 'gender_place', nullable: true, options: ['default' => GenderType::TYPE_MALE]),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr', 'write:employee:main'])
     ]
     private ?string $gender = GenderType::TYPE_MALE;
 
@@ -324,7 +324,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Prénom', required: true, example: 'Super'),
         ORM\Column(length: 30),
-        Serializer\Groups(['read:production-quality', 'create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation', 'read:skill'])
+        Serializer\Groups(['read:production-quality', 'create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'write:employee:main', 'read:manufacturing-operation', 'read:skill'])
     ]
     private ?string $name = null;
 
@@ -359,7 +359,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         ApiProperty(description: 'Situation', example: SituationType::TYPE_SINGLE, openapiContext: ['enum' => SituationType::TYPES]),
         Assert\Choice(choices: SituationType::TYPES),
         ORM\Column(type: 'situation_place', nullable: true, options: ['default' => SituationType::TYPE_SINGLE]),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr', 'write:employee:main'])
     ]
     private ?string $situation = SituationType::TYPE_SINGLE;
 
@@ -373,7 +373,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Nom', example: 'Roosevelt'),
         ORM\Column,
-        Serializer\Groups(['read:production-quality', 'create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation', 'read:skill'])
+        Serializer\Groups(['read:production-quality', 'create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'write:employee:main', 'read:manufacturing-operation', 'read:skill'])
     ]
     private ?string $surname = null;
 

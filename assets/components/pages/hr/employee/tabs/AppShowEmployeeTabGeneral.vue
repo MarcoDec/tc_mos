@@ -42,7 +42,15 @@
         const form = document.getElementById('addGeneralites')
         const formData = new FormData(form)
         const data = {
-            notes: formData.get('notes') ? formData.get('notes') : null
+            name: formData.get('name'),
+            surname: formData.get('surname'),
+            gender: formData.get('gender'),
+            situation: formData.get('situation'),
+            address: {
+                email: formData.get('getEmail')
+            },
+            notes: formData.get('notes') ? formData.get('notes') : null,
+            entryDate: formData.get('getEntryDate')
         }
         const item = generateEmployee(value)
         await item.update(data)
@@ -54,5 +62,5 @@
         id="addGeneralites"
         :fields="generalFields"
         :component-attribute="fetchEmployeeStore.employee"
-        @update="updateGeneral(fetchEmployeeStore.employee)"/>
+        @update="updateGeneral"/>
 </template>
