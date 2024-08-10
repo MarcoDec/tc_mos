@@ -12,8 +12,8 @@
         {text: 'windowed', value: 'windowed'}
     ]
     const generalFields = [
-        {label: 'Nom', name: 'name', type: 'text'},
-        {label: 'Prenom', name: 'surname', type: 'text'},
+        {label: 'Nom', name: 'surname', type: 'text'},
+        {label: 'Prenom', name: 'name', type: 'text'},
         {
             label: 'Genre',
             name: 'gender',
