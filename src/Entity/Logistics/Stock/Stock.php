@@ -17,9 +17,7 @@ use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Order\Receipt;
 use App\Entity\Logistics\Warehouse\Warehouse;
 use App\Entity\Management\Unit;
-use App\Entity\Production\Manufacturing\Operation;
 use App\Entity\Purchase\Order\Item;
-use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
 use App\Repository\Logistics\Stock\StockRepository;
 use App\Validator as AppAssert;
@@ -120,10 +118,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity(repositoryClass: StockRepository::class),
     ORM\InheritanceType('SINGLE_TABLE')
 ]
-abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterface {
-    use BarCodeTrait {
-        getBarCode as private barcode;
-    }
+abstract class Stock extends Entity implements MeasuredInterface {
+    // use BarCodeTrait {
+    //     getBarCode as private barcode;
+    // }
 
     final public const TYPES = [
         ItemType::TYPE_COMPONENT => ComponentStock::class,
@@ -177,12 +175,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     ]
     protected ?Warehouse $warehouse = null;
 
-    /** @var Collection<int, Operation> */
-    #[ORM\ManyToMany(targetEntity: Operation::class)]
-    private Collection $operations;
-
     public function __construct() {
-        $this->operations = new ArrayCollection();
         $this->quantity = new Measure();
         $this->receipts = new ArrayCollection();
     }
@@ -192,16 +185,6 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     }
 
     abstract protected function getType(): string;
-
-    /**
-     * @return $this
-     */
-    final public function addOperation(Operation $operation): self {
-        if (!$this->operations->contains($operation)) {
-            $this->operations->add($operation);
-        }
-        return $this;
-    }
 
     /**
      * @param Receipt<T> $receipt
@@ -251,12 +234,6 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     {
         return [];
     }
-    /**
-     * @return Collection<int, Operation>
-     */
-    final public function getOperations(): Collection {
-        return $this->operations;
-    }
 
     final public function getQuantity(): Measure {
         return $this->quantity;
@@ -279,16 +256,6 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     final public function isJail(): bool {
         return $this->jail;
-    }
-
-    /**
-     * @return $this
-     */
-    final public function removeOperation(Operation $operation): self {
-        if ($this->operations->contains($operation)) {
-            $this->operations->removeElement($operation);
-        }
-        return $this;
     }
 
     /**

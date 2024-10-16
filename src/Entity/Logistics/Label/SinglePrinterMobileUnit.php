@@ -6,7 +6,6 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\Logistics\Label\AddNewSinglePrinterMobileController;
 use App\Controller\Logistics\Label\GetSinglePrinterMobileUnitFromHostController;
 use App\Entity\Entity;
-use App\Entity\Management\Printer;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Filter\RelationFilter;
@@ -19,9 +18,6 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         'name' => 'partial',
         'mobileUnitIp' => 'partial',
         'localPrint' => 'exact'
-    ]),
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'printer'
     ]),
     ApiResource(
         description: 'Poste mobile d\'impression d\'étiquette',
@@ -84,13 +80,6 @@ class SinglePrinterMobileUnit extends Entity
     private ?string $mobileUnitIp = null;
 
     #[
-        ApiProperty(description: 'Imprimante associé au poste mobile', example: '/api/printers/1'),
-        ORM\ManyToOne(targetEntity: Printer::class, fetch: 'EAGER'),
-        Serializer\Groups(['read:single-printer-mobile-unit', 'write:single-printer-mobile-unit'])
-    ]
-    private ?Printer $printer = null;
-
-    #[
         ApiProperty(description: 'Impression locale', example: 'false'),
         ORM\Column(type: 'boolean', nullable: true),
         Serializer\Groups(['read:single-printer-mobile-unit', 'write:single-printer-mobile-unit'])
@@ -134,24 +123,6 @@ class SinglePrinterMobileUnit extends Entity
     }
 
     /**
-     * @return Printer|null
-     */
-    public function getPrinter(): ?Printer
-    {
-        return $this->printer;
-    }
-
-    /**
-     * @param Printer|null $printer
-     * @return SinglePrinterMobileUnit
-     */
-    public function setPrinter(?Printer $printer): SinglePrinterMobileUnit
-    {
-        $this->printer = $printer;
-        return $this;
-    }
-
-    /**
      * @return ?bool
      */
     public function isLocalPrint(): ?bool
@@ -168,6 +139,4 @@ class SinglePrinterMobileUnit extends Entity
         $this->localPrint = $localPrint;
         return $this;
     }
-
-
 }

@@ -17,7 +17,7 @@ api_platform:
   path_segment_name_generator: api_platform.path_segment_name_generator.dash
   swagger:
     versions: [ 3 ]
-  title: TConcept-GPAO
+  title: Mos
   eager_loading:
     enabled: true
     max_joins: 100

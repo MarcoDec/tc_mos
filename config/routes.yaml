@@ -1,14 +1,14 @@
-login:
-  methods: [ post ]
-  path: /api/login
+# login:
+#   methods: [ post ]
+#   path: /api/login
 
-logout:
-  methods: [ post ]
-  path: /api/logout
+# logout:
+#   methods: [ post ]
+#   path: /api/logout
 
-mobile.login:
-  methods: [ post ]
-  path: /api/mobile/login
+# mobile.login:
+#   methods: [ post ]
+#   path: /api/mobile/login
 
 app:
   controller: App\Controller\TemplateController

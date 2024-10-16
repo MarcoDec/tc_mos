@@ -11,7 +11,6 @@ use App\Entity\Logistics\Carrier;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Logistics\Stock\Stock;
 use App\Entity\Management\Color;
-use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Unit;
 use App\Entity\Management\VatMessage;
 use App\Entity\Production\Company\Zone;
@@ -56,7 +55,6 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
                     || $data instanceof EventType
                     || $data instanceof Group
                     || $data instanceof Incoterms
-                    || $data instanceof InvoiceTimeDue
                     || $data instanceof Manufacturer
                     || $data instanceof Operation
                     || $data instanceof OperationType

@@ -18,10 +18,8 @@ use App\Entity\Project\Product\Family as ProductFamily;
 use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
 use App\Entity\Purchase\Component\Family as ComponentFamily;
-use App\Entity\Purchase\Order\Item;
 use App\Entity\Purchase\Order\Order;
 use App\Entity\Purchase\Supplier\Supplier;
-use App\Entity\Quality\Reception\Check;
 use App\Filter\SetFilter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -39,8 +37,7 @@ use App\Filter\CustomGetterFilter;
 #[
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state' => 'partial', 'embBlocker.state' => 'partial']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['date' => 'exact']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['item', 'stocks', 'checks']),
-    ApiFilter(filterClass: CustomGetterFilter::class, properties: ['getterFilter'=>['fields'=>['item']]]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['stocks']),
     ApiResource(
         description: 'Réception',
         collectionOperations: [
@@ -92,10 +89,7 @@ use App\Filter\CustomGetterFilter;
     ),
     ORM\Entity
 ]
-class Receipt extends Entity implements MeasuredInterface {
-    /** @var Collection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>> */
-    #[ORM\OneToMany(mappedBy: 'receipt', targetEntity: Check::class)]
-    private Collection $checks;
+class Receipt extends Entity {
 
     #[
         ApiProperty(description: 'Date', example: '2022-03-27'),
@@ -116,14 +110,6 @@ class Receipt extends Entity implements MeasuredInterface {
     ]
     private State $embState;
 
-    /** @var Item<I>|null */
-    #[
-        ApiProperty(description: 'Item de commande d\'achat', readableLink: false, example: '/api/purchase-order-items/1'),
-        ORM\ManyToOne(inversedBy: 'receipts'),
-        Serializer\Groups(['read:receipt'])
-    ]
-    private ?Item $item = null;
-
     #[
         ApiProperty(description: 'Quantité réceptionnée', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
@@ -136,7 +122,6 @@ class Receipt extends Entity implements MeasuredInterface {
     private Collection $stocks;
 
     public function __construct() {
-        $this->checks = new ArrayCollection();
         $this->date = new DateTimeImmutable();
         $this->embBlocker = new Blocker();
         $this->embState = new State();
@@ -149,25 +134,6 @@ class Receipt extends Entity implements MeasuredInterface {
     ]
     final public function getGetterFilter(): string {
         return $this->getPurchaseOrder()?->getId();
-    }
-    #[
-        ApiProperty(description: 'Commande', example: '/api/purchase-order/1'),
-        Serializer\Groups(['read:receipt', 'write:receipt'])
-    ]
-    public function getPurchaseOrder(){
-        return $this->item?->getParentOrder();
-    }
-    /**
-     * @param Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier> $check
-     *
-     * @return $this
-     */
-    final public function addCheck(Check $check): self {
-        if (!$this->checks->contains($check)) {
-            $this->checks->add($check);
-            $check->setReceipt($this);
-        }
-        return $this;
     }
 
     /**
@@ -187,13 +153,6 @@ class Receipt extends Entity implements MeasuredInterface {
         return $this->date->format('Ymd');
     }
 
-    /**
-     * @return Collection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
-     */
-    final public function getChecks(): Collection {
-        return $this->checks;
-    }
-
     final public function getDate(): DateTimeImmutable {
         return $this->date;
     }
@@ -204,13 +163,6 @@ class Receipt extends Entity implements MeasuredInterface {
 
     final public function getEmbState(): State {
         return $this->embState;
-    }
-
-    /**
-     * @return Item<I>|null
-     */
-    final public function getItem(): ?Item {
-        return $this->item;
     }
 
     final public function getMeasures(): array {
@@ -228,13 +180,6 @@ class Receipt extends Entity implements MeasuredInterface {
         return $this->quantity;
     }
 
-    /**
-     * @return I|null
-     */
-    final public function getReceiptItem() {
-        return $this->item?->getItem();
-    }
-
     final public function getBlocker(): string {
         return $this->embBlocker->getState();
     }
@@ -248,25 +193,6 @@ class Receipt extends Entity implements MeasuredInterface {
      */
     final public function getStocks(): Collection {
         return $this->stocks;
-    }
-
-    final public function getUnit(): ?Unit {
-        return $this->item?->getUnit();
-    }
-
-    /**
-     * @param Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier> $check
-     *
-     * @return $this
-     */
-    final public function removeCheck(Check $check): self {
-        if ($this->checks->contains($check)) {
-            $this->checks->removeElement($check);
-            if ($check->getReceipt() === $this) {
-                $check->setReceipt(null);
-            }
-        }
-        return $this;
     }
 
     /**
@@ -302,16 +228,6 @@ class Receipt extends Entity implements MeasuredInterface {
      */
     final public function setEmbState(State $embState): self {
         $this->embState = $embState;
-        return $this;
-    }
-
-    /**
-     * @param Item<I>|null $item
-     *
-     * @return $this
-     */
-    final public function setItem(?Item $item): self {
-        $this->item = $item;
         return $this;
     }
 

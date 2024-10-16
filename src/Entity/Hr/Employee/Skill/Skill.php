@@ -10,7 +10,6 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Employee;
 use App\Entity\Hr\OutTrainer;
-use App\Entity\Production\Engine\Manufacturer\Engine;
 use App\Entity\Production\Engine\Group;
 use App\Entity\Project\Product\Product;
 use App\Filter\RelationFilter;
@@ -20,7 +19,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['employee', 'inTrainer', 'kind', 'family', 'engine', 'product', 'outTrainer']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['employee', 'inTrainer', 'kind', 'product', 'outTrainer']),
     ApiFilter(filterClass: DateFilter::class, properties: ['startedDate', 'endedDate', 'remindedDate']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['level' => 'exact']),
 
@@ -87,20 +86,6 @@ class Skill extends Entity {
         Serializer\Groups(['read:skill', 'write:skill'])
     ]
     private ?DateTimeImmutable $endedDate = null;
-
-    #[
-        ApiProperty(description: 'Employé', readableLink: false, example: '/api/engines/3'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:skill', 'write:skill'])
-    ]
-    private ?Engine $engine = null;
-
-    #[
-        ApiProperty(description: 'Groupes d\'équipement', readableLink: false, example: '/api/engine-groups/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:skill', 'write:skill'])
-    ]
-    private ?Group $family = null;
 
     #[
         ApiProperty(description: 'Formateur interne', readableLink: false, example: '/api/employees/1'),
@@ -173,14 +158,6 @@ class Skill extends Entity {
         return $this->endedDate;
     }
 
-    final public function getEngine(): ?Engine {
-        return $this->engine;
-    }
-
-    final public function getFamily(): ?Group {
-        return $this->family;
-    }
-
     final public function getInTrainer(): ?Employee {
         return $this->inTrainer;
     }
@@ -224,16 +201,6 @@ class Skill extends Entity {
 
     final public function setEndedDate(?DateTimeImmutable $endedDate): self {
         $this->endedDate = $endedDate;
-        return $this;
-    }
-
-    final public function setEngine(?Engine $engine): self {
-        $this->engine = $engine;
-        return $this;
-    }
-
-    final public function setFamily(?Group $family): self {
-        $this->family = $family;
         return $this;
     }
 

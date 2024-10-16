@@ -132,10 +132,6 @@ class Company extends Entity {
     ]
     private ?Currency $currency;
 
-    /** @var DoctrineCollection<int, Customer> */
-    #[ORM\ManyToMany(targetEntity: Customer::class, mappedBy: 'administeredBy')]
-    private DoctrineCollection $customers;
-
     #[
         ApiProperty(description: 'Temps de livraison', example: 7),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
@@ -218,10 +214,6 @@ class Company extends Entity {
 //    #[ORM\OneToMany(mappedBy: 'administeredBy', targetEntity: CustomerProduct::class)]
 //    private DoctrineCollection $products;
 
-    /** @var DoctrineCollection<int, CompanyReference> */
-    #[ORM\ManyToMany(targetEntity: CompanyReference::class, mappedBy: 'items')]
-    private DoctrineCollection $references;
-
     #[
         ApiProperty(description: 'Société'),
         ORM\ManyToOne,
@@ -237,18 +229,6 @@ class Company extends Entity {
     private ?string $workTimetable;
 
     public function __construct() {
-        $this->customers = new ArrayCollection();
-//        $this->products = new ArrayCollection();
-        $this->references = new ArrayCollection();
-//        $this->components = new ArrayCollection();
-    }
-
-    final public function addCustomer(Customer $customer): self {
-        if (!$this->customers->contains($customer)) {
-            $this->customers->add($customer);
-            $customer->addAdministeredBy($this);
-        }
-        return $this;
     }
 
 //    final public function addProduct(CustomerProduct $product): self {
@@ -259,35 +239,8 @@ class Company extends Entity {
 //        return $this;
 //    }
 
-    final public function addReference(CompanyReference $reference): self {
-        if (!$this->references->contains($reference)) {
-            $this->references->add($reference);
-            $reference->addItem($this);
-        }
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Check<Component|Product, self>>
-     */
-    final public function getChecks(): Collection {
-        return Collection::collect($this->references->getValues())
-            ->map(static function (CompanyReference $reference): Check {
-                /** @var Check<Component|Product, self> $check */
-                $check = new Check();
-                return $check->setReference($reference);
-            });
-    }
-
     final public function getCurrency(): ?Currency {
         return $this->currency;
-    }
-
-    /**
-     * @return DoctrineCollection<int, Customer>
-     */
-    final public function getCustomers(): DoctrineCollection {
-        return $this->customers;
     }
 
     final public function getDeliveryTime(): int {
@@ -333,13 +286,6 @@ class Company extends Entity {
 //        return $this->products;
 //    }
 
-    /**
-     * @return DoctrineCollection<int, CompanyReference>
-     */
-    final public function getReferences(): DoctrineCollection {
-        return $this->references;
-    }
-
     final public function getSociety(): ?Society {
         return $this->society;
     }
@@ -357,14 +303,6 @@ class Company extends Entity {
         return $this->deliveryTimeOpenDays;
     }
 
-    final public function removeCustomer(Customer $customer): self {
-        if ($this->customers->contains($customer)) {
-            $this->customers->removeElement($customer);
-            $customer->removeAdministeredBy($this);
-        }
-        return $this;
-    }
-
 //    final public function removeProduct(CustomerProduct $product): self {
 //        if ($this->products->contains($product)) {
 //            $this->products->removeElement($product);
@@ -372,14 +310,6 @@ class Company extends Entity {
 //        }
 //        return $this;
 //    }
-
-    final public function removeReference(CompanyReference $reference): self {
-        if ($this->references->contains($reference)) {
-            $this->references->removeElement($reference);
-            $reference->removeItem($this);
-        }
-        return $this;
-    }
 
     final public function setCurrency(?Currency $currency): self {
         $this->currency = $currency;

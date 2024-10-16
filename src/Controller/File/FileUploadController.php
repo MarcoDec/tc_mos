@@ -4,7 +4,7 @@ namespace App\Controller\File;
 
 use App\Entity\AbstractAttachment;
 use App\Filesystem\FileManager;
-use App\Service\ParameterManager;
+// use App\Service\ParameterManager;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -16,8 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 class FileUploadController {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private FileManager $fileManager,
-        private ParameterManager $parameterManager) {
+        private FileManager $fileManager) {
     }
 
    public AbstractAttachment $entity;
@@ -49,17 +48,17 @@ class FileUploadController {
        if ($this->entity->hasParameter) {
           $expirationDirectoriesParameter = $this->entity->getExpirationDirectoriesParameter();
           $parameterClass = $this->entity->getParameterClass();
-          $expirationDirectories = $this->parameterManager->getParameter($parameterClass, $expirationDirectoriesParameter);
-          foreach ($expirationDirectories->getTypedValue() as $directory) {
-             if (str_contains($this->entity->getCategory(), $directory)) {
-                $durationParameter = $this->entity->getExpirationDurationParameter();
-                $duration = (int) ($this->parameterManager->getParameter($parameterClass, $durationParameter)->getValue());
-                $durationUnit = $this->entity->getExpirationDateStr();
-                $this->entity->setExpirationDate(new DateTime("now + $duration $durationUnit"));
-             } else {
-                $this->entity->setExpirationDate(null);
-             }
-          }
+         //  $expirationDirectories = $this->parameterManager->getParameter($parameterClass, $expirationDirectoriesParameter);
+         //  foreach ($expirationDirectories->getTypedValue() as $directory) {
+         //     if (str_contains($this->entity->getCategory(), $directory)) {
+         //        $durationParameter = $this->entity->getExpirationDurationParameter();
+         //        $duration = (int) ($this->parameterManager->getParameter($parameterClass, $durationParameter)->getValue());
+         //        $durationUnit = $this->entity->getExpirationDateStr();
+         //        $this->entity->setExpirationDate(new DateTime("now + $duration $durationUnit"));
+         //     } else {
+         //        $this->entity->setExpirationDate(null);
+         //     }
+         //  }
        }
        $this->entityManager->persist($this->entity);
        $this->entityManager->flush(); // pour récupération id utilisé par default dans getBaseFolder

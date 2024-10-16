@@ -7,7 +7,6 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
-use App\Entity\Production\Engine\Engine;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -63,13 +62,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity
 ]
 class Planning extends Entity {
-    #[
-        ApiProperty(description: 'Equivalent', readableLink: false, example: '/api/engines/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:planning', 'write:planning'])
-    ]
-    private ?Engine $engine = null;
-
+    
     #[
         ApiProperty(description: 'Nom'),
         Assert\NotBlank,
@@ -89,10 +82,6 @@ class Planning extends Entity {
         $this->quantity = new Measure();
     }
 
-    final public function getEngine(): ?Engine {
-        return $this->engine;
-    }
-
     final public function getName(): ?string {
         return $this->name;
     }
@@ -101,10 +90,6 @@ class Planning extends Entity {
         return $this->quantity;
     }
 
-    final public function setEngine(?Engine $engine): self {
-        $this->engine = $engine;
-        return $this;
-    }
 
     final public function setName(?string $name): self {
         $this->name = $name;

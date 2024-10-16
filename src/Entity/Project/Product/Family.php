@@ -120,53 +120,14 @@ class Family extends AbstractFamily {
     ]
     protected $parent;
 
-    /** @var DoctrineCollection<int, FamilyReference> */
-    #[ORM\ManyToMany(targetEntity: FamilyReference::class, mappedBy: 'items')]
-    private DoctrineCollection $references;
-
     public function __construct() {
         parent::__construct();
-        $this->references = new ArrayCollection();
-    }
-
-    final public function addReference(FamilyReference $reference): self {
-        if (!$this->references->contains($reference)) {
-            $this->references->add($reference);
-            $reference->addItem($this);
-        }
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Check<Product, self>>
-     */
-    final public function getChecks(): Collection {
-        return Collection::collect($this->references->getValues())
-            ->map(static function (FamilyReference $reference): Check {
-                /** @var Check<Product, self> $check */
-                $check = new Check();
-                return $check->setReference($reference);
-            });
     }
 
     final public function getFilepath(): ?string {
         return parent::getFilepath();
     }
 
-    /**
-     * @return DoctrineCollection<int, FamilyReference>
-     */
-    final public function getReferences(): DoctrineCollection {
-        return $this->references;
-    }
-
-    final public function removeReference(FamilyReference $reference): self {
-        if ($this->references->contains($reference)) {
-            $this->references->removeElement($reference);
-            $reference->removeItem($this);
-        }
-        return $this;
-    }
     #[Serializer\Groups(['read:product-family:option'])]
     public function getText(): ?string {
         return $this->getFullName();

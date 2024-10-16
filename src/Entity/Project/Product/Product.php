@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Logistics\Incoterms;
-use App\Entity\Traits\BarCodeTrait;
+// use App\Entity\Traits\BarCodeTrait;
 use App\Entity\Interfaces\FileEntity;
 use App\Entity\Quality\Reception\Check;
 use ApiPlatform\Core\Annotation\ApiFilter;
@@ -31,7 +31,6 @@ use App\Repository\Project\Product\ProductRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Embeddable\Project\Product\Product\State;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use App\Entity\Selling\Customer\Price\Product as ProductCustomer;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Entity\Project\Product\Attachment\ProductAttachment;
@@ -210,27 +209,13 @@ use App\Controller\Production\Planning\Items\ProductionPlanningItemsController;
     ORM\Entity(repositoryClass: ProductRepository::class),
     UniqueEntity(fields: ['code', 'index'], groups: ['Product-admin', 'Product-clone', 'Product-create'])
 ]
-class Product extends Entity implements BarCodeInterface, MeasuredInterface, FileEntity {
-    use BarCodeTrait, FileTrait;
+class Product extends Entity implements MeasuredInterface, FileEntity {
+    use FileTrait;
 
    /** @var DoctrineCollection<int, ProductAttachment> */
     #[ORM\OneToMany(mappedBy: 'product',targetEntity: ProductAttachment::class)]
     private DoctrineCollection $attachments;
-
-    /** @var DoctrineCollection<int, ProductCustomer> */
-    #[
-        ApiProperty(description: 'Association produit-client', readableLink: false, example: ['/api/customer-products/1']),
-        Serializer\Groups(['read:product', 'read:product:collection']),
-        ORM\OneToMany(mappedBy: 'product', targetEntity: ProductCustomer::class)
-    ]
-    private DoctrineCollection $productCustomers;
     
-    #[
-        ApiProperty(description: 'Association produit-fournisseur', required: false, example: ['/api/supplier-products/1']),
-        ORM\OneToMany(mappedBy: 'product', targetEntity: \App\Entity\Purchase\Supplier\Product::class),
-        Serializer\Groups(['read:product'])
-    ]
-    private DoctrineCollection $supplierProducts;
     #[
         ApiProperty(description: 'Temps auto', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
         Serializer\Groups(['read:item', 'read:product','write:product', 'write:product:production', 'write:product:clone']),
@@ -460,10 +445,6 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
     ]
     private Measure $productionDelay;
 
-    /** @var DoctrineCollection<int, ProductReference> */
-    #[ORM\ManyToMany(targetEntity: ProductReference::class, mappedBy: 'items')]
-    private DoctrineCollection $references;
-
     #[
         ApiProperty(description: 'Prix de cession des composants', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
@@ -493,11 +474,6 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
     ]
     private Measure $weight;
 
-    #[
-        ORM\OneToMany(targetEntity: Order::class, mappedBy: 'product')
-    ]
-    private DoctrineCollection $productorders;
-
     public function __construct() {
         $this->autoDuration = new Measure();
         $this->children = new ArrayCollection();
@@ -515,13 +491,9 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
         $this->price = new Measure();
         $this->priceWithoutCopper = new Measure();
         $this->productionDelay = new Measure();
-        $this->references = new ArrayCollection();
         $this->transfertPriceSupplies = new Measure();
         $this->transfertPriceWork = new Measure();
         $this->weight = new Measure();
-        $this->productorders = new ArrayCollection();
-        $this->productCustomers = new ArrayCollection();
-        $this->supplierProducts = new ArrayCollection();
     }
 
     public function __clone() {
@@ -545,41 +517,12 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
         return $this;
     }
 
-    final public function addReference(ProductReference $reference): self {
-        if (!$this->references->contains($reference)) {
-            $this->references->add($reference);
-            $reference->addItem($this);
-        }
-        return $this;
-    }
-
     final public function getAutoDuration(): Measure {
         return $this->autoDuration;
     }
 
     final public function getBlocker(): string {
         return $this->embBlocker->getState();
-    }
-
-    public function getProductOrders(): DoctrineCollection {
-        return $this->productorders;
-    }
-
-    /**
-     * @return Collection<int, Check<self, Family|self>>
-     */
-    final public function getChecks(): Collection {
-        $checks = Collection::collect($this->references->getValues())
-            ->map(static function (ProductReference $reference): Check {
-                /** @var Check<self, self> $check */
-                $check = new Check();
-                return $check->setReference($reference);
-            });
-        if (!empty($this->family)) {
-            $checks = $checks->merge($this->family->getChecks());
-        }
-        /** @var Collection<int, Check<self, Family|self>> $checks */
-        return $checks;
     }
 
     /**
@@ -745,13 +688,6 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
         return $this->productionDelay;
     }
 
-    /**
-     * @return DoctrineCollection<int, ProductReference>
-     */
-    final public function getReferences(): DoctrineCollection {
-        return $this->references;
-    }
-
     final public function getState(): string {
         return $this->embState->getState();
     }
@@ -782,14 +718,6 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
             if ($children->getParent() === $this) {
                 $children->setParent(null);
             }
-        }
-        return $this;
-    }
-
-    final public function removeReference(ProductReference $reference): self {
-        if ($this->references->contains($reference)) {
-            $this->references->removeElement($reference);
-            $reference->removeItem($this);
         }
         return $this;
     }
@@ -985,35 +913,6 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
       $this->attachments = $attachments;
    }
 
-    /**
-     * @return DoctrineCollection
-     */
-    public function getProductCustomers(): DoctrineCollection
-    {
-        return $this->productCustomers;
-    }
-
-    /**
-     * @param DoctrineCollection $productCustomers
-     * @return Product
-     */
-    public function setProductCustomers(DoctrineCollection $productCustomers): Product
-    {
-        $this->productCustomers = $productCustomers;
-        return $this;
-    }
-    #[
-        ApiProperty(description: 'Clients', readableLink: false, example: ['{@id: "/api/customers/4", @type: "Customer"}']),
-        Serializer\Groups(['read:product', 'read:product:collection']),
-    ]
-    public function getCustomers() : DoctrineCollection
-    {
-        $customers = new ArrayCollection();
-        foreach ($this->productCustomers as $productCustomer) {
-            $customers->add($productCustomer->getCustomer());
-        }
-        return $customers;
-    }
     #[
         ApiProperty(description: 'Compagnies gérantes', readableLink: false, example: '[{@id: "/api/companies/1", @type: "Company"}]'),
         Serializer\Groups(['read:product', 'read:product:collection']),
@@ -1021,12 +920,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
     public function getCompanies() : DoctrineCollection
     {
         $companies = [];
-        foreach ($this->productCustomers as $productCustomer) {
-            $administeredBy = $productCustomer->getAdministeredBy();
-            if ($administeredBy instanceof Company) {
-                $companies[] = $administeredBy;
-            }
-        }
+
         return new ArrayCollection($companies);
     }
 
@@ -1057,24 +951,6 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Fil
     public function setLabelLogo(int $labelLogo): self
     {
         $this->labelLogo = $labelLogo;
-        return $this;
-    }
-
-    /**
-     * @return DoctrineCollection
-     */
-    public function getSupplierProducts(): DoctrineCollection
-    {
-        return $this->supplierProducts;
-    }
-
-    /**
-     * @param DoctrineCollection $supplierProducts
-     * @return Product
-     */
-    public function setSupplierProducts(DoctrineCollection $supplierProducts): Product
-    {
-        $this->supplierProducts = $supplierProducts;
         return $this;
     }
 }

@@ -6,10 +6,10 @@ use App\Doctrine\Type\Type;
 use App\Entity\Entity;
 use App\Entity\Hr\Parameter as HrParam;
 use App\Entity\Purchase\Parameter as PurchaseParam;
-use App\Entity\Production\Parameter as ProductionParam;
-use App\Entity\Project\Parameter as ProjectParam;
-use App\Entity\Selling\Parameter as SellingParam;
-use App\Entity\Logistics\Parameter as LogisticParam;
+// use App\Entity\Production\Parameter as ProductionParam;
+// use App\Entity\Project\Parameter as ProjectParam;
+// use App\Entity\Selling\Parameter as SellingParam;
+// use App\Entity\Logistics\Parameter as LogisticParam;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Core\Annotation\ApiProperty;
@@ -74,12 +74,12 @@ class Parameter extends Entity {
 
     public const PROCESSES = [
         'hr' => HrParam::class,
-        'logistic' => LogisticParam::class,
+        // 'logistic' => LogisticParam::class,
         'management' => self::class,
         'purchase' => PurchaseParam::class,
-        'production' => ProductionParam::class,
-        'project' => ProjectParam::class,
-        'selling' => SellingParam::class
+        // 'production' => ProductionParam::class,
+        // 'project' => ProjectParam::class,
+        // 'selling' => SellingParam::class
     ];
 
     #[

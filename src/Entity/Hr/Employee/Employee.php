@@ -23,10 +23,8 @@ use App\Entity\Embeddable\Hr\Employee\State;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Attachment\EmployeeAttachment;
-use App\Entity\Hr\TimeClock\Clocking;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company\Company;
-use App\Entity\Traits\BarCodeTrait;
 use App\Filter\NumericFilter;
 use App\Filter\SetFilter;
 use App\Repository\Hr\Employee\EmployeeRepository;
@@ -40,7 +38,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\Hr\Employee\EmployeePatchController;
-use App\Entity\Production\Manufacturing\OperationEmployee;
 use App\Filter\CustomGetterFilter;
 
 #[
@@ -200,8 +197,8 @@ use App\Filter\CustomGetterFilter;
     ),
     ORM\Entity(repositoryClass: EmployeeRepository::class)
 ]
-class Employee extends Entity implements BarCodeInterface, PasswordAuthenticatedUserInterface, UserInterface, FileEntity {
-    use BarCodeTrait, FileTrait;
+class Employee extends Entity implements PasswordAuthenticatedUserInterface, UserInterface, FileEntity {
+    use FileTrait;
 
     #[
         ApiProperty(description: 'Ancien_Identifiant', example: 1),
@@ -239,11 +236,6 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
     private ?DateTimeImmutable $birthday = null;
-
-    #[
-       ORM\OneToMany(mappedBy: "employee", targetEntity: Clocking::class)
-       ]
-    private Collection $clockings;
 
     #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
@@ -405,18 +397,6 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     ]
     private ?string $username = null;
 
-    #[
-        ApiProperty(description: 'Opération'),
-        ORM\OneToMany(mappedBy: 'employee', targetEntity: OperationEmployee::class),
-        Serializer\Groups(['read:manufacturing-operation', 'read:operation-employee', 'read:employee'])
-    ]
-    private ?Collection $operationEmployees = null;
-    
-    public function getOperationEmployees(): ?Collection
-    {
-        return $this->operationEmployees;
-    }
-
     public function __construct() {
         $this->apiTokens = new ArrayCollection();
         $this->embBlocker = new Blocker();
@@ -424,8 +404,6 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         $this->attachments = new ArrayCollection();
         $this->embState = new State();
         $this->address = new Address();
-        $this->clockings = new ArrayCollection();
-        $this->operationEmployees = new ArrayCollection();
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -816,17 +794,6 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     public function setOldId(?int $oldId): void
     {
         $this->oldId = $oldId;
-    }
-
-    public function getClockings(): Collection
-    {
-        return $this->clockings;
-    }
-
-    public function setClockings(Collection $clockings): Employee
-    {
-        $this->clockings = $clockings;
-        return $this;
     }
 
     public function getPreferredWarehouse(): ?Warehouse

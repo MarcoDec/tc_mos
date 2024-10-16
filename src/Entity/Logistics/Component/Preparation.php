@@ -12,7 +12,6 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Employee;
 use App\Entity\Logistics\Warehouse\Warehouse;
-use App\Entity\Production\Manufacturing\Order as ManufacturingOrder;
 use App\Entity\Purchase\Component\Component;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Embedded;
@@ -118,13 +117,6 @@ class Preparation extends Entity {
         Groups(['write:component-preparation', 'read:component-preparation'])
     ]
     private string $targetLocation;
-
-    #[
-        ApiProperty(description: 'Ordre de fabrication associé à la demande', readableLink: false, example: '/api/manufacturing-orders/1'),
-        ManyToOne(targetEntity: ManufacturingOrder::class, inversedBy: 'preparationOrders'),
-        Groups(['write:component-preparation', 'read:component-preparation'])
-    ]
-    private ManufacturingOrder $ofnumber;
 
      #[
          ApiProperty(description: 'Priorité de la demande', example: '1'),
@@ -242,16 +234,6 @@ class Preparation extends Entity {
     public function setTargetLocation(string $targetLocation): void
     {
         $this->targetLocation = $targetLocation;
-    }
-
-    public function getOfnumber(): ManufacturingOrder
-    {
-        return $this->ofnumber;
-    }
-
-    public function setOfnumber(ManufacturingOrder $ofnumber): void
-    {
-        $this->ofnumber = $ofnumber;
     }
 
     public function getPriority(): int

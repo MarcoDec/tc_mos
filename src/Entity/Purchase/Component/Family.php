@@ -172,15 +172,10 @@ class Family extends AbstractFamily {
     ]
     private bool $copperable = false;
 
-    /** @var DoctrineCollection<int, FamilyReference> */
-    #[ORM\ManyToMany(targetEntity: FamilyReference::class, mappedBy: 'items')]
-    private DoctrineCollection $references;
-
     public function __construct() {
         parent::__construct();
         $this->attributes = new ArrayCollection();
         $this->components = new ArrayCollection();
-        $this->references = new ArrayCollection();
     }
 
     final public function addAttribute(Attribute $attribute): self {
@@ -202,31 +197,11 @@ class Family extends AbstractFamily {
         return $this;
     }
 
-    final public function addReference(FamilyReference $reference): self {
-        if (!$this->references->contains($reference)) {
-            $this->references->add($reference);
-            $reference->addItem($this);
-        }
-        return $this;
-    }
-
     /**
      * @return DoctrineCollection<int, Attribute>
      */
     final public function getAttributes(): DoctrineCollection {
         return $this->attributes;
-    }
-
-    /**
-     * @return Collection<int, Check<Component, self>>
-     */
-    final public function getChecks(): Collection {
-        return Collection::collect($this->references->getValues())
-            ->map(static function (FamilyReference $reference): Check {
-                /** @var Check<Component, self> $check */
-                $check = new Check();
-                return $check->setReference($reference);
-            });
     }
 
     final public function getCode(): ?string {
@@ -258,13 +233,6 @@ class Family extends AbstractFamily {
     ]
     final public function getFilepath(): ?string {
         return parent::getFilepath();
-    }
-
-    /**
-     * @return DoctrineCollection<int, FamilyReference>
-     */
-    final public function getReferences(): DoctrineCollection {
-        return $this->references;
     }
 
     #[Serializer\Groups(['read:family:option'])]
@@ -301,14 +269,6 @@ class Family extends AbstractFamily {
             if ($component->getFamily() === $this) {
                 $component->setFamily(null);
             }
-        }
-        return $this;
-    }
-
-    final public function removeReference(FamilyReference $reference): self {
-        if ($this->references->contains($reference)) {
-            $this->references->removeElement($reference);
-            $reference->removeItem($this);
         }
         return $this;
     }

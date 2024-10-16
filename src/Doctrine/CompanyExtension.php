@@ -6,11 +6,11 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\QueryCollectionExtensionInter
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\QueryItemExtensionInterface;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use App\Entity\Interfaces\CompanyInterface;
-use App\Security\SecurityTrait;
+// use App\Security\SecurityTrait;
 use Doctrine\ORM\QueryBuilder;
 
 final class CompanyExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface {
-    use SecurityTrait;
+    // use SecurityTrait;
 
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?string $operationName = null): void {
         if (is_subclass_of($resourceClass, CompanyInterface::class)) {

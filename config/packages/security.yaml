@@ -1,58 +1,23 @@
-parameters:
-  ROLE_HIERARCHY: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_HIERARCHY
-  ROLE_IT_ADMIN: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_IT_ADMIN
-  # Accès à la documentation de l'API
-  access_control_api_doc_role: IS_AUTHENTICATED_ANONYMOUSLY
-
 security:
-  access_control:
-    - { path: ^/api/mobile/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/api/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/api$, roles: '%access_control_api_doc_role%' }
-    - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
-    - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-  access_decision_manager:
-    allow_if_all_abstain: true
-  enable_authenticator_manager: true
+  # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+  password_hashers:
+      Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+  providers:
+    users_in_memory:   # Ajout du fournisseur 'users_in_memory'
+      memory:
+        users:
+          user: { password: 'password', roles: ['ROLE_USER'] }
+          admin: { password: 'password', roles: ['ROLE_ADMIN'] }
+    app_user_provider:
+      entity:
+        class: App\Entity\Hr\Employee\Employee
   firewalls:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
-      stateless: true
-    mobile:
-      custom_authenticators:
-        - App\Security\MobileAuthenticator
-      lazy: true
-      pattern: ^/api/mobile/login$
-      stateless: true
-      user_checker: App\Security\UserChecker
     main:
-      custom_authenticators:
-        - App\Security\ApiAuthenticator
-        - App\Security\TokenAuthenticator
       lazy: true
-      logout:
-        path: logout
-      stateless: true
-  password_hashers:
-    Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-    App\Entity\Hr\Employee\Employee:
-      algorithm: auto
-  providers:
-    app_user_provider:
-      entity:
-        class: App\Entity\Hr\Employee\Employee
-  role_hierarchy: '%ROLE_HIERARCHY%'
-
-when@prod:
-  parameters:
-    access_control_api_doc_role: '%ROLE_IT_ADMIN%'
-
-when@test:
-  security:
-    password_hashers:
-      Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
-        algorithm: auto
-        cost: 4
-        time_cost: 3
-        memory_cost: 10
+      provider: users_in_memory
+  access_control:
+      # - { path: ^/admin, roles: ROLE_ADMIN }
+      # - { path: ^/profile, roles: ROLE_USER }

@@ -3,11 +3,8 @@
 namespace App\Entity\Traits;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
-use App\Doctrine\DBAL\Types\Management\VatMessageForce;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Logistics\Incoterms;
-use App\Entity\Management\InvoiceTimeDue;
-use App\Entity\Management\VatMessage;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -29,14 +26,6 @@ trait SocietyTrait {
     private bool $ar = false;
 
     #[
-        ApiProperty(description: 'Forcer la TVA', required: true, example: VatMessageForce::TYPE_FORCE_DEFAULT, openapiContext: ['enum' => VatMessageForce::TYPES]),
-        Assert\Choice(choices: VatMessageForce::TYPES),
-        ORM\Column(type: 'vat_message_force', options: ['default' => VatMessageForce::TYPE_FORCE_DEFAULT]),
-        Serializer\Groups(['read:society', 'write:society'])
-    ]
-    private string $forceVat = VatMessageForce::TYPE_FORCE_DEFAULT;
-
-    #[
         ApiProperty(description: 'Incoterms', readableLink: false, required: false, example: '/api/incoterms/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:society', 'create:society', 'write:society'])
@@ -49,13 +38,6 @@ trait SocietyTrait {
         Serializer\Groups(['read:society', 'write:society'])
     ]
     private Measure $invoiceMin;
-
-    #[
-        ApiProperty(description: 'Délai de paiement des facture', required: false, example: '/api/invoice-time-dues/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:society', 'write:society'])
-    ]
-    private ?InvoiceTimeDue $invoiceTimeDue = null;
 
     #[
         ApiProperty(description: 'Ordre minimum', required: false, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
@@ -81,13 +63,6 @@ trait SocietyTrait {
     ]
     private ?string $vat = null;
 
-    #[
-        ApiProperty(description: 'Message TVA', readableLink:false, required: false, example: '/api/vat-messages/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:society', 'write:society'])
-    ]
-    private ?VatMessage $vatMessage = null;
-
     public function __construct() {
         $this->invoiceMin = new Measure();
         $this->orderMin = new Measure();
@@ -109,10 +84,6 @@ trait SocietyTrait {
         return $this->invoiceMin;
     }
 
-    final public function getInvoiceTimeDue(): ?InvoiceTimeDue {
-        return $this->invoiceTimeDue;
-    }
-
     final public function getOrderMin(): Measure {
         return $this->orderMin;
     }
@@ -123,10 +94,6 @@ trait SocietyTrait {
 
     final public function getVat(): ?string {
         return $this->vat;
-    }
-
-    final public function getVatMessage(): ?VatMessage {
-        return $this->vatMessage;
     }
 
     final public function isAr(): bool {
@@ -158,11 +125,6 @@ trait SocietyTrait {
         return $this;
     }
 
-    final public function setInvoiceTimeDue(?InvoiceTimeDue $invoiceTimeDue): self {
-        $this->invoiceTimeDue = $invoiceTimeDue;
-        return $this;
-    }
-
     final public function setOrderMin(Measure $orderMin): self {
         $this->orderMin = $orderMin;
         return $this;
@@ -178,8 +140,4 @@ trait SocietyTrait {
         return $this;
     }
 
-    final public function setVatMessage(?VatMessage $vatMessage): self {
-        $this->vatMessage = $vatMessage;
-        return $this;
-    }
 }

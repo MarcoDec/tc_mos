@@ -26,7 +26,7 @@ use App\Entity\Purchase\Supplier\Component as SupplierComponent;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Purchase\ComponentReference;
 use App\Entity\Selling\Customer\Price\Component as CustomerComponent;
-use App\Entity\Traits\BarCodeTrait;
+// use App\Entity\Traits\BarCodeTrait;
 use App\Entity\Traits\FileTrait;
 use App\Filter\RelationFilter;
 use App\Filter\SetFilter;
@@ -221,8 +221,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Composant
  * @template-extends Entity<Component>
  */
-class Component extends Entity implements BarCodeInterface, MeasuredInterface, FileEntity {
-    use BarCodeTrait, FileTrait;
+class Component extends Entity implements MeasuredInterface, FileEntity {
+    use FileTrait;
 
    /** @var DoctrineCollection<int, ComponentAttachment> */
     #[ ORM\OneToMany(mappedBy: 'component', targetEntity: ComponentAttachment::class) ]
@@ -392,9 +392,9 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     ]
     private bool $reach = false;
 
-    /** @var DoctrineCollection<int, ComponentReference> */
-    #[ORM\ManyToMany(targetEntity: ComponentReference::class, mappedBy: 'items')]
-    private DoctrineCollection $references;
+    // /** @var DoctrineCollection<int, ComponentReference> */
+    // #[ORM\ManyToMany(targetEntity: ComponentReference::class, mappedBy: 'items')]
+    // private DoctrineCollection $references;
 
     #[
         ApiProperty(description: 'Gestion rohs', required: true, example: true),
@@ -403,14 +403,6 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     ]
     private bool $rohs = false;
 
-    #[
-        ORM\OneToMany(mappedBy: 'component', targetEntity: SupplierComponent::class)
-    ]
-    private DoctrineCollection $supplierComponents;
-    #[
-        ORM\OneToMany(mappedBy: 'component', targetEntity: CustomerComponent::class)
-    ]
-    private DoctrineCollection $customerComponents;
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         Assert\NotBlank(groups: ['Component-create', 'Component-logistics']),
@@ -441,23 +433,13 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     ]
     private DoctrineCollection $preparationComponents;
 
-    #[
-        ApiProperty(description: 'Items de commande fournisseur associés', example: '[/api/purchase-order-items/1]', fetchEager: false),
-        ORM\OneToMany(mappedBy: "item", targetEntity: ComponentItem::class),
-        Serializer\Groups(['read:item', 'write:item'])
-    ]
-    private DoctrineCollection $componentItems;
-
     public function __construct() {
         $this->attributes = new ArrayCollection();
         $this->copperWeight = new Measure();
         $this->embBlocker = new Blocker();
         $this->embState = new State();
         $this->forecastVolume = new Measure();
-        $this->minStock = new Measure();
-        $this->references = new ArrayCollection();
-        $this->supplierComponents = new ArrayCollection();
-        $this->customerComponents = new ArrayCollection();
+        $this->minStock = new Measure();;
         $this->weight = new Measure();
         $this->code = $this->getCode();
         $this->preparationComponents = new ArrayCollection();
@@ -482,14 +464,6 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         return $this;
     }
 
-    final public function addReference(ComponentReference $reference): self {
-        if (!$this->references->contains($reference)) {
-            $this->references->add($reference);
-            $reference->addItem($this);
-        }
-        return $this;
-    }
-
     /**
      * @return DoctrineCollection<int, ComponentAttribute>
      */
@@ -501,22 +475,22 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
         return $this->embBlocker->getState();
     }
 
-    /**
-     * @return Collection<int, Check<self, Family|self>>
-     */
-    final public function getChecks(): Collection {
-        $checks = Collection::collect($this->references->getValues())
-            ->map(static function (ComponentReference $reference): Check {
-                /** @var Check<self, self> $check */
-                $check = new Check();
-                return $check->setReference($reference);
-            });
-        if (!empty($this->family)) {
-            $checks = $checks->merge($this->family->getChecks());
-        }
-        /** @var Collection<int, Check<self, Family|self>> $checks */
-        return $checks;
-    }
+    // /**
+    //  * @return Collection<int, Check<self, Family|self>>
+    //  */
+    // final public function getChecks(): Collection {
+    //     $checks = Collection::collect($this->references->getValues())
+    //         ->map(static function (ComponentReference $reference): Check {
+    //             /** @var Check<self, self> $check */
+    //             $check = new Check();
+    //             return $check->setReference($reference);
+    //         });
+    //     if (!empty($this->family)) {
+    //         $checks = $checks->merge($this->family->getChecks());
+    //     }
+    //     /** @var Collection<int, Check<self, Family|self>> $checks */
+    //     return $checks;
+    // }
 
 
     final public function getCode(): ?string {
@@ -601,13 +575,13 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     ]
     public function getPrice(): Measure {
         $price = (new Measure())->setValue(0)->setCode('EUR');
-        $supplierComponents = $this->getSupplierComponents()->toArray();
-        if (count($supplierComponents)>0) {
-            usort($supplierComponents, function ($a, $b) {
-                return $a->getBestPrice()->getValue() > $b->getBestPrice()->getValue();
-            });
-            $price = $supplierComponents[0]->getBestPrice();
-        }
+        // $supplierComponents = $this->getSupplierComponents()->toArray();
+        // if (count($supplierComponents)>0) {
+        //     usort($supplierComponents, function ($a, $b) {
+        //         return $a->getBestPrice()->getValue() > $b->getBestPrice()->getValue();
+        //     });
+        //     $price = $supplierComponents[0]->getBestPrice();
+        // }
         return $price;
     }
 
@@ -623,13 +597,6 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     public function getReach()
     {
         return $this->reach;
-    }
-
-    /**
-     * @return DoctrineCollection<int, ComponentReference>
-     */
-    final public function getReferences(): DoctrineCollection {
-        return $this->references;
     }
 
     public function getRohs()
@@ -648,11 +615,6 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
 
     final public function setCode($code) {
         $this->code = $code;
-    }
-
-    public function getSupplierComponents()
-    {
-        return $this->supplierComponents;
     }
 
     public function getPreparationComponents()
@@ -682,14 +644,6 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
             if ($attribute->getComponent() === $this) {
                 $attribute->setComponent(null);
             }
-        }
-        return $this;
-    }
-
-    final public function removeReference(ComponentReference $reference): self {
-        if ($this->references->contains($reference)) {
-            $this->references->removeElement($reference);
-            $reference->removeItem($this);
         }
         return $this;
     }
@@ -853,25 +807,5 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, F
     public function setFilePath(?string $filePath): void
     {
         $this->filePath = $filePath;
-    }
-
-    public function getComponentItems(): DoctrineCollection
-    {
-        return $this->componentItems;
-    }
-
-    public function setComponentItems(DoctrineCollection $componentItems): void
-    {
-        $this->componentItems = $componentItems;
-    }
-
-    public function getCustomerComponents(): DoctrineCollection
-    {
-        return $this->customerComponents;
-    }
-
-    public function setCustomerComponents(DoctrineCollection $customerComponents): void
-    {
-        $this->customerComponents = $customerComponents;
     }
 }

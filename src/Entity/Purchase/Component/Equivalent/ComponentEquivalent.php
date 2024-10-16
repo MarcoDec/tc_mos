@@ -14,7 +14,7 @@ use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Family;
-use App\Entity\Traits\BarCodeTrait;
+// use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -123,9 +123,9 @@ use Doctrine\Common\Collections\ArrayCollection;
     ),
     ORM\Entity()
     ]
-class ComponentEquivalent extends Entity implements BarCodeInterface, MeasuredInterface
+class ComponentEquivalent extends Entity implements MeasuredInterface
 {
-    use BarCodeTrait;
+    // use BarCodeTrait;
     #[
         ApiProperty(description: 'Famille du Groupe d\'équivalence', readableLink: false, required: true, example: '/api/component-equivalents/1'),
         Assert\NotBlank(groups: ['ComponentEquivalent-admin', 'ComponentEquivalent-create']),

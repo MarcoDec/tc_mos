@@ -13,7 +13,7 @@ services:
       - ../src/Filesystem/Directory.php
       - ../src/Kernel.php
       - ../src/Paginator.php
-      - ../src/Security/ApiRequest.php
+      #- ../src/Security/ApiRequest.php
       - ../src/Tests
     resource: ../src/
 
@@ -21,19 +21,7 @@ services:
     resource: ../src/Controller
     tags: [ controller.service_arguments ]
 
-  App\DataProvider\Logistics\Stock\GroupDataProvider:
-    arguments:
-      $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
-
-  App\DataProvider\Project\Operation\TypeDataProvider:
-    arguments:
-      $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
-
   App\DataProvider\Purchase\Component\AttributeDataProvider:
-    arguments:
-      $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
-
-  App\DataProvider\Purchase\Order\ItemDataProvider:
     arguments:
       $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
 
@@ -63,30 +51,6 @@ services:
       - event: postLoad
         name: doctrine.event_listener
 
-  App\EventListener\Hr\Employee\NotificationListener:
-    autoconfigure: false
-    tags:
-      - entity: App\Entity\Hr\Employee\Notification
-        event: preRemove
-        name: doctrine.orm.entity_listener
-
-  App\EventListener\Production\Engine\EngineListener:
-    autoconfigure: false
-    tags:
-      - entity: App\Entity\Production\Engine\Engine
-        event: postPersist
-        name: doctrine.orm.entity_listener
-
-  App\EventListener\Management\BalanceSheet\BalanceSheetItemEventListener:
-    autoconfigure: false
-    tags:
-      - entity: App\Entity\Management\Society\Company\BalanceSheetItem
-        event: postPersist
-        name: doctrine.orm.entity_listener
-      - entity: App\Entity\Management\Society\Company\BalanceSheetItem
-        event: postUpdate
-        name: doctrine.orm.entity_listener
-
   App\EventListener\HttpKernel\ExceptionListener:
     arguments:
       $exceptionToStatus: '%api_platform.exception_to_status%'
@@ -95,43 +59,6 @@ services:
       - event: kernel.exception
         name: kernel.event_listener
         priority: 2
-
-  App\EventListener\Project\Product\FamilyListener:
-    autoconfigure: false
-    tags:
-      - entity: App\Entity\Family\Project\Product
-        event: postLoad
-        name: doctrine.orm.entity_listener
-
-  App\EventListener\Purchase\Order\ItemListener:
-    autoconfigure: false
-    tags:
-      - event: workflow.purchase_order_item.guard.deliver
-        method: guardDeliver
-        name: kernel.event_listener
-      - event: workflow.purchase_order_item.completed.deliver
-        method: onDeliver
-        name: kernel.event_listener
-      - event: workflow.purchase_order_item.guard.partially_deliver
-        method: guardPartiallyDeliver
-        name: kernel.event_listener
-
-  App\EventListener\Purchase\Order\OrderListener:
-    autoconfigure: false
-    tags:
-      - event: workflow.purchase_order.guard.deliver
-        method: guardDeliver
-        name: kernel.event_listener
-      - event: workflow.purchase_order.guard.partially_deliver
-        method: guardPartiallyDeliver
-        name: kernel.event_listener
-
-  App\EventListener\Security\LogoutListener:
-    autoconfigure: false
-    tags:
-      - dispatcher: security.event_dispatcher.main
-        event: Symfony\Component\Security\Http\Event\LogoutEvent
-        name: kernel.event_listener
 
   App\Filesystem\FileManager:
     arguments:
@@ -172,64 +99,11 @@ services:
 
   Symfony\Component\Validator\Mapping\Factory\MetadataFactoryInterface: '@validator.mapping.class_metadata_factory'
 
-  App\DataPersister\Logistics\Label\CartonDataPersister:
-    autoconfigure: false
-    tags: [ 'api_platform.data_persister' ]
-
-  App\Filter\CustomGetterFilter:
-    autoconfigure: false
-    tags: [ 'api_platform.filter' ]
-    arguments: [ '@doctrine' ]
-
-  App\Entity\It\SFTPConnection:
-    arguments:
-      $host: '%env(SFTP_HOST)%'
-      $port: '%env(SFTP_PORT)%'
-
-  App\Service\NewFileDetector:
-    arguments:
-      $sftp: '@App\Entity\It\SFTPConnection'
-      $dispatcher: '@event_dispatcher'
-
-  App\EventListener\It\NewFileEventListener:
-    tags:
-      - { name: kernel.event_listener, event: App\Entity\Event\NewFileDetectedEvent }
-
-  App\Service\RedisService:
-    arguments:
-      $scheme: '%env(REDIS_SCHEME)%'
-      $host: '%env(REDIS_HOST)%'
-      $port: '%env(int:REDIS_PORT)%'
-
-  App\EventSubscriber\CacheUpdateSubscriber:
-    arguments:
-      $redis: '@snc_redis.default'
-      $cacheKeyStocks: 'api_needs_stocks_product'
-      $cacheKeySelling: 'api_needs_selling_order_item'
-      $cacheKeymanufacturingOrders: 'api_needs_manufacturing_orders'
-      $cacheKeyProducts: 'api_needs_products'
-      $cacheKeyCreationDate: 'api_needs_creation_date_product'
-      $cacheKeyCreationDateComponent: 'api_needs_creation_date_component'
-      $cachekeyComponentStock: 'api_needs_stock_component'
-      $cachekeyPurchaseItem: 'api_needs_purchase_item'
-      $cacheKeyNomenclature: 'api_needs_nomenclature_%s' # %s c'est l'id du produit
-      $cacheKeyComponent: 'api_needs_component_%s' # %s c'est l'id du component
-    tags:
-      - { name: 'doctrine.event_subscriber', connection: 'default' }
-
   App\DataPersister\FileDataPersister:
     arguments:
       $em: '@doctrine.orm.entity_manager'  # Injecte l'EntityManager
       $fm: '@App\Filesystem\FileManager'      # Injecte votre service FileManager
       $requests: '@request_stack'          # Injecte le RequestStack
-    tags: ['api_platform.data_persister']
-  
-  App\DataPersister\Hr\Employee\EmployeePostDataPersister:
-    arguments:
-      $passwordHasher: '@security.password_hasher'  # Injecte l'instance de UserPasswordHasherInterface
-      $logger: '@logger'                            # Injecte le service de Logger de Symfony
-      $em: '@doctrine.orm.entity_manager'           # Injecte l'EntityManager
-      $requests: '@request_stack'                   # Injecte le RequestStack
     tags: ['api_platform.data_persister']
   
   App\DataPersister\CompositeDataPersister:
