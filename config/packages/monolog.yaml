@@ -15,9 +15,12 @@ when@dev:
         type: rotating_file
         max_files: 30
       deleted_connecteur:
-        type: stream
-        path: "%kernel.logs_dir%/connecteur.log"
+        type: rotating_file
+        path: "%kernel.logs_dir%/deletedConneteur.log"
         level: debug
+        # max_files: 12
+        filename_format: "{filename}-{date}"
+        date_format: "Y-m"
         channels: ['deleted_connecteur']
 
 when@prod:

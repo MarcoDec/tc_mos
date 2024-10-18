@@ -109,9 +109,6 @@ final class ConnecteurDeleteDataPersister implements ContextAwareDataPersisterIn
             $this->em->persist($connecteur);
             $this->em->flush();
 
-            // Configure un tri croissant sur num
-            $sortedVoies = $connecteur->getVoies()->matching($criteria); // Trie les voies
-
             $this->em->remove($data); // Supprime la voie
             $this->em->flush();
         }
