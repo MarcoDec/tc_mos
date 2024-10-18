@@ -6,7 +6,7 @@ use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
-use Symfony\Component\Workflow\Event\Event;
+// use Symfony\Component\Workflow\Event\Event;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\Workflow;

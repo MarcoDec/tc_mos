@@ -77,6 +77,7 @@ doctrine:
       tinyint: App\Doctrine\DBAL\Types\Tinyint
       type: App\Doctrine\Type\Type
       vat_message_force: App\Doctrine\DBAL\Types\Management\VatMessageForce
+      voie_type: App\Doctrine\DBAL\Types\VoieType
       warehouse_families: App\Doctrine\DBAL\Types\Logistics\FamilyType
   orm:
     auto_generate_proxy_classes: true

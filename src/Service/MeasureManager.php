@@ -4,9 +4,7 @@ namespace App\Service;
 
 use App\Entity\Embeddable\Measure;
 use App\Entity\Interfaces\MeasuredInterface;
-use App\Entity\Management\Currency;
 use App\Entity\Management\Unit;
-use App\Repository\CurrencyRepository;
 use App\Repository\Management\UnitRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +16,6 @@ final class MeasureManager {
     public function __construct(
         private readonly CacheInterface     $cache,
         private readonly UnitRepository     $unitRepo,
-        private readonly CurrencyRepository $currencyRepo,
         private readonly RequestStack       $stack,
         private LoggerInterface             $logger
     ) {

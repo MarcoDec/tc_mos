@@ -13,8 +13,6 @@ use App\Entity\Traits\FileTrait;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Logistics\Incoterms;
-// use App\Entity\Traits\BarCodeTrait;
 use App\Entity\Interfaces\FileEntity;
 use App\Entity\Quality\Reception\Check;
 use ApiPlatform\Core\Annotation\ApiFilter;
@@ -299,13 +297,6 @@ class Product extends Entity implements MeasuredInterface, FileEntity {
     private Measure $forecastVolume;
 
     #[
-        ApiProperty(description: 'Incoterms', readableLink: false, required: true, example: '/api/incoterms/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:product', 'write:product', 'write:product:logistics'])
-    ]
-    private ?Incoterms $incoterms = null;
-
-    #[
         ApiProperty(description: 'Indice', required: false, example: '02'),
         Assert\Length(min: 1, max: 10, groups: ['Product-admin', 'Product-create']),
         ORM\Column(name: '`index`', length: 10, nullable: true),
@@ -568,10 +559,6 @@ class Product extends Entity implements MeasuredInterface, FileEntity {
         return $this->forecastVolume;
     }
 
-    final public function getIncoterms(): ?Incoterms {
-        return $this->incoterms;
-    }
-
     final public function getIndex(): ?string {
         return $this->index;
     }
@@ -774,11 +761,6 @@ class Product extends Entity implements MeasuredInterface, FileEntity {
 
     final public function setForecastVolume(Measure $forecastVolume): self {
         $this->forecastVolume = $forecastVolume;
-        return $this;
-    }
-
-    final public function setIncoterms(?Incoterms $incoterms): self {
-        $this->incoterms = $incoterms;
         return $this;
     }
 

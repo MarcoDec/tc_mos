@@ -781,11 +781,12 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
     }
 
     private function getLogin(): string {
-        return $this->urlGenerator->generate('login');
+        return "";
+        #return $this->urlGenerator->generate('login');
     }
 
     private function getLogout(): string {
-        return $this->urlGenerator->generate('logout');
+        return "";
     }
 
     /**
@@ -802,7 +803,8 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
     }
 
     private function getMobileLogin(): string {
-        return $this->urlGenerator->generate('mobile.login');
+        return "";
+        #return $this->urlGenerator->generate('mobile.login');
     }
 
     /**

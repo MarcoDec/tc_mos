@@ -5,11 +5,6 @@ namespace App\DataPersister;
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Entity;
 use App\Entity\Hr\Event\Type as EventType;
-use App\Entity\Hr\OutTrainer;
-use App\Entity\Hr\TimeSlot;
-use App\Entity\Logistics\Carrier;
-use App\Entity\Logistics\Incoterms;
-use App\Entity\Logistics\Stock\Stock;
 use App\Entity\Management\Color;
 use App\Entity\Management\Unit;
 use App\Entity\Management\VatMessage;
@@ -49,23 +44,6 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
         return ($data instanceof Zone && isset($context['item_operation_name']) && $context['item_operation_name'] === 'patch')
             || (
                 (
-                    $data instanceof Carrier
-                    || $data instanceof Color
-                    || $data instanceof ComponentReferenceValue
-                    || $data instanceof EventType
-                    || $data instanceof Group
-                    || $data instanceof Incoterms
-                    || $data instanceof Manufacturer
-                    || $data instanceof Operation
-                    || $data instanceof OperationType
-                    || $data instanceof OutTrainer
-                    || $data instanceof QualityType
-                    || $data instanceof RejectType
-                    || $data instanceof Stock
-                    || $data instanceof TimeSlot
-                    || $data instanceof Unit
-                    || $data instanceof VatMessage
-                ) && (
                     (isset($context['collection_operation_name']) && in_array($context['collection_operation_name'], ['post', 'receipt']))
                     || (isset($context['item_operation_name']) && in_array($context['item_operation_name'], ['out', 'patch']))
                 )

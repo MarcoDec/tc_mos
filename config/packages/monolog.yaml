@@ -1,6 +1,5 @@
 monolog:
-  channels:
-    - deprecation
+  channels: ['deleted_connecteur', 'deprecation']
 
 when@dev:
   monolog:
@@ -15,6 +14,11 @@ when@dev:
         path: '%kernel.logs_dir%/%kernel.environment%.log'
         type: rotating_file
         max_files: 30
+      deleted_connecteur:
+        type: stream
+        path: "%kernel.logs_dir%/connecteur.log"
+        level: debug
+        channels: ['deleted_connecteur']
 
 when@prod:
   monolog:
@@ -37,6 +41,11 @@ when@prod:
         level: debug
         path: '%kernel.logs_dir%/%kernel.environment%.log'
         type: stream
+      deleted_connecteur:
+        type: stream
+        path: "%kernel.logs_dir%/connecteur.log"
+        level: debug
+        channels: ['deleted_connecteur']
 
 when@test:
   monolog:
@@ -51,3 +60,10 @@ when@test:
         level: debug
         path: '%kernel.logs_dir%/%kernel.environment%.log'
         type: stream
+
+
+# services:
+#    custom_monolog_formatter:
+#       class: Monolog\Formatter\LineFormatter
+#       arguments:
+#          - "[%datetime%] %channel%.%level_name%: %message%\n"

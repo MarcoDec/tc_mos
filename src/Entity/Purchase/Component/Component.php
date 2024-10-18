@@ -18,7 +18,6 @@ use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\FileEntity;
 use App\Entity\Interfaces\MeasuredInterface;
-use App\Entity\Logistics\Component\Preparation;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Attachment\ComponentAttachment;
 use App\Entity\Purchase\Order\ComponentItem;
@@ -335,7 +334,7 @@ class Component extends Entity implements MeasuredInterface, FileEntity {
         ApiProperty(description: 'Nom', required: true, example: '2702 SCOTCH ADHESIF PVC T2 19MMX33M NOIR'),
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\Column,
-        Serializer\Groups(['read:item', 'create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone', 'read:stock', 'read:component-preparation'])
+        Serializer\Groups(['read:item', 'create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone', 'read:stock'])
     ]
     private ?string $name = null;
 
@@ -422,16 +421,10 @@ class Component extends Entity implements MeasuredInterface, FileEntity {
     #[
         ApiProperty(description: 'Référence interne', required: true, example: 'FIX-1'),
         ORM\Column,
-        Serializer\Groups(['read:item', 'read:component', 'read:component:collection', 'read:stock', 'read:item', 'read:component-preparation'])
+        Serializer\Groups(['read:item', 'read:component', 'read:component:collection', 'read:stock', 'read:item'])
     ]
     private ?string $code='';
 
-    #[
-        ApiProperty(description: 'Préparations', required: false, fetchEager: true),
-        ORM\OneToMany(mappedBy: 'component', targetEntity: Preparation::class, fetch: 'EAGER'),
-        Serializer\MaxDepth(1)
-    ]
-    private DoctrineCollection $preparationComponents;
 
     public function __construct() {
         $this->attributes = new ArrayCollection();
@@ -442,7 +435,6 @@ class Component extends Entity implements MeasuredInterface, FileEntity {
         $this->minStock = new Measure();;
         $this->weight = new Measure();
         $this->code = $this->getCode();
-        $this->preparationComponents = new ArrayCollection();
     }
 
     public function __clone() {
@@ -615,11 +607,6 @@ class Component extends Entity implements MeasuredInterface, FileEntity {
 
     final public function setCode($code) {
         $this->code = $code;
-    }
-
-    public function getPreparationComponents()
-    {
-        return $this->preparationComponents;
     }
 
     final public function getUnit(): ?Unit {

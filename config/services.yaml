@@ -2,6 +2,8 @@ services:
   _defaults:
     autoconfigure: true
     autowire: true
+    bind:
+      $deleted_connecteur: '@monolog.logger.deleted_connecteur'
 
   App\:
     exclude:

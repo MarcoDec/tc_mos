@@ -4,9 +4,7 @@ namespace App\Service;
 
 use App\Entity\Embeddable\Measure;
 use App\Entity\Interfaces\MeasuredInterface;
-use App\Entity\Management\Currency;
 use App\Entity\Management\Unit;
-use App\Repository\CurrencyRepository;
 use App\Repository\Management\UnitRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +15,6 @@ final class MeasureHydrator {
     public function __construct(
         private readonly CacheInterface     $cache,
         private readonly UnitRepository     $unitRepo,
-        private readonly CurrencyRepository $currencyRepo,
         private readonly RequestStack       $stack,
         private LoggerInterface             $logger
     ) {
@@ -35,7 +32,7 @@ final class MeasureHydrator {
         if (!$this->isSafe()) {
             return $measure;
         }
-        $measure->setUnit($this->getCurrency($measure->getCode()));
+        // $measure->setUnit($this->getCurrency($measure->getCode()));
         $measure->setDenominatorUnit($this->getUnit($measure->getDenominator()));
         return $measure;
     }
@@ -45,9 +42,9 @@ final class MeasureHydrator {
             foreach ($entity->getUnitMeasures() as $measure) {
                 $this->hydrateUnit($measure);
             }
-            foreach ($entity->getCurrencyMeasures() as $measure) {
-                $this->hydrateCurrency($measure);
-            }
+            // foreach ($entity->getCurrencyMeasures() as $measure) {
+                // $this->hydrateCurrency($measure);
+            // }
         }
         return $entity;
     }
@@ -58,13 +55,6 @@ final class MeasureHydrator {
         }
         $units = $this->cache->get('measure-units', fn () => $this->unitRepo->loadAll());
         return $units[$code] ?? null;
-    }
-    private function getCurrency(?string $code): ?Currency {
-        if (empty($code)) {
-            return null;
-        }
-        $currencies = $this->cache->get('measure-currencies', fn () => $this->currencyRepo->loadAll());
-        return $currencies[$code] ?? null;
     }
 
     private function isSafe(): bool {

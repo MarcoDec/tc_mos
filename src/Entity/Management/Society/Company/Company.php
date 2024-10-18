@@ -9,7 +9,6 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Collection;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Entity\Management\Currency;
 use App\Entity\Management\Society\Society;
 use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
@@ -31,7 +30,7 @@ use App\Entity\Selling\Customer\Price\Component as ComponentCustomer;
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'deliveryTime' => 'partial', 'id' => 'exact',
         'deliveryTimeOpenDays' => 'partial', 'engineHourRate' => 'partial', 'generalMargin' => 'partial', 'handlingHourRate' => 'partial',
-        'managementFees' => 'partial', 'numberOfTeamPerDay' => 'partial', 'workTimetable' => 'partial', 'currency.id' => 'exact'
+        'managementFees' => 'partial', 'numberOfTeamPerDay' => 'partial', 'workTimetable' => 'partial'
     ]),
     ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'workTimetable', 'id']),
     ApiResource(
@@ -125,12 +124,6 @@ class Company extends Entity {
 //        Serializer\Groups(['read:company', 'read:company:collection'])
 //        ]
 //    private DoctrineCollection $components;
-    #[
-        ApiProperty(description: 'Monnaie', readableLink: true, example: '/api/currencies/2'),
-        ORM\ManyToOne(targetEntity: Currency::class, fetch: "EAGER"),
-        Serializer\Groups(['read:company', 'read:company:collection', 'write:company', 'write:company:selling'])
-    ]
-    private ?Currency $currency;
 
     #[
         ApiProperty(description: 'Temps de livraison', example: 7),
@@ -239,10 +232,6 @@ class Company extends Entity {
 //        return $this;
 //    }
 
-    final public function getCurrency(): ?Currency {
-        return $this->currency;
-    }
-
     final public function getDeliveryTime(): int {
         return $this->deliveryTime;
     }
@@ -310,11 +299,6 @@ class Company extends Entity {
 //        }
 //        return $this;
 //    }
-
-    final public function setCurrency(?Currency $currency): self {
-        $this->currency = $currency;
-        return $this;
-    }
 
     final public function setDeliveryTime(int $deliveryTime): self {
         $this->deliveryTime = $deliveryTime;

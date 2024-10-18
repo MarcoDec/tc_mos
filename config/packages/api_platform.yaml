@@ -21,3 +21,4 @@ api_platform:
   eager_loading:
     enabled: true
     max_joins: 100
+  show_webby: false

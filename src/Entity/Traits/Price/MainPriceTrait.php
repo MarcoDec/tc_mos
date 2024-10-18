@@ -5,7 +5,6 @@ namespace App\Entity\Traits\Price;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Doctrine\DBAL\Types\Project\Product\KindType;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Society\Company\Company;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -37,12 +36,7 @@ trait MainPriceTrait
         Serializer\Groups(['read:main-price', 'write:main-price'])
     ]
     private Measure $deliveryTime;
-    #[
-        ApiProperty(description: 'Incoterms', readableLink: false, example: '/api/incoterms/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:main-price', 'write:main-price'])
-    ]
-    private ?Incoterms $incoterms = null;
+
     #[
         ApiProperty(description: 'Indice', example: '0'),
         ORM\Column(name: '`index`', options: ['default' => '0']),
@@ -126,16 +120,6 @@ trait MainPriceTrait
     public function setDeliveryTime(Measure $deliveryTime): void
     {
         $this->deliveryTime = $deliveryTime;
-    }
-
-    public function getIncoterms(): ?Incoterms
-    {
-        return $this->incoterms;
-    }
-
-    public function setIncoterms(?Incoterms $incoterms): void
-    {
-        $this->incoterms = $incoterms;
     }
 
     public function getIndex(): string

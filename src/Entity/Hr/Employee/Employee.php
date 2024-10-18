@@ -4,7 +4,6 @@ namespace App\Entity\Hr\Employee;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
 use App\Entity\Interfaces\FileEntity;
-use App\Entity\Logistics\Warehouse\Warehouse;
 use App\Entity\Traits\FileTrait;
 use App\Validator as AppAssert;
 use ApiPlatform\Core\Annotation\ApiFilter;
@@ -339,13 +338,6 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
         Serializer\Groups(['create:employee', 'write:employee', 'write:employee:it'])
     ]
     private ?string $plainPassword = null;
-
-    #[
-        ApiProperty(description: 'Entrepôt préféré', readableLink: false, example: '/api/warehouses/1'),
-        ORM\ManyToOne(targetEntity: Warehouse::class),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:logistics', 'write:employee:production'])
-    ]
-    private ?Warehouse $preferredWarehouse = null;
 
     #[
         ApiProperty(description: 'Situation', example: SituationType::TYPE_SINGLE, openapiContext: ['enum' => SituationType::TYPES]),
@@ -794,25 +786,6 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     public function setOldId(?int $oldId): void
     {
         $this->oldId = $oldId;
-    }
-
-    public function getPreferredWarehouse(): ?Warehouse
-    {
-        return $this->preferredWarehouse;
-    }
-
-    public function setPreferredWarehouse(?Warehouse $preferredWarehouse): Employee
-    {
-        $this->preferredWarehouse = $preferredWarehouse;
-        return $this;
-    }
-    #[
-        ApiProperty(description: 'oldId Entrepôt préféré', example: 1),
-        Serializer\Groups(['read:employee', 'read:employee:collection', 'read:user'])
-    ]
-    public function getOldWarehouseId(): ?int
-    {
-        return $this->getPreferredWarehouse()?->getOldId();
     }
 
     /**

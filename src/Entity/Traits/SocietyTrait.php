@@ -4,7 +4,6 @@ namespace App\Entity\Traits;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Logistics\Incoterms;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -24,13 +23,6 @@ trait SocietyTrait {
         Serializer\Groups(['read:society', 'write:society'])
     ]
     private bool $ar = false;
-
-    #[
-        ApiProperty(description: 'Incoterms', readableLink: false, required: false, example: '/api/incoterms/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:society', 'create:society', 'write:society'])
-    ]
-    private ?Incoterms $incoterms = null;
 
     #[
         ApiProperty(description: 'Minimum de facturation', required: false, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
@@ -76,10 +68,6 @@ trait SocietyTrait {
         return $this->forceVat;
     }
 
-    final public function getIncoterms(): ?Incoterms {
-        return $this->incoterms;
-    }
-
     final public function getInvoiceMin(): Measure {
         return $this->invoiceMin;
     }
@@ -112,11 +100,6 @@ trait SocietyTrait {
 
     final public function setForceVat(string $forceVat): self {
         $this->forceVat = $forceVat;
-        return $this;
-    }
-
-    final public function setIncoterms(?Incoterms $incoterms): self {
-        $this->incoterms = $incoterms;
         return $this;
     }
 

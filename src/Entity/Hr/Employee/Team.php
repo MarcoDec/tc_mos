@@ -6,7 +6,6 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Entity\Hr\TimeSlot;
 use App\Entity\Management\Society\Company\Company;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -19,7 +18,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'timeSlot']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['company']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
@@ -100,13 +99,6 @@ class Team extends Entity {
     ]
     private ?string $name = null;
 
-    #[
-        ApiProperty(description: 'Horaires', readableLink: false, example: '/api/time-slots/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:team', 'write:team', 'read:employee', 'read:employee:collection'])
-    ]
-    private ?TimeSlot $timeSlot = null;
-
     public function __construct() {
         $this->employees = new ArrayCollection();
     }
@@ -134,10 +126,6 @@ class Team extends Entity {
         return $this->name;
     }
 
-    final public function getTimeSlot(): ?TimeSlot {
-        return $this->timeSlot;
-    }
-
     final public function removeEmployee(Employee $employee): self {
         if ($this->employees->contains($employee)) {
             $this->employees->removeElement($employee);
@@ -155,11 +143,6 @@ class Team extends Entity {
 
     final public function setName(?string $name): self {
         $this->name = $name;
-        return $this;
-    }
-
-    final public function setTimeSlot(?TimeSlot $timeSlot): self {
-        $this->timeSlot = $timeSlot;
         return $this;
     }
 }

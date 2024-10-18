@@ -4,17 +4,14 @@ namespace App\DataPersister;
 
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Interfaces\CompanyInterface;
-#use App\Security\SecurityTrait;
+use App\Security\SecurityTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
 
 final class CompanyDataPersister implements ContextAwareDataPersisterInterface {
-    // use SecurityTrait {
-    //     __construct as private constructSecurity;
-    // }
 
     public function __construct(private readonly EntityManagerInterface $em, Security $security) {
-        $this->constructSecurity($security);
+        //$this->constructSecurity($security);
     }
 
     /**
