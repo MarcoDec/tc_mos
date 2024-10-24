@@ -13,23 +13,15 @@ use Psr\Log\LoggerInterface;
 
 final class ConnecteurDeleteDataPersister implements ContextAwareDataPersisterInterface {
     
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(private readonly EntityManagerInterface $em, LoggerInterface $deleted_connecteur) {
         $this->logger = $deleted_connecteur;
     }
 
-    /**
-     * @param WorkflowInterface $data
-     * @param mixed[]           $context
-     */
     public function persist($data, array $context = []): void {
     }
 
-    /**
-     * @param WorkflowInterface $data
-     * @param mixed[]           $context
-     */
     public function remove($data, array $context = []): void {
         $this->em->beginTransaction();
 

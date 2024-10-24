@@ -2,6 +2,7 @@
 
 namespace App\Entity\Mos;
 
+use App\Controller\Connecteur\ConnecteurGammeController;
 use App\Entity\Entity;
 use App\Repository\Mos\ConnecteurRepository;
 use App\Filter\RelationFilter;
@@ -44,6 +45,12 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Créer un connecteur',
                     'summary' => 'Créer un connecteur'
                 ]
+            ],
+
+            'isExistGamme' => [
+                'method' => 'POST',
+                'path' => '/isExistGamme',
+                'controller' => ConnecteurGammeController::class,
             ]
         ],
         itemOperations: [
@@ -133,6 +140,13 @@ class Connecteur extends Entity {
         Serializer\Groups(['create:connecteur', 'read:connecteur', 'read:file', 'write:connecteur'])
     ]
     private ?string $image = null;
+
+    #[
+        ApiProperty(description: 'Connecteur validé'),
+        ORM\Column(options: ["default" => false]),
+        Serializer\Groups(['read:connecteur', 'write:connecteur'])
+    ]
+    private ?bool $valid = false;
 
     /** @var DoctrineCollection<int, Voie> */
     #[
@@ -258,5 +272,15 @@ class Connecteur extends Entity {
         $this->image = $image;
 
         return $this;
+    }
+
+    public function isValid(): bool
+    {
+        return $this->valid;
+    }
+
+    public function setValid(?bool $valid): void
+    {
+        $this->valid = $valid;
     }
 }
